@@ -38,6 +38,6 @@ int main() {
        // printf("%d",kv_B);//
     }
     printf("Alice %d\n Bob %d\n",ak_A,ak_B+kv_B);
-    printf("Okay")
+    printf("Okay");
     return 0;
 }
