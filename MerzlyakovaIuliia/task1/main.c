@@ -8,6 +8,7 @@
 #define COMM_BOB 10000.0
 #define OVERALL_TIME 20
 #define DEPOSIT 300000
+#define FLAT_INCREACE_ONCE_YEAR 1,5
 
 int main()
 {
@@ -16,10 +17,15 @@ int main()
 
     for(int i = 0; i < (OVERALL_TIME*12); i++)
     {
-        bankAlice += SAL_ALICE - COMM_ALICE;
+        static int bobPayment = BOB_FLAT_PAYMENT;
+        //bankAlice += SAL_ALICE - COMM_ALICE;
         bankAlice += bankAlice * (DEB_PERCENT/12);
-        bankBob += SAL_BOB - COMM_BOB - BOB_FLAT_PAYMENT;
+        bankBob += SAL_BOB - (COMM_BOB + bobPayment);
         bankBob += bankBob * (DEB_PERCENT/12);
+        if (i == 48)
+        {
+            bobPayment += bobPayment*(FLAT_INCREACE_ONCE_YEAR/12);
+        }
     }
 
     printf("Alice's money: %f\n", bankAlice);
