@@ -1,6 +1,5 @@
 #include <stdio.h>
-//with commit
-float flatChange(float flat);
+
 
 void main() {
 	int aliceSalary = 150000, bobSalary = 150000, aliceMonthly = 40000, bobMonthly = 10000, bobPayment = 100000, deposit = 300000;
@@ -39,9 +38,4 @@ void main() {
 		printf("Alice and Bob have same amount of money");
 
 	}
-}
-
-float flatChange(float flat) {
-	flat *= 1.05;
-	return flat;
 }
