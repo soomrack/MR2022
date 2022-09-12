@@ -15,7 +15,7 @@ void print_out(unsigned long long int bob_year, unsigned long long int alice_yea
 int main() {
 
     // BOB START IPOTEKA
-    unsigned int bob_month_increase; // комент Жени
+    unsigned int bob_month_increase;
     unsigned long long int bob_bank = start_cash - first_input;
     bob_month_increase = salary - bob_prices - month_cash;
 
