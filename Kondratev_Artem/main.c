@@ -39,7 +39,7 @@ int main() {
     for (int i = 1; i <= year; i++)
     {
         if(i == 3)
-            cr_percent = 12.0;
+            cr_percent = 11.0;
 
         year_payment = 0;
         year_deposit = 0;
