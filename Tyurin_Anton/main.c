@@ -12,18 +12,17 @@ int main() {
     int a_com_pay = (int)(40000.14 * 100);  // коммунальные услуги Alice
     int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
     int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
-    int64_t deposit, year_payment, year_deposit;
+    long double deposit, year_payment, year_deposit;
     long double delta_deposit, month_payment;
 
-
-    int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
+    long double a_balance = start;  // активы Alice после покупки Bob квартиры
     long double a_balance_out = (double)a_balance / 100;
 
-    int64_t b_balance = start + flat_cost - first_pay;  // активы Bob после покупки квартиры
+    long double b_balance = start + flat_cost - first_pay;  // активы Bob после покупки квартиры
     long double b_balance_out = (double)b_balance / 100;
 
     long double dif = b_balance_out - a_balance_out;
-    int64_t rest = flat_cost - first_pay;  // оставшаяся задолженность Bob
+    long double rest = flat_cost - first_pay;  // оставшаяся задолженность Bob
 
     long double credit_payment = (flat_cost - first_pay) / (year * 12.0);  // фиксированная часть ежемесячной выплаты
     if(credit_payment - (int)credit_payment > 0)
@@ -31,6 +30,7 @@ int main() {
 
 
     // вывод активов после покупки Bob квартиры:
+
     printf("year %2d: ", 0);
     printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
     printf("  dif = %14.2Lf\n", dif);
@@ -39,7 +39,9 @@ int main() {
     for (int i = 1; i <= year; i++)
     {
         if(i == 3)
-            cr_percent = 12.0;
+        {
+            cr_percent = 12;
+        }
 
         year_payment = 0;
         year_deposit = 0;
@@ -69,9 +71,9 @@ int main() {
         dif = b_balance_out - a_balance_out;
 
 
-            printf("year %2d: ", i);
-            printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-            printf("  dif = %14.2Lf\n", dif);
+        printf("year %2d: ", i);
+        printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
+        printf("  dif = %14.2Lf\n", dif);
     }
     return 0;
 }
