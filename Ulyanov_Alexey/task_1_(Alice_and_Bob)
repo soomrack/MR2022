@@ -3,7 +3,7 @@
 
 struct person{
 
-    long int beginings;
+    long int beginings; /*Привет, Леша*/
     long int credit;
     long int first_pay;
     long int evry_month_pay;
