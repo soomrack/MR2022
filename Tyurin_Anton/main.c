@@ -5,13 +5,13 @@ int main() {
     int year = 20;  // количество лет, на которые взята ипотека
     double cr_percent = 8.0;  // процент ипотеки
     double dep_percent = 5.2 / 12;
-    int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
-    int start = (int)(1000000.15 * 100);  // массив стартовый капитал
-    int first_pay = (int)(300000.08 * 100);  // первый взнос
-    int salary = (int)(150000.56 * 100);  // зарплата
-    int a_com_pay = (int)(40000.14 * 100);  // коммунальные услуги Alice
-    int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
-    int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
+    int flat_cost = (int)(9000000 * 100);  // стоимость квартиры
+    int start = (int)(1000000 * 100);  // массив стартовый капитал
+    int first_pay = (int)(300000 * 100);  // первый взнос
+    int salary = (int)(150000 * 100);  // зарплата
+    int a_com_pay = (int)(40000 * 100);  // коммунальные услуги Alice
+    int b_com_pay = (int)(10000 * 100);  // коммунальные услуги Bob
+    int month_deposit = (int)(70000 * 100);  // ежемесячные отчисления на вклад
     long double deposit, year_payment, year_deposit;
     long double delta_deposit, month_payment;
 
