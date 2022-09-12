@@ -9,13 +9,13 @@ const int TERM = 20;
 
 // Задаем входные данные для Alice: оплата коммунальных услуг и прочие траты
 const int UTILITIES_PAYMENT_A = 4000000;
-const int SPENDING_A = 2000000;
+const int  ALICE_SPENDING = 2000000;
 
 //Задаем входные данные для Bob: первый платеж по ипотеке,
 //оплата коммунальных услуг и прочие траты, стоимость квартиры, ежемесячный взнос
 const int FIRST_PAYMENT = 30000000;
 const int UTILITIES_PAYMENT_B = 1000000;
-const int SPENDING_B = 1500000;
+const int BOB_SPENDING = 1500000;
 const long long FLAT_COST = 1200000000;
 const int MONTHLY_PAYMENT = 10000000;
 
@@ -34,9 +34,9 @@ int main() {
             depositRateAnnual = DEPOSIT_RATE_ANNUAL_2ND;
         }
         alicePercents = aliceCapital * depositRateAnnual / 1200;
-        aliceCapital += alicePercents + (SALARY - UTILITIES_PAYMENT_A - SPENDING_A);
+        aliceCapital += alicePercents + (SALARY - UTILITIES_PAYMENT_A - ALICE_SPENDING);
         bobPercents = bobCapital * depositRateAnnual / 1200;
-        bobCapital += bobPercents + (SALARY - UTILITIES_PAYMENT_B - SPENDING_B - MONTHLY_PAYMENT);
+        bobCapital += bobPercents + (SALARY - UTILITIES_PAYMENT_B - BOB_SPENDING - MONTHLY_PAYMENT);
         if (i % 12 == 0) {
             printf("%4d year %18lld,%lld %15lld,%lld\n", i/12, aliceCapital/100, aliceCapital%100, bobCapital/100, bobCapital%100);
         }
