@@ -25,9 +25,11 @@ for (int year=1; year<=20; year++){
     }
     itog_a=bank_a;
     itog_b=(bank_b+flat);
+    printf("stavka %.2f ", stavka);
     printf("%d year: ", year);
-    printf("Alice = %d.%d ",(unsigned long long int ) itog_a/100,(unsigned long long int )itog_a%100);
-    printf("Bob = %d.%d\n",(unsigned long long int ) itog_b/100, (unsigned long long int )itog_b%100);
+    printf("Alice = %llu.%llu ",(unsigned long long int ) itog_a/100,(unsigned long long int )itog_a%100);
+    printf("Bob = %llu.%llu\n",(unsigned long long int ) itog_b/100, (unsigned long long int )itog_b%100);
+
 }
     return 0;
 }
