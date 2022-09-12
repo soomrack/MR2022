@@ -18,7 +18,7 @@ int main() {
             a= a*0.06;}
         else {
             a=a*0.08; }
-       //  printf ("Bob= %d\n", a,  ' \n' );
+       //  printf ("Bob1= %d\n", a,  ' \n' );
     }
 
     printf ("Bob= %d\n", a);
