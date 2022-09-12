@@ -16,7 +16,7 @@ int main() {
     long double delta_deposit, month_payment;
 
 
-    int64_t a_balance = start + flat_cost;  // активы Alice после покупки Bob квартиры
+    int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
     long double a_balance_out = (double)a_balance / 100;
 
     int64_t b_balance = start + flat_cost - first_pay;  // активы Bob после покупки квартиры
@@ -39,9 +39,7 @@ int main() {
     for (int i = 1; i <= year; i++)
     {
         if(i == 3)
-        {
             cr_percent = 12.0;
-        }
 
         year_payment = 0;
         year_deposit = 0;
