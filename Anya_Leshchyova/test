@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#define aaaa 1000
 
 int main() {
     int beginning=10000000;
