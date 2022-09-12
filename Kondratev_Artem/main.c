@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 int main() {
-    int year = 22;  // количество лет, на которые взята ипотека
+    int year = 20;  // количество лет, на которые взята ипотека
     double cr_percent = 8.0;  // процент ипотеки
     double dep_percent = 0.2;
     int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
@@ -42,10 +42,7 @@ int main() {
             cr_percent = 13.0;
 
         if(i == 5)
-        {
             b_balance += 150000000;
-            flat_cost += 150000000;
-        }
 
         if(i == 7)
             salary = 5000000;
@@ -82,9 +79,9 @@ int main() {
         dif = b_balance_out - a_balance_out;
 
 
-            printf("year %2d: ", i);
-            printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-            printf("  dif = %14.2Lf\n", dif);
+        printf("year %2d: ", i);
+        printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
+        printf("  dif = %14.2Lf\n", dif);
     }
     return 0;
 }
