@@ -1,1 +1,37 @@
+#include <iostream>
+#include <stdio.h>
+
+
+int main() {
+    int beginning=10000000;
+    int beginning_contribution=300000;
+    int flat=6000000;
+    int income =150000;
+    int expenses = 10000;
+    int expenses2 = 10000;
+    int time=20*12;
+    int a=beginning -beginning_contribution;
+    int b=beginning;
+    for (int i=1; i<=time; i++) {
+        a = (a+(income)-(expenses) -(time/12*0.06*flat)/12);
+        if ( i > 3) {
+            a= a*0.06;}
+        else {
+            a=a*0.08; }
+       //  printf ("Bob= %d\n", a,  ' \n' );
+    }
+
+    printf ("Bob= %d\n", a);
+    for (int j=1; j<=time/12; j++) {
+        if ( j > 3) {
+            b=(b+(b*0.08)+(income*12)-(expenses2*12));}
+        else {
+             b=(b+(b*0.06)+(income*12)-(expenses2*12));
+    }
+      //  printf (" Alice= %d\n", b );
+
+    }
+    printf ("  Alice= %d\n", b );
+    return 0;
+}
 
