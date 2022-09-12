@@ -12,7 +12,7 @@ void main() {
 		aliceAccount *= 1 + alicePercent;
 
 		bobAccount += bobSalary - bobPayment - bobMonthly;
-		bobAccount -= flat * (1 + fee);
+		bobAccount -= flat * fee;
 		bobAccount *= 1 + bobPercent;
 
 		if (n == 5) {
