@@ -2,6 +2,7 @@
 #include <math.h>
 
 int main() {
+    //Привет, Валя! Спасибо за помощь, желаю хорошего дня!
     float pr = 0.06;
     int tr_A = 40000;
     int zp_A = 150000;
@@ -28,7 +29,7 @@ int main() {
         if (i>=36){
             pr = 0.08;
         }
-        if (i=5){
+        if (i=60){
             kv_B=kv_B*1.5;
         }
         kv_B = kv_B * (1+price/12);
@@ -38,6 +39,6 @@ int main() {
        // printf("%d",kv_B);//
     }
     printf("Alice %d\n Bob %d\n",ak_A,ak_B+kv_B);
-    printf("Okay")
+    printf("Okay");
     return 0;
 }
