@@ -11,8 +11,7 @@ const int period = 20; // Years
 const int alice_prices = 40000; // ALICE'S MONTHLY WASTE
 const int bob_prices = 10000; // BOB'S MONTHLY WASTE
 
-//float bob_money;
-//float alice_money;
+
 
 void print_out(double bob_year, double alice_year, int year);
 
@@ -37,13 +36,12 @@ int main() {
     printf("Bob                  Alice               Year");
     printf("\n");
 
-    // По прошествии 5-ти лет вклад изменился в большую сторону
-
 
 
     int i;
     for (i = 0; i < period; i++) {
 
+        // По прошествии 5-ти лет вклад изменился в большую сторону
         if (i == 4) {
             year_percent = 8;
         }
