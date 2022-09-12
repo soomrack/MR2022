@@ -32,7 +32,7 @@ int main() {
     int year_ch = 3;
     double new_deposit_count = 8;
 
-    printf("%f, %f\n", k_deposit_per_month, k_credit_per_month);
+    /*printf("%f, %f\n", k_deposit_per_month, k_credit_per_month);*/
 
     struct person Alice = {1000000, 0, 0, 0, 40000, 150000, 0, 0};
     Alice.bank = Alice.beginings;
@@ -42,7 +42,7 @@ int main() {
     Bob.house = Bob.credit;
     Bob.evry_month_pay =  ceil(Bob.credit * ((k_credit_per_month-1) + (k_credit_per_month-1) / (pow(k_credit_per_month,term) - 1)));
 
-    printf("%d\n", Bob.evry_month_pay);
+    /*printf("%d\n", Bob.evry_month_pay);*/
 
     for (int i = 1; i <= term; i++){
         int free_money_a = Alice.income - Alice.house_spending;
