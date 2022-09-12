@@ -48,7 +48,7 @@ int main() {
     double house_rotate = 2;
     double k_house_per_month = k_per_month(house_rotate);
 
-    double house_tax = 5;
+    double house_tax = 5;      // налог на имущество, который съедает по 5% раз в год.
 
     //printf("%f, %f\n", k_deposit_per_month, k_credit_per_month);
 
