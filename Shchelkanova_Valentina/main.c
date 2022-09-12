@@ -28,7 +28,7 @@ int main() {
         if (i>=36){
             pr = 0.08;
         }
-        if (i=5){
+        if (i=60){
             kv_B=kv_B*1.5;
         }
         kv_B = kv_B * (1+price/12);
