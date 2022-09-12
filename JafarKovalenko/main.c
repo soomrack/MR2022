@@ -5,7 +5,7 @@ struct human{
     unsigned int firstPay; // первоначальный взнос
     unsigned int monthPay; //ежемесячный взнос
     unsigned int monthSpend; // ежемесячные траты
-    unsigned long long int nowMoney; // текущие средства
+    unsigned long long nowMoney; // текущие средства
 };
 
 const unsigned int initMoney = 1000000 * 100; // начальный капитал в коп
@@ -18,8 +18,14 @@ const int year = 20; // срок в годах
 
 int toCalcMonthPay(unsigned int price, unsigned int firstPay, double rate, int time) {
     double monthRate = rate / 12;
-    int monthPay = ((price - firstPay) * monthRate) / (1 - pow((1 + monthRate),(time * -12)));
+    int monthPay = (int)(((price - firstPay) * monthRate) / (1 - pow((1 + monthRate),(time * -12))));
     return monthPay;
+}
+
+void toDisplayResult(unsigned long long int money){
+    unsigned long long rub = money / 100;
+    unsigned long long kop = money % 100;
+    printf("%llu.%llu", rub, kop);
 }
 
 int main() {
@@ -35,26 +41,30 @@ int main() {
 
     for (int i = 1; i < year * 12 + 1; i++){
         if (i < 37) {
-            Alice.nowMoney = (unsigned long long int) ((double) (Alice.nowMoney + income - Alice.monthSpend) *
+            Alice.nowMoney = (unsigned long long) ((double) (Alice.nowMoney + income - Alice.monthSpend) *
                                                        (1 + fbankRate / 12));
-            Bob.nowMoney = (unsigned long long int) ((double) (Bob.nowMoney + income - Bob.monthSpend - Bob.monthPay) *
+            Bob.nowMoney = (unsigned long long) ((double) (Bob.nowMoney + income - Bob.monthSpend - Bob.monthPay) *
                                                      (1 + fbankRate / 12));
         } else{
-            Alice.nowMoney = (unsigned long long int) ((double) (Alice.nowMoney + income - Alice.monthSpend) *
+            Alice.nowMoney = (unsigned long long) ((double) (Alice.nowMoney + income - Alice.monthSpend) *
                                                        (1 + sbankRate / 12));
-            Bob.nowMoney = (unsigned long long int) ((double) (Bob.nowMoney + income - Bob.monthSpend - Bob.monthPay) *
+            Bob.nowMoney = (unsigned long long) ((double) (Bob.nowMoney + income - Bob.monthSpend - Bob.monthPay) *
                                                      (1 + sbankRate / 12));
         }
         if ((i % 60) == 0){
-            printf(" | %d years ", (i / 12));
-            printf(" | Alice: %d.%d", Alice.nowMoney / 100, Alice.nowMoney % 100);
-            printf(" | Bob: %d.%d\n", Bob.nowMoney / 100, Bob.nowMoney % 100);
+            printf("\n| %d years ", (i / 12));
+            printf(" | Alice:");
+            toDisplayResult(Alice.nowMoney);
+            printf(" | Bob:");
+            toDisplayResult(Bob.nowMoney);
         }
     }
 
-    printf("\nAfter 20 years:\nAlice: %d.%d rub\n", Alice.nowMoney / 100, Alice.nowMoney % 100);
-    printf("Bob: %d.%d rub + the apartment\n", Bob.nowMoney / 100, Bob.nowMoney % 100);
-    printf("Alice is richer than Bob of %d.%d rub", (Alice.nowMoney - Bob.nowMoney) / 100, (Alice.nowMoney - Bob.nowMoney) % 100);
-
+    printf("\nAfter 20 years:\nAlice: ");
+    toDisplayResult(Alice.nowMoney);
+    printf("rub\nBob: ");
+    toDisplayResult(Bob.nowMoney);
+    printf("rub + the apartment\nAlice is richer than Bob of %llu.%llu rub", (unsigned long long)((Alice.nowMoney - Bob.nowMoney) / 100),
+           (unsigned long long) ((Alice.nowMoney - Bob.nowMoney) % 100));
     return 0;
 }

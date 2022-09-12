@@ -15,6 +15,8 @@ int main() {
         i,
         b;
 
+    //Егор, я поменял твой код
+
     double
         ProcentKred = 0.12,
         ProcentVklad = 0.06,

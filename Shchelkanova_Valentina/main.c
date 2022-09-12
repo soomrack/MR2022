@@ -22,18 +22,22 @@ int main() {
     int zp_B = 150000;
     float price = 0.01;
     int k_B;
+    float nalog = 0.001;
     pr = 0.06;
     for(i=1;i<=240;i++) {
         if (i>=36){
             pr = 0.08;
         }
+        if (i=60){
+            kv_B=kv_B*1.5;
+        }
         kv_B = kv_B * (1+price/12);
 
-        ak_B = ((ak_B+zp_B-tr_B-pk_B)*(1+pr/12));
+        ak_B = ((ak_B+zp_B-tr_B-pk_B-(kv_B*nalog/12))*(1+pr/12));
        // printf("Bob %d-%d\n",i,ak_B);//
        // printf("%d",kv_B);//
     }
     printf("Alice %d\n Bob %d\n",ak_A,ak_B+kv_B);
-    printf("Okay")
+    printf("Okay");
     return 0;
 }

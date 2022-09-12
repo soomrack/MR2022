@@ -1,3 +1,11 @@
+#include <stdio.h>
+
+const int STARTUP_CAPITAL = 1000000;
+const int SALARY = 150000;
+const double DEPOSIT_RATE_ANNUAL = 0.02;
+const double DEPOSIT_RATE_ANNUAL_NEW = 0.03;
+const int YEARS = 20;
+const int YEARS_NEW = 3;
 
 const int UTILITIES_PAYMENT_A = 40000;
 const int SPENDING_A = 10000;
@@ -37,10 +45,5 @@ int main() {
     }
 
     bobFinalCapital = bobCapital + FLAT_COST;
-    printf("Final capital %14.2f %16.2f\n", aliceCapital, bobFinalCapital);
-    if (aliceCapital > bobFinalCapital) {
-        printf("Alice will have a %10.2f rubles more, then Bob", aliceCapital - bobFinalCapital);
-    } else {
-        printf("Bob will have a %10.2f rubles more, then Alice", bobFinalCapital - aliceCapital);
-    }
+   
 }

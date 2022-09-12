@@ -4,7 +4,7 @@
 int main() {
     int year = 20;  // количество лет, на которые взята ипотека
     double cr_percent = 8.0;  // процент ипотеки
-    double dep_percent = 5.2 / 12;
+    double dep_percent = 0.2;
     int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
     int start = (int)(1000000.15 * 100);  // массив стартовый капитал
     int first_pay = (int)(300000.08 * 100);  // первый взнос
@@ -13,7 +13,7 @@ int main() {
     int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
     int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
     int64_t deposit, year_payment, year_deposit;
-    long double delta_deposit, month_payment;
+    long double delta_deposit, month_payment, flat_tax;
 
 
     int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
@@ -39,10 +39,20 @@ int main() {
     for (int i = 1; i <= year; i++)
     {
         if(i == 3)
-            cr_percent = 11.0;
+            cr_percent = 13.0;
+
+        if(i == 5)
+            b_balance += 150000000;
+
+        if(i == 7)
+            salary = 5000000;
 
         year_payment = 0;
         year_deposit = 0;
+
+        flat_tax = flat_cost * 0.5 / 100;
+        if(flat_tax - (int)flat_tax > 0)
+            flat_tax = (int)flat_tax + 1;
 
         for(int j = 0; j < 12; j++)
         {
@@ -60,7 +70,7 @@ int main() {
             year_deposit += (int)delta_deposit;
         }
 
-        b_balance += (salary - b_com_pay) * 12 - year_payment + year_deposit;
+        b_balance += (salary - b_com_pay - (int)flat_tax) * 12 - year_payment + year_deposit;
         b_balance_out = (double)b_balance / 100;
 
         a_balance += (salary - a_com_pay) * 12 + year_deposit;
@@ -69,9 +79,9 @@ int main() {
         dif = b_balance_out - a_balance_out;
 
 
-            printf("year %2d: ", i);
-            printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-            printf("  dif = %14.2Lf\n", dif);
+        printf("year %2d: ", i);
+        printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
+        printf("  dif = %14.2Lf\n", dif);
     }
     return 0;
 }
