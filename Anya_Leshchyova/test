@@ -3,22 +3,26 @@
 
 
 int main() {
-    int beginning=10000000;
-    int beginning_contribution=300000;
-    int flat=6000000;
-    int income =150000;
-    int expenses = 10000;
-    int expenses2 = 10000;
-    int time=20*12;
-    int a=beginning -beginning_contribution;
+    int beginning=10000000; // начальный капитал
+    int beginning_contribution=300000; // начальная выплата по ипотеке
+    int flat=6000000; // стоимость квартиры
+    int income =150000; // доходы
+    int expenses = 10000;  // расходы Боба
+    int expenses2 = 40000; // расходы Алисы
+    int time=20*12; // время на погашение ипотеки
+    int a=beginning -beginning_contribution; // остаток Боба
     int b=beginning;
-    for (int i=1; i<=time; i++) {
-        a = (a+(income)-(expenses) -(time/12*0.06*flat)/12);
-        if ( i > 3) {
-            a= a*0.06;}
+    int monthly_payment= (flat +flat*0.08)/ (time) ; // стоим. кв. плюс проценты по ипотеке и поделим на месяцы
+    int k=1; // вспомогательный счётчик
+    for (int i=1; i<=time; i++) { // расчёт идёт по месяцам
+        a = (a+(income)-(expenses) -(monthly_payment);
+        if ( i > 3*12) {
+            a= a*0.08;}  // после трёх лет процент на вклад увеличился
         else {
-            a=a*0.08; }
-       //  printf ("Bob= %d\n", a,  ' \n' );
+            a=a*0.06; }   // до трёх лет
+        if ( i%12=1) {
+         printf ("Year=%d", k, "Bob= %d\n", a );
+        k =k+1;}
     }
 
     printf ("Bob= %d\n", a);
