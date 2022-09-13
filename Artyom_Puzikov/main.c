@@ -2,29 +2,32 @@
 
 int main()
 {
-  int expensesA = 40000, salary = 150000, expensesB = 10000, downpayment = 600000, flat = 4000000, monthly_payment = 51480;
-  double deposit = 0.00125, resultA = 1000000, contributionA = 0.0, moneyA = 1000000, resultB = 1000000 - downpayment,
-    moneyB = 1000000, contributionB = 0.0;
+  long long expensesA = 4000000, salary = 15000000, expensesB = 1000000, downpayment = 60000000, flat = 400000000, monthly_payment = 5148000;
+  double deposit = 0.00125;
+  long long resultA = 100000000, contributionA = 0, moneyA = 100000000, resultB =
+    100000000 - downpayment, moneyB = 100000000,
+    contributionB = 0;
   for (int i = 1; i <= 20 * 12; i++)
   {
-    if (i > 3 * 12){
+    if (i > 3 * 12)
+    {
       deposit = 0.00167;
     }
-    resultA = resultA + ((salary - expensesA) + deposit * contributionA);
+    resultA = (long long) (resultA + ((salary - expensesA) + deposit * contributionA));
     moneyA += salary - expensesA;
-    contributionA += moneyA + contributionA * deposit;
+    contributionA += (long long) (moneyA + contributionA * deposit);
     moneyA = 0;
 
-    resultB = resultB + ((salary - expensesA - monthly_payment) + deposit * contributionB);
+    resultB = (long long) (resultB + ((salary - expensesA - monthly_payment) + deposit * contributionB));
     moneyB += salary - expensesB - monthly_payment;
-    contributionB += moneyB + contributionB * deposit;
+    contributionB += (long long) (moneyB + contributionB * deposit);
     moneyB = 0;
 
     if (i % 12 == 0)
     {
       printf("%d) \t", i / 12);
-      printf("Alice: %f\t", resultA);
-      printf("Bob: %f\n", resultB + flat);
+      printf("Alice: %lld,%lld\t", resultA / 100, resultA % 100);
+      printf("Bob: %lld,%lld\n", (resultB + flat) / 100, resultB % 100);
     }
   }
   return 0;
