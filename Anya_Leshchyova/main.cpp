@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
+
 int main() {
     int beginning=1000000; // начальный капитал
     int beginning_contribution=300000; // начальная выплата по ипотеке
@@ -10,7 +11,7 @@ int main() {
     int expenses2 = 40000; // расходы Алисы
     int time=20*12; // время на погашение ипотеки
     int a=beginning -beginning_contribution; // остаток Боба
-    int b=beginning;
+    int b=beginning;//
     int Bob, Alice;
     int monthly_payment= ((flat +flat*0.08)/ (time)) ; // стоим. кв. плюс проценты по ипотеке и поделим на месяцы
     int k=1, f=0; // вспомогательный счётчик
