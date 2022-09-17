@@ -27,7 +27,7 @@ int main( ) {
         }
         for (int month = 1; month <= 12; month++) {
             bank_a = (unsigned long long int) ((bank_a + dox_A - trat_a) * (1.f + stavka / 12)); //учет налога на недвижимость
-            bank_b = (unsigned long long int) ((bank_b + dox_B - trat_b - plat_b) * (1.f + stavka / 12) - 5000000); // учет налога на недвижимость
+            bank_b = (unsigned long long int) ((bank_b + dox_B - trat_b - plat_b) * (1.f + stavka / 12) - 50000); // учет налога на недвижимость
         }
         itog_a = bank_a;
         itog_b = (bank_b + flat);
