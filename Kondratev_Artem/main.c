@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 int main() {
-    int year = 20;  // количество лет, на которые взята ипотека
+    int year = 22;  // количество лет, на которые взята ипотека
     double cr_percent = 8.0;  // процент ипотеки
     double dep_percent = 0.2;
     int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
