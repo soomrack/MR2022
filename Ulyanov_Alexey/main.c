@@ -3,14 +3,14 @@
 
 struct person{
 
-    long int beginings;
-    long int credit;
-    long int first_pay;
-    long int evry_month_pay;
-    long int house_spending;
-    long int income;
-    long int bank;
-    long int house;
+    long int beginings;                     // Начальные сбережения
+    long int credit;                        // Сумма кредиторской задолжности в банке
+    long int first_pay;                     // Сумма первого платежа
+    long int evry_month_pay;                // Сумма ежемесячного платежа по кредиту
+    long int house_spending;                // Ежемесячные затраты на жилье и пр.
+    long int income;                        // Ежемесячный доход
+    long int bank;                          // Счет в банке (на эту сумму начисляется процент (первая часть всех активов)
+    long int house;                         // Стоимость купленного имущества (вторая часть всех активов)
 
 };
 
