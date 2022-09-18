@@ -13,7 +13,7 @@ int main() {
     int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
     int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
     int64_t deposit, year_payment, year_deposit;
-    long double delta_deposit, month_payment, flat_tax;
+    long double delta_deposit, month_payment, flat_taxes;
 
 
     int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
@@ -50,9 +50,9 @@ int main() {
         year_payment = 0;
         year_deposit = 0;
 
-        flat_tax = flat_cost * 0.5 / 100;
-        if(flat_tax - (int)flat_tax > 0)
-            flat_tax = (int)flat_tax + 1;
+        flat_taxes = flat_cost * 0.5 / 100;
+        if(flat_taxes - (int)flat_taxes > 0)
+            flat_taxes = (int)flat_taxes + 1;
 
         for(int j = 0; j < 12; j++)
         {
@@ -70,7 +70,7 @@ int main() {
             year_deposit += (int)delta_deposit;
         }
 
-        b_balance += (salary - b_com_pay - (int)flat_tax) * 12 - year_payment + year_deposit;
+        b_balance += (salary - b_com_pay - (int)flat_taxes) * 12 - year_payment + year_deposit;
         b_balance_out = (double)b_balance / 100;
 
         a_balance += (salary - a_com_pay) * 12 + year_deposit;
