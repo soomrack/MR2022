@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-int main() {
-    int year = 12;  // количество лет, на которые взята ипотека
+int main()
+    {
+    int year = 22;  // количество лет, на которые взята ипотека
     double cr_percent = 8.0;  // процент ипотеки
     double dep_percent = 0.2;
     int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
@@ -31,6 +32,7 @@ int main() {
 
 
     // вывод активов после покупки Bob квартиры:
+    printf("  Year\t\t\tAlice\t\t  Bob\t\t\t\tDif\n");
     printf("year %2d: ", 0);
     printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
     printf("  dif = %14.2Lf\n", dif);
@@ -84,4 +86,4 @@ int main() {
         printf("  dif = %14.2Lf\n", dif);
     }
     return 0;
-}
+    }
