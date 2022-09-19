@@ -2,26 +2,26 @@
 #include <math.h>
 
 struct human{
-    unsigned int firstPay; // первоначальный взнос
-    unsigned int monthPay; //ежемесячный взнос
-    unsigned int monthSpend; // ежемесячные траты
-    unsigned long long nowMoney; // текущие средства
+    unsigned int first_pay; // первоначальный взнос
+    unsigned int month_pay; //ежемесячный взнос
+    unsigned int month_spend; // ежемесячные траты
+    unsigned long long now_money; // текущие средства
 };
 
-const unsigned int initMoney = 1000000 * 100; // начальный капитал в коп
-const unsigned int apartPrice = 5000000 * 100; // стоимость квартиры в коп
+const unsigned int INITIAL_MONEY = 1000000 * 100; // начальный капитал в коп
+const unsigned int APART_PRICE = 5000000 * 100; // стоимость квартиры в коп
+const double APART_RATE = 0.1; // год ставка по ипотеке
+const int YEAR = 20; // срок в годах
 unsigned int income = 150000 * 100; // доход в коп
-double bankRate = 0.08; // год ставка в банке
-const double apartRate = 0.1; // год ставка по ипотеке
-const int year = 20; // срок в годах
+double bank_rate = 0.08; // год ставка в банке
 
-int toCalcMonthPay(unsigned int price, unsigned int firstPay, double rate, int time) {
-    double monthRate = rate / 12;
-    int monthPay = (int)(((price - firstPay) * monthRate) / (1 - pow((1 + monthRate),(time * -12))));
-    return monthPay;
+int to_calc_month_pay(unsigned int price, unsigned int first_pay, double rate, int time) {
+    double month_rate = rate / 12;
+    int month_pay = (int)(((price - first_pay) * month_rate) / (1 - pow((1 + month_rate), (time * -12))));
+    return month_pay;
 }
 
-void toDisplayResult(unsigned long long int money){
+void to_display_result(unsigned long long int money){
     unsigned long long rub = money / 100;
     unsigned long long kop = money % 100;
     printf("%llu.%llu", rub, kop);
@@ -29,34 +29,34 @@ void toDisplayResult(unsigned long long int money){
 
 int main() {
     struct human Alice;
-    Alice.nowMoney = initMoney;
-    Alice.monthSpend = 40000 * 100;
+    Alice.now_money = INITIAL_MONEY;
+    Alice.month_spend = 40000 * 100;
 
     struct human Bob;
-    Bob.firstPay = (unsigned int) (0.15 * apartPrice);
-    Bob.nowMoney = initMoney - Bob.firstPay;
-    Bob.monthPay = toCalcMonthPay(apartPrice, Bob.firstPay, apartRate, year);
-    Bob.monthSpend = 10000 * 100;
+    Bob.first_pay = (unsigned int) (0.15 * APART_PRICE);
+    Bob.now_money = INITIAL_MONEY - Bob.first_pay;
+    Bob.month_pay = to_calc_month_pay(APART_PRICE, Bob.first_pay, APART_RATE, YEAR);
+    Bob.month_spend = 10000 * 100;
 
-    for (int i = 1; i < year * 12 + 1; i++){
-        Alice.nowMoney = (unsigned long long) ((double) (Alice.nowMoney + income - Alice.monthSpend) * (1 + bankRate / 12));
-        Bob.nowMoney = (unsigned long long) ((double) (Bob.nowMoney + income - Bob.monthSpend - Bob.monthPay) * (1 + bankRate / 12));
-        if (i == (3 * 12)) bankRate += 0.02; // увеличение процента по вкладу спустя 3 года
+    for (int i = 1; i < YEAR * 12 + 1; i++){
+        Alice.now_money = (unsigned long long) ((double) (Alice.now_money + income - Alice.month_spend) * (1 + bank_rate / 12));
+        Bob.now_money = (unsigned long long) ((double) (Bob.now_money + income - Bob.month_spend - Bob.month_pay) * (1 + bank_rate / 12));
+        if (i == (3 * 12)) bank_rate += 0.02; // увеличение процента по вкладу спустя 3 года
         if (i == (10 * 12)) income -= 50000 * 100; // уменьшение додходов спустя 10 лет
         if ((i % 60) == 0){
             printf("\n| %d years ", (i / 12));
             printf(" | Alice:");
-            toDisplayResult(Alice.nowMoney);
+            to_display_result(Alice.now_money);
             printf(" | Bob:");
-            toDisplayResult(Bob.nowMoney);
+            to_display_result(Bob.now_money);
         }
     }
 
     printf("\n\nAfter 20 years:\nAlice: ");
-    toDisplayResult(Alice.nowMoney);
+    to_display_result(Alice.now_money);
     printf(" rub\nBob: ");
-    toDisplayResult(Bob.nowMoney);
-    printf(" rub + the apartment\nAlice is richer than Bob of %llu.%llu rub\n", (unsigned long long)((Alice.nowMoney - Bob.nowMoney) / 100),
-           (unsigned long long) ((Alice.nowMoney - Bob.nowMoney) % 100));
+    to_display_result(Bob.now_money);
+    printf(" rub + the apartment\nAlice is richer than Bob of %llu.%llu rub\n", (unsigned long long)((Alice.now_money - Bob.now_money) / 100),
+           (unsigned long long) ((Alice.now_money - Bob.now_money) % 100));
     return 0;
 }
