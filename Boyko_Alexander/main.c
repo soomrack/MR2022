@@ -64,10 +64,10 @@ void month_cycle(int year){
     for (j = 0; j < 12; j++) {
 
         // ALICE MONTH
-        alice_bank = month_calc(alice_bank,alice_month_increase);
+        alice_bank = month_calc(alice_bank, alice_month_increase);
 
         // BOB MONTH
-        bob_bank = month_calc(bob_bank,bob_month_increase);
+        bob_bank = month_calc(bob_bank, bob_month_increase);
     }
 
     // RESULTS
