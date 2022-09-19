@@ -26,6 +26,7 @@ void year_cycle();
 void month_cycle(int year);
 void year_event(int year);
 
+// MAIN FUNC
 int main() {
     // VARs INITIALIZATION
     init();
