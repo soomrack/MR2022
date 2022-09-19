@@ -6,7 +6,7 @@ const int first_input = 450000 * 100; // BOB'S INPUT IN FLAT (KOP)
 const int flat_price = 3000000 * 100; // FLAT'S PRICE (KOP)
 const int salary = 150000 * 100; // SALARY FOR BOTH (KOP)
 const int month_cash = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
-const int period = 20; // YEARS (KOP)
+const int period = 20; // YEARS
 const int alice_prices = 40000 * 100; // ALICE'S MONTHLY WASTE (KOP)
 const int bob_prices = 10000 * 100; // BOB'S MONTHLY WASTE (KOP)
 
