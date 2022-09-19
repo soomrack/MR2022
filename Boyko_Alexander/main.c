@@ -1,14 +1,14 @@
 #include <stdio.h>
 
-const int start_cash = 1000000 * 100; // FIRST INPUT IN BANK
-const int first_input = 450000 * 100; // BOB'S INPUT IN FLAT
-const int flat_price = 3000000 * 100; // FLAT'S PRICE
-const int salary = 150000 * 100; // SALARY FOR BOTH
-const int month_cash = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT
+const int start_cash = 1000000 * 100; // FIRST INPUT IN BANK (KOP)
+const int first_input = 450000 * 100; // BOB'S INPUT IN FLAT (KOP)
+const int flat_price = 3000000 * 100; // FLAT'S PRICE (KOP)
+const int salary = 150000 * 100; // SALARY FOR BOTH (KOP)
+const int month_cash = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
 int year_percent = 7; // BANK'S PERCENT
-const int period = 20; // Years
-const int alice_prices = 40000 * 100; // ALICE'S MONTHLY WASTE
-const int bob_prices = 10000 * 100; // BOB'S MONTHLY WASTE
+const int period = 20; // YEARS
+const int alice_prices = 40000 * 100; // ALICE'S MONTHLY WASTE (KOP)
+const int bob_prices = 10000 * 100; // BOB'S MONTHLY WASTE (KOP)
 
 void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year);
 
@@ -49,6 +49,7 @@ int main() {
     return 0;
 }
 
+// OUTPUT BLOCK
 void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year) {
     // BOB'S RESULT
     unsigned long long int bob_rub = bob_year / 100;
