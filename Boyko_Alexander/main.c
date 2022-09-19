@@ -1,25 +1,29 @@
 #include <stdio.h>
+#include "malloc.h"
 
 // CONSTS
-const int start_cash = 1000000 * 100; // FIRST INPUT IN BANK (KOP)
-const int first_input = 450000 * 100; // BOB'S INPUT IN FLAT (KOP)
-const int flat_price = 3000000 * 100; // FLAT'S PRICE (KOP)
-const int salary = 150000 * 100; // SALARY FOR BOTH (KOP)
-const int month_cash = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
-const int period = 20; // YEARS
-const int alice_prices = 40000 * 100; // ALICE'S MONTHLY WASTE (KOP)
-const int bob_prices = 10000 * 100; // BOB'S MONTHLY WASTE (KOP)
+const int START_CASH = 1000000 * 100; // FIRST INPUT IN BANK (KOP)
+const int FIRST_INPUT = 450000 * 100; // BOB'S INPUT IN FLAT (KOP)
+const int FLAT_PRICE = 3000000 * 100; // FLAT'S PRICE (KOP)
+const int SALARY = 150000 * 100; // SALARY FOR BOTH (KOP)
+const int MONTH_CASH = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
+const int PERIOD = 20; // YEARS
+const int ALICE_WASTE = 40000 * 100; // ALICE'S MONTHLY WASTE (KOP)
+const int BOB_WASTE = 10000 * 100; // BOB'S MONTHLY WASTE (KOP)
 
 int year_percent = 7; // BANK'S PERCENT
 
-// VARIABLES FOR CYCLE
-unsigned int bob_month_increase; // KOP
-unsigned long long int bob_bank; // KOP
-unsigned int alice_month_increase; // KOP
-unsigned long long int alice_bank; // KOP
+struct Client {
+    char *name;
+    unsigned int month_increase; // KOP
+    unsigned long long int bank; // KOP
+};
+
+struct Client Alice, Bob;
 
 // PROCs AND FUNCs
 void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year);
+void print_res_string(unsigned long long int client_year);
 void init();
 unsigned long long int month_calc(unsigned long long int bank, unsigned int month_increase);
 void year_cycle();
@@ -40,19 +44,23 @@ int main() {
 // INITIALIZATION BLOCK
 void init(){
     // BOB START IPOTEKA
-    bob_bank = start_cash - first_input;
-    bob_month_increase = salary - bob_prices - month_cash;
+    Bob.name = malloc(6);
+    Bob.name = "Bob";
+    Bob.bank = START_CASH - FIRST_INPUT;
+    Bob.month_increase = SALARY - BOB_WASTE - MONTH_CASH;
 
     // ALICE START BANK
-    alice_bank = start_cash;
-    alice_month_increase = salary - alice_prices;
+    Alice.name = malloc(6);
+    Alice.name = "Alice";
+    Alice.bank = START_CASH;
+    Alice.month_increase = SALARY - ALICE_WASTE;
 }
 
 // YEAR CYCLE BLOCK
 void year_cycle(){
     int i;
-    for (i = 0; i < period; i++) {
-
+    for (i = 0; i < PERIOD; i++) {
+        // SOMETHING CHANGED
         year_event(i);
 
         month_cycle(i);
@@ -65,14 +73,14 @@ void month_cycle(int year){
     for (j = 0; j < 12; j++) {
 
         // ALICE MONTH
-        alice_bank = month_calc(alice_bank, alice_month_increase);
+        Alice.bank = month_calc(Alice.bank, Alice.month_increase);
 
         // BOB MONTH
-        bob_bank = month_calc(bob_bank, bob_month_increase);
+        Bob.bank = month_calc(Bob.bank, Bob.month_increase);
     }
 
     // RESULTS
-    print_out(bob_bank + flat_price, alice_bank, year);
+    print_out(Bob.bank + FLAT_PRICE, Alice.bank, year);
 }
 
 // YEAR EVENT BLOCK
@@ -93,19 +101,24 @@ unsigned long long int month_calc(unsigned long long int bank, unsigned int mont
 void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year) {
     // TABLE HEAD
     if(year == 0){
-        printf("Bob                     Alice                     Year \n");
+        printf("%s                     %s                     Year \n",Bob.name,Alice.name);
     }
 
     // BOB'S RESULT
-    unsigned long long int bob_rub = bob_year / 100;
-    int bob_kop = (int)(bob_year % 100);
-    printf("%0.2llu Rub %0.2d Kop       ", bob_rub,bob_kop);
+    print_res_string(bob_year);
 
     // ALICE"S RESULT
-    unsigned long long int alice_rub = alice_year / 100;
-    int alice_kop = (int)(alice_year % 100);
-    printf("%0.2llu Rub %0.2d Kop       ", alice_rub,alice_kop);
+    print_res_string(alice_year);
 
     // YEAR OUTPUT
     printf("%0.2d \n", year + 1);
 }
+
+// INDIVIDUAL OUTPUT BLOCK
+void print_res_string(unsigned long long int client_year) {
+    unsigned long long int client_rub = client_year / 100;
+    int client_kop = (int)(client_year % 100);
+    printf("%0.2llu Rub %0.2d Kop       ", client_rub,client_kop);
+}
+
+
