@@ -18,8 +18,9 @@ struct Data {
 
     int deposit_payment;
     double deposit_percent;
+    int deposit_balance;
 
-    int mortgage_month_fixed_payment;
+    int mortgage_month_payment;
 
 };
 
@@ -68,19 +69,17 @@ void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
 }
 
 
-int mortgage_month_payment(struct Data data, struct Buyer bob) {
+int mortgage_month_payment_function(struct Data data, struct Buyer bob) {
 
     int mortgage_month_fixed_payment = (data.apartment_price - data.first_payment) / (data.mortgage_year * 12);
-    if((data.apartment_price - data.first_payment) % (data.mortgage_year * 12) > 0)
-        data.mortgage_month_fixed_payment += 1;
+    if(mortgage_month_fixed_payment - (int)mortgage_month_fixed_payment > 0)
+        mortgage_month_fixed_payment = (int)mortgage_month_fixed_payment + 1;
 
     double mortgage_month_dynamic_payment = (double)bob.rest * data.mortgage_percent;
     if (mortgage_month_dynamic_payment - (int)mortgage_month_dynamic_payment > 0)
         mortgage_month_dynamic_payment = (int)mortgage_month_dynamic_payment + 1;
 
-    int mortgage_month_payment = mortgage_month_fixed_payment + (int)mortgage_month_dynamic_payment;
-
-    return mortgage_month_payment;
+    data.mortgage_month_payment = mortgage_month_fixed_payment + (int)mortgage_month_dynamic_payment;
 
 }
 
@@ -111,13 +110,15 @@ void simulation() {
 
     input_data(data, alice, bob);
 
-    mortgage_month_fixed_payment(data);
-
     for(short year = 0; year <= data.mortgage_year; year++) {
 
         for(short month = 1; month <= 12; month++) {
 
+            change_deposit_balance();
+            mortgage_month_payment_function()
 
+            alice.balance = data.deposit_balance + data.salary - alice.communal_service;
+            bob.balance = data.salary - bob.communal_service + data
 
         }
 
