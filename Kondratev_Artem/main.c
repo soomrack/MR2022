@@ -33,6 +33,20 @@ struct Buyer {
 };
 
 
+void alice_init(struct Data data, struct Buyer alice) {
+
+    alice.balance = data.start_capital;
+
+}
+
+
+void bob_init(struct Data data, struct Buyer bob) {
+
+    bob.balance = data.start_capital + data.apartment_price - data.first_payment;
+
+}
+
+
 void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
 
     data.apartment_price = (int)(9000000.32 * 100);
@@ -50,7 +64,7 @@ void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
     bob.communal_service = (int)(40000.14 * 100);
     alice.communal_service = (int)(10000.02 * 100);
 
-};
+}
 
 
 void mortgage_month_fixed_payment(struct Data data) {
@@ -60,21 +74,21 @@ void mortgage_month_fixed_payment(struct Data data) {
     if(data.mortgage_fixed_payment - (int)data.mortgage_fixed_payment > 0)
         data.mortgage_fixed_payment = (int)data.mortgage_fixed_payment + 1;
 
-};
+}
 
 
-void alice_init(struct Data data, struct Buyer alice) {
+void output_data(struct Buyer alice, struct Buyer bob, short year) {
 
-    alice.balance = data.start_capital;
+    double alice_balance_rub = (double)alice.balance / 100;
+    double bob_balance_rub = (double)bob.balance / 100;
 
-};
+    double difference = alice_balance_rub - bob_balance_rub;
 
-
-void bob_init(struct Data data, struct Buyer bob) {
-
-    bob.balance = data.start_capital;
-
-};
+    printf("year %2d: ", year);
+    printf("%14.2f%14.2f ", alice_balance_rub, bob_balance_rub);
+    printf("  dif = %14.2f\n", difference);
+    
+}
 
 
 void simulation() {
@@ -97,25 +111,12 @@ int main() {
     int64_t deposit, year_payment, year_deposit;
     long double delta_deposit, month_payment, flat_taxes;*/
 
-
-    int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
-    long double a_balance_out = (double)a_balance / 100;
-
-    int64_t b_balance = start + flat_cost - first_pay;  // активы Bob после покупки квартиры
-    long double b_balance_out = (double)b_balance / 100;
-
     long double dif = b_balance_out - a_balance_out;
     int64_t rest = flat_cost - first_pay;  // оставшаяся задолженность Bob
 
     long double credit_payment = (flat_cost - first_pay) / (year * 12.0);  // фиксированная часть ежемесячной выплаты
     if(credit_payment - (int)credit_payment > 0)
         credit_payment = (int)credit_payment + 1;
-
-
-    // вывод активов после покупки Bob квартиры:
-    printf("year %2d: ", 0);
-    printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-    printf("  dif = %14.2Lf\n", dif);
 
 
     for (int i = 1; i <= year; i++)
@@ -158,12 +159,7 @@ int main() {
         a_balance += (salary - a_com_pay) * 12 + year_deposit;
         a_balance_out = (double)a_balance / 100;
 
-        dif = b_balance_out - a_balance_out;
 
-
-        /*printf("year %2d: ", i);
-        printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-        printf("  dif = %14.2Lf\n", dif);*/
     }
     return 0;
     }
