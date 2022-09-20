@@ -1,20 +1,70 @@
 #include <stdio.h>
 #include <stdint.h>
 
+
+struct Data {
+
+    int apartment_price;
+
+    int start_capital;
+    int salary;
+
+    int alice_communal_service;
+    int bob_communal_service;
+
+    int first_payment;
+    short mortgage_year;
+    double mortgage_percent;
+
+    int deposit_payment;
+    double deposit_percent;
+};
+
+
+struct Buyer {
+    double mortgage_percent;
+    double deposit_percent;
+
+    int apartment_price;  //  в копейках
+    int start_capital;  //  в копейках
+};
+
+
+void input_data(struct Data data) {
+
+    int apartment_price = (int)(9000000.32 * 100);
+
+    int start_capital = (int)(1000000.15 * 100);
+    int salary = (int)(150000.56 * 100);
+
+    int alice_communal_service = (int)(40000.14 * 100);
+    int bob_communal_service = (int)(10000.02 * 100);
+
+    int first_payment = (int)(300000.08 * 100);
+    short mortgage_year = 22;
+    double mortgage_percent = 8.0;
+
+    int deposit_payment = (int)(70000.16 * 100);
+    double deposit_percent = 0.2;
+
+
+
+
+
+};
+
+
+
+void alice_init(struct Buyer alice, int input_start_capital) {
+
+
+};
+
+
 int main()
     {
-    int year = 22;  // количество лет, на которые взята ипотека
-    double cr_percent = 8.0;  // процент ипотеки
-    double dep_percent = 0.2;
-    int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
-    int start = (int)(1000000.15 * 100);  // массив стартовый капитал
-    int first_pay = (int)(300000.08 * 100);  // первый взнос
-    int salary = (int)(150000.56 * 100);  // зарплата
-    int a_com_pay = (int)(40000.14 * 100);  // коммунальные услуги Alice
-    int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
-    int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
     int64_t deposit, year_payment, year_deposit;
-    long double delta_deposit, month_payment, flat_taxes;
+    long double delta_deposit, month_payment, flat_taxes;*/
 
 
     int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
@@ -80,9 +130,9 @@ int main()
         dif = b_balance_out - a_balance_out;
 
 
-        printf("year %2d: ", i);
+        /*printf("year %2d: ", i);
         printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-        printf("  dif = %14.2Lf\n", dif);
+        printf("  dif = %14.2Lf\n", dif);*/
     }
     return 0;
     }
