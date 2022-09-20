@@ -2,7 +2,6 @@
 
 // Задаем общие входные данные: начальный капитал, доход, ставка по вкладу
 const int STARTUP_CAPITAL = 100000000;
-const int SALARY = 15000000;
 const int DEPOSIT_RATE_ANNUAL_1ST = 3;
 const int DEPOSIT_RATE_ANNUAL_2ND = 5;
 const int TERM = 20;
@@ -16,10 +15,11 @@ const int  ALICE_SPENDING = 2000000;
 const int FIRST_PAYMENT = 30000000;
 const int UTILITIES_PAYMENT_B = 1000000;
 const int BOB_SPENDING = 1500000;
-const long long FLAT_COST = 1200000000;
 const int MONTHLY_PAYMENT = 10000000;
 
 int main() {
+    int SALARY = 15000000;
+    long long FLAT_COST = 1200000000;
     long long aliceCapital = STARTUP_CAPITAL;
     long long bobCapital =  (STARTUP_CAPITAL - FIRST_PAYMENT);
     int alicePercents;
@@ -28,6 +28,18 @@ int main() {
     int depositRateAnnual;
     printf("%12s %15s %17s\n", "Capital on ", "Alice", "Bob");
     for (int i = 1; i <= TERM * 12; i++) {
+       // Рост цен на недвижимость.
+      if (i == 12 * 5){
+          FLAT_COST *= 1.5;
+        }
+      // Падение дохода.
+        if (i == 10 * 12){
+          SALARY *= 1.5;
+        }
+        if (i == 16 * 12){
+          SALARY = 15000000;
+        }
+
         if (i <= 36) {
             depositRateAnnual = DEPOSIT_RATE_ANNUAL_1ST;
         } else {
