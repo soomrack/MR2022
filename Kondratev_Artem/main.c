@@ -18,18 +18,27 @@ struct Data {
 
     int deposit_payment;
     double deposit_percent;
+
+    double mortgage_fixed_payment;
+
 };
 
 
-void input_data(struct Data data) {
+struct Buyer {
+
+    int communal_service;
+
+    uint64_t balance;
+
+};
+
+
+void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
 
     data.apartment_price = (int)(9000000.32 * 100);
 
     data.start_capital = (int)(1000000.15 * 100);
     data.salary = (int)(150000.56 * 100);
-
-    data.alice_communal_service = (int)(40000.14 * 100);
-    data.bob_communal_service = (int)(10000.02 * 100);
 
     data.first_payment = (int)(300000.08 * 100);
     data.mortgage_year = 22;
@@ -37,33 +46,54 @@ void input_data(struct Data data) {
 
     data.deposit_payment = (int)(70000.16 * 100);
     data.deposit_percent = 0.2;
+
+    bob.communal_service = (int)(40000.14 * 100);
+    alice.communal_service = (int)(10000.02 * 100);
+
 };
 
 
-struct Buyer {
-    double mortgage_percent;
-    double deposit_percent;
+void mortgage_month_fixed_payment(struct Data data) {
 
-    int apartment_price;  //  в копейках
-    int start_capital;  //  в копейках
+    data.mortgage_fixed_payment = (data.apartment_price - data.first_payment) / (data.mortgage_year * 12.0);
+
+    if(data.mortgage_fixed_payment - (int)data.mortgage_fixed_payment > 0)
+        data.mortgage_fixed_payment = (int)data.mortgage_fixed_payment + 1;
+
 };
 
 
-void alice_init(struct Buyer alice, int input_start_capital) {
+void alice_init(struct Data data, struct Buyer alice) {
+
+    alice.balance = data.start_capital;
+
+};
+
+
+void bob_init(struct Data data, struct Buyer bob) {
+
+    bob.balance = data.start_capital;
 
 };
 
 
 void simulation() {
+
     struct Data data;
-    input_data(data);
 
+    struct Buyer alice;
+    alice_init(data, alice);
 
+    struct Buyer bob;
+    bob_init(data, bob);
+
+    input_data(data, alice, bob);
+
+    mortgage_month_fixed_payment(data);
 };
 
 
-int main()
-    {
+int main() {
     int64_t deposit, year_payment, year_deposit;
     long double delta_deposit, month_payment, flat_taxes;*/
 
