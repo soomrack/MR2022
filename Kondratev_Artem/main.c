@@ -32,7 +32,6 @@ int main()
 
 
     // вывод активов после покупки Bob квартиры:
-    printf("  Year\t\t\tAlice\t\t  Bob\t\t\t\tDif\n");
     printf("year %2d: ", 0);
     printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
     printf("  dif = %14.2Lf\n", dif);
