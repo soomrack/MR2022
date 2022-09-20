@@ -21,6 +21,25 @@ struct Data {
 };
 
 
+void input_data(struct Data data) {
+
+    data.apartment_price = (int)(9000000.32 * 100);
+
+    data.start_capital = (int)(1000000.15 * 100);
+    data.salary = (int)(150000.56 * 100);
+
+    data.alice_communal_service = (int)(40000.14 * 100);
+    data.bob_communal_service = (int)(10000.02 * 100);
+
+    data.first_payment = (int)(300000.08 * 100);
+    data.mortgage_year = 22;
+    data.mortgage_percent = 8.0;
+
+    data.deposit_payment = (int)(70000.16 * 100);
+    data.deposit_percent = 0.2;
+};
+
+
 struct Buyer {
     double mortgage_percent;
     double deposit_percent;
@@ -30,32 +49,14 @@ struct Buyer {
 };
 
 
-void input_data(struct Data data) {
-
-    int apartment_price = (int)(9000000.32 * 100);
-
-    int start_capital = (int)(1000000.15 * 100);
-    int salary = (int)(150000.56 * 100);
-
-    int alice_communal_service = (int)(40000.14 * 100);
-    int bob_communal_service = (int)(10000.02 * 100);
-
-    int first_payment = (int)(300000.08 * 100);
-    short mortgage_year = 22;
-    double mortgage_percent = 8.0;
-
-    int deposit_payment = (int)(70000.16 * 100);
-    double deposit_percent = 0.2;
-
-
-
-
+void alice_init(struct Buyer alice, int input_start_capital) {
 
 };
 
 
-
-void alice_init(struct Buyer alice, int input_start_capital) {
+void simulation() {
+    struct Data data;
+    input_data(data);
 
 
 };
