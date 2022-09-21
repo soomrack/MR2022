@@ -1,58 +1,155 @@
 #include <stdio.h>
 #include <stdint.h>
 
+
+struct Data {
+
+    int apartment_price;
+
+    int start_capital;
+    int salary;
+
+    int alice_communal_service;
+    int bob_communal_service;
+
+    int first_payment;
+    short mortgage_year;
+    double mortgage_percent;
+
+    int deposit_payment;
+    double deposit_percent;
+    int deposit_balance;
+
+    int mortgage_month_payment;
+
+};
+
+
+struct Buyer {
+
+    int communal_service;
+    uint64_t balance;
+    uint64_t rest;
+    uint64_t yw;
+
+};
+
+
+void alice_init(struct Data data, struct Buyer alice) {
+
+    alice.balance = data.start_capital;
+
+}
+
+
+void bob_init(struct Data data, struct Buyer bob) {
+
+    bob.balance = data.start_capital + data.apartment_price - data.first_payment;
+    bob.rest = data.apartment_price - data.first_payment;
+}
+
+
+void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
+
+    data.apartment_price = (int)(9000000.32 * 100);
+
+    data.start_capital = (int)(1000000.15 * 100);
+    data.salary = (int)(150000.56 * 100);
+
+    data.first_payment = (int)(300000.08 * 100);
+    data.mortgage_year = 22;
+    data.mortgage_percent = 8.0 / 100;  //  в долях
+
+    data.deposit_payment = (int)(70000.16 * 100);
+    data.deposit_percent = 0.2 / 100;  //  в долях
+
+    bob.communal_service = (int)(40000.14 * 100);
+    alice.communal_service = (int)(10000.02 * 100);
+
+}
+
+
+int mortgage_month_payment_function(struct Data data, struct Buyer bob) {
+
+    int mortgage_month_fixed_payment = (data.apartment_price - data.first_payment) / (data.mortgage_year * 12);
+    if(mortgage_month_fixed_payment - (int)mortgage_month_fixed_payment > 0)
+        mortgage_month_fixed_payment = (int)mortgage_month_fixed_payment + 1;
+
+    double mortgage_month_dynamic_payment = (double)bob.rest * data.mortgage_percent;
+    if (mortgage_month_dynamic_payment - (int)mortgage_month_dynamic_payment > 0)
+        mortgage_month_dynamic_payment = (int)mortgage_month_dynamic_payment + 1;
+
+    data.mortgage_month_payment = mortgage_month_fixed_payment + (int)mortgage_month_dynamic_payment;
+
+}
+
+
+void output_data(struct Buyer alice, struct Buyer bob, short year) {
+
+    double alice_balance_rub = (double)alice.balance / 100;
+    double bob_balance_rub = (double)bob.balance / 100;
+
+    double difference = alice_balance_rub - bob_balance_rub;
+
+    printf("year %2d: ", year);
+    printf("%14.2f%14.2f ", alice_balance_rub, bob_balance_rub);
+    printf("  dif = %14.2f\n", difference);
+
+}
+
+
+void simulation() {
+
+    struct Data data;
+
+    struct Buyer alice;
+    alice_init(data, alice);
+
+    struct Buyer bob;
+    bob_init(data, bob);
+
+    input_data(data, alice, bob);
+
+    for(short year = 0; year <= data.mortgage_year; year++) {
+
+        for(short month = 1; month <= 12; month++) {
+
+            change_deposit_balance();
+            mortgage_month_payment_function()
+
+            alice.balance = data.deposit_balance + data.salary - alice.communal_service;
+            bob.balance = data.salary - bob.communal_service + data
+
+        }
+
+    }
+
+}
+
+
 int main() {
-    int year = 20;  // количество лет, на которые взята ипотека
-    double cr_percent = 8.0;  // процент ипотеки
-    double dep_percent = 0.2;
-    int flat_cost = (int)(9000000.32 * 100);  // стоимость квартиры
-    int start = (int)(1000000.15 * 100);  // массив стартовый капитал
-    int first_pay = (int)(300000.08 * 100);  // первый взнос
-    int salary = (int)(150000.56 * 100);  // зарплата
-    int a_com_pay = (int)(40000.14 * 100);  // коммунальные услуги Alice
-    int b_com_pay = (int)(10000.02 * 100);  // коммунальные услуги Bob
-    int month_deposit = (int)(70000.16 * 100);  // ежемесячные отчисления на вклад
     int64_t deposit, year_payment, year_deposit;
-    long double delta_deposit, month_payment, flat_tax;
+    long double delta_deposit, month_payment, flat_taxes;
 
 
-    int64_t a_balance = start;  // активы Alice после покупки Bob квартиры
-    long double a_balance_out = (double)a_balance / 100;
 
-    int64_t b_balance = start + flat_cost - first_pay;  // активы Bob после покупки квартиры
-    long double b_balance_out = (double)b_balance / 100;
-
-    long double dif = b_balance_out - a_balance_out;
-    int64_t rest = flat_cost - first_pay;  // оставшаяся задолженность Bob
-
-    long double credit_payment = (flat_cost - first_pay) / (year * 12.0);  // фиксированная часть ежемесячной выплаты
-    if(credit_payment - (int)credit_payment > 0)
-        credit_payment = (int)credit_payment + 1;
-
-
-    // вывод активов после покупки Bob квартиры:
-    printf("year %2d: ", 0);
-    printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-    printf("  dif = %14.2Lf\n", dif);
-
-
-    for (int i = 1; i <= year; i++)
+    for (int i = 1; i <= 22; i++)
     {
-        if(i == 3)
+        /*if(i == 3)
             cr_percent = 13.0;
 
         if(i == 5)
             b_balance += 150000000;
 
         if(i == 7)
-            salary = 5000000;
+            salary = 5000000;*/
 
         year_payment = 0;
         year_deposit = 0;
 
-        flat_tax = flat_cost * 0.5 / 100;
-        if(flat_tax - (int)flat_tax > 0)
-            flat_tax = (int)flat_tax + 1;
+        /*flat_taxes = flat_cost * 0.5 / 100;
+        if(flat_taxes - (int)flat_taxes > 0)
+            flat_taxes = (int)flat_taxes + 1;*/
 
         for(int j = 0; j < 12; j++)
         {
@@ -70,18 +167,12 @@ int main() {
             year_deposit += (int)delta_deposit;
         }
 
-        b_balance += (salary - b_com_pay - (int)flat_tax) * 12 - year_payment + year_deposit;
-        b_balance_out = (double)b_balance / 100;
+        b_balance += (salary - b_com_pay - (int)flat_taxes) * 12 - year_payment + year_deposit;
 
         a_balance += (salary - a_com_pay) * 12 + year_deposit;
-        a_balance_out = (double)a_balance / 100;
-
-        dif = b_balance_out - a_balance_out;
 
 
-        printf("year %2d: ", i);
-        printf("%14.2Lf%14.2Lf ", a_balance_out, b_balance_out);
-        printf("  dif = %14.2Lf\n", dif);
+
     }
     return 0;
-}
+    }
