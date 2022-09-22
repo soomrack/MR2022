@@ -36,6 +36,19 @@ void change_others(int f, long int *value, long int new_value){
     }
 }
 
+void plus_money(struct person *man, double k_credit, double k_bank, double k_house){
+    long int free_money = man->income - man->house_spending - man->evry_month_pay;
+    man->credit = round(man->credit * k_credit);
+    if (man->credit > man->evry_month_pay) {
+        man->credit = man->credit - man->evry_month_pay;
+    } else {
+        free_money = free_money + man->evry_month_pay - man->credit;
+        man->credit = 0;
+    }
+    man->bank = floor(man->bank * k_bank) + free_money;
+    man->house = floor(man->house * k_house);
+}
+
 
 int main() {
     int term = 20 * 12;
@@ -68,20 +81,8 @@ int main() {
         change_percent(i / 12 == 5, &house_rotate, &k_house_per_month, 3);
         change_others(i / 12 == 10, &Alice.income, 200000);
 
-        int free_money_a = Alice.income - Alice.house_spending;
-        Alice.bank = floor(Alice.bank * k_deposit_per_month) + free_money_a;
-        Alice.house = floor(Alice.house * k_house_per_month);
-
-        int free_money_b = Bob.income - Bob.house_spending - Bob.evry_month_pay;
-        Bob.credit = round(Bob.credit * k_credit_per_month);
-        if (Bob.credit >= Bob.evry_month_pay){
-            Bob.credit = Bob.credit - Bob.evry_month_pay;
-        } else {
-            free_money_b += Bob.evry_month_pay - Bob.credit;
-            Bob.credit = 0;
-        }
-        Bob.bank = floor(Bob.bank * k_deposit_per_month) + free_money_b;
-        Bob.house = floor(Bob.house * k_house_per_month);
+        plus_money(&Alice, k_credit_per_month, k_deposit_per_month, k_house_per_month);
+        plus_money(&Bob, k_credit_per_month, k_deposit_per_month, k_house_per_month);
 
         if (i % 12 == 0){
             Bob.house = floor(Bob.house * (1 - house_tax / 100));
