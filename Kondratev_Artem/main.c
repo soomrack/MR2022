@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdint.h>
 
 
 struct Buyer {
@@ -116,9 +115,10 @@ int mortgage_month_payment_foo(struct Buyer *bob) {
 }
 
 
-void changing_balance(struct Buyer *buyer, int mortgage_month_payment) {
+void changing_balance(struct Buyer *buyer) {
 
-    buyer->balance = buyer->deposit_payment + buyer->salary - buyer->communal_service - mortgage_month_payment;
+    buyer->balance += buyer->deposit_payment + buyer->salary - buyer->communal_service - buyer->mortgage_month_payment;
+    buyer->rest -= buyer->mortgage_month_payment;
 
 }
 
@@ -137,16 +137,26 @@ void changing_deposit_balance(struct Buyer *buyer, short month) {
 }
 
 
-void output_data(struct Buyer alice, struct Buyer bob, short year) {
+void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
 
-    double alice_balance_rub = (double)alice.balance / 100;
-    double bob_balance_rub = (double)bob.balance / 100;
+    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
+    double alice_actives_rub = (double)alice_actives / 100;
 
-    double difference = alice_balance_rub - bob_balance_rub;
+    unsigned long long int bob_actives = bob->balance + bob->deposit_balance;
+    double bob_actives_rub = (double)bob_actives / 100;
+
+    double difference = alice_actives_rub - bob_actives_rub;
 
     printf("year %2d: ", year);
-    printf("%14.2f%14.2f ", alice_balance_rub, bob_balance_rub);
+    printf("%14.2f%14.2f ", alice_actives_rub, bob_actives_rub);
     printf("  dif = %14.2f\n", difference);
+
+}
+
+
+void life_changes() {
+
+    
 
 }
 
@@ -165,16 +175,16 @@ void simulation() {
 
             mortgage_month_payment_foo(&bob);
 
-            changing_balance(&alice, 0);
+            changing_balance(&alice);
 
-            changing_balance(&bob, bob.mortgage_month_payment);
-
-            bob.rest -= bob.mortgage_month_payment;
+            changing_balance(&bob);
 
             changing_deposit_balance(&bob, month);
             changing_deposit_balance(&alice, month);
 
         }
+
+        output_data(&alice, &bob, year);
 
     }
 
@@ -183,14 +193,7 @@ void simulation() {
 
 int main() {
 
-        /*if(i == 3)
-            cr_percent = 13.0;
-
-        if(i == 5)
-            b_balance += 150000000;
-
-        if(i == 7)
-            salary = 5000000;*/
+    simulation();
 
     return 0;
-    }
+}
