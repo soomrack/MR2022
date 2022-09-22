@@ -6,6 +6,7 @@ struct Buyer {
     int start_capital;  //  копейки
     int salary;  //  копейки
     int communal_service;  //  копейки
+    int taxes;  //  копейки
 
     int apartment_price;  //  копейки
     int first_payment;  //  копейки
@@ -15,9 +16,9 @@ struct Buyer {
 
     int deposit_payment;  //  копейки
     double deposit_percent;  //  в долях
-    unsigned long int deposit_balance;  //  копейки
+    long long int deposit_balance;  //  копейки
 
-    unsigned long int balance;  //  копейки
+    long long int balance;  //  копейки
     long int rest;  //  копейки
 
 };
@@ -54,7 +55,8 @@ void bob_init(struct Buyer *bob, int apartment_price, int salary, int first_paym
     bob->deposit_payment = deposit_payment;
     bob->deposit_percent = deposit_percent;
 
-    bob->balance = bob->start_capital - bob->first_payment;
+    bob->balance = bob->start_capital - bob->first_payment + bob->apartment_price;
+    bob->rest = bob->apartment_price - bob->first_payment;
 
 }
 
@@ -68,7 +70,7 @@ void input_data(struct Buyer *alice, struct Buyer *bob) {
 
     int first_payment = (int)(300000.08 * 100);  //  копейки
     short mortgage_year = 22;
-    double mortgage_percent = 8.0 / 100;  //  в долях
+    double mortgage_percent = 1.0;
 
     int deposit_payment = (int)(70000.16 * 100);  //  копейки
     double deposit_percent = 0.2 / 100;  //  в долях
@@ -95,9 +97,11 @@ int specific_rounding(double parameter) {
 }
 
 
-void taxes() {
+void taxes(struct Buyer *bob) {
 
-
+    const double taxes_percent = 0.1;
+    double taxes = bob->apartment_price * taxes_percent / 100;
+    bob->taxes = specific_rounding(taxes);
 
 }
 
@@ -107,18 +111,20 @@ int mortgage_month_payment_foo(struct Buyer *bob) {
     double mortgage_month_fixed_payment = (double)(bob->apartment_price - bob->first_payment)/(bob->mortgage_year * 12);
     int rounded_mortgage_month_fixed_payment = specific_rounding(mortgage_month_fixed_payment);
 
-    double mortgage_month_dynamic_payment = (double)bob->rest * bob->mortgage_percent;
+    double mortgage_month_dynamic_payment = (double)bob->rest * bob->mortgage_percent / 100;
     int rounded_mortgage_month_dynamic_payment = specific_rounding(mortgage_month_dynamic_payment);
 
     bob->mortgage_month_payment = rounded_mortgage_month_fixed_payment + rounded_mortgage_month_dynamic_payment;
+    bob->rest -= rounded_mortgage_month_fixed_payment;
 
 }
 
 
 void changing_balance(struct Buyer *buyer) {
 
-    buyer->balance += buyer->deposit_payment + buyer->salary - buyer->communal_service - buyer->mortgage_month_payment;
-    buyer->rest -= buyer->mortgage_month_payment;
+    int income = buyer->salary;
+    int expenses = buyer->deposit_payment + buyer->communal_service + buyer->mortgage_month_payment + buyer->taxes;
+    buyer->balance += income - expenses;
 
 }
 
@@ -129,7 +135,7 @@ void changing_deposit_balance(struct Buyer *buyer, short month) {
 
     if(month == 12) {
 
-        double deposit_balance = (double)buyer->deposit_balance * (1 + buyer->deposit_percent);
+        double deposit_balance = (double)buyer->deposit_balance * (1 + buyer->deposit_percent / 100);
         buyer->deposit_balance = specific_rounding(deposit_balance);
 
     }
@@ -154,9 +160,26 @@ void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
 }
 
 
-void life_changes() {
+void apartment_price_increasing(struct Buyer *buyer, const double apartment_increase_percent) {
 
-    
+    buyer->balance -= buyer->apartment_price;
+    double apartment_price = buyer->apartment_price * (1 + apartment_increase_percent / 100);
+    buyer->apartment_price = specific_rounding(apartment_price);
+    buyer->balance += buyer->apartment_price;
+
+}
+
+
+void life_changes(struct Buyer *alice, struct Buyer *bob, short year) {
+
+    if(year == 3)
+        bob->mortgage_percent = 1.2;
+
+    if(year == 5)
+        apartment_price_increasing(bob, 8.0);
+
+    if(year == 7)
+        alice->salary = 25000000;
 
 }
 
@@ -169,18 +192,20 @@ void simulation() {
 
     input_data(&alice, &bob);
 
-    for(short year = 0; year <= bob.mortgage_year; year++) {
+    for(short year = 1; year <= bob.mortgage_year; year++) {
+
+        life_changes(&alice, &bob, year);
 
         for(short month = 1; month <= 12; month++) {
 
             mortgage_month_payment_foo(&bob);
+            taxes(&bob);
 
             changing_balance(&alice);
-
             changing_balance(&bob);
 
-            changing_deposit_balance(&bob, month);
             changing_deposit_balance(&alice, month);
+            changing_deposit_balance(&bob, month);
 
         }
 
