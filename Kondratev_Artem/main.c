@@ -127,24 +127,14 @@ void changing_deposit_balance(struct Buyer *buyer, short month) {
 
     buyer->deposit_balance += buyer->deposit_payment;
 
-    if(month == 12)
-        buyer->deposit_balance *= 1 + buyer->deposit_percent;
+    if(month == 12) {
+
+        double deposit_balance = (double)buyer->deposit_balance * (1 + buyer->deposit_percent);
+        buyer->deposit_balance = specific_rounding(deposit_balance);
+
+    }
 
 }
-
-
-
-
-
-delta_deposit = month_deposit + (double)deposit * dep_percent / 100;
-if(delta_deposit - (int)delta_deposit > 0)
-delta_deposit = (int)delta_deposit + 1;
-deposit += (int)delta_deposit;
-year_deposit += (int)delta_deposit;
-
-
-
-
 
 
 void output_data(struct Buyer alice, struct Buyer bob, short year) {
