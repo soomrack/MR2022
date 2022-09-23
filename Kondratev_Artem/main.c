@@ -1,126 +1,215 @@
 #include <stdio.h>
-#include <stdint.h>
-
-
-struct Data {
-
-    int apartment_price;
-
-    int start_capital;
-    int salary;
-
-    int alice_communal_service;
-    int bob_communal_service;
-
-    int first_payment;
-    short mortgage_year;
-    double mortgage_percent;
-
-    int deposit_payment;
-    double deposit_percent;
-    int deposit_balance;
-
-    int mortgage_month_payment;
-
-};
 
 
 struct Buyer {
 
-    int communal_service;
-    uint64_t balance;
-    uint64_t rest;
-    uint64_t yw;
+    int start_capital;  //  копейки
+    int salary;  //  копейки
+    int communal_service;  //  копейки
+    int taxes;  //  копейки
+
+    int apartment_price;  //  копейки
+    int first_payment;  //  копейки
+    short mortgage_year;
+    double mortgage_percent;  //  в долях
+    int mortgage_month_payment;  //  копейки
+
+    int deposit_payment;  //  копейки
+    double deposit_percent;  //  в долях
+    long long int deposit_balance;  //  копейки
+
+    long long int balance;  //  копейки
+    long int rest;  //  копейки
 
 };
 
 
-void alice_init(struct Data data, struct Buyer alice) {
+void alice_init(struct Buyer *alice, int apartment_price, int salary, int alice_communal_service,
+                int deposit_payment, double deposit_percent, int start_capital) {
 
-    alice.balance = data.start_capital;
+    alice->apartment_price = apartment_price;
 
-}
+    alice->start_capital = start_capital;
+    alice->salary = salary;
+    alice->communal_service = alice_communal_service;
 
-
-void bob_init(struct Data data, struct Buyer bob) {
-
-    bob.balance = data.start_capital + data.apartment_price - data.first_payment;
-    bob.rest = data.apartment_price - data.first_payment;
-}
-
-
-void input_data(struct Data data, struct Buyer alice, struct Buyer bob) {
-
-    data.apartment_price = (int)(9000000.32 * 100);
-
-    data.start_capital = (int)(1000000.15 * 100);
-    data.salary = (int)(150000.56 * 100);
-
-    data.first_payment = (int)(300000.08 * 100);
-    data.mortgage_year = 22;
-    data.mortgage_percent = 8.0 / 100;  //  в долях
-
-    data.deposit_payment = (int)(70000.16 * 100);
-    data.deposit_percent = 0.2 / 100;  //  в долях
-
-    bob.communal_service = (int)(40000.14 * 100);
-    alice.communal_service = (int)(10000.02 * 100);
+    alice->deposit_payment = deposit_payment;
+    alice->deposit_percent = deposit_percent;
 
 }
 
 
-int mortgage_month_payment_function(struct Data data, struct Buyer bob) {
+void bob_init(struct Buyer *bob, int apartment_price, int salary, int first_payment, int bob_communal_service,
+        short mortgage_year, double mortgage_percent, int deposit_payment, double deposit_percent, int start_capital) {
 
-    int mortgage_month_fixed_payment = (data.apartment_price - data.first_payment) / (data.mortgage_year * 12);
-    if(mortgage_month_fixed_payment - (int)mortgage_month_fixed_payment > 0)
-        mortgage_month_fixed_payment = (int)mortgage_month_fixed_payment + 1;
+    bob->apartment_price = apartment_price;
 
-    double mortgage_month_dynamic_payment = (double)bob.rest * data.mortgage_percent;
-    if (mortgage_month_dynamic_payment - (int)mortgage_month_dynamic_payment > 0)
-        mortgage_month_dynamic_payment = (int)mortgage_month_dynamic_payment + 1;
+    bob->start_capital = start_capital;
+    bob->salary = salary;
+    bob->communal_service = bob_communal_service;
 
-    data.mortgage_month_payment = mortgage_month_fixed_payment + (int)mortgage_month_dynamic_payment;
+    bob->first_payment = first_payment;
+    bob->mortgage_year = mortgage_year;
+    bob->mortgage_percent = mortgage_percent;
+
+    bob->deposit_payment = deposit_payment;
+    bob->deposit_percent = deposit_percent;
+
+    bob->balance = bob->start_capital - bob->first_payment + bob->apartment_price;
+    bob->rest = bob->apartment_price - bob->first_payment;
 
 }
 
 
-void output_data(struct Buyer alice, struct Buyer bob, short year) {
+void input_data(struct Buyer *alice, struct Buyer *bob) {
 
-    double alice_balance_rub = (double)alice.balance / 100;
-    double bob_balance_rub = (double)bob.balance / 100;
+    int apartment_price = (int)(9000000.32 * 100);  //  копейки
 
-    double difference = alice_balance_rub - bob_balance_rub;
+    int start_capital = (int)(1000000.15 * 100);  //  копейки
+    int salary = (int)(150000.56 * 100);  //  копейки
+
+    int first_payment = (int)(300000.08 * 100);  //  копейки
+    short mortgage_year = 22;
+    double mortgage_percent = 1.0;
+
+    int deposit_payment = (int)(70000.16 * 100);  //  копейки
+    double deposit_percent = 0.2 / 100;  //  в долях
+
+    int alice_communal_service = (int)(40000.02 * 100);  //  копейки
+    int bob_communal_service = (int)(10000.04 * 100);  //  копейки
+
+    alice_init(alice, apartment_price, salary, alice_communal_service,
+    deposit_payment, deposit_percent, start_capital);
+
+    bob_init(bob, apartment_price, salary, first_payment, bob_communal_service,
+    mortgage_year, mortgage_percent, deposit_payment, deposit_percent, start_capital);
+
+}
+
+
+int specific_rounding(double parameter) {
+
+    if(parameter - (int)parameter > 0)
+        parameter = (int)parameter + 1;
+
+    return (int)parameter;
+
+}
+
+
+void taxes(struct Buyer *bob) {
+
+    const double taxes_percent = 0.1;
+    double taxes = bob->apartment_price * taxes_percent / 100;
+    bob->taxes = specific_rounding(taxes);
+
+}
+
+
+int mortgage_month_payment_foo(struct Buyer *bob) {
+
+    double mortgage_month_fixed_payment = (double)(bob->apartment_price - bob->first_payment)/(bob->mortgage_year * 12);
+    int rounded_mortgage_month_fixed_payment = specific_rounding(mortgage_month_fixed_payment);
+
+    double mortgage_month_dynamic_payment = (double)bob->rest * bob->mortgage_percent / 100;
+    int rounded_mortgage_month_dynamic_payment = specific_rounding(mortgage_month_dynamic_payment);
+
+    bob->mortgage_month_payment = rounded_mortgage_month_fixed_payment + rounded_mortgage_month_dynamic_payment;
+    bob->rest -= rounded_mortgage_month_fixed_payment;
+
+}
+
+
+void changing_balance(struct Buyer *buyer) {
+
+    int income = buyer->salary;
+    int expenses = buyer->deposit_payment + buyer->communal_service + buyer->mortgage_month_payment + buyer->taxes;
+    buyer->balance += income - expenses;
+
+}
+
+
+void changing_deposit_balance(struct Buyer *buyer, short month) {
+
+    buyer->deposit_balance += buyer->deposit_payment;
+
+    if(month == 12) {
+
+        double deposit_balance = (double)buyer->deposit_balance * (1 + buyer->deposit_percent / 100);
+        buyer->deposit_balance = specific_rounding(deposit_balance);
+
+    }
+
+}
+
+
+void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
+
+    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
+    double alice_actives_rub = (double)alice_actives / 100;
+
+    unsigned long long int bob_actives = bob->balance + bob->deposit_balance;
+    double bob_actives_rub = (double)bob_actives / 100;
+
+    double difference = alice_actives_rub - bob_actives_rub;
 
     printf("year %2d: ", year);
-    printf("%14.2f%14.2f ", alice_balance_rub, bob_balance_rub);
+    printf("%14.2f%14.2f ", alice_actives_rub, bob_actives_rub);
     printf("  dif = %14.2f\n", difference);
+
+}
+
+
+void apartment_price_increasing(struct Buyer *buyer, const double apartment_increase_percent) {
+
+    buyer->balance -= buyer->apartment_price;
+    double apartment_price = buyer->apartment_price * (1 + apartment_increase_percent / 100);
+    buyer->apartment_price = specific_rounding(apartment_price);
+    buyer->balance += buyer->apartment_price;
+
+}
+
+
+void life_changes(struct Buyer *alice, struct Buyer *bob, short year) {
+
+    if(year == 3)
+        bob->mortgage_percent = 1.2;
+
+    if(year == 5)
+        apartment_price_increasing(bob, 8.0);
+
+    if(year == 7)
+        alice->salary = 25000000;
 
 }
 
 
 void simulation() {
 
-    struct Data data;
-
     struct Buyer alice;
-    alice_init(data, alice);
 
     struct Buyer bob;
-    bob_init(data, bob);
 
-    input_data(data, alice, bob);
+    input_data(&alice, &bob);
 
-    for(short year = 0; year <= data.mortgage_year; year++) {
+    for(short year = 1; year <= bob.mortgage_year; year++) {
+
+        life_changes(&alice, &bob, year);
 
         for(short month = 1; month <= 12; month++) {
 
-            change_deposit_balance();
-            mortgage_month_payment_function()
+            mortgage_month_payment_foo(&bob);
+            taxes(&bob);
 
-            alice.balance = data.deposit_balance + data.salary - alice.communal_service;
-            bob.balance = data.salary - bob.communal_service + data
+            changing_balance(&alice);
+            changing_balance(&bob);
+
+            changing_deposit_balance(&alice, month);
+            changing_deposit_balance(&bob, month);
 
         }
+
+        output_data(&alice, &bob, year);
 
     }
 
@@ -128,51 +217,8 @@ void simulation() {
 
 
 int main() {
-    int64_t deposit, year_payment, year_deposit;
-    long double delta_deposit, month_payment, flat_taxes;
 
+    simulation();
 
-
-    for (int i = 1; i <= 22; i++)
-    {
-        /*if(i == 3)
-            cr_percent = 13.0;
-
-        if(i == 5)
-            b_balance += 150000000;
-
-        if(i == 7)
-            salary = 5000000;*/
-
-        year_payment = 0;
-        year_deposit = 0;
-
-        /*flat_taxes = flat_cost * 0.5 / 100;
-        if(flat_taxes - (int)flat_taxes > 0)
-            flat_taxes = (int)flat_taxes + 1;*/
-
-        for(int j = 0; j < 12; j++)
-        {
-            month_payment = credit_payment + (double)rest * cr_percent / 100;
-            if(month_payment - (int)month_payment > 0)
-                month_payment = (int)month_payment + 1;
-
-            year_payment += (int)month_payment;
-            rest -= (int)month_payment;
-
-            delta_deposit = month_deposit + (double)deposit * dep_percent / 100;
-            if(delta_deposit - (int)delta_deposit > 0)
-                delta_deposit = (int)delta_deposit + 1;
-            deposit += (int)delta_deposit;
-            year_deposit += (int)delta_deposit;
-        }
-
-        b_balance += (salary - b_com_pay - (int)flat_taxes) * 12 - year_payment + year_deposit;
-
-        a_balance += (salary - a_com_pay) * 12 + year_deposit;
-
-
-
-    }
     return 0;
-    }
+}
