@@ -1,5 +1,5 @@
 #include <stdio.h>
-int const CREDIT_PERSENT=1, YEAR=1;
+int const CREDIT_PERSENT=1, YEAR=2;
 int const  DEPOSIT_RATE=10;
 
 
@@ -16,23 +16,23 @@ struct Client {
 struct Client Alice= {1000*1000*100,0,40*1000*100,0,150*1000*100,0}; //копейки
 struct Client Bob= {1000*1000*100,300*1000*100,10*1000*100,9*1000*1000*100,150*1000*100,0,9*1000*1000*100}; //копейки
 
-unsigned long long int deposit_income(struct Client *client) {
+double deposit_income(struct Client *client) {
     client->Vklad+=5000000;
     client->capital+=client->Vklad*DEPOSIT_RATE/1200;
     return client->capital,client->Vklad;
 }
 
-unsigned long long int salary_income(struct Client *client) {
+double salary_income(struct Client *client) {
     client->capital += client->salary - 5000000;
     return client->capital;
 }
 
-unsigned long long int utility_payment(struct Client *client) {
+double utility_payment(struct Client *client) {
     client->capital -=client->utility_spending;
     return client->capital;
 }
 
-unsigned long long int mortgage_payment(struct Client *client,int *i){
+double mortgage_payment(struct Client *client,int *i){
     if (*i==1){
         client->rest-=client->first_payment;
     };
@@ -45,7 +45,7 @@ unsigned long long int mortgage_payment(struct Client *client,int *i){
 
 void out_put (struct Client *client,int *i){
 
-    printf("Year: %lf\tCapital = %.2lf\n", (double)*i/12,(double)((client->capital+client->flat_cost)/100));
+    printf("Year: %.lf\tCapital = %.2lf\t\n", (double)*i/12,(double)((client->capital+client->flat_cost)/100));
 }
 
 int main() {
