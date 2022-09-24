@@ -155,23 +155,6 @@ void changing_deposit_balance(struct Buyer *buyer, short month) {
 }
 
 
-void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
-
-    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
-    double alice_actives_rub = (double)alice_actives / 100;
-
-    unsigned long long int bob_actives = bob->balance + bob->deposit_balance;
-    double bob_actives_rub = (double)bob_actives / 100;
-
-    double difference = alice_actives_rub - bob_actives_rub;
-
-    printf("year %2d:\t", year);
-    printf("Alice: %12.2f\t\tBob: %12.2f\t\t", alice_actives_rub, bob_actives_rub);
-    printf("Dif: %12.2f\n", difference);
-
-}
-
-
 void apartment_price_increasing(struct Buyer *buyer, const double apartment_increase_percent) {
 
     buyer->balance -= buyer->apartment_price;
@@ -192,6 +175,23 @@ void life_changes(struct Buyer *alice, struct Buyer *bob, short year) {
 
     if(year == 7)
         alice->salary = 25000000;
+
+}
+
+
+void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
+
+    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
+    double alice_actives_rub = (double)alice_actives / 100;
+
+    unsigned long long int bob_actives = bob->balance + bob->deposit_balance + bob->apartment_price;
+    double bob_actives_rub = (double)bob_actives / 100;
+
+    double difference = alice_actives_rub - bob_actives_rub;
+
+    printf("year %2d:\t", year);
+    printf("Alice: %12.2f\t\tBob: %12.2f\t\t", alice_actives_rub, bob_actives_rub);
+    printf("Dif: %12.2f\n", difference);
 
 }
 
