@@ -32,8 +32,8 @@ unsigned long long int utility_payment(struct Client *client) {
     return client->capital;
 }
 
-unsigned long long int mortgage_payment(struct Client *client,int i){
-    if (i=1){
+unsigned long long int mortgage_payment(struct Client *client,int *i){
+    if (*i==1){
         client->rest-=client->first_payment;
     };
     client->capital-=client->flat_cost/(YEAR*12)+client->rest*(CREDIT_PERSENT/100);
@@ -43,9 +43,9 @@ unsigned long long int mortgage_payment(struct Client *client,int i){
 
 
 
-void out_put (struct Client *client,int i){
+void out_put (struct Client *client,int *i){
 
-    printf("Year: %d\tCapital = %.2lf\n", (double)i/12,(double)((client->capital+client->flat_cost)/100));
+    printf("Year: %lf\tCapital = %.2lf\n", (double)*i/12,(double)((client->capital+client->flat_cost)/100));
 }
 
 int main() {
