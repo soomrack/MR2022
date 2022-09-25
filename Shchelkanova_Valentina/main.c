@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-int main() {
     const int months = 20 * 12;
 
     struct Holder {
@@ -138,4 +137,3 @@ int main() {
     void main() {
         simulation();
     }
-}
