@@ -17,7 +17,7 @@ int main() {
         Alice->name = "Alice";
         Alice->account = 1000000 * 100;
         Alice->deposit_interest = 0.07;
-        Alice->sallary = 150000 * 100;
+        Alice->salary = 150000 * 100;
         Alice->utility = 10000 * 100;
         Alice->rent = 30000 * 100;
         Alice->apartments = 0;
@@ -28,7 +28,7 @@ int main() {
         Bob->name = "Bob";
         Bob->account = 1000000 * 100;
         Bob->deposit_interest = 0.07;
-        Bob->sallary = 150000 * 100;
+        Bob->salary = 150000 * 100;
         Bob->utility = 10000 * 100;
         Bob->apartments = 7000000 * 100;
         Bob->mortage_percentage = 0.05;
@@ -67,16 +67,16 @@ int main() {
     }
 
     void print_report(struct Holder holder) {
-        printf("%s\n", client.name);
+        printf("%s\n", holder.name);
         for (int year = 0; year < 20; ++year) {
-            printf("%d: %llu\n", year + 1, client.account_history[year] + client.apartment);
+            printf("%d: %llu\n", year + 1, holder.account_history[year] + holder.apartments);
         }
         printf("\n");
     }
 
     void print_comparison(struct Holder holder1, struct Holder holder2) {
         printf("Total (%s): %llu\n", holder1.name, holder1.account);
-        printf("Total (%s): %llu\n", holder2.name, holder2.account + holder2.apartment);
+        printf("Total (%s): %llu\n", holder2.name, holder2.account + holder2.apartments);
 
         if (holder1.account > holder2.account + holder2.apartment) {
             printf("%s has more money", holder1.name);
