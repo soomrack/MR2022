@@ -1,70 +1,51 @@
 #include <stdio.h>
 
-int main() {
+int const start = 1000 * 1000;
+int const years = 20;
+int const apartment_price = 8 * 1000 * 1000;  // rubles
+int const apartment_fee = 300 * 1000;  // rubles
+int const mortgage_rate = 10;  // %
+double const deposit_interest = 0.5; // %
 
-    /* s - нач. капитал, y - стоимость квартиры, v - первонач. взнос, st - годовая процентная ставка, t - срок ипотеки (лет),
-       d - доход, krA и krB- ком. расходы и проживание Alice и Bob соответственно, pr - процент по вкладу. */
-    int s = 1000000, y = 8000000, v = 300000, st = 10, t = 20, d = 150000, krA = 60000, krB = 30000;
-    float pr = 0.5;
+struct hero {
+    long capital;
+    int income;
+    int monthly_expenses;
+} hero;
 
-    // Капиталы Alice и Bob соответсвенно.
-    long kapA = s, kapB = s - v;
+struct hero Alice = {start,  150 * 1000,  90 * 1000};
+struct hero Bob = {start - apartment_fee,  150 * 1000,  60 * 1000};
 
-    // x - ежемес. взнос.
-    float x = (y - v) / (t * 12) + (y - v) * (0.01 * st / (t * 12));
-
-    // Вывод капитала за год.ригри григ
-    for (int i = 1; i <= 20; i++)
-    {
-        // Изменение процента по вкладу по прошествии 3-х лет
-        if (i == 4)
-            pr = 0.7;
-
-        // Рассчет капитала за месяц
-        for (int j = 1; j <= 12; j++)
-        {
-            kapA = (kapA + d - krA) * (1 + 0.01 * pr);
-            kapB = (kapB + d - krB - x) * (1 + 0.01 * pr);
-        }
-        if (i == 20)
-            kapB = kapB + y;
-        printf("Alice: %ld\t", kapA);
-        printf("Bob: %ld\n", kapB);
-    }
-
+int monthly_installment() {
+    int monthly_installment = (apartment_price - apartment_fee) * (1 + 0.01 * mortgage_rate) / (years * 12);
+    return monthly_installment;
 }
 
-void total(){
+long Alices_profit_per_month() {
+    Alice.capital = (Alice.capital + Alice.income - Alice.monthly_expenses) * (1 + 0.01 * deposit_interest);
+    return Alice.capital;
+}
+
+long Bobs_profit_per_month() {
+    Bob.capital = (Bob.capital + Bob.income - Bob.monthly_expenses) * (1 + 0.01 * deposit_interest);
+    return Bob.capital;
+}
+
+void output_of_monthly_results() {
+    printf('Alice: %d \n', Alice.capital);
+    printf('Bob: %d \n', Bob.capital);
+}
+
+void total() {
     monthly_installment();
-    for (int months = 1; i <= 12 * years; months++)
+    for (int months = 1; months <= 12 * years; months++)
     {
         Alices_profit_per_month();
         Bobs_profit_per_month();
-        output_of_monthly_results()
-    }
-    if months % 12 == 0
-        output_of_yearly_results();
+        output_of_monthly_results();
     }
 }
 
-void Alices_profit_per_month(){
-    kapA = (kapA + d - krA) * (1 + 0.01 * pr);
-}
-
-void Bobs_profit_per_month(){
-    kapB = (kapB + d - krB - x) * (1 + 0.01 * pr);
-}
-
-void output_of_monthly_results(){
-    printf();
-    printf();
-}
-
-void output_of_yearly_results(){
-    printf();
-    printf();
-}
-
-void monthly_installment(){
-    float x = (y - v) / (t * 12) + (y - v) * (0.01 * st / (t * 12));
+int main() {
+    total();
 }
