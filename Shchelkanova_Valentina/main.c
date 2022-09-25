@@ -88,5 +88,54 @@ int main() {
         }
     }
 
-    return 0;
+    void simulation() {
+        struct Holder Alice, Bob;
+
+        init_Alice(&Alice);
+        init_Bob(&Bob);
+
+        deposit_fee(&Bob);
+
+        mortgage_calculation(&Bob);
+
+        for (int i = 1; i <= months; ++i) {
+            salary_income(&Alice);
+            salary_income(&Bob);
+
+            utility_payment(&Alice);
+            utility_payment(&Bob);
+
+            rent_payment(&Alice);
+
+            mortgage_pay(&Bob);
+
+            interest_payment(&Alice);
+            interest_payment(&Bob);
+
+            //на 5 году увеличивается процент на вкладе
+            if (i == 12 * 5) {
+                Alice.deposit_interest = 0.1;
+                Bob.deposit_interest = 0.1;
+            }
+
+            // в 10 году цена квартиры увеличивается
+            if (i == 12 * 10) {
+                Bob.apartments*= 1.02;
+            }
+
+            if (i % 12 == 0) {
+                save_account_history(&Alice, (int)i / 12);
+                save_account_history(&Bob, (int)i / 12);
+            }
+
+        }
+
+        print_report(Alice);
+        print_report(Bob);
+        print_comparison(Alice, Bob);
+    }
+
+    void main() {
+        simulation();
+    }
 }
