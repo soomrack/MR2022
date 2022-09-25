@@ -5,51 +5,98 @@
      long long kapital, perviy_vznos, ezh_vznos, rashody, stoimost_kv, dohod, dolg;
      unsigned int  stavka_vklada, stavka_ipoteki;
 } Person;
-int const MONTHS = 12, YEARS = 20;
-int Y = 9*1000*1000*100, Z = 5, A = 12; //все вычисления происходят в копейках
 
-int tax(long long a){
-    int b;
-    b = (long long)(a * 0.005);
-    return b;
+int const MONTHS = 12, YEARS = 20, FIRST_PRICE = 9*1000*1000*100, FIRST_STAVKA_VKLADA = 5, FIRST_STAVKA_IPOTEKI = 12; //все вычисления происходят в копейках
+int const EZH_VZNOS_PURE = FIRST_STAVKA_IPOTEKI / 12 / 20; //значение ежемесячного взнооса без процентов
+
+
+void tax (Person *person){
+    person->kapital -= 0.005 * person->stoimost_kv;
 }
 
-long long priceRise(long long a){
-    long long b;
-    b = (long long)(a * 0.5);
-    return b;
+
+void stavkaVkladaRise( Person *person ){
+    person->stavka_vklada += 2;
 }
+
+
+void priceRise(Person *person){
+    person->kapital -= person->stoimost_kv;
+    person->stoimost_kv = (long long)(person->stoimost_kv * 1.5);
+    person->kapital += person->stoimost_kv;
+}
+
+
+void dohodFall(Person *person) {
+    person->dohod -= 30*100*1000;
+}
+
+
+void obrabotchikYear (int year, Person *person ){
+    if (year == 2) stavkaVkladaRise( person );
+    if (year == 4) priceRise( person );
+    if (year == 6) dohodFall( person );
+}
+
+
+void rashodyDohody ( Person *person ){
+    person->kapital += person->dohod - person->rashody;
+}
+
+
+void ipotekaPayment( Person *person ){
+    person->kapital -= (person->ezh_vznos + person->dolg * 0.01 * person->stavka_ipoteki / 12);
+    person->dolg -= person->ezh_vznos;
+}
+
+
+void vkladIncome( Person *person ) {
+    person->kapital *= (double)(1 + 0.01 * person->stavka_vklada / 12);
+}
+
+
+void obrabotchikMonth ( Person *person ){
+    rashodyDohody (person);
+    ipotekaPayment (person);
+    vkladIncome (person);
+}
+
+
+void personPrint ( Person person ){
+    printf("%.2lf  \t",(person.kapital + person.stoimost_kv) / 100.0);
+}
+
+void diffPrint ( Person person1, Person person2 ){
+    printf("difference:%.2lf \n",(person1.kapital - person2.stoimost_kv) / 100.0);
+}
+
 
 int main() {
-   int X = Y / 12 / 20; //значение ежемесячного взнооса;
     Person Alice = {
-           1000*1000*100, 0, 0, 4*1000*1000, Y, 150*1000*100, 0,Z,0,
+           1000*1000*100, 0, 0, 4*1000*1000, FIRST_PRICE, 150*1000*100, 0,FIRST_STAVKA_VKLADA,0,
    };
      Person Bob = {
-            1000*1000*100, 300*1000*100, X, 4*1000*1000, Y, 150*1000*100, 0,Z,A
+            1000*1000*100, 300*1000*100, EZH_VZNOS_PURE, 4*1000*1000, FIRST_PRICE, 150*1000*100, 0,FIRST_STAVKA_VKLADA,FIRST_STAVKA_IPOTEKI
     };
     Bob.kapital -= Bob.perviy_vznos; //платёж первого взноса
     Bob.dolg += Bob.stoimost_kv - Bob.perviy_vznos;
-    printf("year:0  \t Alice:%.2lf \t Bob:%.2lf \t difference %.2lf \n",(double) Alice.kapital / 100.0,(double) (Bob.kapital + 900000000) / 100.0, (double) (Bob.kapital + 900000000 - Alice.kapital) / 100.0);
+    printf("year:0\tAlice:"); //вывод
+    personPrint(Alice);
+    printf("Bob:");
+    personPrint(Bob);
+    diffPrint(Alice,Bob);
     for (int year = 0; year < YEARS; year++) { //годовая итерация
         for (int month = 0; month < MONTHS; month++) { //месячная итерация
-            Alice.kapital +=  (long long)((double)(Alice.dohod - Alice.rashody) * (double)(1 + 0.01 * Alice.stavka_vklada / 12));
-            Bob.kapital += (long long )((double)(Bob.dohod - Bob.rashody - (Bob.ezh_vznos + Bob.dolg * 0.01 * Bob.stavka_ipoteki / 12)) * (double)(1 + 0.01 * Bob.stavka_vklada / 12));
-            Bob.dolg -= Bob.ezh_vznos;
+            obrabotchikMonth(&Alice);
+            obrabotchikMonth(&Bob);
         }
-        if ( year == 2){ // повышение годовой ставки
-            Alice.stavka_vklada += 2;
-            Bob.stavka_vklada += 2;
-        }
-        if(year == 4){ // повышение цен на недвижимость
-            Bob.stoimost_kv += priceRise(Bob.stoimost_kv);
-            Bob.kapital += priceRise(Bob.stoimost_kv);
-        }
-        if(year == 6){ //падение дохода
-            Alice.dohod -= 3000000;
-            Bob.dohod -= 3000000;
-        }
-        Bob.kapital -= tax(Bob.stoimost_kv);
-        printf("year:%d  \t Alice:%.2lf \t Bob:%.2lf \t difference:%.2lf \n",year + 1, (double) Alice.kapital/100.0, (double) (Bob.kapital + 900000000) / 100.0, (double) (Bob.kapital + 900000000 - Alice.kapital) / 100.0); //вывод
+        obrabotchikYear ( year,  &Alice );
+        obrabotchikYear ( year,  &Bob );
+        tax(&Bob);
+        printf("year:%d\tAlice:",year + 1); //вывод
+        personPrint(Alice);
+        printf("Bob:");
+        personPrint(Bob);
+        diffPrint(Alice,Bob);
     }
 }
