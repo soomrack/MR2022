@@ -1,41 +1,144 @@
 #include <stdio.h>
+#include <stdlib.h>
 
+const int MAX_MONTH = 20 * 12;
 
-void main() {
-	int aliceSalary = 150000, bobSalary = 150000, aliceMonthly = 40000, bobMonthly = 10000, bobPayment = 100000, deposit = 300000;
-	float aliceAccount = 1000000, bobAccount = 1000000, alicePercent = 0.07, bobPercent = 0.07, flat = 1700000, fee = 0.005;
+struct Client {
+	char *name;
+	unsigned long long account, account_history[20 * 12], deposit, salary, utility, 
+		rent, flat, mortage_monthly; // копейки
+	double interest_percentage, mortage_percentage; // 10%=0.1
 
-	bobAccount -= deposit;
+};
 
-	for (int n = 1; n <= 20; n++) {
-		aliceAccount += aliceSalary - aliceMonthly;
-		aliceAccount *= 1 + alicePercent;
+void init_Alice(struct Client *Alice) {
+	Alice->name = malloc(5);
+	Alice->name = "Alice";
+	Alice->account = 1000 * 1000 * 100; 
+	Alice->interest_percentage = 0.07;
+	Alice->salary = 150 * 1000 * 100; 
+	Alice->utility = 10 * 1000 * 100; 
+	Alice->rent = 30 * 1000 * 100; 
+	Alice->flat = 0;
 
-		bobAccount += bobSalary - bobPayment - bobMonthly;
-		bobAccount -= flat * fee;
-		bobAccount *= 1 + bobPercent;
+}
 
-		if (n == 5) {
-			flat *= 1.5;
-		}
+void init_Bob(struct Client* Bob) {
+	Bob->name = malloc(3);
+	Bob->name = "Bob";
+	Bob->account = 1000 * 1000 * 100; 
+	Bob->interest_percentage = 0.07;
+	Bob->salary = 150 * 1000 * 100; 
+	Bob->utility = 10 * 1000 * 100; 
+	Bob->flat = 15 * 1000 * 1000 * 100;
+	Bob->utility = 10 * 1000 * 100; 
+	Bob->mortage_percentage = 0.05;
+	Bob->deposit = 100 * 1000 * 100;
+}
 
-		if (n == 3) {
-			alicePercent = 0.1;
-			bobPercent = 0.1;
-		}
+void save_account_history(struct Client* client, int year) {
+	client->account_history[year - 1] = client->account;
+}
+
+void deposit_payment(struct Client* client) {
+	client->account -= client->deposit;
+}
+
+void mortgage_calculation(struct Client* client) {
+	client->mortage_monthly = (client->flat - client->deposit) / (12 * 20) * (1 + client->mortage_percentage);
+}
+
+void salary_income(struct Client* client) {
+	client->account += client->salary;
+}
+
+void utility_payment(struct Client* client) {
+	client->account -= client->utility;
+}
+
+void rent_payment(struct Client* client) {
+	client->account -= client->rent;
+}
+
+void mortgage_payment(struct Client* client) {
+	client->account -= client->mortage_monthly;
+}
+
+void interest_payment(struct Client* client) {
+	client->account *= 1 + client->interest_percentage;
+}
+
+void print_report(struct Client client) {
+	printf("%s\n", client.name);
+	for (int year = 0; year < 20; ++year) {
+		printf("%d: %llu\n", year + 1, client.account_history[year] + client.flat);
 	}
+	printf("\n");
+}
 
-	printf("On Alice's money: %f\n", aliceAccount);
-	printf("On Bob's money: %f\n", bobAccount + flat);
+void print_comparison(struct Client client1, struct Client client2) {
+	printf("Total (%s): %llu\n", client1.name, client1.account);
+	printf("Total (%s): %llu\n", client2.name, client2.account + client2.flat);
 
-	if (aliceAccount > bobAccount + flat) {
-		printf("Alice has more money");
+	if (client1.account > client2.account + client2.flat) {
+		printf("%s has more money", client1.name);
 	}
-	else if (aliceAccount < bobAccount + flat) {
-		printf("Bob has more money");
+	else if (client1.account < client2.account + client2.flat) {
+		printf("%s has more money", client2.name);
 	}
 	else {
 		printf("Alice and Bob have same amount of money");
 
 	}
+}
+
+void simulation() {
+	struct Client Alice, Bob;
+
+	init_Alice(&Alice);
+	init_Bob(&Bob);
+
+	deposit_payment(&Bob);
+
+	mortgage_calculation(&Bob);
+
+	for (int i = 1; i <= MAX_MONTH; ++i) {
+		salary_income(&Alice);
+		salary_income(&Bob);
+
+		utility_payment(&Alice);
+		utility_payment(&Bob);
+
+		rent_payment(&Alice);
+
+		mortgage_payment(&Bob);
+
+		interest_payment(&Alice);
+		interest_payment(&Bob);
+		
+		//на 5 году увеличиваем процент на вкладе
+		if (i == 12 * 5) {
+			Alice.interest_percentage = 0.8;
+			Bob.interest_percentage = 0.1;
+		}
+
+		// в 10 году цена квартиры увеличивается
+		if (i == 12 * 10) {
+			Bob.flat *= 1.02;
+		}
+
+		if (i % 12 == 0) {
+			save_account_history(&Alice, (int)i / 12);
+			save_account_history(&Bob, (int)i / 12);
+		}
+		
+	}
+
+	print_report(Alice);
+	print_report(Bob);
+	print_comparison(Alice, Bob);
+}
+
+void main() {
+	simulation();
 }
