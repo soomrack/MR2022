@@ -58,6 +58,7 @@ int main() {
         }
     }
     bobFinalCapital = bobCapital + FLAT_COST;
+
     printf("Final capital %14lld,%lld %15lld,%lld\n", aliceCapital/100, aliceCapital%100, bobFinalCapital/100, bobFinalCapital%100);
     if (aliceCapital > bobFinalCapital) {
         printf("Alice will have a %lld,%lld rubles more, then Bob\n", (aliceCapital - bobFinalCapital) / 100, (aliceCapital - bobFinalCapital) % 100);
