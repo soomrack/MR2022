@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-int a_bank = 1000000;  // ghffhgf
+int a_bank = 1000000;
 int b_bank = 1000000;
 int vklad = 300000;
 int komunalka_a = 40000, komunalka_b = 10000;
@@ -11,12 +11,12 @@ int doxod = 150000;
 int srok = 20;
 int mec = 20*12;
 double stavka_vklad = 0.1;
-double itogo;
-double chist;
-double percent;
-double yearitog_a, yearitog_b;
-double cent_a,cent_b;
-double celoe_a,celoe_b;
+int itogo;
+int chist;
+int percent;
+int yearitog_a, yearitog_b;
+int cent_a,cent_b;
+int celoe_a,celoe_b;
 
 
 int main () {
