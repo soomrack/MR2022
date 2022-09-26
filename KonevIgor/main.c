@@ -28,23 +28,27 @@ int main() {
     int depositRateAnnual;
     printf("%12s %15s %17s\n", "Capital on ", "Alice", "Bob");
     for (int i = 1; i <= TERM * 12; i++) {
-       // Рост цен на недвижимость.
+
+       // Рост цен на недвижимость
       if (i == 12 * 5){
           FLAT_COST *= 1.5;
         }
-      // Падение дохода.
+
+      // Падение дохода
         if (i == 10 * 12){
-          SALARY *= 1.5;
+          SALARY /= 1.5;
         }
         if (i == 16 * 12){
           SALARY = 15000000;
         }
 
+        // Повышение ставки по вкладу
         if (i <= 36) {
             depositRateAnnual = DEPOSIT_RATE_ANNUAL_1ST;
         } else {
             depositRateAnnual = DEPOSIT_RATE_ANNUAL_2ND;
         }
+
         alicePercents = aliceCapital * depositRateAnnual / 1200;
         aliceCapital += alicePercents + (SALARY - UTILITIES_PAYMENT_A - ALICE_SPENDING);
         bobPercents = bobCapital * depositRateAnnual / 1200;
