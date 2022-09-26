@@ -1,123 +1,130 @@
 #include <stdio.h>
 #include <math.h>                                                           //Подключаем библиотеку для математических операций
 
-#define K 0
+#define IF_ADD 1
 
-int main() {
+struct person {
+    int capital;
+    int expenses;
+    int income;
+    double deposit;
+};
 
-    int start_kap = 1000000,                                                //Объявляем целичисленные переменные
-        perv_vznos = 300000,
-        KommB = 10000,
-        KommA = 40000,
-        dohod = 150000,
-        T=20,
-        t_pov = 3,
-        i,
-        b;
+struct person Alice = {1000000, 40000, 150000};
+struct person Bob = {1000000, 10000, 150000};
 
-    //Егор, я поменял твой код
 
-    double
-        ProcentKred = 0.12,
-        ProcentVklad = 0.06,
-        Dbvk = 0.06,
-        PM = ProcentKred / 12,                                                          //Объявляем переменные с плавающей точкой
-        PV = ProcentVklad / 12,
-        PV1 = (ProcentVklad + Dbvk) / 12;
+int
+    first_payment = 300000,                                             //Объявляем целичисленные переменные
+    time=20,
+    change_time = 3,
+    b;
 
-    printf( "\n"                                                     //Выводим начальную информацию
+double
+    credit_rate = 0.12,
+    deposit_rate = 0.06,
+    deposit_rate_addition = 0.06;
+
+
+
+    double monthly_rate(double arg){
+        double new_rate = pow(arg+1, 1.0/12.0) - 1;
+        printf("Monthly rate: %lf\n", new_rate);
+        return new_rate;
+    }
+
+
+    void start_info(){
+        printf( "\n"                                                     //Выводим начальную информацию
                 "Bob\n"
                 "\n"
-                "Nachal'nyi kapital: %d\n"
-                "Pervyi vznos: %d\n"
-                "Kommunal'nye platezhi: %d\n"
-                "Dohod: %d\n"
+                "Capital: %d\n"
+                "First payment: %d\n"
+                "Expenses: %d\n"
+                "Monthly income: %d\n"
                 "\n"
                 "Alice\n"
                 "\n"
-                "Nachal'nyi kapital: %d\n"
-                "Pervyi vznos: - \n"
-                "Kommunal'nye platezhi: %d\n"
-                "Dohod: %d\n"
+                "Capital: %d\n"
+                "First payment: - \n"
+                "Expenses: %d\n"
+                "Income: %d\n"
                 "\n"
-                "Srok: %d\n"
+                "Period: %d\n"
 
-                ,start_kap, perv_vznos, KommB, dohod, start_kap, KommA, dohod, T );
-
-
-    int st_kv = perv_vznos*10;                                              //Высчитываем стоимость квартиры (Первый взнос - 10 процентов от стоимости)
-            printf("Stoimost' kvartiry: %d\n", st_kv);
-
-
-    double Platezh = (st_kv*PM)/(1-pow((1+PM),(-T*12)));              //Высчитываем аннуитентный ежемесячный платеж по формуле
-            printf("Platezh: %lf\n", Platezh);
-
-
-    double Vklad = start_kap-perv_vznos;                                    //Начальные суммы вкладов у Боба и Элис соответственно
-    double VkladA = start_kap;
-
-    printf("Vklad v nachale: %lf\n", Vklad);                         //Высчитываем ежемесячный баланс вклада у Боба
-
-    if (K)
-    {
-        for (i = 1; i <= t_pov * 12; i++)
-        {
-            Vklad = Vklad + Vklad * PV;
-            Vklad = Vklad + dohod - Platezh - KommB;
-            printf("Vklad: %lf Spustya %d month\n", Vklad, i);
-        }
-        printf("Stavka povysilas': %lf\n", PV1);
-        for (i = 1; i <= ((T-t_pov)*12); i++)
-        {
-            Vklad = Vklad + Vklad * PV1;
-            Vklad = Vklad + dohod - Platezh - KommB;
-            printf("Vklad: %lf Spustya %d month\n", Vklad, i);
-        }
-    }
-    else
-    {
-        for (i = 1; i <= T * 12; i++)
-        {
-            Vklad = Vklad + Vklad * PV;
-            Vklad = Vklad + dohod - Platezh - KommB;
-            printf("Vklad: %lf Spustya %d month\n", Vklad, i);
-        }
+                ,Bob.capital, first_payment, Bob.expenses, Bob.income, Alice.capital, Alice.expenses, Alice.income, time );
     }
 
 
-    printf ("\nVklad v nachale: %lf\n", VkladA);                     //Высчитываем ежемесячный баланс вклада у Элис
-
-    if (K)
-    {
-        for (i = 1; i <= t_pov * 12; i++)
-        {
-            VkladA = VkladA + VkladA*PV;
-            VkladA = VkladA+dohod-KommA;
-            printf ("Vklad: %lf Spustya %d month\n", VkladA, b);
-        }
-        printf("Stavka povysilas': %lf\n", PV1);
-        for (i = 1; i <= ((T-t_pov)*12); i++)
-        {
-            VkladA = VkladA + VkladA*PV1;
-            VkladA = VkladA+dohod-KommA;
-            printf ("Vklad: %lf Spustya %d month\n", VkladA, b);
-        }
-    }
-    else
-    {
-        for (i = 1; i <= T * 12; i++)
-        {
-            VkladA = VkladA + VkladA*PV;
-            VkladA = VkladA+dohod-KommA;
-            printf ("Vklad: %lf Spustya %d month\n", VkladA, b);
-        }
+    int flat(int first_pay){
+        int price = first_pay*10;
+        printf("Full price of the flat: %d\n", price);
+        return price;
     }
 
 
-    double SAl = VkladA;                                                   //Считаем суммы имеющихся средств у каждого и выводим
-    printf ("\n\nSumma Alice: %lf ", SAl);
+    double payment (int price, double rate, double t){                        //Высчитываем аннуитентный ежемесячный платеж по формуле
+        double month_pay = (price*rate)/(1.0-pow((1.0+rate),(-t*12.0)));
+        printf("Monthly payment: %lf\n", month_pay);
+        return month_pay;
+    }
 
-    double SBoba = st_kv + Vklad;
-    printf("\n\nSumma Boba: %lf\n", SBoba);
 
+    void deposit(){
+        Alice.deposit = Alice.capital;                                          //Начальные суммы вкладов у Боба и Элис соответственно
+        printf("Alice's start deposit: %lf\n", Alice.deposit);
+        Bob.deposit = Bob.capital - first_payment;
+        printf("Bob's start deposit: %lf\n", Bob.deposit);
+    }
+
+
+    double deposit_sum(char* name, int if_add, int time_change,  double deposit, double rate, int income, int expenses, double payment, double rate_addition){
+        if (if_add)
+        {
+            for (int i=1; i<=time_change*12; i++)
+            {
+                deposit = deposit + deposit * rate;
+                deposit = deposit + income - payment - expenses;
+                printf("%s's Deposit: %lf After %d Month\n",name, deposit, i);
+            }
+            rate = monthly_rate(rate+rate_addition);
+            printf("Rate was raised': %lf\n", rate);
+            for (int a=1; a<=((time-time_change)*12); a++)
+            {
+                deposit = deposit + deposit * rate;
+                deposit = deposit + income - payment - expenses;
+                printf("%s's Deposit: %lf After %d Month\n",name, deposit, a);
+            }
+        }
+        else
+        {
+            for (b = 1; b <= time * 12; b++)
+            {
+                printf("%s -s Deposit: %lf After %d Month\n",name, deposit, b);
+                deposit = deposit + deposit * rate;
+                deposit = deposit + income - payment - expenses;
+            }
+        }
+
+        return deposit;
+    }
+
+
+int main() {
+    start_info();
+
+    credit_rate = monthly_rate(credit_rate);
+    deposit_rate = monthly_rate(deposit_rate);
+
+    int flat_price = flat(first_payment);
+    double monthly_payment = payment(flat_price, credit_rate, time);
+
+    deposit();
+    double final_bob = deposit_sum("Bob", IF_ADD, change_time, Bob.deposit, deposit_rate, Bob.income, Bob.expenses, monthly_payment, deposit_rate_addition);
+    double final_alice = deposit_sum("Alice", IF_ADD, change_time, Alice.deposit, deposit_rate, Alice.income, Alice.expenses, 0, deposit_rate_addition);
+
+    printf ("\n\nAlice's final deposit sum: %lf ", final_alice);
+    printf("\n\nBob's final deposit sum: %lf\n", flat_price+final_bob);
+
+    return 0;
 }
