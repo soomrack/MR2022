@@ -15,29 +15,25 @@ struct Client
 };
 struct Client Alice, Bob;
 
-void aliceInit(struct Client *alice)
+void initClient(struct Client *client, char *name,
+                long long account_balance,
+                long long salary,
+                long long house_value,
+                double bank_deposit_percent,
+                long long monthly_arenda_payments,
+                long long monthly_house_bills,
+                long long monthly_mortgage_payments)
 {
-  alice->name = "Alice";
-  alice->account_balance = 1000 * 1000 * 100;
-  alice->salary = 150 * 1000 * 100;
-  alice->house_value = 0;
-  alice->bank_deposit_percent = 0.015;
-  alice->monthly_arenda_payments = 40 * 1000 * 100;
-  alice->monthly_house_bills = 10 * 1000 * 100;
-  alice->monthly_mortgage_payments = 0;
+  client->name = name;
+  client->account_balance = account_balance;
+  client->salary = salary;
+  client->house_value = house_value;
+  client->bank_deposit_percent = bank_deposit_percent;
+  client->monthly_arenda_payments = monthly_arenda_payments;
+  client->monthly_house_bills = monthly_house_bills;
+  client->monthly_mortgage_payments = monthly_mortgage_payments;
 }
 
-void bobInit(struct Client *bob)
-{
-  bob->name = "Bob";
-  bob->account_balance = 1000 * 1000 * 100;
-  bob->salary = 150 * 1000 * 100;
-  bob->house_value = 4 * 1000 * 1000 * 100;
-  bob->bank_deposit_percent = 0.015;
-  bob->monthly_arenda_payments = 0;
-  bob->monthly_house_bills = 10 * 1000 * 100;
-  bob->monthly_mortgage_payments = 51480 * 100;
-}
 
 void outClient(const struct Client *client)
 {
@@ -86,8 +82,8 @@ void bank_account_increase(struct Client *client)
 
 int main()
 {
-  aliceInit(&Alice);
-  bobInit(&Bob);
+  initClient(&Alice, "Alice", 1000 * 1000 * 100, 150 * 1000 * 100, 0, 0.015, 40 * 1000 * 100, 10 * 1000 * 100, 0);
+  initClient(&Bob, "Bob", 1000 * 1000 * 100, 150 * 1000 * 100,  4 * 1000 * 1000 * 100, 0.015, 0, 10 * 1000 * 100, 51480 * 100);
 
   for (int month = 1; month <= MONTH_NUMBER; month++)
   {
