@@ -3,4 +3,4 @@ project(untitled1 C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(untitled1 00_Alice_and_Bob.c)
+add_executable(untitled1 01_Alice_and_Bob.c)
