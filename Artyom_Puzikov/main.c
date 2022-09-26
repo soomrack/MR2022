@@ -1,47 +1,122 @@
 #include <stdio.h>
 
+const int MONTH_NUMBER = 12 * 20;
+
+struct Client
+{
+  char *name;
+  long long account_balance;
+  long long salary;
+  long long house_value;
+  double bank_deposit_percent;
+  long long monthly_arenda_payments;
+  long long monthly_house_bills;
+  long long monthly_mortgage_payments;
+};
+struct Client Alice, Bob;
+
+void aliceInit(struct Client *alice)
+{
+  alice->name = "Alice";
+  alice->account_balance = 1000 * 1000 * 100;
+  alice->salary = 150 * 1000 * 100;
+  alice->house_value = 0;
+  alice->bank_deposit_percent = 0.015;
+  alice->monthly_arenda_payments = 40 * 1000 * 100;
+  alice->monthly_house_bills = 10 * 1000 * 100;
+  alice->monthly_mortgage_payments = 0;
+}
+
+void bobInit(struct Client *bob)
+{
+  bob->name = "Bob";
+  bob->account_balance = 1000 * 1000 * 100;
+  bob->salary = 150 * 1000 * 100;
+  bob->house_value = 4 * 1000 * 1000 * 100;
+  bob->bank_deposit_percent = 0.015;
+  bob->monthly_arenda_payments = 0;
+  bob->monthly_house_bills = 10 * 1000 * 100;
+  bob->monthly_mortgage_payments = 51480 * 100;
+}
+
+void outClient(const struct Client *client)
+{
+  printf("%s: %lld,%lld", client->name, (client->account_balance + client->house_value) / 100,
+         client->account_balance % 100);
+}
+
+void printResult(const struct Client *alice, const struct Client *bob, int month)
+{
+  if (month % 12 == 0)
+  {
+    printf("%d) \t", month / 12);
+    outClient(alice);
+    printf("\t");
+    outClient(bob);
+    printf("\n");
+  }
+}
+
+void deposit_increase(struct Client *client)
+{
+  client->bank_deposit_percent *= 1.25;
+}
+
+void flat_cost_increase(struct Client *client)
+{
+  client->house_value *= 1.5;
+}
+
+void salary_rate_return(struct Client *client)
+{
+  client->salary = 150 * 1000 * 100;
+}
+
+void salary_decrease(struct Client *client)
+{
+  client->salary /= 1.5;
+}
+
+void bank_account_increase(struct Client *client)
+{
+  client->account_balance += (long long) (client->account_balance * client->bank_deposit_percent / 12 -
+                                          client->monthly_mortgage_payments - client->monthly_house_bills -
+                                          client->monthly_arenda_payments + client->salary);
+}
+
 int main()
 {
-    long long expensesA = 4000000, salaryA = 15000000, salaryB = 15000000, expensesB = 1000000, downpayment = 60000000, flat = 400000000, monthly_payment = 5148000;
-    double deposit = 0.00125;
-    long long resultA = 100000000, contributionA = 0, moneyA = 100000000, resultB = 100000000 - downpayment,
-    moneyB = 100000000, contributionB = 0, cadastrFlat = flat/1.5, cadastrTax = 0.01*cadastrFlat;
-    for (int i = 1; i <= 20 * 12; i++)
+  aliceInit(&Alice);
+  bobInit(&Bob);
+
+  for (int month = 1; month <= MONTH_NUMBER; month++)
+  {
+    if (month == 3 * 12)
     {
-        if (i > 3 * 12)
-        {
-            deposit = 0.00167;
-        }
-
-        // Рост цен на недвижимость на 5-ый год
-        if (i == 5 * 12) {
-            flat *= 1.5;
-        }
-
-        // Уменьшение дохода Алисы на через 10 лет на срок в 6 лет
-        if (i == 10*12) {
-            salaryA /= 1.5;
-        }
-        if (i == 16*12) {
-            salaryA *= 1.5;
-        }
-
-        resultA = (long long) (resultA + ((salaryA - expensesA) + deposit * contributionA));
-        moneyA += salaryA - expensesA;
-        contributionA += (long long) (moneyA + contributionA * deposit);
-        moneyA = 0;
-
-        resultB = (long long) (resultB + ((salaryB - expensesA - monthly_payment - cadastrTax) + deposit * contributionB));
-        moneyB += salaryB - expensesB - monthly_payment;
-        contributionB += (long long) (moneyB + contributionB * deposit);
-        moneyB = 0;
-
-        if (i % 12 == 0)
-        {
-            printf("%d) \t", i / 12);
-            printf("Alice: %lld,%lld\t", resultA / 100, resultA % 100);
-            printf("Bob: %lld,%lld\n", (resultB + flat) / 100, resultB % 100);
-        }
+      deposit_increase(&Alice);
+      deposit_increase(&Bob);
     }
-    return 0;
+
+    // Рост цен на недвижимость на 5-ый год
+    if (month == 5 * 12)
+    {
+      flat_cost_increase(&Alice);
+      flat_cost_increase(&Bob);
+    }
+
+    // Уменьшение дохода на через 10 лет на срок в 6 лет
+    if (month == 10 * 12)
+    {
+      salary_decrease(&Alice);
+      salary_decrease(&Bob);
+    }
+    if (month == 16 * 12)
+    {
+      salary_rate_return(&Alice);
+      salary_rate_return(&Bob);
+    }
+    bank_account_increase(&Alice);
+    bank_account_increase(&Bob);
+    printResult(&Alice, &Bob, month);
+  }
 }
