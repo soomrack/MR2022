@@ -12,7 +12,8 @@ struct Buyer {
     int first_payment;  //  копейки
     short mortgage_year;
     double mortgage_percent;  //  в долях
-    int mortgage_month_payment;  //  копейки
+    int mortgage_fixed_payment;  //  копейки
+    int mortgage_payment;  //  копейки
 
     int deposit_payment;  //  копейки
     double deposit_percent;  //  в долях
@@ -89,10 +90,11 @@ void input_data(struct Buyer *alice, struct Buyer *bob) {
 
 int specific_rounding(double parameter) {
 
-    if(parameter - (int)parameter > 0)
-        parameter = (int)parameter + 1;
-
-    return (int)parameter;
+    int check_value = (int)((parameter - (int)parameter) * 10000);
+    if(check_value == 0)
+        return (int)parameter;
+    else
+        return ((int)parameter + 1);
 
 }
 
@@ -106,24 +108,35 @@ void taxes(struct Buyer *bob) {
 }
 
 
-int mortgage_month_payment_foo(struct Buyer *bob) {
+void mortgage_fixed_payment_function(struct Buyer *bob) {
 
-    double mortgage_month_fixed_payment = (double)(bob->apartment_price - bob->first_payment)/(bob->mortgage_year * 12);
-    int rounded_mortgage_month_fixed_payment = specific_rounding(mortgage_month_fixed_payment);
+    double mortgage_fixed_payment = (double)(bob->apartment_price - bob->first_payment)/(bob->mortgage_year * 12);
+    bob->mortgage_fixed_payment = specific_rounding(mortgage_fixed_payment);
 
-    double mortgage_month_dynamic_payment = (double)bob->rest * bob->mortgage_percent / 100;
-    int rounded_mortgage_month_dynamic_payment = specific_rounding(mortgage_month_dynamic_payment);
+}
 
-    bob->mortgage_month_payment = rounded_mortgage_month_fixed_payment + rounded_mortgage_month_dynamic_payment;
-    bob->rest -= rounded_mortgage_month_fixed_payment;
 
+void mortgage_payment_function(struct Buyer *bob) {
+
+    double mortgage_dynamic_payment = (double)bob->rest * bob->mortgage_percent / 100;
+    int rounded_mortgage_dynamic_payment = specific_rounding(mortgage_dynamic_payment);
+
+    if(bob->rest < bob->mortgage_fixed_payment) {
+        bob->mortgage_payment = (int)bob->rest + rounded_mortgage_dynamic_payment;
+        bob->rest = 0;
+    }
+    else{
+        bob->mortgage_payment = bob->mortgage_fixed_payment + rounded_mortgage_dynamic_payment;
+        bob->rest -= bob->mortgage_fixed_payment;
+    }
 }
 
 
 void changing_balance(struct Buyer *buyer) {
 
     int income = buyer->salary;
-    int expenses = buyer->deposit_payment + buyer->communal_service + buyer->mortgage_month_payment + buyer->taxes;
+    int expenses = buyer->deposit_payment + buyer->communal_service + buyer->taxes + buyer->mortgage_payment;
+
     buyer->balance += income - expenses;
 
 }
@@ -139,23 +152,6 @@ void changing_deposit_balance(struct Buyer *buyer, short month) {
         buyer->deposit_balance = specific_rounding(deposit_balance);
 
     }
-
-}
-
-
-void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
-
-    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
-    double alice_actives_rub = (double)alice_actives / 100;
-
-    unsigned long long int bob_actives = bob->balance + bob->deposit_balance;
-    double bob_actives_rub = (double)bob_actives / 100;
-
-    double difference = alice_actives_rub - bob_actives_rub;
-
-    printf("year %2d: ", year);
-    printf("%14.2f%14.2f ", alice_actives_rub, bob_actives_rub);
-    printf("  dif = %14.2f\n", difference);
 
 }
 
@@ -184,13 +180,31 @@ void life_changes(struct Buyer *alice, struct Buyer *bob, short year) {
 }
 
 
+void output_data(struct Buyer *alice, struct Buyer *bob, short year) {
+
+    unsigned long long int alice_actives = alice->balance + alice->deposit_balance;
+    double alice_actives_rub = (double)alice_actives / 100;
+
+    unsigned long long int bob_actives = bob->balance + bob->deposit_balance + bob->apartment_price;
+    double bob_actives_rub = (double)bob_actives / 100;
+
+    double difference = alice_actives_rub - bob_actives_rub;
+
+    printf("year %2d:\t", year);
+    printf("Alice: %12.2f\t\tBob: %12.2f\t\t", alice_actives_rub, bob_actives_rub);
+    printf("Dif: %12.2f\n", difference);
+
+}
+
+
 void simulation() {
 
     struct Buyer alice;
-
     struct Buyer bob;
 
     input_data(&alice, &bob);
+
+    mortgage_fixed_payment_function(&bob);
 
     for(short year = 1; year <= bob.mortgage_year; year++) {
 
@@ -198,7 +212,7 @@ void simulation() {
 
         for(short month = 1; month <= 12; month++) {
 
-            mortgage_month_payment_foo(&bob);
+            mortgage_payment_function(&bob);
             taxes(&bob);
 
             changing_balance(&alice);
