@@ -36,18 +36,6 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
 }
 
 
-Matrix new_matrix() {
-
-    uint64_t  rows, cols;
-
-    printf("input new matrix parameters:\n");
-    scanf("%lux%lu", &rows, &cols);
-    printf("%lux%lu\n", rows, cols);
-
-    return matrix_init(rows, cols);
-}
-
-
 void filling_matrix(Matrix *matrix) {
 
     printf("fill matrix:\n");
@@ -72,6 +60,28 @@ void output_matrix(Matrix *matrix) {
 }
 
 
+Matrix new_matrix() {
+
+    uint64_t  rows, cols;
+
+    printf("input new matrix parameters:\n");
+    scanf("%lux%lu", &rows, &cols);
+    printf("%lux%lu\n", rows, cols);
+
+    Matrix matrix = matrix_init(rows, cols);
+    filling_matrix(&matrix);
+
+    printf("You entered:\n");
+    output_matrix(&matrix);
+
+    return matrix;
+
+}
+
+
+
+
+
 int matrix_size_comparer(Matrix *matrix1, Matrix *matrix2) {
 
     uint64_t delta_rows = matrix1->rows - matrix2->rows;
@@ -88,14 +98,9 @@ int matrix_size_comparer(Matrix *matrix1, Matrix *matrix2) {
 int matrix_addition() {
 
     Matrix matrix1 = new_matrix();
-    filling_matrix(&matrix1);
-    printf("You entered:\n");
-    output_matrix(&matrix1);
 
     Matrix matrix2 = new_matrix();
-    filling_matrix(&matrix2);
-    printf("You entered:\n");
-    output_matrix(&matrix2);
+
 
     if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
         printf("Sizes of matrices are not equals");
@@ -110,6 +115,13 @@ int matrix_addition() {
             sum_matrix.array[row][col] = matrix1.array[row][col] + matrix2.array[row][col];
 
     output_matrix(&sum_matrix);
+}
+
+
+void matrix_multiplication() {
+
+
+
 }
 
 
