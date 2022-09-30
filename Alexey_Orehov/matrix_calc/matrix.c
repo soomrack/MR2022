@@ -75,6 +75,18 @@ Matrix transpose(const Matrix matrix){
     return ans;
 }
 
+Matrix minor(const Matrix matrix, const int i, const int j){
+    Matrix minor = {matrix.rows - 1, matrix.cols - 1};
+    minor.values = (double*) malloc(sizeof(double) * minor.cols * minor.rows);
+    int minor_index = 0;
+    for (int row = 1; row < matrix.rows; row++){  // Формирование алгебраического дополнения для элементов первой строки
+        for (int col = 0; col < matrix.cols; col++) if (row != i && col != j){
+                minor.values[minor_index++] = matrix.values[row * matrix.rows + col];
+            }
+    }
+    return minor;
+}
+
 double m_det(const Matrix matrix){
     if (matrix.cols != matrix.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
@@ -88,17 +100,9 @@ double m_det(const Matrix matrix){
         return ans;
     }
     // Определители матриц больших порядков считаются разложением по первой строке
-    Matrix submatrix = {dim - 1, dim - 1,(double*)malloc(sizeof(double) * (dim - 1) * (dim - 1))};
     for (int i = 0; i < dim; i++){
-        int value_counter = 0;
-        for (int row = 1; row < dim; row++){  // Формирование алгебраического дополнения для элементов первой строки
-            for (int col = 0; col < dim; col++) if (col != i){
-                submatrix.values[value_counter++] = matrix.values[row * dim + col];
-            }
-        }
-        ans += matrix.values[i] * pow(-1, i) * m_det(submatrix);
+        ans += matrix.values[i] * pow(-1, i) * m_det(minor(matrix, 0, i));
     }
-    free(submatrix.values);
     return ans;
 }
 
@@ -125,6 +129,6 @@ int main(){
     printm(matrix1);
     printm(transpose(matrix1));
 
-    //printf("%f", m_det(matrix1));
+    printf("%f", m_det(matrix1));
 
 }
