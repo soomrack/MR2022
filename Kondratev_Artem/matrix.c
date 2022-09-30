@@ -142,21 +142,42 @@ void matrix_multiplication() {
 }
 
 
+void number_addition() {
+
+    Matrix matrix = new_matrix();
+
+    double number;
+
+    printf("Enter a number:\n");
+    scanf("%lf", &number);
+
+    Matrix sum_matrix = matrix_init(matrix.rows, matrix.cols);
+
+    for(int row = 0; row <= matrix.rows-1; row++)
+        for(int col = 0; col <= matrix.cols-1; col++)
+            sum_matrix.array[row][col] = matrix.array[row][col] + number;
+
+    printf("You get:\n");
+    output_matrix(&sum_matrix);
+
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
-    printf("1: matrix addition; 2: matrix multiplication\n");
+    printf("1: matrix addition; 2: matrix multiplication; 3: number addition\n");
 
     int operation_key;
     scanf("%d", &operation_key);
     switch(operation_key)
     {
         case 1:
-            matrix_addition();
-            break;
+            matrix_addition(); break;
         case 2:
-            matrix_multiplication();
-            break;
+            matrix_multiplication(); break;
+        case 3:
+            number_addition(); break;
     }
 
 }
