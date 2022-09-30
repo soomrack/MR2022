@@ -32,17 +32,6 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
 }
 
 
-void filling_matrix(Matrix *matrix) {
-
-    printf("fill matrix:\n");
-
-    for(int row = 0; row <= matrix->rows-1; row++)
-        for(int col = 0; col <= matrix->cols-1; col++)
-            scanf("%lf", &matrix->array[row][col]);
-
-}
-
-
 void output_matrix(Matrix *matrix) {
 
     for(int row = 0; row <= matrix->rows-1; row++) {
@@ -56,6 +45,20 @@ void output_matrix(Matrix *matrix) {
 }
 
 
+void filling_matrix(Matrix *matrix) {
+
+    printf("fill matrix:\n");
+
+    for(int row = 0; row <= matrix->rows-1; row++)
+        for(int col = 0; col <= matrix->cols-1; col++)
+            scanf("%lf", &matrix->array[row][col]);
+
+    printf("You entered:\n");
+    output_matrix(matrix);
+
+}
+
+
 Matrix new_matrix() {
 
     uint64_t  rows, cols;
@@ -65,9 +68,6 @@ Matrix new_matrix() {
     printf("sizes: %lux%lu\n", rows, cols);
 
     Matrix matrix = matrix_init(rows, cols);
-
-    printf("You entered:\n");
-    output_matrix(&matrix);
 
     return matrix;
 
