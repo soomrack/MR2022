@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <malloc.h>
+#include<iso646.h>
 
 
 typedef struct Matrix {
@@ -27,6 +28,9 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
     for(int row = 0; row <= rows-1; row++)
         matrix.array[row] = (long double *)malloc(column_array_mem);
 
+    free(malloc(array_of_pointers_mem));
+    free(malloc(column_array_mem));
+
     return matrix;
 
 }
@@ -36,6 +40,7 @@ Matrix new_matrix() {
 
     uint64_t  rows, cols;
 
+    printf("input new matrix parameters:\n");
     scanf("%lux%lu", &rows, &cols);
     printf("%lux%lu\n", rows, cols);
 
@@ -44,6 +49,8 @@ Matrix new_matrix() {
 
 
 void filling_matrix(Matrix *matrix) {
+
+    printf("fill matrix:\n");
 
     for(int row = 0; row <= matrix->rows-1; row++)
         for(int col = 0; col <= matrix->cols-1; col++)
@@ -65,18 +72,38 @@ void output_matrix(Matrix *matrix) {
 }
 
 
-void plus() {
+int matrix_size_comparer(Matrix *matrix1, Matrix *matrix2) {
+
+    uint64_t delta_rows = matrix1->rows - matrix2->rows;
+    uint64_t delta_cols = matrix1->cols - matrix2->cols;
+
+    if(delta_rows != 0 or delta_cols != 0)
+        return -1;
+    else
+        return 0;
+
+}
+
+
+int matrix_addition() {
 
     Matrix matrix1 = new_matrix();
     filling_matrix(&matrix1);
+    printf("You entered:\n");
+    output_matrix(&matrix1);
 
     Matrix matrix2 = new_matrix();
     filling_matrix(&matrix2);
+    printf("You entered:\n");
+    output_matrix(&matrix2);
 
+    if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
+        printf("Sizes of matrices are not equals");
+        return -1;
+    }
+
+    printf("You get:\n");
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-
-    /*if (plus_check == False)
-        return;*/
 
     for(int row = 0; row <= matrix1.rows-1; row++)
         for(int col = 0; col <= matrix1.cols-1; col++)
@@ -88,7 +115,7 @@ void plus() {
 
 int main() {
 
-    plus();
+    matrix_addition();
 
     return 0;
 }
