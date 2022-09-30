@@ -295,7 +295,7 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 }
 
 
-void matrix_determinant_output(int key) {
+void matrix_determinant_output() {
 
     Matrix matrix = new_matrix();
 
@@ -308,10 +308,8 @@ void matrix_determinant_output(int key) {
 
     double determinant = recursive_determinant_evaluation(&matrix);
 
-    if(key == 1) {
-        printf("You get: ");
-        printf("determinant = %.3lf", determinant);
-    }
+    printf("You get: ");
+    printf("determinant = %.3lf", determinant);
 
     mem_clearing(&matrix);
 
@@ -337,7 +335,7 @@ void start_menu() {
         case 4:
             matrix_multiplication(); break;
         case 5:
-            matrix_determinant_output(1); break;
+            matrix_determinant_output(); break;
     }
 
 }
