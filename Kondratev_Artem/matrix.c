@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <iso646.h>
-#include <math.h>
 
 
 typedef struct Matrix {
@@ -213,17 +212,19 @@ int matrix_square_checker(Matrix *matrix) {
 }
 
 
-void minor_function(Matrix *matrix, int col_m) {
+Matrix minor_function(Matrix *matrix, int crossed_col) {
 
     Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
 
+    int link;
+
     for(int i = 0; i <= minor.rows - 1; i++) {
 
-        int link = 0;
+        link = 0;
 
         for (int j = 0; j <= minor.cols - 1; j++) {
 
-            if (j != col_m)
+            if (j != crossed_col)
                 minor.array[i][j] = matrix->array[i + 1][j + link];
             else {
                 link += 1;
@@ -232,13 +233,7 @@ void minor_function(Matrix *matrix, int col_m) {
         }
     }
 
-}
-
-
-void test() {
-
-    Matrix matrix = new_matrix();
-    minor_function(&matrix, 1);
+    return minor;
 
 }
 
@@ -246,7 +241,6 @@ void test() {
 double recursive_determinant_evaluation(Matrix *matrix) {
 
     double determinant;
-    Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
 
     if(matrix->rows == 1) {
         determinant = matrix->array[0][0];
@@ -255,35 +249,32 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 
     for(int col = 0; col <= matrix->cols - 1; col++) {
 
-        for(int i = 0; i <= minor.rows - 1; i++) {
-            for(int j = 0; j <= minor.cols; j++) {
-                if(j != col)
-                    minor.array[i][j] = matrix->array[i+1][j];
+        Matrix minor = minor_function(matrix, col);
 
+        int k;
+        k = (col % 2 != 0) ? -1 : 1;
 
-            }
-        }
-        //determinant += pow(-1, col+1) * matrix->array[0][col] * recursive_determinant_evaluation(matrix);
+        determinant += k * matrix->array[0][col] * recursive_determinant_evaluation(&minor);
 
     }
+
+    return determinant;
 
 }
 
 
-void matrix_determinant(int key) {
-
-    double determinant = 0;
+void matrix_determinant_output(int key) {
 
     Matrix matrix = new_matrix();
 
     if(matrix_square_checker(&matrix) == -1)
         return;
 
-
+    double determinant = recursive_determinant_evaluation(&matrix);
 
     if(key == 1) {
-        printf("You get:\n");
-        output_matrix(&matrix);
+        printf("You get: ");
+        printf("determinant = %.3lf", determinant);
     }
 
 }
@@ -308,7 +299,7 @@ void start_menu() {
         case 4:
             matrix_multiplication(); break;
         case 5:
-            matrix_determinant(1); break;
+            matrix_determinant_output(1); break;
     }
 
 }
@@ -316,7 +307,7 @@ void start_menu() {
 
 int main() {
 
-    test();
+    start_menu();
 
     return 0;
 }
