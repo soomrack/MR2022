@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int max_range = 51;
+const unsigned int max_range = 51;
 
-int ** array_initialization(unsigned int col, unsigned int row){
-    int ** rez = (int **)malloc(row * sizeof(int *));
+double ** array_initialization(unsigned int col, unsigned int row){
+    double ** rez = (double **)malloc(row * sizeof(double *));
     for (int i = 0; i < row; i ++){
-        rez[i] = (int *)malloc(col*sizeof(int *));
+        rez[i] = (double *)malloc(col*sizeof(double *));
     }
     return rez;
 }
@@ -17,8 +17,34 @@ struct matrix {
     unsigned int cols;
     unsigned int rows;
 
-    int **values;
+    double **values;
 };
+
+struct matrix edinichnaia(unsigned int n){
+    struct matrix rez = {n, n};
+    rez.values = array_initialization(rez.cols, rez.rows);
+    for (int i = 0; i < rez.rows; i++){
+        for (int j = 0; j < rez.cols; j++){
+            if (i == j){
+                rez.values[i][j] = 1.0;
+            } else {
+                rez.values[i][j] = 0.0;
+            }
+        }
+    }
+    return rez;
+}
+
+struct matrix transponation(struct matrix x){
+    struct matrix rez = {x.rows, x.cols};
+    rez.values = array_initialization(rez.cols, rez.rows);
+    for (int i = 0; i < rez.rows; i++){
+        for (int j = 0; j < rez.cols; j++){
+            rez.values[i][j] = x.values[j][i];
+        }
+    }
+    return rez;
+}
 
 struct matrix minor(unsigned int i, unsigned int j, struct matrix x){
     struct matrix rez = {x.cols-1, x.rows-1};
@@ -88,7 +114,7 @@ struct matrix multiplication(const struct matrix x, const struct matrix y){
         rez.values = array_initialization(rez.cols, rez.rows);
         for (int i = 0; i < rez.rows; i++){
             for (int j = 0; j < rez.cols; j++){
-                rez.values[i][j] = 0;
+                rez.values[i][j] = 0.0;
                 for (int k = 0; k < x.cols; k++){
                     rez.values[i][j] += x.values[i][k] * y.values[k][j];
                 }
@@ -101,7 +127,7 @@ struct matrix multiplication(const struct matrix x, const struct matrix y){
     return rez;
 }
 
-struct matrix multy_k(struct matrix x, int k){
+struct matrix multy_k(struct matrix x, double k){
     struct matrix rez = {x.cols, x.rows};
     rez.values = array_initialization(rez.cols, rez.rows);
     for (int i = 0; i < rez.rows; i++){
@@ -112,23 +138,36 @@ struct matrix multy_k(struct matrix x, int k){
     return rez;
 }
 
-long long  int det(struct matrix x){
+double det(struct matrix x){
     if (x.cols == x.rows){
         if (x.cols == 1){
             return x.values[0][0];
-
         } else {
-            long int rez = 0;
+            double rez = 0.0;
             for (int i = 0; i < x.cols; i++) {
                 rez += pow(-1, i) * x.values[0][i] * det(minor(0, i, x));
             }
             return rez;
         }
     } else {
-        return NULL;
+        return 0.0;
     }
 }
 
+struct matrix reverse(struct matrix x){
+    struct matrix rez = {x.cols, x.rows};
+    double deter = det(x);
+    if ((x.cols == x.rows) && (deter != 0)){
+        rez.values = array_initialization(rez.cols, rez.rows);
+        for (int i = 0; i < rez.rows; i++){
+            for (int j = 0; j < rez.cols; j ++){
+                rez.values[i][j] = pow(-1, i+j) * det(minor(i, j, x));
+            }
+        }
+        rez = multy_k(transponation(rez), 1/deter);
+    }
+    return rez;
+}
 
 
 struct matrix A = {5, 5};
@@ -139,7 +178,7 @@ void vivod(struct matrix x){
 
     for (int i = 0; i < x.rows; i++){
         for (int j = 0; j < x.cols; j++){
-            printf("%d ", x.values[i][j]);
+            printf("%.2lf ", x.values[i][j]);
         }
         printf("\n");
     }
@@ -165,18 +204,24 @@ int main() {
     vivod(A);
     printf("This is matrix B\n");
     vivod(B);
+    printf("This is transporation of matrix A\n");
+    vivod(transponation(A));
     printf("This is matrix A + B\n");
     vivod(addition(A,B));
     printf("This is matrix A - B\n");
     vivod(subtraction(A,B));
     printf("This is matrix A * B\n");
     vivod(multiplication(A, B));
-    printf("This is matrix A * 5\n");
-    vivod(multy_k(A, 5));
+    printf("This is matrix A * 1.5\n");
+    vivod(multy_k(A, 0.33));
 
     printf("This is det of matrix A\n");
-    printf("%d", det(A));
+    printf("%lld\n\n", det(A));
 
+    printf("This is is reverse of matrix A\n");
+    vivod(reverse(A));
+
+    vivod(multiplication(A, reverse(A)));
 
     return 0;
 }
