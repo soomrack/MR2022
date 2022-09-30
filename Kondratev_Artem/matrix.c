@@ -142,9 +142,29 @@ void matrix_multiplication() {
 }
 
 
+void start_menu() {
+
+    printf("Choose operation\n");
+    printf("1: matrix addition; 2: matrix multiplication\n");
+
+    int operation_key;
+    scanf("%d", &operation_key);
+    switch(operation_key)
+    {
+        case 1:
+            matrix_addition();
+            break;
+        case 2:
+            matrix_multiplication();
+            break;
+    }
+
+}
+
+
 int main() {
 
-    matrix_multiplication();
+    start_menu();
 
     return 0;
 }
