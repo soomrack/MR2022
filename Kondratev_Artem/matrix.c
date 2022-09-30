@@ -163,10 +163,33 @@ void number_addition() {
 }
 
 
+int matrix_subtraction() {
+
+    Matrix matrix1 = new_matrix();
+
+    Matrix matrix2 = new_matrix();
+
+
+    if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
+        printf("Sizes of matrices are not equals");
+        return -1;
+    }
+
+    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
+
+    for(int row = 0; row <= matrix1.rows-1; row++)
+        for(int col = 0; col <= matrix1.cols-1; col++)
+            sum_matrix.array[row][col] = matrix1.array[row][col] - matrix2.array[row][col];
+
+    printf("You get:\n");
+    output_matrix(&sum_matrix);
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
-    printf("1: matrix addition; 2: matrix multiplication; 3: number addition\n");
+    printf("1: matrix addition; 2: matrix multiplication; 3: number addition; 4: matrix subtraction\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -178,6 +201,8 @@ void start_menu() {
             matrix_multiplication(); break;
         case 3:
             number_addition(); break;
+        case 4:
+            matrix_subtraction(); break;
     }
 
 }
