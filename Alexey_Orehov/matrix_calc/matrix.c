@@ -20,9 +20,9 @@ void printm(struct Matrix matrix){
     }
 }
 
-bool same_size(Matrix m1, Matrix m2){ return (m1.cols == m2.cols && m1.rows == m2.rows);}
+bool same_size(const Matrix m1, const Matrix m2){ return (m1.cols == m2.cols && m1.rows == m2.rows);}
 
-Matrix m_add(Matrix m1, Matrix m2){
+Matrix m_add(const Matrix m1, const Matrix m2){
     if (!same_size(m1, m2)){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
@@ -34,7 +34,7 @@ Matrix m_add(Matrix m1, Matrix m2){
     return ans;
 }
 
-Matrix m_subs(Matrix m1, Matrix m2){
+Matrix m_sub(const Matrix m1, const Matrix m2){
     if (!same_size(m1, m2)){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
@@ -46,7 +46,7 @@ Matrix m_subs(Matrix m1, Matrix m2){
     return ans;
 }
 
-Matrix m_mult(Matrix m1, Matrix m2){
+Matrix m_mul(const Matrix m1, const Matrix m2){
     if (m1.cols != m2.rows){
         fprintf(stderr, "number of cols of matrix 1 should be equal to number of rows of second matrix");
         exit(1);
@@ -64,24 +64,36 @@ Matrix m_mult(Matrix m1, Matrix m2){
     return ans;
 }
 
+Matrix transpose(const Matrix matrix){
+    Matrix ans = {matrix.cols, matrix.rows,
+                  (double*)malloc(sizeof(double) * matrix.rows * matrix.cols)};
+    for (int row = 0; row < matrix.rows; row++){
+        for (int col = 0; col < matrix.cols; col++){
+            ans.values[col * ans.rows + row] = matrix.values[row * ans.cols + col];
+        }
+    }
+    return ans;
+}
+
 double m_det(const Matrix matrix){
     if (matrix.cols != matrix.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
     }
     double ans = 0;
-    unsigned int dim = matrix.rows;
+    unsigned int dim = matrix.rows;  // Размер матрицы
 
-    if (dim == 2){
+    if (dim == 2){  // Определитель матрицы порядка 2 считается по формуле
         ans = matrix.values[0] * matrix.values[3] - matrix.values[1] * matrix.values[2];
         return ans;
     }
+    // Определители матриц больших порядков считаются разложением по первой строке
     Matrix submatrix = {dim - 1, dim - 1,(double*)malloc(sizeof(double) * (dim - 1) * (dim - 1))};
     for (int i = 0; i < dim; i++){
         int value_counter = 0;
-        for (int row = 1; row < dim; row++){
-            for (int col = 0; col < dim; col++){
-                if (col != i) submatrix.values[value_counter++] = matrix.values[row * dim + col];
+        for (int row = 1; row < dim; row++){  // Формирование алгебраического дополнения для элементов первой строки
+            for (int col = 0; col < dim; col++) if (col != i){
+                submatrix.values[value_counter++] = matrix.values[row * dim + col];
             }
         }
         ans += matrix.values[i] * pow(-1, i) * m_det(submatrix);
@@ -110,7 +122,9 @@ int main(){
     //printm(m_add(matrix1, matrix2));
     //printm(m_subs(matrix1, matrix2));
     //printm(m_mult(matrix1, matrix2));
+    printm(matrix1);
+    printm(transpose(matrix1));
 
-    printf("%f", m_det(matrix1));
+    //printf("%f", m_det(matrix1));
 
 }
