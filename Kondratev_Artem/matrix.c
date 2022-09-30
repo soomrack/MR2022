@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <malloc.h>
-#include<iso646.h>
+#include <iso646.h>
+#include <math.h>
 
 
 typedef struct Matrix {
@@ -192,8 +193,8 @@ void number_addition() {
 
     Matrix sum_matrix = matrix_init(matrix.rows, matrix.cols);
 
-    for(int row = 0; row <= matrix.rows-1; row++)
-        for(int col = 0; col <= matrix.cols-1; col++)
+    for(int row = 0; row <= matrix.rows - 1; row++)
+        for(int col = 0; col <= matrix.cols - 1; col++)
             sum_matrix.array[row][col] = matrix.array[row][col] + number;
 
     printf("You get:\n");
@@ -202,10 +203,97 @@ void number_addition() {
 }
 
 
+int matrix_square_checker(Matrix *matrix) {
+
+    if(matrix->rows - matrix->cols != 0)
+        return -1;
+    else
+        return 0;
+
+}
+
+
+void minor_function(Matrix *matrix, int col_m) {
+
+    Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
+
+    for(int i = 0; i <= minor.rows - 1; i++) {
+
+        int link = 0;
+
+        for (int j = 0; j <= minor.cols - 1; j++) {
+
+            if (j != col_m)
+                minor.array[i][j] = matrix->array[i + 1][j + link];
+            else {
+                link += 1;
+                minor.array[i][j] = matrix->array[i + 1][j + link];
+            }
+        }
+    }
+
+}
+
+
+void test() {
+
+    Matrix matrix = new_matrix();
+    minor_function(&matrix, 1);
+
+}
+
+
+double recursive_determinant_evaluation(Matrix *matrix) {
+
+    double determinant;
+    Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
+
+    if(matrix->rows == 1) {
+        determinant = matrix->array[0][0];
+        return determinant;
+    }
+
+    for(int col = 0; col <= matrix->cols - 1; col++) {
+
+        for(int i = 0; i <= minor.rows - 1; i++) {
+            for(int j = 0; j <= minor.cols; j++) {
+                if(j != col)
+                    minor.array[i][j] = matrix->array[i+1][j];
+
+
+            }
+        }
+        //determinant += pow(-1, col+1) * matrix->array[0][col] * recursive_determinant_evaluation(matrix);
+
+    }
+
+}
+
+
+void matrix_determinant(int key) {
+
+    double determinant = 0;
+
+    Matrix matrix = new_matrix();
+
+    if(matrix_square_checker(&matrix) == -1)
+        return;
+
+
+
+    if(key == 1) {
+        printf("You get:\n");
+        output_matrix(&matrix);
+    }
+
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
+    printf("5: matrix determinant\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -219,6 +307,8 @@ void start_menu() {
             number_addition(); break;
         case 4:
             matrix_multiplication(); break;
+        case 5:
+            matrix_determinant(1); break;
     }
 
 }
@@ -226,7 +316,7 @@ void start_menu() {
 
 int main() {
 
-    start_menu();
+    test();
 
     return 0;
 }
