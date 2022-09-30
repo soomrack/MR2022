@@ -99,6 +99,16 @@ int matrix_size_comparer(int key, Matrix *matrix1, Matrix *matrix2) {
 }
 
 
+void mem_clearing(Matrix *matrix) {
+
+    for(int row = 0; row <= matrix->rows - 1; row ++)
+        free(matrix->array[row]);
+
+    free(matrix->array);
+
+}
+
+
 int matrix_addition() {
 
     Matrix matrix1 = new_matrix();
@@ -121,6 +131,11 @@ int matrix_addition() {
 
     printf("You get:\n");
     output_matrix(&sum_matrix);
+
+    mem_clearing(&matrix1);
+    mem_clearing(&matrix2);
+    mem_clearing(&sum_matrix);
+
 }
 
 
@@ -147,6 +162,11 @@ int matrix_subtraction() {
 
     printf("You get:\n");
     output_matrix(&sum_matrix);
+
+    mem_clearing(&matrix1);
+    mem_clearing(&matrix2);
+    mem_clearing(&sum_matrix);
+
 }
 
 
@@ -181,6 +201,10 @@ int matrix_multiplication() {
     printf("You get:\n");
     output_matrix(&multiplied_matrix);
 
+    mem_clearing(&matrix1);
+    mem_clearing(&matrix2);
+    mem_clearing(&multiplied_matrix);
+
 }
 
 
@@ -202,6 +226,8 @@ void number_addition() {
 
     printf("You get:\n");
     output_matrix(&sum_matrix);
+
+    mem_clearing(&matrix);
 
 }
 
@@ -260,6 +286,8 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 
         determinant += k * matrix->array[0][col] * recursive_determinant_evaluation(&minor);
 
+        mem_clearing(&minor);
+
     }
 
     return determinant;
@@ -284,6 +312,8 @@ void matrix_determinant_output(int key) {
         printf("You get: ");
         printf("determinant = %.3lf", determinant);
     }
+
+    mem_clearing(&matrix);
 
 }
 
