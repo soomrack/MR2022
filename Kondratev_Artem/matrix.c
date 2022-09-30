@@ -27,10 +27,6 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
         matrix.array[row] = (double*)malloc(cols * sizeof(double));
     }
 
-
-
-
-
     return matrix;
 
 }
@@ -80,15 +76,30 @@ Matrix new_matrix() {
 }
 
 
-int matrix_size_comparer(Matrix *matrix1, Matrix *matrix2) {
+int matrix_size_comparer(int key, Matrix *matrix1, Matrix *matrix2) {
 
-    uint64_t delta_rows = matrix1->rows - matrix2->rows;
-    uint64_t delta_cols = matrix1->cols - matrix2->cols;
+    if(key == 0){
 
-    if(delta_rows != 0 or delta_cols != 0)
-        return -1;
-    else
-        return 0;
+        uint64_t delta_rows = matrix1->rows - matrix2->rows;
+        uint64_t delta_cols = matrix1->cols - matrix2->cols;
+
+        if(delta_rows != 0 or delta_cols != 0)
+            return -1;
+        else
+            return 0;
+
+    }
+
+    if(key == 1) {
+
+        uint64_t delta = matrix1->cols - matrix2->rows;
+
+        if(delta != 0)
+            return -1;
+        else
+            return 0;
+
+    }
 
 }
 
@@ -100,7 +111,7 @@ int matrix_addition() {
     Matrix matrix2 = new_matrix();
 
 
-    if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
+    if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
         printf("Sizes of matrices are not equals");
         return -1;
     }
@@ -116,11 +127,39 @@ int matrix_addition() {
 }
 
 
-void matrix_multiplication() {
+int matrix_subtraction() {
 
     Matrix matrix1 = new_matrix();
 
     Matrix matrix2 = new_matrix();
+
+
+    if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
+        printf("Sizes of matrices are not equals");
+        return -1;
+    }
+
+    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
+
+    for(int row = 0; row <= matrix1.rows-1; row++)
+        for(int col = 0; col <= matrix1.cols-1; col++)
+            sum_matrix.array[row][col] = matrix1.array[row][col] - matrix2.array[row][col];
+
+    printf("You get:\n");
+    output_matrix(&sum_matrix);
+}
+
+
+int matrix_multiplication() {
+
+    Matrix matrix1 = new_matrix();
+
+    Matrix matrix2 = new_matrix();
+
+    if(matrix_size_comparer(1, &matrix1, &matrix2) == -1) {
+        printf("Sizes of matrices are not equals");
+        return -1;
+    }
 
     Matrix multiplied_matrix = matrix_init(matrix1.rows, matrix2.cols);
 
@@ -163,33 +202,10 @@ void number_addition() {
 }
 
 
-int matrix_subtraction() {
-
-    Matrix matrix1 = new_matrix();
-
-    Matrix matrix2 = new_matrix();
-
-
-    if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
-        printf("Sizes of matrices are not equals");
-        return -1;
-    }
-
-    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-
-    for(int row = 0; row <= matrix1.rows-1; row++)
-        for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = matrix1.array[row][col] - matrix2.array[row][col];
-
-    printf("You get:\n");
-    output_matrix(&sum_matrix);
-}
-
-
 void start_menu() {
 
     printf("Choose operation\n");
-    printf("1: matrix addition; 2: matrix multiplication; 3: number addition; 4: matrix subtraction\n");
+    printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -198,11 +214,11 @@ void start_menu() {
         case 1:
             matrix_addition(); break;
         case 2:
-            matrix_multiplication(); break;
+            matrix_subtraction(); break;
         case 3:
             number_addition(); break;
         case 4:
-            matrix_subtraction(); break;
+            matrix_multiplication(); break;
     }
 
 }
