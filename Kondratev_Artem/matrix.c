@@ -66,8 +66,6 @@ Matrix new_matrix() {
 
     Matrix matrix = matrix_init(rows, cols);
 
-    filling_matrix(&matrix);
-
     printf("You entered:\n");
     output_matrix(&matrix);
 
@@ -94,10 +92,7 @@ int matrix_size_comparer(int key, Matrix *matrix1, Matrix *matrix2) {
 
         uint64_t delta = matrix1->cols - matrix2->rows;
 
-        if(delta != 0)
-            return -1;
-        else
-            return 0;
+        return (delta != 0) ? -1 : 0;
 
     }
 
@@ -110,11 +105,13 @@ int matrix_addition() {
 
     Matrix matrix2 = new_matrix();
 
-
     if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
         printf("Sizes of matrices are not equals");
         return -1;
     }
+
+    filling_matrix(&matrix1);
+    filling_matrix(&matrix2);
 
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
 
@@ -139,6 +136,9 @@ int matrix_subtraction() {
         return -1;
     }
 
+    filling_matrix(&matrix1);
+    filling_matrix(&matrix2);
+
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
 
     for(int row = 0; row <= matrix1.rows-1; row++)
@@ -160,6 +160,9 @@ int matrix_multiplication() {
         printf("Sizes of matrices are not equals");
         return -1;
     }
+
+    filling_matrix(&matrix1);
+    filling_matrix(&matrix2);
 
     Matrix multiplied_matrix = matrix_init(matrix1.rows, matrix2.cols);
 
@@ -184,6 +187,7 @@ int matrix_multiplication() {
 void number_addition() {
 
     Matrix matrix = new_matrix();
+    filling_matrix(&matrix);
 
     double number;
 
@@ -212,7 +216,7 @@ int matrix_square_checker(Matrix *matrix) {
 }
 
 
-Matrix minor_function(Matrix *matrix, int crossed_col) {
+Matrix minor_init(Matrix *matrix, int crossed_col) {
 
     Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
 
@@ -249,7 +253,7 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 
     for(int col = 0; col <= matrix->cols - 1; col++) {
 
-        Matrix minor = minor_function(matrix, col);
+        Matrix minor = minor_init(matrix, col);
 
         int k;
         k = (col % 2 != 0) ? -1 : 1;
@@ -267,8 +271,12 @@ void matrix_determinant_output(int key) {
 
     Matrix matrix = new_matrix();
 
-    if(matrix_square_checker(&matrix) == -1)
+    if(matrix_square_checker(&matrix) == -1) {
+        printf("You need to input square matrix\n");
         return;
+    }
+
+    filling_matrix(&matrix);
 
     double determinant = recursive_determinant_evaluation(&matrix);
 
