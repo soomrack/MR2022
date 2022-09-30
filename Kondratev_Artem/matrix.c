@@ -13,13 +13,7 @@ typedef struct Matrix {
 } Matrix;
 
 
-Matrix matrix_init() {
-
-    uint64_t rows;
-    uint64_t cols;
-
-    scanf("%lux%lu", &rows, &cols);
-    printf("%lux%lu\n", rows, cols);
+Matrix matrix_init(uint64_t rows, uint64_t cols) {
 
     struct Matrix matrix;
 
@@ -38,7 +32,18 @@ Matrix matrix_init() {
 }
 
 
-void input_matrix(Matrix *matrix) {
+Matrix new_matrix() {
+
+    uint64_t  rows, cols;
+
+    scanf("%lux%lu", &rows, &cols);
+    printf("%lux%lu\n", rows, cols);
+
+    return matrix_init(rows, cols);
+}
+
+
+void filling_matrix(Matrix *matrix) {
 
     for(int row = 0; row <= matrix->rows-1; row++)
         for(int col = 0; col <= matrix->cols-1; col++)
@@ -60,11 +65,30 @@ void output_matrix(Matrix *matrix) {
 }
 
 
+void plus() {
+
+    Matrix matrix1 = new_matrix();
+    filling_matrix(&matrix1);
+
+    Matrix matrix2 = new_matrix();
+    filling_matrix(&matrix2);
+
+    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
+
+    /*if (plus_check == False)
+        return;*/
+
+    for(int row = 0; row <= matrix1.rows-1; row++)
+        for(int col = 0; col <= matrix1.cols-1; col++)
+            sum_matrix.array[row][col] = matrix1.array[row][col] + matrix2.array[row][col];
+
+    output_matrix(&sum_matrix);
+}
+
+
 int main() {
 
-    Matrix matrix = matrix_init();
-    input_matrix(&matrix);
-    output_matrix(&matrix);
+    plus();
 
     return 0;
 }
