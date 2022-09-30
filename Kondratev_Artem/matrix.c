@@ -32,7 +32,10 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
 }
 
 
-void output_matrix(Matrix *matrix) {
+void output_matrix(Matrix *matrix, int key) {
+
+    if(key != 0)
+        printf("You get: \n");
 
     for(int row = 0; row <= matrix->rows-1; row++) {
 
@@ -54,7 +57,7 @@ void filling_matrix(Matrix *matrix) {
             scanf("%lf", &matrix->array[row][col]);
 
     printf("You entered:\n");
-    output_matrix(matrix);
+    output_matrix(matrix, 0);
 
 }
 
@@ -129,8 +132,7 @@ int matrix_addition() {
         for(int col = 0; col <= matrix1.cols-1; col++)
             sum_matrix.array[row][col] = matrix1.array[row][col] + matrix2.array[row][col];
 
-    printf("You get:\n");
-    output_matrix(&sum_matrix);
+    output_matrix(&sum_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -160,8 +162,7 @@ int matrix_subtraction() {
         for(int col = 0; col <= matrix1.cols-1; col++)
             sum_matrix.array[row][col] = matrix1.array[row][col] - matrix2.array[row][col];
 
-    printf("You get:\n");
-    output_matrix(&sum_matrix);
+    output_matrix(&sum_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -198,8 +199,7 @@ int matrix_multiplication() {
                 multiplied_matrix.array[row][col] += matrix1.array[row][k] * matrix2.array[k][col];
         }
 
-    printf("You get:\n");
-    output_matrix(&multiplied_matrix);
+    output_matrix(&multiplied_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -224,8 +224,7 @@ void number_addition() {
         for(int col = 0; col <= matrix.cols - 1; col++)
             sum_matrix.array[row][col] = matrix.array[row][col] + number;
 
-    printf("You get:\n");
-    output_matrix(&sum_matrix);
+    output_matrix(&sum_matrix, 1);
 
     mem_clearing(&matrix);
 
@@ -316,11 +315,27 @@ void matrix_determinant_output() {
 }
 
 
+Matrix matrix_transposition() {
+
+    Matrix matrix = new_matrix();
+    filling_matrix(&matrix);
+
+    Matrix transposed_matrix = matrix_init(matrix.cols, matrix.rows);
+
+    for(int row = 0; row <= transposed_matrix.rows - 1; row++)
+        for(int col = 0; col <= transposed_matrix.cols - 1; col++)
+            transposed_matrix.array[row][col] = matrix.array[col][row];
+
+    output_matrix(&transposed_matrix, 1);
+
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
-    printf("5: matrix determinant\n");
+    printf("5: matrix determinant; 6: matrix transposition\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -336,6 +351,8 @@ void start_menu() {
             matrix_multiplication(); break;
         case 5:
             matrix_determinant_output(); break;
+        case 6:
+            matrix_transposition(); break;
     }
 
 }
