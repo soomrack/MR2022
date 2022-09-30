@@ -208,7 +208,23 @@ int matrix_multiplication() {
 }
 
 
-void number_addition() {
+Matrix matrix_number_operation(Matrix *matrix, double number, int key) {
+
+    Matrix operated_matrix = matrix_init(matrix->rows, matrix->cols);
+
+    for(int row = 0; row <= matrix->rows - 1; row++)
+        for(int col = 0; col <= matrix->cols - 1; col++)
+            if(key == 0)
+                operated_matrix.array[row][col] = matrix->array[row][col] + number;
+            else
+                operated_matrix.array[row][col] = matrix->array[row][col] * number;
+
+    return operated_matrix;
+
+}
+
+
+void number_operation_output(int key) {
 
     Matrix matrix = new_matrix();
     filling_matrix(&matrix);
@@ -218,15 +234,12 @@ void number_addition() {
     printf("Enter a number:\n");
     scanf("%lf", &number);
 
-    Matrix sum_matrix = matrix_init(matrix.rows, matrix.cols);
+    Matrix operated_matrix = matrix_number_operation(&matrix, number, key);
 
-    for(int row = 0; row <= matrix.rows - 1; row++)
-        for(int col = 0; col <= matrix.cols - 1; col++)
-            sum_matrix.array[row][col] = matrix.array[row][col] + number;
-
-    output_matrix(&sum_matrix, 1);
+    output_matrix(&operated_matrix, 1);
 
     mem_clearing(&matrix);
+    mem_clearing(&operated_matrix);
 
 }
 
@@ -315,18 +328,52 @@ void matrix_determinant_output() {
 }
 
 
-Matrix matrix_transposition() {
+Matrix matrix_transposition(Matrix *matrix) {
 
-    Matrix matrix = new_matrix();
-    filling_matrix(&matrix);
+    filling_matrix(matrix);
 
-    Matrix transposed_matrix = matrix_init(matrix.cols, matrix.rows);
+    Matrix transposed_matrix = matrix_init(matrix->cols, matrix->rows);
 
     for(int row = 0; row <= transposed_matrix.rows - 1; row++)
         for(int col = 0; col <= transposed_matrix.cols - 1; col++)
-            transposed_matrix.array[row][col] = matrix.array[col][row];
+            transposed_matrix.array[row][col] = matrix->array[col][row];
+
+    return transposed_matrix;
+
+}
+
+
+void transposition_output() {
+
+    Matrix matrix = new_matrix();
+
+    Matrix transposed_matrix = matrix_transposition(&matrix);
 
     output_matrix(&transposed_matrix, 1);
+
+    mem_clearing(&matrix);
+    mem_clearing(&transposed_matrix);
+
+}
+
+
+void matrix_inversion() {
+
+    Matrix matrix = new_matrix();
+
+    if(matrix_square_checker(&matrix) == -1) {
+        printf("You need to input square matrix\n");
+        return;
+    }
+
+    filling_matrix(&matrix);
+
+    double determinant = recursive_determinant_evaluation(&matrix);
+    double number = 1 / determinant;
+
+    Matrix transposed_matrix = matrix_transposition(&matrix);
+
+    Matrix inverse_matrix = matrix_number_operation(&matrix, determinant, 1);
 
 }
 
@@ -346,13 +393,13 @@ void start_menu() {
         case 2:
             matrix_subtraction(); break;
         case 3:
-            number_addition(); break;
+            number_operation_output(0); break;
         case 4:
             matrix_multiplication(); break;
         case 5:
             matrix_determinant_output(); break;
         case 6:
-            matrix_transposition(); break;
+            transposition_output(); break;
     }
 
 }
