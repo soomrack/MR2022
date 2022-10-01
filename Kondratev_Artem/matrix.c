@@ -277,7 +277,6 @@ Matrix minor_init(Matrix *matrix, int crossed_row, int crossed_col, int det_key)
 
     }
 
-    output_matrix(&minor, 1);
     return minor;
 
 }
@@ -359,34 +358,32 @@ void transposition_output() {
 }
 
 
-/*Matrix minor_for_inverse_addition(Matrix *matrix) {
+Matrix each_element_minor_transformation(Matrix *matrix) {
 
-
-
-}
-
-
-Matrix inverse_addition(Matrix *matrix) {
+    Matrix inverse_added_matrix = matrix_init(matrix->rows, matrix->cols);
 
     if(matrix->rows == 1) {
-        Matrix inverse_added_matrix = *matrix;
+        inverse_added_matrix = *matrix;
         return inverse_added_matrix;
     }
 
-    for(int col = 0; col <= matrix->cols - 1; col++) {
+    for(int row = 0; row <= matrix->rows - 1; row++) {
 
-        Matrix minor = minor_init(matrix, col);
+        for(int col = 0; col <= matrix->cols - 1; col++) {
 
-        int k;
-        k = (col % 2 != 0) ? -1 : 1;
+            Matrix minor = minor_init(matrix,row, col, 0);
 
-        matrix[][] += k * matrix->array[0][col] * recursive_determinant_evaluation(&minor);
+            int k = ((row + col) % 2 == 0) ? 1 : -1;
 
-        mem_clearing(&minor);
+            inverse_added_matrix.array[row][col] = k * recursive_determinant_evaluation(&minor);
+
+            mem_clearing(&minor);
+
+        }
 
     }
 
-    return determinant;
+    return inverse_added_matrix;
 
 }
 
@@ -398,9 +395,13 @@ Matrix matrix_inversion(Matrix *matrix) {
 
     Matrix transposed_matrix = matrix_transposition(matrix);
 
-    Matrix inverse_added_matrix = inverse_addition(&transposed_matrix);
+    Matrix transformed_matrix = each_element_minor_transformation(&transposed_matrix);
 
-    Matrix inverse_matrix = matrix_number_operation(&inverse_added_matrix, inverse_coef, 1);
+    Matrix inverse_matrix = matrix_number_operation(&transformed_matrix, inverse_coef, 1);
+
+    mem_clearing(matrix);
+    mem_clearing(&transposed_matrix);
+    mem_clearing(&transformed_matrix);
 
     return inverse_matrix;
 
@@ -425,7 +426,7 @@ void inverse_matrix_output() {
     mem_clearing(&matrix);
     mem_clearing(&inverse_matrix);
 
-}*/
+}
 
 
 void start_menu() {
@@ -450,8 +451,8 @@ void start_menu() {
             matrix_determinant_output(); break;
         case 6:
             transposition_output(); break;
-        //case 7:
-            //inverse_matrix_output(); break;
+        case 7:
+            inverse_matrix_output(); break;
     }
 
 }
