@@ -113,7 +113,7 @@ void mem_clearing(Matrix *matrix) {
 }
 
 
-int matrix_addition() {
+int matrix_addition(int key) {
 
     Matrix matrix1 = new_matrix();
 
@@ -131,37 +131,7 @@ int matrix_addition() {
 
     for(int row = 0; row <= matrix1.rows-1; row++)
         for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = matrix1.array[row][col] + matrix2.array[row][col];
-
-    output_matrix(&sum_matrix, 1);
-
-    mem_clearing(&matrix1);
-    mem_clearing(&matrix2);
-    mem_clearing(&sum_matrix);
-
-}
-
-
-int matrix_subtraction() {
-
-    Matrix matrix1 = new_matrix();
-
-    Matrix matrix2 = new_matrix();
-
-
-    if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
-        printf("Sizes of matrices are not equals");
-        return -1;
-    }
-
-    filling_matrix(&matrix1);
-    filling_matrix(&matrix2);
-
-    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-
-    for(int row = 0; row <= matrix1.rows-1; row++)
-        for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = matrix1.array[row][col] - matrix2.array[row][col];
+            sum_matrix.array[row][col] = matrix1.array[row][col] + key * matrix2.array[row][col];
 
     output_matrix(&sum_matrix, 1);
 
@@ -429,20 +399,27 @@ void inverse_matrix_output() {
 }
 
 
+void matrix_inverse_multiplication() {
+
+
+
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
-    printf("5: matrix determinant; 6: matrix transposition; 7: invert matrix\n");
+    printf("5: matrix determinant; 6: matrix transposition; 7: matrix inversion\n");
 
     int operation_key;
     scanf("%d", &operation_key);
     switch(operation_key)
     {
         case 1:
-            matrix_addition(); break;
+            matrix_addition(1); break;
         case 2:
-            matrix_subtraction(); break;
+            matrix_addition(-1); break;
         case 3:
             number_operation_output(0); break;
         case 4:
