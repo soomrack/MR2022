@@ -142,23 +142,11 @@ int matrix_addition(int key) {
 }
 
 
-int matrix_multiplication() {
+Matrix matrix_multiplication(Matrix *matrix1, Matrix *matrix2) {
 
-    Matrix matrix1 = new_matrix();
+    Matrix multiplied_matrix = matrix_init(matrix1->rows, matrix2->cols);
 
-    Matrix matrix2 = new_matrix();
-
-    if(matrix_size_comparer(1, &matrix1, &matrix2) == -1) {
-        printf("Sizes of matrices are not equals");
-        return -1;
-    }
-
-    filling_matrix(&matrix1);
-    filling_matrix(&matrix2);
-
-    Matrix multiplied_matrix = matrix_init(matrix1.rows, matrix2.cols);
-
-    int key = (int)matrix1.cols;
+    int key = (int)matrix1->cols;
 
     for(int row = 0; row <= multiplied_matrix.rows - 1; row++)
 
@@ -167,8 +155,29 @@ int matrix_multiplication() {
             multiplied_matrix.array[row][col] = 0;
 
             for (int k = 0; k <= key - 1; k++)
-                multiplied_matrix.array[row][col] += matrix1.array[row][k] * matrix2.array[k][col];
+                multiplied_matrix.array[row][col] += matrix1->array[row][k] * matrix2->array[k][col];
         }
+
+    return multiplied_matrix;
+
+}
+
+
+void multiplication_output() {
+
+    Matrix matrix1 = new_matrix();
+
+    Matrix matrix2 = new_matrix();
+
+    if(matrix_size_comparer(1, &matrix1, &matrix2) == -1) {
+        printf("Sizes of matrices are not equals");
+        return;
+    }
+
+    filling_matrix(&matrix1);
+    filling_matrix(&matrix2);
+
+    Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
 
     output_matrix(&multiplied_matrix, 1);
 
@@ -361,6 +370,7 @@ Matrix each_element_minor_transformation(Matrix *matrix) {
 Matrix matrix_inversion(Matrix *matrix) {
 
     double determinant = recursive_determinant_evaluation(matrix);
+
     double inverse_coef = 1 / determinant;
 
     Matrix transposed_matrix = matrix_transposition(matrix);
@@ -389,6 +399,12 @@ void inverse_matrix_output() {
 
     filling_matrix(&matrix);
 
+    double determinant = recursive_determinant_evaluation(&matrix);
+    if((int)((determinant - (int)determinant) * 1000) == 0) {
+        printf("Error: determinant = 0\n");
+        return;
+    }
+
     Matrix inverse_matrix = matrix_inversion(&matrix);
 
     output_matrix(&inverse_matrix, 1);
@@ -399,9 +415,40 @@ void inverse_matrix_output() {
 }
 
 
-void matrix_inverse_multiplication() {
+Matrix matrix_inverse_multiplication(Matrix *matrix1, Matrix *matrix2) {
+
+    Matrix inverse_matrix = matrix_inversion(matrix2);printf("ok\n");
+    output_matrix(&inverse_matrix, 0);printf("ok\n");
+
+    Matrix inverse_multiplied_matrix = matrix_multiplication(matrix1, &inverse_matrix);printf("ok");
+    mem_clearing(&inverse_matrix);printf("ok");
+
+    return inverse_multiplied_matrix;
+
+}
 
 
+void inverse_multiplication_output() {
+
+    Matrix matrix1 = new_matrix();
+
+    Matrix matrix2 = new_matrix();
+
+    if(matrix_square_checker(&matrix2) == -1) {
+        printf("You need to input square matrix\n");
+        return;
+    }
+
+    filling_matrix(&matrix1);
+    filling_matrix(&matrix2);
+
+    Matrix inverse_multiplied_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
+
+    output_matrix(&inverse_multiplied_matrix, 1);
+
+    mem_clearing(&matrix1);
+    mem_clearing(&matrix2);
+    mem_clearing(&inverse_multiplied_matrix);
 
 }
 
@@ -410,7 +457,7 @@ void start_menu() {
 
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
-    printf("5: matrix determinant; 6: matrix transposition; 7: matrix inversion\n");
+    printf("5: matrix determinant; 6: matrix transposition; 7: matrix inversion; 8: inverse matrix multiplication\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -423,13 +470,15 @@ void start_menu() {
         case 3:
             number_operation_output(0); break;
         case 4:
-            matrix_multiplication(); break;
+            multiplication_output(); break;
         case 5:
             matrix_determinant_output(); break;
         case 6:
             transposition_output(); break;
         case 7:
             inverse_matrix_output(); break;
+        case 8:
+            inverse_multiplication_output(); break;
     }
 
 }
