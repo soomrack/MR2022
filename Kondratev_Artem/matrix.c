@@ -36,6 +36,8 @@ void output_matrix(Matrix *matrix, int key) {
 
     if(key != 0)
         printf("You get: \n");
+    else
+        printf("You entered:\n");
 
     for(int row = 0; row <= matrix->rows-1; row++) {
 
@@ -56,7 +58,6 @@ void filling_matrix(Matrix *matrix) {
         for(int col = 0; col <= matrix->cols-1; col++)
             scanf("%lf", &matrix->array[row][col]);
 
-    printf("You entered:\n");
     output_matrix(matrix, 0);
 
 }
@@ -254,27 +255,29 @@ int matrix_square_checker(Matrix *matrix) {
 }
 
 
-Matrix minor_init(Matrix *matrix, int crossed_col) {
+Matrix minor_init(Matrix *matrix, int crossed_row, int crossed_col, int det_key) {
 
     Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
 
-    int link;
+    int row_link = det_key;
+    int col_link;
 
     for(int i = 0; i <= minor.rows - 1; i++) {
 
-        link = 0;
+        if(crossed_row == i)
+            row_link += 1;
+
+        col_link = 0;
 
         for (int j = 0; j <= minor.cols - 1; j++) {
-
-            if (j != crossed_col)
-                minor.array[i][j] = matrix->array[i + 1][j + link];
-            else {
-                link += 1;
-                minor.array[i][j] = matrix->array[i + 1][j + link];
-            }
+            if(j == crossed_col)
+                col_link += 1;
+            minor.array[i][j] = matrix->array[i + row_link][j + col_link];
         }
+
     }
 
+    output_matrix(&minor, 1);
     return minor;
 
 }
@@ -291,7 +294,7 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 
     for(int col = 0; col <= matrix->cols - 1; col++) {
 
-        Matrix minor = minor_init(matrix, col);
+        Matrix minor = minor_init(matrix, -1, col, 1);
 
         int k;
         k = (col % 2 != 0) ? -1 : 1;
@@ -330,8 +333,6 @@ void matrix_determinant_output() {
 
 Matrix matrix_transposition(Matrix *matrix) {
 
-    filling_matrix(matrix);
-
     Matrix transposed_matrix = matrix_init(matrix->cols, matrix->rows);
 
     for(int row = 0; row <= transposed_matrix.rows - 1; row++)
@@ -346,6 +347,7 @@ Matrix matrix_transposition(Matrix *matrix) {
 void transposition_output() {
 
     Matrix matrix = new_matrix();
+    filling_matrix(&matrix);
 
     Matrix transposed_matrix = matrix_transposition(&matrix);
 
@@ -357,7 +359,55 @@ void transposition_output() {
 }
 
 
-void matrix_inversion() {
+/*Matrix minor_for_inverse_addition(Matrix *matrix) {
+
+
+
+}
+
+
+Matrix inverse_addition(Matrix *matrix) {
+
+    if(matrix->rows == 1) {
+        Matrix inverse_added_matrix = *matrix;
+        return inverse_added_matrix;
+    }
+
+    for(int col = 0; col <= matrix->cols - 1; col++) {
+
+        Matrix minor = minor_init(matrix, col);
+
+        int k;
+        k = (col % 2 != 0) ? -1 : 1;
+
+        matrix[][] += k * matrix->array[0][col] * recursive_determinant_evaluation(&minor);
+
+        mem_clearing(&minor);
+
+    }
+
+    return determinant;
+
+}
+
+
+Matrix matrix_inversion(Matrix *matrix) {
+
+    double determinant = recursive_determinant_evaluation(matrix);
+    double inverse_coef = 1 / determinant;
+
+    Matrix transposed_matrix = matrix_transposition(matrix);
+
+    Matrix inverse_added_matrix = inverse_addition(&transposed_matrix);
+
+    Matrix inverse_matrix = matrix_number_operation(&inverse_added_matrix, inverse_coef, 1);
+
+    return inverse_matrix;
+
+}
+
+
+void inverse_matrix_output() {
 
     Matrix matrix = new_matrix();
 
@@ -368,21 +418,21 @@ void matrix_inversion() {
 
     filling_matrix(&matrix);
 
-    double determinant = recursive_determinant_evaluation(&matrix);
-    double number = 1 / determinant;
+    Matrix inverse_matrix = matrix_inversion(&matrix);
 
-    Matrix transposed_matrix = matrix_transposition(&matrix);
+    output_matrix(&inverse_matrix, 1);
 
-    Matrix inverse_matrix = matrix_number_operation(&matrix, determinant, 1);
+    mem_clearing(&matrix);
+    mem_clearing(&inverse_matrix);
 
-}
+}*/
 
 
 void start_menu() {
 
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
-    printf("5: matrix determinant; 6: matrix transposition\n");
+    printf("5: matrix determinant; 6: matrix transposition; 7: invert matrix\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -400,6 +450,8 @@ void start_menu() {
             matrix_determinant_output(); break;
         case 6:
             transposition_output(); break;
+        //case 7:
+            //inverse_matrix_output(); break;
     }
 
 }
