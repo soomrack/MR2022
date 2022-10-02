@@ -1,5 +1,4 @@
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,10 +18,8 @@ void printm(struct Matrix matrix){
     }
 }
 
-bool same_size(const Matrix m1, const Matrix m2){ return (m1.cols == m2.cols && m1.rows == m2.rows);}
-
 Matrix m_add(const Matrix m1, const Matrix m2){
-    if (!same_size(m1, m2)){
+    if (m1.cols != m2.cols || m1.rows != m2.rows){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
     }
@@ -34,7 +31,7 @@ Matrix m_add(const Matrix m1, const Matrix m2){
 }
 
 Matrix m_sub(const Matrix m1, const Matrix m2){
-    if (!same_size(m1, m2)){
+    if (m1.cols != m2.cols || m1.rows != m2.rows){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
     }
@@ -64,8 +61,7 @@ Matrix m_mul(const Matrix m1, const Matrix m2){
 }
 
 Matrix transpose(const Matrix mat){
-    Matrix ans = {mat.cols, mat.rows,
-                  (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
+    Matrix ans = {mat.cols, mat.rows, (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++){
             ans.values[col * ans.rows + row] = mat.values[row * ans.cols + col];
@@ -78,7 +74,7 @@ Matrix minor(const Matrix mat, const unsigned int i, const unsigned int j){
     Matrix minor = {mat.rows - 1, mat.cols - 1};
     minor.values = (double*) malloc(sizeof(double) * minor.cols * minor.rows);
     int minor_index = 0;
-    for (int row = 0; row < mat.rows; row++){  // Формирование алгебраического дополнения для элементов первой строки
+    for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++) if (row != i && col != j){
                 minor.values[minor_index++] = mat.values[row * mat.rows + col];
             }
@@ -92,15 +88,12 @@ double m_det(const Matrix mat){
         exit(1);
     }
     double ans = 0;
-    unsigned int dim = mat.rows;  // Размер матрицы
-
-    if (dim == 2){  // Определитель матрицы порядка 2 считается по формуле
+    if (mat.rows == 2){  // Определитель матрицы порядка 2 считается по формуле
         ans = mat.values[0] * mat.values[3] - mat.values[1] * mat.values[2];
         return ans;
     }
-    // Определители матриц больших порядков считаются разложением по первой строке
-    for (int i = 0; i < dim; i++){
-        ans += mat.values[i] * pow(-1, i) * m_det(minor(mat, 0, i));
+    for (int i = 0; i < mat.rows; i++){  // Определители матриц больших порядков считаются разложением по первой строке
+        if (mat.values[i] != 0) ans += mat.values[i] * pow(-1, i) * m_det(minor(mat, 0, i));
     }
     return ans;
 }
@@ -121,9 +114,29 @@ Matrix m_inv(Matrix mat){
     return transpose(inv);
 }
 
+Matrix m_exp(Matrix mat){
+    if (mat.cols != mat.rows){
+        fprintf(stderr, "number of cols should be equal to number of rows");
+        exit(1);
+    }  // TODO: вычисление экспоненты не только для диагональных матриц
+    Matrix ans = {mat.rows, mat.cols, (double*) malloc(sizeof(double) * mat.rows * mat.cols)};
+    for (int row = 0; row < mat.rows; row++){
+        for (int col = 0; col < mat.cols; col++){
+            if (row != col){
+                if (mat.values[row * mat.cols + col] != 0){
+                    fprintf(stderr, "for now, this function only works for diagonal matrices");
+                    exit(1);
+                }
+                else ans.values[row * mat.cols + col] = 0;
+            }
+            else ans.values[row * mat.cols + col] = exp(mat.values[row * mat.cols + col]);
+        }
+    }
+    return ans;
+}
+
 unsigned int rank(Matrix mat){
     if (mat.cols == mat.rows && m_det(mat) != 0) return mat.cols;
-    // TODO Вычисление ранга матрицы
     return 0;
 }
 
@@ -140,18 +153,20 @@ int main(){
     double values1[9] = {3, -1, 2,
                          4, 2, 0,
                          -5, 6, 1};
-    double values2[9] = {0.026, 0.167, -0.051,
-                         -0.051, 0.167, 0.103,
-                         0.436, -0.167, 0.128};
+    double values2[16] = {1, 0, 2, 3,
+                         0, 2, 0, 4,
+                         0, 0, 3, 5,
+                         1, 5, 2, 8,};
     Matrix matrix1 = {3, 3, values1};
-    Matrix matrix2 = {3, 3, values2};
+    Matrix matrix2 = {4, 4, values2};
 
     //printm(m_add(matrix1, matrix2));
     //printm(m_subs(matrix1, matrix2));
     //printm(m_mult(matrix1, matrix2));
-    printm(matrix1);
+    //printm(m_exp(matrix2));
+    //printm(minor(matrix2, 2, 2));
+    //printm(matrix1);
     printm(m_mul(matrix1, m_inv(matrix1)));
 
     //printf("%f", m_det(matrix1));
-
 }
