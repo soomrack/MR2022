@@ -3,4 +3,5 @@ project(hello_world C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(hello_world main.c)
+
+add_executable(hello_world matrix.c)

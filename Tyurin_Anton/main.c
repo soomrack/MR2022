@@ -1,71 +1,148 @@
 #include <stdio.h>
-int const CREDIT_PERSENT=1, YEAR=2;
-int const  DEPOSIT_RATE=10;
+#include <math.h>
+#include <malloc.h>
 
 
-struct Client {
-    unsigned long long int capital;
-    unsigned long long int first_payment;
-    unsigned long long int utility_spending;
-    unsigned long long int flat_cost;
-    unsigned long long int salary;
-    unsigned long long int Vklad;
-    unsigned long long int rest;
+struct Matrix {
+    unsigned int cols;
+    unsigned int rows;
+    double *values;
 };
 
-struct Client Alice= {1000*1000*100,0,40*1000*100,0,150*1000*100,0}; //копейки
-struct Client Bob= {1000*1000*100,300*1000*100,10*1000*100,9*1000*1000*100,150*1000*100,0,9*1000*1000*100}; //копейки
 
-double deposit_income(struct Client *client) {
-    client->Vklad+=5000000;
-    client->capital+=client->Vklad*DEPOSIT_RATE/1200;
-    return client->capital,client->Vklad;
-}
-
-double salary_income(struct Client *client) {
-    client->capital += client->salary - 5000000;
-    return client->capital;
-}
-
-double utility_payment(struct Client *client) {
-    client->capital -=client->utility_spending;
-    return client->capital;
-}
-
-double mortgage_payment(struct Client *client,int *i){
-    if (*i==1){
-        client->rest-=client->first_payment;
-    };
-    client->capital-=client->flat_cost/(YEAR*12)+client->rest*(CREDIT_PERSENT/100);
-    client->rest-=client->flat_cost/(YEAR*12);
-    return client->capital;
-}
+struct Matrix zero(const unsigned int cols, const unsigned int rows){// Инициализация матрицы A
+    struct Matrix A;
+    A.cols = cols;
+    A.rows = rows;
+    A.values = malloc(cols * rows * sizeof(double));
+    for (unsigned int idx = 0; idx < cols * rows; idx++){
+        A.values[idx] = 0.0;
+    }
+    return A;
+};
 
 
+struct Matrix one(const unsigned int cols, const unsigned int rows){// Инициализация матрицы B
+    struct Matrix B;
+    B.cols = cols;
+    B.rows = rows;
+    B.values = malloc(cols * rows * sizeof(double));
+    for (unsigned int idx = 0; idx < cols * rows; idx++){
+        B.values[idx] = 0.0;
+    }
+    return B;
+};
 
-void out_put (struct Client *client,int *i){
 
-    printf("Year: %.lf\tCapital = %.2lf\t\n", (double)*i/12,(double)((client->capital+client->flat_cost)/100));
-}
-
-int main() {
-    for(int i=1;i<=YEAR*12;i++) {
-
-        salary_income(&Alice);
-        salary_income(&Bob);
-
-        deposit_income(&Alice);
-        deposit_income(&Bob);
-
-        mortgage_payment(&Bob, &i);
-
-        utility_payment(&Alice);
-        utility_payment(&Bob);
-
-        if (i%12==0) {
-            out_put(&Alice, &i);
-            out_put(&Bob, &i);
+void print_matrix(const struct Matrix X){// Вывод матрицы на экран
+    printf("Matrix \n");
+    for (unsigned int row = 0; row < X.rows; row++){
+        for(unsigned int col = 0; col < X.cols; col++){
+            scanf("%lf",&(X.values[row * X.cols + col]));
         }
     }
+    for (unsigned int row = 0; row < X.rows; row++){
+        for(unsigned int col = 0; col < X.cols; col++){
+            printf("%.1lf\t", X.values[row * X.cols + col]);
+        }
+        printf("\n");
+    }
+}
+
+
+void matrix_sum(struct Matrix A, struct Matrix B){
+    switch ((A.cols == B.cols)*(A.rows == B.rows)) {
+        case 1: for (unsigned int row = 0; row < A.rows; row++) {
+                for (unsigned int col = 0; col < A.cols; col++) {
+                A.values[row * A.cols + col] += B.values[row * B.cols + col];
+                }
+            }
+            printf("A+B=\n");
+            for (unsigned int row = 0; row < A.rows; row++){
+                for(unsigned int col = 0; col < A.cols; col++){
+                    printf("%.1lf\t", A.values[row * A.cols + col]);
+                }
+                printf("\n");
+            }
+            break;
+
+
+        case 0: printf("Can't be solved!");break;
+    }
+}
+
+
+void matrix_min(struct Matrix A, struct Matrix B){
+    switch ((A.cols == B.cols)*(A.rows == B.rows)) {
+        case 1: for (unsigned int row = 0; row < A.rows; row++) {
+                for (unsigned int col = 0; col < A.cols; col++) {
+                    A.values[row * A.cols + col] -= B.values[row * B.cols + col];
+                }
+            }
+            printf("A-B=\n");
+            for (unsigned int row = 0; row < A.rows; row++){
+                for(unsigned int col = 0; col < A.cols; col++){
+                    printf("%.1lf\t", A.values[row * A.cols + col]);
+                }
+                printf("\n");
+            }
+            break;
+
+
+        case 0: printf("Can't be solved!");break;
+    }
+}
+
+
+void matrix_mult(struct Matrix A, struct Matrix B) {
+
+    struct Matrix C;
+    C.cols = A.rows;
+    C.rows = B.cols;
+    C.values = malloc(C.cols * C.rows * sizeof(double));
+    for (unsigned int idx = 0; idx < C.cols * C.rows; idx++) {
+        C.values[idx] = 0.0;
+    }
+    for (unsigned int row = 0; row < A.rows; row++){
+    for (unsigned int col = 0; col < B.cols; col++) {
+
+            int sum = 0;
+            int sum1 = 0;
+            for(unsigned int k = 0; k < A.cols; k++) {
+               sum1 += A.values[k * A.cols + row] * B.values[k * B.cols + col];
+               C.values[col * C.cols + row] = sum1;
+
+               sum += A.values[row * A.cols + k] * B.values[k * B.cols + col];
+               C.values[col * C.rows + row] = sum;
+            }
+        }
+    }
+
+        printf("A*B=\n");
+        for (unsigned int row = 0; row < C.rows; row++) {
+            for (unsigned int col = 0; col < C.cols; col++) {
+                printf("%.1lf\t", C.values[col * C.cols + row]);
+            }
+            printf("\n");
+    }
+}
+
+
+
+
+
+int main() {
+
+    struct Matrix A = zero(3,2);
+    print_matrix(A);
+
+    struct Matrix B = one(2,3);
+    print_matrix(B);
+
+
+    matrix_mult(A,B);
+
+    free(A.values);
+    free(B.values);
     return 0;
 }

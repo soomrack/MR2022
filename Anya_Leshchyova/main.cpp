@@ -1,87 +1,189 @@
 #include <iostream>
+#define _CRT_SECURE_NO_WARNINGS
+#include <malloc.h>
+#include <stdlib.h> // под динамические масивы
+
+//структуры
 
 
-// функция считает ежемесячный платёж
-double monthly_payment_F (double beginning,double beginning_contribution,double flat, int time_month,
-                          double percent_mortgages) {
+typedef struct {
+    char *name;
+    bool wish;
 
-    double monthly_payment = ((flat + flat * percent_mortgages)/ (time_month)); // вычисление ежемеячного платежа
+} Identification; // структура имени и желания клиента (ипотека или вклад)
+
+
+typedef struct {
+    int beginning; // начальный капитал
+    int beginning_contribution; // начальная выплата по ипотеке
+    int flat; // стоимость квартиры
+    int income; // доходы
+    int expenses;  // расходы
+    unsigned int time_year; // время на погашение ипотеки, год
+
+}money;
+
+
+typedef struct {
+    unsigned int row; // число строк, целое положительное
+    unsigned int col; // число столбцов, целое положительное
+    long long int ** massive;
+}matrix;   // структура задаёт размеры матрицы и саму матрицу
+
+
+typedef struct {
+    double percent_mortgages; // процент ипотеки
+    double deposit_interest;  // процент вклада
+    double percentage_increase; // на сколько увеличивается процент по прошествию половины срока
+} percent; // структура процентов
+
+
+
+// задаём параметры
+
+
+// первый клиент
+Identification сlient_1 ={"Alice", false};
+
+const percent сlient_percent_1 ={0.09,0.02,0.02};
+
+const money сlient_money_1  ={100000, 300000,15000500, 150000,40000,20};
+
+const matrix сlient_matrix_1={20,1};
+
+
+//второй клиент
+Identification client_2 ={"Bob", true};
+
+const percent сlient_percent_2 ={0.09,0.0001,0.02};
+
+const money сlient_money_2  ={100000, 300000,15000500, 150000,25000,20};
+
+const matrix сlient_matrix_2={20,1};
+
+
+
+//row строка, col столбец
+// функция возвращает память для матрицы
+long long int **memory (unsigned int row,unsigned int col ){
+    long long int **a;
+    a = (long long int**)malloc(row * sizeof(long long int*)); //выделение памяти под указатели на строки
+    for (int i = 0; i<row; i++)  // цикл по строкам
+    {
+        a[i] = (long long int *) malloc(col * sizeof(long long int));// Выделение памяти под хранение строк
+    }
+    return a;
+}
+
+
+// вычисление ежемесячного платежа
+int monthly_payment_F (const money A,const  percent B ) {
+
+    int monthly_payment = ((A.flat + A.flat * B.percent_mortgages)/ (A.time_year*12));
     return monthly_payment;
 }
-//считает ипотеку и вклад
-void ipoteka_and_deposit( int beginning,int beginning_contribution, int time_month, int expenses,int income,
-                          int  monthly_payment,int deposit_interest,int percentage_increase, int time_year, int flat) {
 
-    int k = 1, h=0;
-    long double a = 0;
 
-    if (monthly_payment != 0) { // ипотека
-        printf("\nMortgage calculator for %d years\n",time_year);
+//вычисления момента когда увеличивается процент по вкладу
+double percentage_increase(int a,int b, double c,double d ){
+    double rez;
+    if( a>b/a){
+        rez=c+d;
+    }
+    else {
+        rez=c;
+    }
+    return rez;
+}
 
-        int residue = beginning - beginning_contribution; // остаток Боба
-        for (int i = 1; i <= time_month; i++) {
-            a = residue - expenses + income - monthly_payment;
-            residue = a;
-            if (i % 12 == 0) {
-                if (i / 12 >=  time_year/2) {
-                    residue = a * (deposit_interest + percentage_increase);
-                }
-                else {
-                    residue = a * deposit_interest;
-                }
-                printf("          Years %d Bob's Capital= %d\n", k, residue);
-                k = k + 1;
+
+// вычисление вклада
+matrix deposit (const money A, const percent B, const matrix C){
+    matrix result = {C.row, C.col};
+    result.massive = memory(result.row, result.col);
+    long long int a,b;
+    double per_increase;
+    long long int residue = A.beginning;
+    for (int i=1; i<=A.time_year;i++){
+        per_increase=percentage_increase(i,A.time_year,B.deposit_interest,B.percentage_increase);
+        a= (residue+A.income*12-A.expenses*12);
+        residue=a*per_increase+a;
+        result.massive[i-1][0]=residue;
+    }
+    return result;
+}
+
+
+//вычисление ипотеки
+matrix mortgages (const money A, const percent B, const matrix C){
+    matrix result = {C.row, C.col};
+    result.massive = memory(result.row, result.col);
+    long long int monthly_payment=monthly_payment_F(money(A), percent(B));
+    long long int a;
+    double per_increase;
+    long long int residue = A.beginning - A.beginning_contribution;
+    for (int i=1; i<=A.time_year;i++){
+        per_increase=percentage_increase(i,A.time_year,B.deposit_interest,B.percentage_increase);
+        a= (residue+(A.income-A.expenses-monthly_payment)*12);
+        residue=a*per_increase+a;
+        result.massive[i-1][0]=residue;
+    }
+    return result;
+}
+
+
+//функция вывода
+void Itog (matrix A){
+    for (int i = 0; i < A.row; i++){
+        for (int j = 0; j < A.col; j++){
+            printf("Years %d  %d",i+1, A.massive[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+
+//показывает на какой год клиент сможет купить квартиру, если возьмет вклад
+void Apartment_purchase(const money A, const percent B, const matrix C){
+    // matrix result={A.time_year, 1};
+    //result.massive = memory(A.time_year, 1);
+    matrix result=deposit ( money(A) ,  percent (B),  matrix (C));
+    int k=0,n=0;
+    for (int i = 0; i < result.row; i++){
+        for (int j = 0; j < result.col; j++){
+            k=k+1;
+            if(result.massive[i][j]>A.flat and n==0){
+                printf ("You buy an apartment for %d years\n",k);
+                n=1;
             }
         }
-        printf ("Monthly_payment=%d\n", monthly_payment);
-        if (residue>monthly_payment*time_month){
-            printf ("Congratulations! You pay off the mortgage\n");
-        }
     }
-    else{
-        printf("\nDeposit calculator for %d years\n",time_year);
-        for (int i = 1; i <= time_month; i++) {
-            a = beginning - expenses + income;
-            beginning = a;
-            if (i % 12 == 0) {
-                if (i / 12 >= time_year/2) {
-                    beginning = a * (deposit_interest + percentage_increase);
-                }
-                else {
-                    beginning = a * deposit_interest;
-                }
-                printf("          Years %d Alice's Capital %d\n", k, beginning);
-                k = k + 1;
-                if (beginning>=flat and h==0){
-                    h=i/12;
-                }
-            }
-        }
-        printf("You can buy an apartment in the %d year \n", h);
+}
+
+
+// приветствует клиента и, основываясь на его желаниях, показывает результат вычисления
+Identification name (const Identification A) {
+    Identification B = {A.name, A.wish};
+    //B.Cl = memory(2);
+    printf("\n");
+    printf("           Helloy  %s\n",A.name);
+    if( B.wish== true) {
+        printf("           Mortgage calculator\n");
+        Itog(mortgages(сlient_money_2,сlient_percent_2,сlient_matrix_2));
     }
+    else {
+        printf("           Deposit calculator\n");
+        Itog(deposit(сlient_money_1,сlient_percent_1,сlient_matrix_1));
+        Apartment_purchase(сlient_money_1,сlient_percent_1,сlient_matrix_1);
+    }
+    B.name=NULL;
+    return B;
 }
 
 
 int main() {
-    int beginning=1000000.00; // начальный капитал
-    int beginning_contribution=500000.00; // начальная выплата по ипотеке
-    int flat=15550000.00; // стоимость квартиры
-    int income =150000.00; // доходы
-    int expenses = 10000.00;  // расходы Боба
-    int expenses2 = 40000.00; // расходы Алисы
-    int time_year=20; // время на погашение ипотеки, год
-    int time_month=time_year*12;// время на погашение ипотеки в месяцах
-    int percent_mortgages=0.1; // процент ипотеки
-    int deposit_interest=1.06; // процент вклада
-    int monthly_payment; // ежемесячный платёж
-    int percentage_increase=0.02; // на сколько увеличился процент по прошедствию половины времени
-
-    monthly_payment=monthly_payment_F( beginning,beginning_contribution, flat, time_month, percent_mortgages);
-    ipoteka_and_deposit( beginning, beginning_contribution,  time_month, expenses, income, monthly_payment,
-                         deposit_interest,percentage_increase, time_year, flat);
-    ipoteka_and_deposit( beginning, 0,  time_month, expenses2, income, 0,
-                         deposit_interest,percentage_increase, time_year,flat);
-
+    name(сlient_1);
+    name(client_2);
     return 0;
 }
-
