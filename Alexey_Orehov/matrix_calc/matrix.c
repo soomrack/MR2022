@@ -18,6 +18,14 @@ void printm(struct Matrix matrix){
     }
 }
 
+Matrix create_identity(const int size){
+    Matrix mat = {size, size, (double*)malloc(sizeof(double) * size * size)};
+    for (int idx = 0; idx < size * size; idx++){
+        mat.values[idx] = idx % (size + 1) == 0 ? 1 : 0;
+    }
+    return mat;
+}
+
 Matrix m_add(const Matrix m1, const Matrix m2){
     if (m1.cols != m2.cols || m1.rows != m2.rows){
         fprintf(stderr, "Matrices should have same size");
@@ -159,6 +167,8 @@ int main(){
                          1, 5, 2, 8,};
     Matrix matrix1 = {3, 3, values1};
     Matrix matrix2 = {4, 4, values2};
+    Matrix matrix3 = create_identity(4);
+    printm(matrix3);
 
     //printm(m_add(matrix1, matrix2));
     //printm(m_subs(matrix1, matrix2));
