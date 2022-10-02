@@ -302,7 +302,7 @@ void matrix_determinant_output() {
     double determinant = recursive_determinant_evaluation(&matrix);
 
     printf("You get: ");
-    printf("determinant = %.3lf", determinant);
+    printf("determinant = %.3lf\n", determinant);
 
     mem_clearing(&matrix);
 
@@ -387,6 +387,17 @@ Matrix matrix_inversion(Matrix *matrix) {
 }
 
 
+int zero_determinant(Matrix *matrix) {
+
+    double determinant = recursive_determinant_evaluation(matrix);
+
+    if((int)((determinant - (int)determinant) * 1000) == 0)
+        return -1;
+    else
+        return 0;
+}
+
+
 void inverse_matrix_output() {
 
     Matrix matrix = new_matrix();
@@ -398,8 +409,7 @@ void inverse_matrix_output() {
 
     matrix_filling(&matrix);
 
-    double determinant = recursive_determinant_evaluation(&matrix);
-    if((int)((determinant - (int)determinant) * 1000) == 0) {
+    if(zero_determinant(&matrix) == -1) {
         printf("Error: determinant = 0\n");
         return;
     }
@@ -440,6 +450,12 @@ void inverse_multiplication_output() {
 
     matrix_filling(&matrix1);
     matrix_filling(&matrix2);
+
+    double determinant = recursive_determinant_evaluation(&matrix2);
+    if((int)((determinant - (int)determinant) * 1000) == 0) {
+        printf("Error: determinant2 = 0\n");
+        return;
+    }
 
     Matrix inverse_multiplied_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
 
