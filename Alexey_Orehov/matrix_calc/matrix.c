@@ -13,6 +13,7 @@ typedef struct Matrix{
 } Matrix;
 
 void printm(struct Matrix mat){
+    // Вывод матрицы в консоль
     printf("\n");
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++){
@@ -23,19 +24,22 @@ void printm(struct Matrix mat){
 }
 
 Matrix create_identity(const int size){
+    // Создание единичной матрицы размера n*n
     Matrix mat = {size, size, (double*)malloc(sizeof(double) * size * size)};
     for (int idx = 0; idx < size * size; idx++) mat.values[idx] = idx % (size + 1) == 0 ? 1 : 0;
     return mat;
 }
 
 Matrix create_random(const int rows, const int cols, const double max_value){
+    // Создание матрицы со случайными значениями от 0 до max_value
     srand(time(NULL));
     Matrix mat = {rows, cols, (double*) malloc(sizeof(double) * cols * rows)};
     for (int idx = 0; idx < rows * cols; idx++) mat.values[idx] = ((float)rand()/(float)(RAND_MAX)) * max_value;
     return mat;
 }
 
-Matrix m_add(const Matrix m1, const Matrix m2){  // Сложение двух матриц
+Matrix m_add(const Matrix m1, const Matrix m2){
+    // Сложение двух матриц
     if (m1.cols != m2.cols || m1.rows != m2.rows){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
@@ -47,7 +51,8 @@ Matrix m_add(const Matrix m1, const Matrix m2){  // Сложение двух м
     return ans;
 }
 
-Matrix m_sub(const Matrix m1, const Matrix m2){  // Вычитание двух матриц
+Matrix m_sub(const Matrix m1, const Matrix m2){
+    // Вычитание двух матриц
     if (m1.cols != m2.cols || m1.rows != m2.rows){
         fprintf(stderr, "Matrices should have same size");
         exit(1);
@@ -59,7 +64,8 @@ Matrix m_sub(const Matrix m1, const Matrix m2){  // Вычитание двух 
     return ans;
 }
 
-Matrix m_mul(const Matrix m1, const Matrix m2){  // Умножение двух матриц
+Matrix m_mul(const Matrix m1, const Matrix m2){
+    // Умножение двух матриц
     if (m1.cols != m2.rows){
         fprintf(stderr, "number of cols of matrix 1 should be equal to number of rows of second matrix");
         exit(1);
@@ -77,13 +83,15 @@ Matrix m_mul(const Matrix m1, const Matrix m2){  // Умножение двух 
     return ans;
 }
 
-Matrix s_mul(const Matrix mat, const double scal){  // Умножение матрицы на скаляр
+Matrix s_mul(const Matrix mat, const double scal){
+    // Умножение матрицы на скаляр
     Matrix ans = {mat.rows, mat.cols, (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
     for (int idx = 0; idx < mat.rows * mat.cols; idx++) ans.values[idx] = mat.values[idx] * scal;
     return ans;
 }
 
-Matrix transpose(const Matrix mat){  // Транспонирование матрицы
+Matrix transpose(const Matrix mat){
+    // Транспонирование матрицы
     Matrix ans = {mat.cols, mat.rows, (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++){
@@ -93,19 +101,21 @@ Matrix transpose(const Matrix mat){  // Транспонирование мат�
     return ans;
 }
 
-Matrix minor(const Matrix mat, const unsigned int i, const unsigned int j){  // Минор матрицы по строке и столбцу
+Matrix minor(const Matrix mat, const unsigned int minor_row, const unsigned int minor_col){
+    // Минор матрицы по строке minor_row и столбцу minor_col
     Matrix ans = {mat.rows - 1, mat.cols - 1};
     ans.values = (double*) malloc(sizeof(double) * ans.cols * ans.rows);
     int minor_index = 0;
     for (int row = 0; row < mat.rows; row++){
-        for (int col = 0; col < mat.cols; col++) if (row != i && col != j){
+        for (int col = 0; col < mat.cols; col++) if (row != minor_row && col != minor_col){
                 ans.values[minor_index++] = mat.values[row * mat.rows + col];
             }
     }
     return ans;
 }
 
-double m_det(const Matrix mat){  // Определитель матрицы
+double m_det(const Matrix mat){
+    // Определитель матрицы
     if (mat.cols != mat.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
@@ -121,7 +131,8 @@ double m_det(const Matrix mat){  // Определитель матрицы
     return ans;
 }
 
-double m_tr(Matrix mat){  // След (trace) матрицы
+double m_tr(Matrix mat){
+    // След (trace) матрицы
     if (mat.cols != mat.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
@@ -132,7 +143,8 @@ double m_tr(Matrix mat){  // След (trace) матрицы
     return trace;
 }
 
-Matrix m_inv(Matrix mat){  // Вычисление обратной матрицы
+Matrix m_inv(Matrix mat){
+    // Обратная матрица
     if (mat.cols != mat.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
@@ -148,7 +160,8 @@ Matrix m_inv(Matrix mat){  // Вычисление обратной матриц
     return transpose(ans);
 }
 
-Matrix m_exp(Matrix mat){  // Матричная экспонента
+Matrix m_exp(Matrix mat){
+    // Матричная экспонента (На данный момент работает только для диагональных матриц)
     if (mat.cols != mat.rows){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
@@ -169,7 +182,8 @@ Matrix m_exp(Matrix mat){  // Матричная экспонента
     return ans;
 }
 
-unsigned int rank(Matrix mat){  // Ранг матрицы
+unsigned int rank(Matrix mat){
+    // Ранг матрицы (Пока считает только максимальное значение или 0)
     if (mat.cols == mat.rows && m_det(mat) != 0) return mat.cols;
     return 0;
 }
@@ -194,13 +208,14 @@ int main(){
     Matrix matrix1 = {3, 3, values1};
     Matrix matrix2 = {4, 4, values2};
     Matrix matrix3 = create_random(3, 3, 5);
-    printm(matrix3);
+    //printm(matrix3);
 
     //printm(m_add(matrix1, matrix2));
     //printm(m_subs(matrix1, matrix2));
     //printm(m_mult(matrix1, matrix2));
     //printm(m_exp(matrix2));
-    //printm(minor(matrix2, 2, 2));
+    printf("%f", m_det(matrix1));
+    printm(minor(matrix2, 2, 2));
     //printm(matrix1);
     printm(m_mul(matrix1, m_inv(matrix1)));
 
