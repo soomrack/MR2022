@@ -133,10 +133,10 @@ void matrix_mult(struct Matrix A, struct Matrix B) {
 
 int main() {
 
-    struct Matrix A = zero(3,2);
+    struct Matrix A = zero(1,4);
     print_matrix(A);
 
-    struct Matrix B = one(2,3);
+    struct Matrix B = one(4,1);
     print_matrix(B);
 
 
