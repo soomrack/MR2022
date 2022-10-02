@@ -455,8 +455,9 @@ void inverse_multiplication_output() {
 void start_menu() {
 
     printf("Choose operation\n");
-    printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: matrix multiplication\n");
-    printf("5: matrix determinant; 6: matrix transposition; 7: matrix inversion; 8: inverse matrix multiplication\n");
+    printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: number multiplication;\n");
+    printf("5: matrix multiplication; 6: matrix determinant; 7: matrix transposition; 8: matrix inversion;\n");
+    printf("9: inverse matrix multiplication;\n");
 
     int operation_key;
     scanf("%d", &operation_key);
@@ -469,14 +470,16 @@ void start_menu() {
         case 3:
             number_operation_output(0); break;
         case 4:
-            multiplication_output(); break;
+            number_operation_output(1); break;
         case 5:
-            matrix_determinant_output(); break;
+            multiplication_output(); break;
         case 6:
-            transposition_output(); break;
+            matrix_determinant_output(); break;
         case 7:
-            inverse_matrix_output(); break;
+            transposition_output(); break;
         case 8:
+            inverse_matrix_output(); break;
+        case 9:
             inverse_multiplication_output(); break;
     }
 
