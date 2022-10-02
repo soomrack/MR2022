@@ -72,11 +72,55 @@ void matrix_sum(struct Matrix A, struct Matrix B){
 }
 
 
+void matrix_min(struct Matrix A, struct Matrix B){
+    switch ((A.cols == B.cols)*(A.rows == B.rows)) {
+        case 1: for (unsigned int row = 0; row < A.rows; row++) {
+                for (unsigned int col = 0; col < A.cols; col++) {
+                    A.values[row * A.cols + col] -= B.values[row * B.cols + col];
+                }
+            }
+            printf("A-B=\n");
+            for (unsigned int row = 0; row < A.rows; row++){
+                for(unsigned int col = 0; col < A.cols; col++){
+                    printf("%.1lf\t", A.values[row * A.cols + col]);
+                }
+                printf("\n");
+            }
+            break;
 
 
+        case 0: printf("Can't be solved!");break;
+    }
+}
 
 
+void matrix_mult(struct Matrix A, struct Matrix B) {
 
+    struct Matrix C;
+    C.cols = A.cols;
+    C.rows = B.rows;
+    C.values = malloc(C.cols * C.rows * sizeof(double));
+    for (unsigned int idx = 0; idx < C.cols * C.rows; idx++) {
+        C.values[idx] = 0.0;
+    }
+
+    for (unsigned int k = 0; k < C.cols*C.rows; k++){
+        for (unsigned int col = 0; col < A.cols; col++) {
+            for (unsigned int row = 0; row < A.rows; row++) {
+
+                    C.values[k] += A.values[row * A.cols + col] * B.values[col * B.cols + row];
+            }
+        }
+    }
+
+        printf("A*B=\n");
+        for (unsigned int row = 0; row < C.rows; row++) {
+            for (unsigned int col = 0; col < C.cols; col++) {
+                printf("%.1lf\t", C.values[row * C.cols + col]);
+            }
+            printf("\n");
+    }
+}
 
 
 
@@ -85,10 +129,11 @@ int main() {
     struct Matrix A = zero(2,3);
     print_matrix(A);
 
-    struct Matrix B = one(2,3);
+    struct Matrix B = one(3,2);
     print_matrix(B);
 
-    matrix_sum(A,B);
+
+    matrix_mult(A,B);
 
     free(A.values);
     free(B.values);
