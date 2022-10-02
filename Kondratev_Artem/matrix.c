@@ -32,7 +32,7 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
 }
 
 
-void output_matrix(Matrix *matrix, int key) {
+void matrix_output(Matrix *matrix, int key) {
 
     if(key != 0)
         printf("You get: \n");
@@ -50,7 +50,7 @@ void output_matrix(Matrix *matrix, int key) {
 }
 
 
-void filling_matrix(Matrix *matrix) {
+void matrix_filling(Matrix *matrix) {
 
     printf("fill matrix:\n");
 
@@ -58,7 +58,7 @@ void filling_matrix(Matrix *matrix) {
         for(int col = 0; col <= matrix->cols-1; col++)
             scanf("%lf", &matrix->array[row][col]);
 
-    output_matrix(matrix, 0);
+    matrix_output(matrix, 0);
 
 }
 
@@ -117,15 +117,15 @@ int matrix_addition(int key) {
 
     Matrix matrix1 = new_matrix();
 
-    Matrix matrix2 = new_matrix();
+    Matrix matrix2 = matrix_init(matrix1.rows, matrix1.cols);
 
     if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
         printf("Sizes of matrices are not equals");
         return -1;
     }
 
-    filling_matrix(&matrix1);
-    filling_matrix(&matrix2);
+    matrix_filling(&matrix1);
+    matrix_filling(&matrix2);
 
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
 
@@ -133,7 +133,7 @@ int matrix_addition(int key) {
         for(int col = 0; col <= matrix1.cols-1; col++)
             sum_matrix.array[row][col] = matrix1.array[row][col] + key * matrix2.array[row][col];
 
-    output_matrix(&sum_matrix, 1);
+    matrix_output(&sum_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -174,12 +174,12 @@ void multiplication_output() {
         return;
     }
 
-    filling_matrix(&matrix1);
-    filling_matrix(&matrix2);
+    matrix_filling(&matrix1);
+    matrix_filling(&matrix2);
 
     Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
 
-    output_matrix(&multiplied_matrix, 1);
+    matrix_output(&multiplied_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -207,7 +207,7 @@ Matrix matrix_number_operation(Matrix *matrix, double number, int key) {
 void number_operation_output(int key) {
 
     Matrix matrix = new_matrix();
-    filling_matrix(&matrix);
+    matrix_filling(&matrix);
 
     double number;
 
@@ -216,7 +216,7 @@ void number_operation_output(int key) {
 
     Matrix operated_matrix = matrix_number_operation(&matrix, number, key);
 
-    output_matrix(&operated_matrix, 1);
+    matrix_output(&operated_matrix, 1);
 
     mem_clearing(&matrix);
     mem_clearing(&operated_matrix);
@@ -297,7 +297,7 @@ void matrix_determinant_output() {
         return;
     }
 
-    filling_matrix(&matrix);
+    matrix_filling(&matrix);
 
     double determinant = recursive_determinant_evaluation(&matrix);
 
@@ -325,11 +325,11 @@ Matrix matrix_transposition(Matrix *matrix) {
 void transposition_output() {
 
     Matrix matrix = new_matrix();
-    filling_matrix(&matrix);
+    matrix_filling(&matrix);
 
     Matrix transposed_matrix = matrix_transposition(&matrix);
 
-    output_matrix(&transposed_matrix, 1);
+    matrix_output(&transposed_matrix, 1);
 
     mem_clearing(&matrix);
     mem_clearing(&transposed_matrix);
@@ -379,7 +379,6 @@ Matrix matrix_inversion(Matrix *matrix) {
 
     Matrix inverse_matrix = matrix_number_operation(&transformed_matrix, inverse_coef, 1);
 
-    mem_clearing(matrix);
     mem_clearing(&transposed_matrix);
     mem_clearing(&transformed_matrix);
 
@@ -397,7 +396,7 @@ void inverse_matrix_output() {
         return;
     }
 
-    filling_matrix(&matrix);
+    matrix_filling(&matrix);
 
     double determinant = recursive_determinant_evaluation(&matrix);
     if((int)((determinant - (int)determinant) * 1000) == 0) {
@@ -407,7 +406,7 @@ void inverse_matrix_output() {
 
     Matrix inverse_matrix = matrix_inversion(&matrix);
 
-    output_matrix(&inverse_matrix, 1);
+    matrix_output(&inverse_matrix, 1);
 
     mem_clearing(&matrix);
     mem_clearing(&inverse_matrix);
@@ -418,7 +417,7 @@ void inverse_matrix_output() {
 Matrix matrix_inverse_multiplication(Matrix *matrix1, Matrix *matrix2) {
 
     Matrix inverse_matrix = matrix_inversion(matrix2);printf("ok\n");
-    output_matrix(&inverse_matrix, 0);printf("ok\n");
+    matrix_output(&inverse_matrix, 0);printf("ok\n");
 
     Matrix inverse_multiplied_matrix = matrix_multiplication(matrix1, &inverse_matrix);printf("ok");
     mem_clearing(&inverse_matrix);printf("ok");
@@ -439,12 +438,12 @@ void inverse_multiplication_output() {
         return;
     }
 
-    filling_matrix(&matrix1);
-    filling_matrix(&matrix2);
+    matrix_filling(&matrix1);
+    matrix_filling(&matrix2);
 
     Matrix inverse_multiplied_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
 
-    output_matrix(&inverse_multiplied_matrix, 1);
+    matrix_output(&inverse_multiplied_matrix, 1);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
