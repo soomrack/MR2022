@@ -8,11 +8,11 @@ typedef struct Matrix{
     double* values;
 } Matrix;
 
-void printm(struct Matrix matrix){
+void printm(struct Matrix mat){
     printf("\n");
-    for (int row = 0; row < matrix.rows; row++){
-        for (int col = 0; col < matrix.cols; col++){
-            printf(" %f", matrix.values[row * matrix.cols + col]);
+    for (int row = 0; row < mat.rows; row++){
+        for (int col = 0; col < mat.cols; col++){
+            printf(" %f", mat.values[row * mat.cols + col]);
         }
         printf("\n");
     }
@@ -20,9 +20,7 @@ void printm(struct Matrix matrix){
 
 Matrix create_identity(const int size){
     Matrix mat = {size, size, (double*)malloc(sizeof(double) * size * size)};
-    for (int idx = 0; idx < size * size; idx++){
-        mat.values[idx] = idx % (size + 1) == 0 ? 1 : 0;
-    }
+    for (int idx = 0; idx < size * size; idx++) mat.values[idx] = idx % (size + 1) == 0 ? 1 : 0;
     return mat;
 }
 
@@ -32,8 +30,8 @@ Matrix m_add(const Matrix m1, const Matrix m2){
         exit(1);
     }
     Matrix ans = {m1.rows, m1.cols, (double*)malloc(sizeof(double) * m1.rows * m2.cols)};
-    for (int index = 0; index < ans.rows * ans.cols; index++){
-        ans.values[index] = m1.values[index] + m2.values[index];
+    for (int idx = 0; idx < ans.rows * ans.cols; idx++){
+        ans.values[idx] = m1.values[idx] + m2.values[idx];
     }
     return ans;
 }
@@ -44,8 +42,8 @@ Matrix m_sub(const Matrix m1, const Matrix m2){
         exit(1);
     }
     Matrix ans = {m1.rows, m1.cols, (double*)malloc(sizeof(double) * m1.rows * m2.cols)};
-    for (int index = 0; index < ans.rows * ans.cols; index++){
-        ans.values[index] = m1.values[index] - m2.values[index];
+    for (int idx = 0; idx < ans.rows * ans.cols; idx++){
+        ans.values[idx] = m1.values[idx] - m2.values[idx];
     }
     return ans;
 }
@@ -59,8 +57,8 @@ Matrix m_mul(const Matrix m1, const Matrix m2){
     for (int rows = 0; rows < ans.rows; rows++){
         for (int cols = 0; cols < ans.cols; cols++){
             double summa = 0.f;
-            for (int k = 0; k < m1.cols; k++){
-                summa += m1.values[rows * m1.cols + k] * m2.values[k * m2.cols + cols];
+            for (int idx = 0; idx < m1.cols; idx++){
+                summa += m1.values[rows * m1.cols + idx] * m2.values[idx * m2.cols + cols];
             }
             ans.values[ans.cols * rows + cols] = summa;
         }
@@ -79,15 +77,15 @@ Matrix transpose(const Matrix mat){
 }
 
 Matrix minor(const Matrix mat, const unsigned int i, const unsigned int j){
-    Matrix minor = {mat.rows - 1, mat.cols - 1};
-    minor.values = (double*) malloc(sizeof(double) * minor.cols * minor.rows);
+    Matrix ans = {mat.rows - 1, mat.cols - 1};
+    ans.values = (double*) malloc(sizeof(double) * ans.cols * ans.rows);
     int minor_index = 0;
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++) if (row != i && col != j){
-                minor.values[minor_index++] = mat.values[row * mat.rows + col];
+                ans.values[minor_index++] = mat.values[row * mat.rows + col];
             }
     }
-    return minor;
+    return ans;
 }
 
 double m_det(const Matrix mat){
@@ -96,14 +94,25 @@ double m_det(const Matrix mat){
         exit(1);
     }
     double ans = 0;
-    if (mat.rows == 2){  // Определитель матрицы порядка 2 считается по формуле
+    if (mat.rows == 2){
         ans = mat.values[0] * mat.values[3] - mat.values[1] * mat.values[2];
         return ans;
-    }
-    for (int i = 0; i < mat.rows; i++){  // Определители матриц больших порядков считаются разложением по первой строке
-        if (mat.values[i] != 0) ans += mat.values[i] * pow(-1, i) * m_det(minor(mat, 0, i));
-    }
+    }  // Определитель матрицы порядка 2 считается по формуле
+    for (int idx = 0; idx < mat.rows; idx++){
+        if (mat.values[idx] != 0) ans += mat.values[idx] * pow(-1, idx) * m_det(minor(mat, 0, idx));
+    }  // Определители матриц больших порядков считаются разложением по первой строке
     return ans;
+}
+
+double trace(Matrix mat){
+    if (mat.cols != mat.rows){
+        fprintf(stderr, "number of cols should be equal to number of rows");
+        exit(1);
+    }
+    unsigned int size = mat.cols;
+    double trace = 0;
+    for (int idx = 0; idx < size * size; idx++) if (idx % (size + 1) == 0) trace += mat.values[idx];
+    return trace;
 }
 
 Matrix m_inv(Matrix mat){
@@ -111,15 +120,15 @@ Matrix m_inv(Matrix mat){
         fprintf(stderr, "number of cols should be equal to number of rows");
         exit(1);
     }
-    Matrix inv = {mat.rows, mat.cols, (double*) malloc(sizeof(double) * mat.rows * mat.cols)};
+    Matrix ans = {mat.rows, mat.cols, (double*) malloc(sizeof(double) * mat.rows * mat.cols)};
     double determinant = m_det(mat);
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++){
-            inv.values[row * inv.cols + col] = pow(-1, row + col) *
+            ans.values[row * ans.cols + col] = pow(-1, row + col) *
                                                m_det(minor(mat, row, col)) / determinant;
         }
     }
-    return transpose(inv);
+    return transpose(ans);
 }
 
 Matrix m_exp(Matrix mat){
