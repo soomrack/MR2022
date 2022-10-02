@@ -121,7 +121,7 @@ void matrix_mult(struct Matrix A, struct Matrix B) {
         printf("A*B=\n");
         for (unsigned int row = 0; row < C.rows; row++) {
             for (unsigned int col = 0; col < C.cols; col++) {
-                printf("%.1lf\t", C.values[row * C.cols + col]);
+                printf("%.1lf\t", C.values[col * C.cols + row]);
             }
             printf("\n");
     }
