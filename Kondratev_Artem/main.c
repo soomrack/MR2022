@@ -90,10 +90,11 @@ void input_data(struct Buyer *alice, struct Buyer *bob) {
 
 int specific_rounding(double parameter) {
 
-    if(parameter - (int)parameter > 0)
-        parameter = (int)parameter + 1;
-
-    return (int)parameter;
+    int check_value = (int)((parameter - (int)parameter) * 10000);
+    if(check_value == 0)
+        return (int)parameter;
+    else
+        return ((int)parameter + 1);
 
 }
 
