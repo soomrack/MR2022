@@ -27,13 +27,13 @@ long Alices_profit_per_month() {
 }
 
 long Bobs_profit_per_month() {
-    Bob.capital = (Bob.capital + Bob.income - Bob.monthly_expenses) * (1 + 0.01 * deposit_interest);
+    Bob.capital = (Bob.capital + Bob.income - Bob.monthly_expenses - monthly_installment()) * (1 + 0.01 * deposit_interest);
     return Bob.capital;
 }
 
 void output_of_monthly_results() {
-    printf('Alice: %d \n', Alice.capital);
-    printf('Bob: %d \n', Bob.capital);
+    printf("Alice: %d \n", Alice.capital);
+    printf("Bob: %d \n", Bob.capital);
 }
 
 void total() {

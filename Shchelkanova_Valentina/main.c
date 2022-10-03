@@ -1,31 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int months = 20 * 12; //эксперимент длится 20 лет = 240 месяцев
+const int Months = 20 * 12;  // Эксперимент длится 20 лет = 240 месяцев
 
-struct Holder {
+struct Holder {  // Все цены в копейках
     char *name;
-    unsigned long long account; //счет
-    unsigned long long account_history[240];//история изменния счета
-    unsigned long long salary; //зарплата
-    unsigned long long utility; //коссунальные платежи
-    unsigned long long rent; //арендная плата
-    unsigned long long apartments; //цена квартиры
-    unsigned long long mortage_payment; //плата по ипотеке
-    unsigned long long mortage_down_payment; //первоначальный взнос по ипотеке
-    double deposit_interest; //процент по вкладу
-    double mortage_percentage; //процент по ипотеке
+    unsigned long long account;  // Счет
+    unsigned long long account_history[240];  // История изменния счета
+    unsigned long long salary;  // Зарплата
+    unsigned long long utility;  // Коммунальные платежи
+    unsigned long long rent;  // Арендная плата
+    unsigned long long apartments;  // Цена квартиры
+    unsigned long long mortage_payment;  // Плата по ипотеке
+    unsigned long long mortage_down_payment;  // Первоначальный взнос по ипотеке
+    double deposit_interest;  // Процент по вкладу
+    double mortage_percentage;  // Процент по ипотеке
 };
 
 void init_Alice(struct Holder *Alice) {
     Alice->name = malloc(5);
     Alice->name = "Alice";
-    Alice->account = 1000000 * 100; //начальные сбережения
-    Alice->deposit_interest = 0.07/12;
+    Alice->account = 1000000 * 100;  // Начальные сбережения
+    Alice->deposit_interest = 0.07 / 12.0;
     Alice->salary = 150000 * 100;
     Alice->utility = 10000 * 100;
     Alice->rent = 30000 * 100;
-    Alice->apartments = 0; //Алиса не покупает квартиру
+    Alice->apartments = 0;  // Алиса не покупает квартиру
 };
 
 void init_Bob(struct Holder *Bob) {
@@ -35,20 +35,20 @@ void init_Bob(struct Holder *Bob) {
     Bob->deposit_interest = 0.07/12;
     Bob->salary = 150000 * 100;
     Bob->utility = 10000 * 100;
-    Bob->mortage_down_payment = 300000*100; //Первоначальный взнос
+    Bob->mortage_down_payment = 300000*100;  // Первоначальный взнос
     Bob->apartments = 7000000*100;
     Bob->mortage_percentage = 0.1/12;
 };
 
-void save_account_history(struct Holder *holder, int year) {
+void save_account_history(struct Holder *holder, const year) {
     holder->account_history[year - 1] = holder->account;
 }
 
 void mortgage_calculation(struct Holder *holder) {
-    holder->mortage_payment = (holder->apartments - holder->mortage_down_payment) / (12 * 20) * (1 + holder->mortage_percentage);
+    holder->mortage_payment = (holder->apartments - holder->mortage_down_payment) / (12 * 20) * (1.0 + holder->mortage_percentage);
 
 }
-// цена на квартиру постоянно растет
+//  Цена на квартиру постоянно растет
 void apartment_grow(struct Holder *holder) {
     holder->apartments *= 1.0001;
 }
@@ -70,8 +70,8 @@ void mortgage_pay(struct Holder *holder) {
 }
 
 void interest_payment(struct Holder *holder) {
-    holder->account *= (1 + holder->deposit_interest);
-} //Остаток средств на счете каждый месяц, который уходит на вклад с учетом процентов
+    holder->account *= (1.0 + holder->deposit_interest);
+}  // Остаток средств на счете каждый месяц, который уходит на вклад с учетом процентов
 
 void print_report(struct Holder *holder) {
     printf("%s\n", holder->name);
@@ -103,7 +103,7 @@ void simulation() {
 
     mortgage_calculation(&Bob);
 
-    for (int i = 1; i <= months; ++i) {
+    for (int month = 1; month <= Months; ++month) {
         salary_income(&Alice);
         salary_income(&Bob);
 
@@ -119,20 +119,20 @@ void simulation() {
 
         apartment_grow(&Bob);
 
-        //на 5 году увеличивается процент на вкладе
-        if (i >= 12 * 5) {
-            Alice.deposit_interest = 0.08/12;
-            Bob.deposit_interest = 0.08/12;
+        //  На 5 году увеличивается процент на вкладе
+        if (month >= 12 * 5) {
+            Alice.deposit_interest = 0.08/12.0;
+            Bob.deposit_interest = 0.08/12.0;
         }
 
-        // в 10 году цена квартиры резко увеличивается
-        if (i == 12 * 10) {
+        // На 10 году цена квартиры резко увеличиваетcя
+        if (month == 12 * 10) {
             Bob.apartments *= 1.6;
         }
 
-        if (i % 12 == 0) {
-            save_account_history(&Alice, (int)i / 12);
-            save_account_history(&Bob, (int)i / 12);
+        if (month % 12 == 0) {
+            save_account_history(&Alice, (int)month / 12.0);
+            save_account_history(&Bob, (int)month / 12.0);
         }
 
     }
