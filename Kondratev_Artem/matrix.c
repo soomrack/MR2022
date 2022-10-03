@@ -21,11 +21,19 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
     matrix.rows = rows;
     matrix.cols  = cols;
 
-    matrix.array = (double**)malloc(rows * sizeof(double*));
+    matrix.array  = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
 
-    for(int row = 0; row <= rows - 1; row++) {
-        matrix.array[row] = (double*)malloc(cols * sizeof(double));
+    double* start = (double*)((double*)matrix.array + matrix.rows * sizeof(double*));
+
+    for(int row = 0; row <= matrix.rows - 1; row++) {
+        matrix.array[row] = start + matrix.rows * matrix.cols;
     }
+
+/*matrix.array = (double**)malloc(rows * sizeof(double*));
+
+for(int row = 0; row <= rows - 1; row++) {
+    matrix.array[row] = (double*)malloc(cols * sizeof(double));
+}*/
 
     return matrix;
 
@@ -105,8 +113,8 @@ int matrix_size_comparer(int key, Matrix *matrix1, Matrix *matrix2) {
 
 void mem_clearing(Matrix *matrix) {
 
-    for(int row = 0; row <= matrix->rows - 1; row ++)
-        free(matrix->array[row]);
+    /*for(int row = 0; row <= matrix->rows - 1; row ++)
+        free(matrix->array[row]);*/
 
     free(matrix->array);
 
@@ -473,7 +481,7 @@ void start_menu() {
     printf("Choose operation\n");
     printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: number multiplication;\n");
     printf("5: matrix multiplication; 6: matrix determinant; 7: matrix transposition; 8: matrix inversion;\n");
-    printf("9: inverse matrix multiplication;\n");
+    printf("9: matrix inverse multiplication;\n");
 
     int operation_key;
     scanf("%d", &operation_key);
