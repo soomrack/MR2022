@@ -2,6 +2,7 @@
 #include "malloc.h"
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 const unsigned int max_range = 51;
 
@@ -187,6 +188,8 @@ void vivod(struct matrix x){
 }
 
 int main() {
+    //srand(time(NULL));
+
     A.values = array_initialization(A.cols, A.rows);
     B.values = array_initialization(B.cols, B.rows);
     for (int i = 0; i < A.rows; i++){
@@ -212,11 +215,11 @@ int main() {
     vivod(subtraction(A,B));
     printf("This is matrix A * B\n");
     vivod(multiplication(A, B));
-    printf("This is matrix A * 1.5\n");
+    printf("This is matrix A * 0.33\n");
     vivod(multy_k(A, 0.33));
 
     printf("This is det of matrix A\n");
-    printf("%lld\n\n", det(A));
+    printf("%.2Lf\n\n", det(A));
 
     printf("This is is reverse of matrix A\n");
     vivod(reverse(A));
