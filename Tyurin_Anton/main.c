@@ -97,18 +97,23 @@ void matrix_min(struct Matrix A, struct Matrix B){
 void matrix_mult(struct Matrix A, struct Matrix B) {
 
     struct Matrix C;
-    C.cols = A.cols;
-    C.rows = B.rows;
+    C.cols = A.rows;
+    C.rows = B.cols;
     C.values = malloc(C.cols * C.rows * sizeof(double));
     for (unsigned int idx = 0; idx < C.cols * C.rows; idx++) {
         C.values[idx] = 0.0;
     }
+    for (unsigned int row = 0; row < A.rows; row++){
+    for (unsigned int col = 0; col < B.cols; col++) {
 
-    for (unsigned int k = 0; k < C.cols*C.rows; k++){
-        for (unsigned int col = 0; col < A.cols; col++) {
-            for (unsigned int row = 0; row < A.rows; row++) {
+            int sum = 0;
+            int sum1 = 0;
+            for(unsigned int k = 0; k < A.cols; k++) {
+               sum1 += A.values[k * A.cols + row] * B.values[k * B.cols + col];
+               C.values[col * C.cols + row] = sum1;
 
-                    C.values[k] += A.values[row * A.cols + col] * B.values[col * B.cols + row];
+               sum += A.values[row * A.cols + k] * B.values[k * B.cols + col];
+               C.values[col * C.rows + row] = sum;
             }
         }
     }
@@ -116,7 +121,7 @@ void matrix_mult(struct Matrix A, struct Matrix B) {
         printf("A*B=\n");
         for (unsigned int row = 0; row < C.rows; row++) {
             for (unsigned int col = 0; col < C.cols; col++) {
-                printf("%.1lf\t", C.values[row * C.cols + col]);
+                printf("%.1lf\t", C.values[col * C.cols + row]);
             }
             printf("\n");
     }
@@ -124,12 +129,14 @@ void matrix_mult(struct Matrix A, struct Matrix B) {
 
 
 
+
+
 int main() {
 
-    struct Matrix A = zero(2,3);
+    struct Matrix A = zero(1,4);
     print_matrix(A);
 
-    struct Matrix B = one(3,2);
+    struct Matrix B = one(4,1);
     print_matrix(B);
 
 
