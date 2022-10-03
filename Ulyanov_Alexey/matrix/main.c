@@ -139,7 +139,7 @@ struct matrix multy_k(struct matrix x, double k){
     return rez;
 }
 
-double det(struct matrix x){
+long double det(struct matrix x){
     if (x.cols == x.rows){
         if (x.cols == 1){
             return x.values[0][0];
