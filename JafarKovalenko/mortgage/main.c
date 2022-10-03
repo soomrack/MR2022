@@ -1,62 +1,97 @@
 #include <stdio.h>
 #include <math.h>
 
-struct human{
-    unsigned int first_pay; // первоначальный взнос
-    unsigned int month_pay; //ежемесячный взнос
-    unsigned int month_spend; // ежемесячные траты
-    unsigned long long now_money; // текущие средства
+struct Human{
+    unsigned int initial_capital;
+    unsigned int income;
+    unsigned int monthly_spending;
+    unsigned int first_payment;
+    unsigned int mortgage_payment;
+    unsigned long long now_money;
 };
 
-const unsigned int INITIAL_MONEY = 1000000 * 100; // начальный капитал в коп
-const unsigned int APART_PRICE = 5000000 * 100; // стоимость квартиры в коп
-const double APART_RATE = 0.1; // год ставка по ипотеке
+const unsigned int APART_PRICE = 5000 * 1000 * 100; // стоимость квартиры в коп
+const double APART_RATE = 0.1; // год ставка по ипотеке в процентах
 const int YEAR = 20; // срок в годах
-unsigned int income = 150000 * 100; // доход в коп
-double bank_rate = 0.08; // год ставка в банке
+double bank_rate = 0.08; // год ставка в банке в процентах
 
-int to_calc_month_pay(unsigned int price, unsigned int first_pay, double rate, int time) {
+unsigned int to_calc_mortgage_payment(unsigned int price, unsigned int first_pay, double rate, int time){
     double month_rate = rate / 12;
-    int month_pay = (int)(((price - first_pay) * month_rate) / (1 - pow((1 + month_rate), (time * -12))));
+    unsigned month_pay = (int)(((price - first_pay) * month_rate) / (1 - pow((1 + month_rate), (time * -12))));
     return month_pay;
 }
 
-void to_display_result(unsigned long long int money){
-    unsigned long long rub = money / 100;
-    unsigned long long kop = money % 100;
-    printf("%llu.%llu", rub, kop);
+void alice_init(struct Human *alice){
+    alice->initial_capital = 1000 * 1000 * 100; // в коп
+    alice->income = 150 * 1000 * 100; // в коп
+    alice->monthly_spending =   40000 * 100; // в коп
+    alice->first_payment = 0;
+    alice->mortgage_payment = 0;
+    alice->now_money = alice->initial_capital;
+}
+
+void bob_init(struct Human *bob){
+    bob->initial_capital = 1000 * 1000 * 100; // в коп
+    bob->income = 150 * 1000 * 100; // в коп
+    bob->monthly_spending =   10000 * 100; // в коп
+    bob->first_payment = (unsigned int) (APART_PRICE * 0.15);
+    bob->mortgage_payment = to_calc_mortgage_payment(APART_PRICE, bob->first_payment, APART_RATE, YEAR);
+    bob->now_money = bob->initial_capital - bob->first_payment;
+}
+
+void pass_month_alice(struct Human *alice){
+    alice->now_money = (unsigned long long) ((double) (alice->now_money + alice->income - alice->monthly_spending) * (1 + bank_rate / 12));
+}
+
+void pass_month_bob(struct Human *bob){
+    bob->now_money = (unsigned long long) ((double) (bob->now_money + bob->income - bob->monthly_spending - bob->mortgage_payment) * (1 + bank_rate / 12));
+}
+
+void print_result(struct Human *alice, struct Human *bob){
+    unsigned long long alice_rub = alice->now_money / 100;
+    unsigned long long bob_rub = bob->now_money / 100;
+
+    unsigned long long alice_kop = alice->now_money % 100;
+    unsigned long long bob_kop = bob->now_money % 100;
+
+    printf("\n%d years later...\n", YEAR);
+    printf("Alice saved: %llu.%llu rub\n", alice_rub, alice_kop);
+    printf("Bob saved: %llu.%llu rub + his own apartment", bob_rub, bob_kop);
+}
+
+void create_accident(int month, struct Human *alice, struct Human *bob){
+    switch (month) {
+        case 5 * 12: {
+            bank_rate += 0.02;
+            printf("After 5 years the bank rate increased by 2%\n");
+        }
+            break;
+        case 10 * 12: {
+            alice->income -= 20 * 1000 * 100;
+            bob->income -= 20 * 1000 * 100;
+            printf("After 10 years salary has decreased\n");
+        }
+            break;
+    }
+}
+
+void simulation(){
+    struct Human alice;
+    struct Human bob;
+
+    alice_init(&alice);
+    bob_init(&bob);
+
+    for (int month = 1; month < YEAR * 12 + 1; month++) {
+        create_accident(month, &alice, &bob);
+
+        pass_month_alice(&alice);
+        pass_month_bob(&bob);
+    }
+
+    print_result(&alice, &bob);
 }
 
 int main() {
-    struct human Alice;
-    Alice.now_money = INITIAL_MONEY;
-    Alice.month_spend = 40000 * 100;
-
-    struct human Bob;
-    Bob.first_pay = (unsigned int) (0.15 * APART_PRICE);
-    Bob.now_money = INITIAL_MONEY - Bob.first_pay;
-    Bob.month_pay = to_calc_month_pay(APART_PRICE, Bob.first_pay, APART_RATE, YEAR);
-    Bob.month_spend = 10000 * 100;
-
-    for (int i = 1; i < YEAR * 12 + 1; i++){
-        Alice.now_money = (unsigned long long) ((double) (Alice.now_money + income - Alice.month_spend) * (1 + bank_rate / 12));
-        Bob.now_money = (unsigned long long) ((double) (Bob.now_money + income - Bob.month_spend - Bob.month_pay) * (1 + bank_rate / 12));
-        if (i == (3 * 12)) bank_rate += 0.02; // увеличение процента по вкладу спустя 3 года
-        if (i == (10 * 12)) income -= 50000 * 100; // уменьшение додходов спустя 10 лет
-        if ((i % 60) == 0){
-            printf("\n| %d years ", (i / 12));
-            printf(" | Alice:");
-            to_display_result(Alice.now_money);
-            printf(" | Bob:");
-            to_display_result(Bob.now_money);
-        }
-    }
-
-    printf("\n\nAfter 20 years:\nAlice: ");
-    to_display_result(Alice.now_money);
-    printf(" rub\nBob: ");
-    to_display_result(Bob.now_money);
-    printf(" rub + the apartment\nAlice is richer than Bob of %llu.%llu rub\n", (unsigned long long)((Alice.now_money - Bob.now_money) / 100),
-           (unsigned long long) ((Alice.now_money - Bob.now_money) % 100));
-    return 0;
+    simulation();
 }
