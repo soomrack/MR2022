@@ -47,47 +47,47 @@ void init_Bob(struct Client *bob){
 }
 
 
-void first_payment(struct Client *client){
+void first_payment(struct Client *client){ //первый платеж
     client->bank_account -= client->first_payment;
 }
 
 
-void salary_income(struct Client *client){
+void salary_income(struct Client *client){ //пришла получка
     client->bank_account += client->salary;
 }
 
 
-void house_bills(struct Client *client){
+void house_bills(struct Client *client){ //прочие расходы
     client->bank_account -= client->monthly_house_bills;
 }
 
 
-void arenda(struct Client *client){
+void arenda(struct Client *client){ //рента
     client->bank_account -= client->monthly_arenda_payments;
 }
 
 
-void mortgage(struct Client *client){
+void mortgage(struct Client *client){ //плата по ипотеке
     client->bank_account -= client->monthly_mortgage_payments;
 }
 
 
-void bank_deposit_income(struct Client *client){
+void bank_deposit_income(struct Client *client){ //начислили проценты
     client->bank_account = (unsigned long long int)(1.0 + client->bank_deposit_percent/12.0)*client->bank_account;
 }
 
 
-void deposit_increase(struct Client *client){
+void deposit_increase(struct Client *client){ //ставка повысилась
     client->bank_deposit_percent += 0.02;
 }
 
 
-void salary_decrease(struct Client *client){
+void salary_decrease(struct Client *client){ //получку урезали
     client->salary /= (unsigned long int) 1.05;
 }
 
 
-void house_value_increase(struct Client *client){
+void house_value_increase(struct Client *client){ //повысиласть стоимость квартиры
     client->house_value *= (unsigned long long int) 1.2;
 }
 
@@ -106,6 +106,12 @@ void simulation (){
     init_Bob(&bob);
 
     for (int month = 1; month <= TOTAL_MONTH; month ++){
+
+        if (month == 1){
+            first_payment(&alice);
+            first_payment(&bob);
+        }
+
         salary_income(&alice);
         salary_income(&bob);
 
