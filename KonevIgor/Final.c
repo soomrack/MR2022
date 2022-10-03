@@ -149,4 +149,4 @@ void decSalary (Client *Client) {
 
 void incSalary (Client *Client) {
     Client->salary = 150 * 1000 * 100;
-}}
+}
