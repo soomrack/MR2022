@@ -22,7 +22,7 @@ struct Client {
 void init_Alice(struct Client *alice){
     alice->name = malloc(6);
     alice->name = "Alice";
-    alice->bank_account = 1000 * 1000 * 100;
+    alice->bank_account = 1 * 1000 * 1000 * 100;
     alice->bank_deposit_percent = 0.08;
     alice->monthly_arenda_payments = 40 * 1000 * 100;
     alice->monthly_mortgage_payments = 0;
@@ -36,7 +36,7 @@ void init_Alice(struct Client *alice){
 void init_Bob(struct Client *bob){
     bob->name = malloc(6);
     bob->name = "Bob";
-    bob->bank_account = 1000 * 1000 * 100;
+    bob->bank_account = 1 * 1000 * 1000 * 100;
     bob->bank_deposit_percent = 0.08;
     bob->monthly_arenda_payments = 40 * 1000 * 100;
     bob->monthly_mortgage_payments = 30 * 1000 * 100;
@@ -73,7 +73,7 @@ void mortgage(struct Client *client){ //плата по ипотеке
 
 
 void bank_deposit_income(struct Client *client){ //начислили проценты
-    client->bank_account = (unsigned long long int)(1.0 + client->bank_deposit_percent/12.0)*client->bank_account;
+    client->bank_account = (unsigned long long int)(client->bank_account) + (client->bank_deposit_percent/12.0)*client->bank_account;
 }
 
 
@@ -94,8 +94,8 @@ void house_value_increase(struct Client *client){ //повысиласть ст�
 
 void print_result(struct Client *client){
     printf("Name: %s\n", client->name);
-    printf("Bank account: %llu,", client->bank_account/100);
-    printf("%llu\n", client->bank_account%100);
+    printf("Bank account: %llu,", (client->bank_account/100)+(client->house_value/100));
+    printf("%llu\n", (client->bank_account%100)+(client->house_value%100));
 }
 
 
