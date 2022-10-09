@@ -96,20 +96,28 @@ void mem_clearing(Matrix *matrix) {
 }
 
 
-void matrix_addition(int sign) {
+Matrix matrix_addition(int sign, Matrix *matrix1, Matrix *matrix2) {
+
+    Matrix sum_matrix = matrix_init(matrix1->rows, matrix1->rows);
+
+    for(int row = 0; row <= matrix1->rows-1; row++)
+        for(int col = 0; col <= matrix1->cols-1; col++)
+            sum_matrix.array[row][col] = 1 * matrix1->array[row][col] + sign * matrix2->array[row][col];
+
+    return sum_matrix;
+
+}
+
+
+void matrix_addition_output(int sign) {
 
     Matrix matrix1 = new_matrix();
-
     Matrix matrix2 = matrix_init(matrix1.rows, matrix1.cols);
 
     matrix_filling(&matrix1);
     matrix_filling(&matrix2);
 
-    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-
-    for(int row = 0; row <= matrix1.rows-1; row++)
-        for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = 1 * matrix1.array[row][col] + sign * matrix2.array[row][col];
+    Matrix sum_matrix = matrix_addition(sign, &matrix1, &matrix2);
 
     matrix_output(&sum_matrix, 0);
 
@@ -464,9 +472,9 @@ void start_menu() {
     switch(operation_key)
     {
         case 1:
-            matrix_addition(1); break;
+            matrix_addition_output(1); break;
         case 2:
-            matrix_addition(-1); break;
+            matrix_addition_output(-1); break;
         case 3:
             number_operation_output(1); break;
         case 4:
@@ -513,14 +521,14 @@ void test() {
 
     printf("\n\n");
 
-    
+
 
 }
 
 
 int main() {
 
-    test();
+    start_menu();
 
     return 0;
 }
