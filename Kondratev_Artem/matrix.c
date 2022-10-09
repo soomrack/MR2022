@@ -21,28 +21,28 @@ Matrix matrix_init(uint64_t rows, uint64_t cols) {
     matrix.rows = rows;
     matrix.cols  = cols;
 
-    matrix.array  = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
+    matrix.array = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
 
-    double* start = (double*)((double*)matrix.array + matrix.rows * sizeof(double*));
+    double* start = (double*)((char*)matrix.array + matrix.rows * sizeof(double*));
 
     for(int row = 0; row <= matrix.rows - 1; row++) {
-        matrix.array[row] = start + matrix.rows * matrix.cols;
+        matrix.array[row] = start + row * matrix.cols;
     }
 
-/*matrix.array = (double**)malloc(rows * sizeof(double*));
+    /*matrix.array = (double**)malloc(rows * sizeof(double*));
 
-for(int row = 0; row <= rows - 1; row++) {
-    matrix.array[row] = (double*)malloc(cols * sizeof(double));
-}*/
+    for(int row = 0; row <= rows - 1; row++) {
+     matrix.array[row] = (double*)malloc(cols * sizeof(double));
+    }*/
 
     return matrix;
 
 }
 
 
-void matrix_output(Matrix *matrix, int key) {
+void matrix_output(Matrix *matrix, int filling_key) {
 
-    if(key != 0)
+    if(filling_key == 0)
         printf("You get: \n");
     else
         printf("You entered:\n");
@@ -50,7 +50,7 @@ void matrix_output(Matrix *matrix, int key) {
     for(int row = 0; row <= matrix->rows-1; row++) {
 
         for(int col = 0; col <= matrix->cols-1; col++)
-            printf("%6.2lf", matrix->array[row][col]);
+            printf("%10.2lf", matrix->array[row][col]);
 
         printf("\n");
     }
@@ -66,7 +66,7 @@ void matrix_filling(Matrix *matrix) {
         for(int col = 0; col <= matrix->cols-1; col++)
             scanf("%lf", &matrix->array[row][col]);
 
-    matrix_output(matrix, 0);
+    matrix_output(matrix, 1);
 
 }
 
@@ -128,7 +128,7 @@ int matrix_addition(int key) {
     Matrix matrix2 = matrix_init(matrix1.rows, matrix1.cols);
 
     if(matrix_size_comparer(0, &matrix1, &matrix2) == -1) {
-        printf("Sizes of matrices are not equals");
+        printf("Sizes of matrices are not equals\n");
         return -1;
     }
 
@@ -139,9 +139,9 @@ int matrix_addition(int key) {
 
     for(int row = 0; row <= matrix1.rows-1; row++)
         for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = matrix1.array[row][col] + key * matrix2.array[row][col];
+            sum_matrix.array[row][col] = 1 * matrix1.array[row][col] + key * matrix2.array[row][col];
 
-    matrix_output(&sum_matrix, 1);
+    matrix_output(&sum_matrix, 0);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -187,7 +187,7 @@ void multiplication_output() {
 
     Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
 
-    matrix_output(&multiplied_matrix, 1);
+    matrix_output(&multiplied_matrix, 0);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
@@ -224,7 +224,7 @@ void number_operation_output(int key) {
 
     Matrix operated_matrix = matrix_number_operation(&matrix, number, key);
 
-    matrix_output(&operated_matrix, 1);
+    matrix_output(&operated_matrix, 0);
 
     mem_clearing(&matrix);
     mem_clearing(&operated_matrix);
@@ -337,7 +337,7 @@ void transposition_output() {
 
     Matrix transposed_matrix = matrix_transposition(&matrix);
 
-    matrix_output(&transposed_matrix, 1);
+    matrix_output(&transposed_matrix, 0);
 
     mem_clearing(&matrix);
     mem_clearing(&transposed_matrix);
@@ -424,7 +424,7 @@ void inverse_matrix_output() {
 
     Matrix inverse_matrix = matrix_inversion(&matrix);
 
-    matrix_output(&inverse_matrix, 1);
+    matrix_output(&inverse_matrix, 0);
 
     mem_clearing(&matrix);
     mem_clearing(&inverse_matrix);
@@ -467,7 +467,7 @@ void inverse_multiplication_output() {
 
     Matrix inverse_multiplied_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
 
-    matrix_output(&inverse_multiplied_matrix, 1);
+    matrix_output(&inverse_multiplied_matrix, 0);
 
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
