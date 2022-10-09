@@ -3,6 +3,7 @@
 #include "malloc.h"
 
 int period = 20 * 12;
+long long int buffer;
 
 double deposit_rate = 6.0;  // Процент годовых
 double k_deposit_per_month = 0;
@@ -32,7 +33,7 @@ struct person{
 
 };
 
-struct person *people = NULL;
+struct person *people;
 int size_of_people = 0;
 
 
@@ -129,8 +130,36 @@ void all_changes (unsigned int current_month){
 
     change_percent(current_month == 3 * 12, &deposit_rate, &k_deposit_per_month, 8.0);
     change_percent(current_month == 5 * 12, &house_rotate, &k_house_per_month, 3.0);
-    change_others(current_month == 10 * 12, &people[0].income, 200 * 1000 * 100);
+    change_others(current_month == 10 * 12, &people[1].income, 200 * 1000 * 100);
 
+}
+
+void month_income(struct person man){
+    buffer += man.income;
+}
+
+void month_spending(struct person man){
+    buffer -= man.house_spending;
+}
+
+void month_credit(struct person *man){
+    buffer -= man->every_month_pay;
+    man->credit = round(man->credit * k_credit_per_month);
+
+    if (man->credit > man->every_month_pay){
+        man->credit = man->credit - man->every_month_pay;
+    } else {
+        buffer += man->every_month_pay - man->credit;
+        man->credit = 0;
+    }
+}
+
+void month_balance(struct person *man){
+    man->balance = floor(man->balance * k_deposit_per_month) + buffer;
+}
+
+void month_house(struct person *man){
+    man->house = floor(man->house * k_house_per_month);
 }
 
 void monthly_events(){
@@ -142,7 +171,7 @@ void monthly_events(){
         if (people[i].credit > people[i].every_month_pay) {
             people[i].credit = people[i].credit - people[i].every_month_pay;
         } else {
-            free_money = free_money + people[i].every_month_pay - people[i].credit;
+            free_money += people[i].every_month_pay - people[i].credit;
             people[i].credit = 0;
         }
         people[i].balance = floor(people[i].balance * k_deposit_per_month) + free_money;
@@ -209,7 +238,6 @@ void output(int current_year) {
 }
 
 void results(){
-
     printf("\n\nAs a result: \n");
     if (size_of_people > 0){
         struct person winner_sum = people[0];
@@ -225,7 +253,7 @@ void results(){
         }
 
         if (winner_sum.name != winner_house.name){
-            printf("\t\t%s earned the biggest cash, but %s has the most expensive house",
+            printf("\t\t%s earned the biggest cash.\n\t\tBut %s has the most expensive house.",
                    winner_sum.name, winner_house.name);
         } else {
             printf("\t\t%s has the biggest fortune and the most expensive house", winner_sum.name);
@@ -244,10 +272,15 @@ int main() {
     for (int month = 1; month <= period; month++){
 
         all_changes(month);
-        monthly_events(); // в данном месте расчитывается сумма, которую каждый человек кладет на вклад,
-                          // с учетом поступающих средств, кредиторской задолжности, ежемесячного роста
-                          // цен на жилье, трат на жильё, а также с учетом изменения всех участвующих в
-                          // процессе расчета величин.
+        for (int number = 0; number < size_of_people; number++){
+            buffer = 0;
+            month_income(people[number]);
+            month_spending(people[number]);
+            month_credit(&people[number]);
+            month_balance(&people[number]);
+            month_house(&people[number]);
+        }
+        //monthly_events();
 
         if (month % 12 == 0){
             yearly_events();
