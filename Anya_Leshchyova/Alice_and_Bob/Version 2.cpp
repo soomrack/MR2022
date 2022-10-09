@@ -5,7 +5,6 @@
 
 //структуры
 
-
 typedef struct {
      char *name;
     bool wish;
