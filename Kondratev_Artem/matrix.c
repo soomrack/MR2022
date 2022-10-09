@@ -6,15 +6,15 @@
 
 typedef struct Matrix {
 
-    uint64_t rows;
-    uint64_t cols;
+    int rows;
+    int cols;
 
     double **array;
 
 } Matrix;
 
 
-Matrix matrix_init(uint64_t rows, uint64_t cols) {
+Matrix matrix_init(int rows, int cols) {
 
     struct Matrix matrix;
 
@@ -50,7 +50,7 @@ void matrix_output(Matrix *matrix, int filling_key) {
     for(int row = 0; row <= matrix->rows-1; row++) {
 
         for(int col = 0; col <= matrix->cols-1; col++)
-            printf("%10.2lf", matrix->array[row][col]);
+            printf("%14.4lf", matrix->array[row][col]);
 
         printf("\n");
     }
@@ -73,11 +73,11 @@ void matrix_filling(Matrix *matrix) {
 
 Matrix new_matrix() {
 
-    uint64_t  rows, cols;
+    int  rows, cols;
 
     printf("input new matrix sizes:\n");
-    scanf("%lux%lu", &rows, &cols);
-    printf("sizes: %lux%lu\n", rows, cols);
+    scanf("%dx%d", &rows, &cols);
+    printf("sizes: %dx%d\n", rows, cols);
 
     Matrix matrix = matrix_init(rows, cols);
 
@@ -460,6 +460,117 @@ void inverse_multiplication_output() {
 }
 
 
+int test_filling(Matrix *matrix, const double array[]) {
+
+    int array_index = 0;
+    for(int row = 0; row <= matrix->rows-1; row++)
+        for(int col = 0; col <= matrix->cols-1; col++) {
+            matrix->array[row][col] = array[array_index];
+            array_index += 1;
+        }
+
+}
+
+
+/*int test_check_array(const double true_array[], int len, Matrix *res_matrix) {
+
+    double res_array[len];
+    int array_index = 0;
+
+    double delta;
+    int error_flag = 0;
+
+    for(int row = 0; row <= res_matrix->rows-1; row++)
+        for(int col = 0; col <= res_matrix->cols-1; col++) {
+            res_array[array_index] = res_matrix->array[row][col];
+            array_index += 1;
+        }
+
+    for(array_index = 0; array_index <= len - 1; array_index++) {
+
+        if(res_array[array_index] > true_array[array_index]) {
+            delta = res_array[array_index] - true_array[array_index];
+            printf("res bigger ");
+        }
+        else {
+            delta = true_array[array_index] - res_array[array_index];
+            printf("true bigger ");
+        }
+        printf("res: %lf // ", res_array[array_index]);
+        printf("true: %lf // ", true_array[array_index]);
+        printf("delta: %lf // ", delta);
+
+        delta = (delta < 0) ? -delta : delta;
+        printf("delta2: %lf // ", delta);
+        printf("delta3: %lf // ", delta * 10000);
+        if(delta * 10000 >= 10) {
+            error_flag += 1;
+            printf("error_flag: +1 //");
+            printf("yes\n");
+        }
+        else
+            printf("error_flag: +0 //\n");
+
+    }
+
+    return error_flag;
+
+}
+
+
+int test_matrix_addition(Matrix matrix1, Matrix matrix2, const double sum_true_array[]) {
+
+    Matrix sum_matrix  = matrix_addition(1, &matrix1, &matrix2);
+
+    int sum_len = matrix1.rows * matrix1.cols;
+
+    int error_flag = test_check_array(sum_true_array, sum_len, &sum_matrix);
+
+    return error_flag;
+
+}
+
+
+int test_matrix_multiplication(Matrix matrix1, Matrix matrix2, const double multi_true_array[]) {
+
+    Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
+
+    int multi_len = matrix1.rows * matrix1.cols;
+
+    int error_flag = test_check_array(multi_true_array, multi_len, &multiplied_matrix);
+
+    return error_flag;
+
+}*/
+
+
+void test() {
+
+    Matrix matrix1 = matrix_init(2, 2);
+    double array1[] = {3.1, 8, 1, 2.659};
+    test_filling(&matrix1, array1);
+
+
+    Matrix matrix2 = matrix_init(2, 2);
+    double array2[] = {13.314, 9, 21, 46.928};
+    test_filling(&matrix2, array2);
+
+
+    /*int error_flag;
+
+    double sum_true_array[] = {16.415, 16.999, 22, 49.587};
+    error_flag = test_matrix_addition(matrix1, matrix2, sum_true_array);
+    printf("Addition. Errors: %d\n", error_flag);
+
+    double multi_true_array[] = {209.273, 403.324, 69.153, 133.782};
+    error_flag = test_matrix_multiplication(matrix1, matrix2, multi_true_array);
+    printf("Multiplication. Errors: %d\n", error_flag);*/
+
+    Matrix result = matrix_addition(1, &matrix1, &matrix2);
+    matrix_output(&result, 0);
+}
+
+
 void start_menu() {
 
     printf("Choose operation\n");
@@ -471,6 +582,8 @@ void start_menu() {
     scanf("%d", &operation_key);
     switch(operation_key)
     {
+        case 0:
+            test(); break;
         case 1:
             matrix_addition_output(1); break;
         case 2:
@@ -494,41 +607,10 @@ void start_menu() {
 }
 
 
-void test_filling(Matrix *matrix, const double array[]) {
-
-    int array_index = 0;
-    for(int row = 0; row <= matrix->rows-1; row++)
-        for(int col = 0; col <= matrix->cols-1; col++) {
-            matrix->array[row][col] = array[array_index];
-            array_index += 1;
-        }
-
-}
-
-
-void test() {
-
-    Matrix matrix2_2_1 = matrix_init(2, 2);
-    double array2_2_1[] = {3, 8, 1, 2};
-    test_filling(&matrix2_2_1, array2_2_1);
-    matrix_output(&matrix2_2_1, 1);
-
-
-    Matrix matrix2_2_2 = matrix_init(2, 2);
-    double array2_2_2[] = {13, 9, 21, 46};
-    test_filling(&matrix2_2_2, array2_2_2);
-    matrix_output(&matrix2_2_2, 1);
-
-    printf("\n\n");
-
-
-
-}
-
-
 int main() {
 
     start_menu();
+    //test();
 
     return 0;
 }
