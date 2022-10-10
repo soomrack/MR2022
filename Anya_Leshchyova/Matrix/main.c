@@ -3,7 +3,6 @@
 #include <stdlib.h> // под динамические масивы
 #include <valarray>
 
-
 typedef struct {  // структура задаёт размеры матрицы и саму матрицу
     unsigned int row; // число строк, целое положительное
     unsigned int col; // число столбцов, целое положительное
