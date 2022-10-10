@@ -30,6 +30,11 @@ struct Matrix undefined(const unsigned int rows, const unsigned int cols){
     return rez;
 }
 
+void release(struct Matrix x){
+    free(x.data);
+    free(x.value);
+}
+
 struct Matrix empty(){
     struct Matrix rez = undefined(0,0);
     return rez;
@@ -151,8 +156,7 @@ double det(struct Matrix x){
         struct Matrix temp = minor(0, idx, x);
         rez += ratio * x.value[0][idx] * det(temp);
         ratio *= -1;
-        free(temp.value);
-        free(temp.data);
+        release(temp);
     }
     return rez;
 
@@ -169,12 +173,13 @@ struct Matrix reverse(struct Matrix x){
             struct Matrix temp = minor(row, col, x);
             rez.value[row][col] = ratio * det(temp);
             ratio *= -1;
-            free(temp.value);
-            free(temp.data);
+            release(temp);
         }
     }
-    //rez = multy_k(tran(rez), 1/deter);
-    return multy_k(tran(rez), 1/deter);
+    struct Matrix ans = tran(rez);
+    rez = multy_k(ans, 1/deter);
+    release(ans);
+    return rez;
 
 }
 
@@ -186,8 +191,9 @@ struct Matrix pow_mat(struct Matrix x, unsigned int n){
     rez.data = x.data;
     rez.value = x.value;
     for (int idx = 1; idx < n; idx++){
-
-        rez = multiplication(x, rez);
+        struct Matrix temp = multiplication(x, rez);
+        rez = temp;
+        release(temp);
     }
     return rez;
 
@@ -197,10 +203,15 @@ struct Matrix exponent(struct Matrix x, const unsigned int kol_slog){
     if (x.cols != x.rows) return empty();
 
     struct Matrix rez = zero(x.rows, x.cols);
-    double a_n = 1;
+    double ratio = 1;
     for (int idx = 0; idx < kol_slog; idx++){
-        rez = addition(rez, multy_k(pow_mat(x, idx), a_n));
-        a_n /= (idx + 1);
+        struct Matrix degree = pow_mat(x, idx);
+        struct Matrix multiplier = multy_k(degree, ratio);
+        rez = addition(rez, multiplier);
+        ratio /= (idx + 1);
+
+        release(degree);
+        release(multiplier);
     }
     return rez;
 
@@ -247,6 +258,10 @@ void test_of_add(){
     } else {
         printf("Test of addition was faild\n");
     }
+
+    release(first);
+    release(second);
+    release(rez_add);
 }
 
 void test_of_sub(){
@@ -275,6 +290,10 @@ void test_of_sub(){
     } else {
         printf("Test of subtraction was faild\n");
     }
+
+    release(first);
+    release(second);
+    release(rez_sub);
 }
 
 void test_of_multy(){
@@ -303,6 +322,10 @@ void test_of_multy(){
     } else {
         printf("Test of multiplication was faild\n");
     }
+
+    release(first);
+    release(second);
+    release(rez_mul);
 }
 
 void test_of_reverse(){
@@ -325,6 +348,10 @@ void test_of_reverse(){
     } else {
         printf("Test of reverse matrix was faild\n");
     }
+
+    release(obj);
+    release(rez);
+    release(one_3);
 }
 
 void test_of_exponent(){
@@ -346,6 +373,10 @@ void test_of_exponent(){
     } else {
         printf("Test of exponent was faild\n");
     }
+
+    release(base);
+    release(option_1);
+    release(option_2);
 }
 
 void block_tests(){
@@ -371,7 +402,7 @@ void block_output(){
     printf("This is empty Matrix\n");
     output(empty());
     printf("This is zero matrix\n");
-    output(zero(5,5));
+    output(zero(5, 5));
     printf("This is one matrix\n");
     output(one(5, 5));
 
