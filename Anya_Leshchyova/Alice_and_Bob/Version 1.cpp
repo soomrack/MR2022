@@ -10,32 +10,31 @@ typedef struct {
     char *name;
     bool wish;
 
-} Identification; // структура имени и желания клиента (ипотека или вклад)
+} Identification;  // структура имени и желания клиента (ипотека или вклад)
 
 
 typedef struct {
-    int beginning; // начальный капитал
-    int beginning_contribution; // начальная выплата по ипотеке
-    int flat; // стоимость квартиры
-    int income; // доходы
+    int beginning;  // начальный капитал
+    int beginning_contribution;  // начальная выплата по ипотеке
+    int flat;  // стоимость квартиры
+    int income;  // доходы
     int expenses;  // расходы
-    unsigned int time_year; // время на погашение ипотеки, год
-
+    unsigned int time_year;  // время на погашение ипотеки, год
 }money;
 
 
 typedef struct {
-    unsigned int row; // число строк, целое положительное
-    unsigned int col; // число столбцов, целое положительное
+    unsigned int row;  // число строк, целое положительное
+    unsigned int col;  // число столбцов, целое положительное
     long long int ** massive;
 }matrix;   // структура задаёт размеры матрицы и саму матрицу
 
 
 typedef struct {
-    double percent_mortgages; // процент ипотеки
+    double percent_mortgages;  // процент ипотеки
     double deposit_interest;  // процент вклада
-    double percentage_increase; // на сколько увеличивается процент по прошествию половины срока
-} percent; // структура процентов
+    double percentage_increase;  // на сколько увеличивается процент по прошествию половины срока
+} percent;  // структура процентов
 
 
 

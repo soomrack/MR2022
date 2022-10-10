@@ -2,7 +2,7 @@
 #include <math.h>
 #include "malloc.h"
 
-int period = 20 * 12;
+unsigned int period = 20 * 12;
 long long int buffer;
 
 double deposit_rate = 6.0;  // Процент годовых
@@ -18,7 +18,7 @@ double house_tax = 2.5;  // Процент налогового изъятия �
 double k_house_tax_pm = 0;
 
 
-struct person{
+struct Person{
 
     char *name;                                // Имя
     unsigned long long int beginings;          // Начальные сбережения
@@ -33,7 +33,7 @@ struct person{
 
 };
 
-struct person *people;
+struct Person *people;
 int size_of_people = 0;
 
 
@@ -59,12 +59,12 @@ void change_others(int f, unsigned long long int *value, unsigned long long int 
     }
 }
 
-unsigned int annuetet_pay(struct person man){
+unsigned int annuetet_pay(struct Person man){
     return ceil(man.credit * ((k_credit_per_month-1) + (k_credit_per_month-1) / (pow(k_credit_per_month,man.loan_term) - 1)));
 }
 
 void Alice_init(){
-    struct person Alice;
+    struct Person Alice;
     Alice.name = "Alice";
     Alice.beginings = 1 * 1000 * 1000 * 100;
     Alice.credit = 0;
@@ -75,13 +75,13 @@ void Alice_init(){
     Alice.house_spending = 40 * 1000 * 100;
     Alice.balance = Alice.beginings;
     Alice.house = 0;
-    people = (struct person*) realloc(people, (size_of_people + 1) * sizeof(struct person));
+    people = (struct Person*) realloc(people, (size_of_people + 1) * sizeof(struct Person));
     people[size_of_people] = Alice;
     size_of_people++;
 }
 
 void Bob_init(){
-    struct person Bob;
+    struct Person Bob;
     Bob.name = "Bob";
     Bob.beginings = 1 * 1000 * 1000 * 100;
     Bob.credit = 8 * 1000 * 1000 * 100;
@@ -92,13 +92,13 @@ void Bob_init(){
     Bob.house_spending = 10 * 1000 * 100;
     Bob.balance = Bob.beginings - Bob.first_fee;
     Bob.house = Bob.credit;
-    people = (struct person*) realloc(people, (size_of_people + 1) * sizeof(struct person));
+    people = (struct Person*) realloc(people, (size_of_people + 1) * sizeof(struct Person));
     people[size_of_people] = Bob;
     size_of_people++;
 }
 
 void Carol_init(){
-    struct person Carol;
+    struct Person Carol;
     Carol.name = "Carol";
     Carol.beginings = 100 * 1000 * 100;
     Carol.credit = 0;
@@ -109,7 +109,7 @@ void Carol_init(){
     Carol.house_spending = 30 * 1000 * 100;
     Carol.balance = Carol.beginings;
     Carol.house = 0;
-    people = (struct person*) realloc(people, (size_of_people + 1) * sizeof(struct person));
+    people = (struct Person*) realloc(people, (size_of_people + 1) * sizeof(struct Person));
     people[size_of_people] = Carol;
     size_of_people++;
 }
@@ -134,15 +134,15 @@ void all_changes (unsigned int current_month){
 
 }
 
-void month_income(struct person man){
+void month_income(struct Person man){
     buffer += man.income;
 }
 
-void month_spending(struct person man){
+void month_spending(struct Person man){
     buffer -= man.house_spending;
 }
 
-void month_credit(struct person *man){
+void month_credit(struct Person *man){
     buffer -= man->every_month_pay;
     man->credit = round(man->credit * k_credit_per_month);
 
@@ -154,11 +154,11 @@ void month_credit(struct person *man){
     }
 }
 
-void month_balance(struct person *man){
+void month_balance(struct Person *man){
     man->balance = floor(man->balance * k_deposit_per_month) + buffer;
 }
 
-void month_house(struct person *man){
+void month_house(struct Person *man){
     man->house = floor(man->house * k_house_per_month);
 }
 
@@ -240,8 +240,8 @@ void output(int current_year) {
 void results(){
     printf("\n\nAs a result: \n");
     if (size_of_people > 0){
-        struct person winner_sum = people[0];
-        struct person winner_house = people[0];
+        struct Person winner_sum = people[0];
+        struct Person winner_house = people[0];
 
         for (int i = 1; i < size_of_people; i++){
             if (people[i].balance > winner_sum.balance){
