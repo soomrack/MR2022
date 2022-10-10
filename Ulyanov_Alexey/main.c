@@ -126,23 +126,16 @@ void initialization() {
 
 }
 
-void all_changes (unsigned int current_month){
-
-    change_percent(current_month == 3 * 12, &deposit_rate, &k_deposit_per_month, 8.0);
-    change_percent(current_month == 5 * 12, &house_rotate, &k_house_per_month, 3.0);
+void month_income(struct Person man, unsigned int current_month){
     change_others(current_month == 10 * 12, &people[1].income, 200 * 1000 * 100);
-
-}
-
-void month_income(struct Person man){
     buffer += man.income;
 }
 
-void month_spending(struct Person man){
+void month_spending(struct Person man, unsigned int current_month){
     buffer -= man.house_spending;
 }
 
-void month_credit(struct Person *man){
+void month_credit(struct Person *man, unsigned int current_month){
     buffer -= man->every_month_pay;
     man->credit = round(man->credit * k_credit_per_month);
 
@@ -154,31 +147,14 @@ void month_credit(struct Person *man){
     }
 }
 
-void month_balance(struct Person *man){
+void month_balance(struct Person *man, unsigned int current_month){
+    change_percent(current_month == 3 * 12, &deposit_rate, &k_deposit_per_month, 8.0);
     man->balance = floor(man->balance * k_deposit_per_month) + buffer;
 }
 
-void month_house(struct Person *man){
+void month_house(struct Person *man, unsigned int current_month){
+    change_percent(current_month == 5 * 12, &house_rotate, &k_house_per_month, 3.0);
     man->house = floor(man->house * k_house_per_month);
-}
-
-void monthly_events(){
-
-    for (int i = 0; i < size_of_people; i++){
-        long int free_money = people[i].income - people[i].house_spending - people[i].every_month_pay;
-        people[i].credit = round(people[i].credit * k_credit_per_month);
-
-        if (people[i].credit > people[i].every_month_pay) {
-            people[i].credit = people[i].credit - people[i].every_month_pay;
-        } else {
-            free_money += people[i].every_month_pay - people[i].credit;
-            people[i].credit = 0;
-        }
-        people[i].balance = floor(people[i].balance * k_deposit_per_month) + free_money;
-
-        people[i].house = floor(people[i].house * k_house_per_month);
-    }
-
 }
 
 void yearly_events() {
@@ -238,6 +214,10 @@ void output(int current_year) {
 }
 
 void results(){
+    if (size_of_people == 0){
+        printf("There is no people to compare\n");
+        return;
+    }
     printf("\n\nAs a result: \n");
     if (size_of_people > 0){
         struct Person winner_sum = people[0];
@@ -265,22 +245,18 @@ void results(){
 
 }
 
-
-int main() {
+void simulation(){
     initialization();
-
     for (int month = 1; month <= period; month++){
 
-        all_changes(month);
         for (int number = 0; number < size_of_people; number++){
             buffer = 0;
-            month_income(people[number]);
-            month_spending(people[number]);
-            month_credit(&people[number]);
-            month_balance(&people[number]);
-            month_house(&people[number]);
+            month_income(people[number], month);
+            month_spending(people[number], month);
+            month_credit(&people[number], month);
+            month_balance(&people[number], month);
+            month_house(&people[number], month);
         }
-        //monthly_events();
 
         if (month % 12 == 0){
             yearly_events();
@@ -290,5 +266,10 @@ int main() {
 
     }
     results();
+
+}
+
+int main() {
+    simulation();
     return 0;
 }
