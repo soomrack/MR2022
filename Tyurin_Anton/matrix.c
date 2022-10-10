@@ -143,10 +143,13 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
     return C;
 }
 
-void test(struct Matrix One, struct Matrix Zero){
-    matrix_sum(One,Zero);
-    matrix_sub(Zero,One);
-    matrix_mult(One,Zero);
+void test(const struct Matrix One, const struct Matrix Zero){
+    struct Matrix sum = matrix_sum(One,Zero);
+    matrix_output(sum,'+');
+    struct Matrix sub = matrix_sub(Zero,One);
+    matrix_output(sub,'-');
+    struct Matrix mult = matrix_mult(One,Zero);
+    matrix_output1(mult);
 }
 
 
@@ -167,9 +170,12 @@ int main() {
     data_input(B, arr_B);
     print_matrix(B);
 
-    matrix_sum(A,B);
-    matrix_sub(A,B);
-    matrix_mult(A,B);
+    struct Matrix sum = matrix_sum(A,B);
+    matrix_output(sum,'+');
+    struct Matrix sub = matrix_sub(A,B);
+    matrix_output(sub,'-');
+    struct Matrix mult = matrix_mult(A,B);
+    matrix_output1(mult);
 
     free(A.values);
     free(B.values);
