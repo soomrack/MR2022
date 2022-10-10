@@ -100,7 +100,7 @@ double deposit_sum(char* name, double deposit, int income, int expenses, double 
     for (int i = 1; i <= time * 12; i++){
         deposit = deposit_calculation(name, deposit, payment, credit_rate, income, expenses, i);
     }
-    printf("Rate was raised': %lf\n", new_credit_rate);// DEBUG
+    printf("Rate was raised': %lf\n", new_credit_rate);  // DEBUG
     for (int a = 1; a <= time - change_time * 12; a++){
         deposit = deposit_calculation(name, deposit, payment, new_credit_rate, income, expenses, a);
     }

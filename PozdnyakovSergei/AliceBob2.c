@@ -13,7 +13,7 @@ struct Client {
     unsigned long long int monthly_house_bills; //komunalka v copeikah
     unsigned long long int monthly_mortgage_payments; //oplata ipoteki
     unsigned long long int monthly_arenda_payments; //рента
-    unsigned long long int income;
+    //unsigned long long int income;
     unsigned long long int salary;
     unsigned long long int first_payment;
 };
@@ -34,7 +34,7 @@ void init_Alice(struct Client *alice){
 
 
 void init_Bob(struct Client *bob){
-    bob->name = malloc(6);
+    bob->name = malloc(4);
     bob->name = "Bob";
     bob->bank_account = 1 * 1000 * 1000 * 100;
     bob->bank_deposit_percent = 0.08;
@@ -73,7 +73,7 @@ void mortgage(struct Client *client){ //плата по ипотеке
 
 
 void bank_deposit_income(struct Client *client){ //начислили проценты
-    client->bank_account = (unsigned long long int)((client->bank_account) + (client->bank_deposit_percent/12.0)*client->bank_account);
+    client->bank_account = (unsigned long long int)((client->bank_deposit_percent/12.0 + 1.0) * client->bank_account);
 }
 
 
@@ -118,6 +118,8 @@ void simulation (){
         if (month == 1){
             first_payment(&alice);
             first_payment(&bob);
+            print_result(&alice, &bob);
+            printf("0 year\n");
         }
 
         salary_income(&alice);
