@@ -23,14 +23,19 @@ void printm(struct Matrix mat){
     }
 }
 
-Matrix create_identity(const int size){
+Matrix create_identity(const unsigned int size){
     // Создание единичной матрицы размера n*n
     Matrix mat = {size, size, (double*)malloc(sizeof(double) * size * size)};
     for (int idx = 0; idx < size * size; idx++) mat.values[idx] = idx % (size + 1) == 0 ? 1 : 0;
     return mat;
 }
 
-Matrix create_random(const int rows, const int cols, const double max_value){
+void set_to_identity(const Matrix* mat){
+    unsigned int size = mat->cols;
+    for (int idx = 0; idx < size * size; idx++) mat->values[idx] = idx % (size + 1) == 0 ? 1 : 0;
+}
+
+Matrix create_random(const unsigned int rows, const unsigned int cols, const double max_value){
     // Создание матрицы со случайными значениями от 0 до max_value
     srand(time(NULL));
     Matrix mat = {rows, cols, (double*) malloc(sizeof(double) * cols * rows)};
@@ -67,7 +72,7 @@ Matrix m_sub(const Matrix m1, const Matrix m2){
 Matrix m_mul(const Matrix m1, const Matrix m2){
     // Умножение двух матриц
     if (m1.cols != m2.rows){
-        fprintf(stderr, "number of cols of matrix 1 should be equal to number of rows of second matrix");
+        fprintf(stderr, "number of cols of matrix.c 1 should be equal to number of rows of second matrix.c");
         exit(1);
     }
     Matrix ans = {m1.rows, m2.cols, (double*)malloc(sizeof(double) * m1.rows * m2.cols)};
@@ -87,6 +92,13 @@ Matrix s_mul(const Matrix mat, const double scal){
     // Умножение матрицы на скаляр
     Matrix ans = {mat.rows, mat.cols, (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
     for (int idx = 0; idx < mat.rows * mat.cols; idx++) ans.values[idx] = mat.values[idx] * scal;
+    return ans;
+}
+
+Matrix s_div(const Matrix mat, const double scal){
+    // Умножение матрицы на скаляр
+    Matrix ans = {mat.rows, mat.cols, (double*)malloc(sizeof(double) * mat.rows * mat.cols)};
+    for (int idx = 0; idx < mat.rows * mat.cols; idx++) ans.values[idx] = mat.values[idx] / scal;
     return ans;
 }
 
@@ -160,6 +172,24 @@ Matrix m_inv(Matrix mat){
     return transpose(ans);
 }
 
+void iterate_exp(const Matrix* ans, const Matrix mat){
+    double accuracy = 0.001;
+    double trace_old = m_tr(*ans);
+    Matrix power = mat;
+
+    unsigned long long int factorial = 1;
+    Matrix temp = create_identity(ans->rows);
+
+    int counter = 1;
+    while (fabs(m_tr(temp) - trace_old) / trace_old > accuracy){
+        trace_old = m_tr(temp);
+        temp = m_add(temp, s_div(power, factorial));
+        factorial *= ++counter;
+        power = m_mul(power, mat);
+    }
+    for (int idx = 0; idx < ans->rows * ans->cols; idx++) ans->values[idx] = temp.values[idx];
+}
+
 Matrix m_exp(Matrix mat){
     // Матричная экспонента (На данный момент работает только для диагональных матриц)
     if (mat.cols != mat.rows){
@@ -171,8 +201,8 @@ Matrix m_exp(Matrix mat){
         for (int col = 0; col < mat.cols; col++){
             if (row != col){
                 if (mat.values[row * mat.cols + col] != 0){
-                    fprintf(stderr, "for now, this function only works for diagonal matrices");
-                    exit(1);
+                    iterate_exp(&ans, mat);
+                    return ans;
                 }
                 else ans.values[row * mat.cols + col] = 0;
             }
@@ -193,31 +223,33 @@ int main(){
 //    double values1[6] = {3, 2, 1,
 //                         0, 1, 2};
 //    double values2[6] = {1, 2,
-//                         2, 0,
+//                         2, 0,3
 //                         3, 1};
 //    Matrix matrix1 = {2, 3, values1};
 //    Matrix matrix2 = {3, 2, values2};
 
-    double values1[9] = {3, -1, 2,
-                         4, 2, 0,
-                         -5, 6, 1};
+    double values1[4] = {8, -7,
+                         1, 0};
     double values2[16] = {1, 0, 2, 3,
                          0, 2, 0, 4,
                          0, 0, 3, 5,
                          1, 5, 2, 8,};
-    Matrix matrix1 = {3, 3, values1};
+    Matrix matrix1 = {2, 2, values1};
     Matrix matrix2 = {4, 4, values2};
     Matrix matrix3 = create_random(3, 3, 5);
     //printm(matrix3);
+
+    //printm(m_exp(s_mul(create_identity(3), 3)));
+    printm(m_exp(matrix1));
 
     //printm(m_add(matrix1, matrix2));
     //printm(m_subs(matrix1, matrix2));
     //printm(m_mult(matrix1, matrix2));
     //printm(m_exp(matrix2));
-    printf("%f", m_det(matrix1));
-    printm(minor(matrix2, 2, 2));
+    //printf("%f", m_det(matrix1));
+    //printm(minor(matrix2, 2, 2));
     //printm(matrix1);
-    printm(m_mul(matrix1, m_inv(matrix1)));
+    //printm(m_mul(matrix1, m_inv(matrix1)));
 
     //printf("%f", m_det(matrix1));
 }

@@ -16,14 +16,14 @@ struct Matrix matrix_make (const unsigned int cols, const unsigned int rows, str
     for (unsigned int idx = 0; idx < cols * rows; idx++){
         matrix.values[idx] = 0.0;
     }
-return matrix;
+    return matrix;
 };
 
 struct Matrix data_input(struct Matrix matrix, double arr[]){
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++){
         matrix.values[idx] = arr[idx];
     }
-return matrix;
+    return matrix;
 }
 
 struct Matrix zero(const unsigned int cols, const unsigned int rows){  // Инициализация нулевой матрицы
@@ -133,7 +133,7 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
 
     for (unsigned int row = 0; row < A.rows; row++){
         for (unsigned int col = 0; col < B.cols; col++) {
-        C.values[col * C.rows + row] = 0;
+            C.values[col * C.rows + row] = 0;
             for(unsigned int k = 0; k < A.cols; k++) {
                 C.values[col * C.rows + row] += A.values[row * A.cols + k] * B.values[k * B.cols + col];
             }
@@ -175,3 +175,4 @@ int main() {
     free(B.values);
     return 0;
 }
+

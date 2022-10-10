@@ -20,8 +20,8 @@ void Init_F(Matr *mas1){ //задание кол-ва рядов и стобцо
     scanf("%d", &mas1->rows);
     printf("Enter the number of cols of the %s \n", mas1->name);
     scanf("%d", &mas1->cols);
-    printf("number of rows of the first matrix:%d\n", mas1->rows);
-    printf("number of cols of the first matrix:%d", mas1->cols);
+    printf("number of rows of the first matrix.c:%d\n", mas1->rows);
+    printf("number of cols of the first matrix.c:%d", mas1->cols);
 }
 
 void Init_S(Matr *mas2){ //задание кол-ва рядов и стобцов матрицы
@@ -111,7 +111,7 @@ void sumofmatrices(Matr *mas1, Matr *mas2, Matr *mas3) {
         }
     }
     else
-        printf("Invalid matrix size summation is impossible\n");
+        printf("Invalid matrix.c size summation is impossible\n");
 }
 
 
@@ -133,7 +133,7 @@ void subtraction(Matr *mas1, Matr *mas2, Matr *mas3) {
         }
     }
     else
-        printf("Invalid matrix size. Subtraction is impossible\n");
+        printf("Invalid matrix.c size. Subtraction is impossible\n");
 }
 
 void multiplication(Matr *mas1, Matr *mas2, Matr *mas3){
@@ -161,7 +161,7 @@ void multiplication(Matr *mas1, Matr *mas2, Matr *mas3){
         }
     }
     else
-        printf("Invalid matrix size. Multiplication is impossible\n");
+        printf("Invalid matrix.c size. Multiplication is impossible\n");
 }
 
 int main() {
