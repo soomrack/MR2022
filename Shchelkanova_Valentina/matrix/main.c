@@ -106,15 +106,15 @@ int main() {
         }
     }
 
-    printf("This is matrix A\n");
+    printf("This is matrix.c A\n");
     print(A);
-    printf("This is matrix B\n");
+    printf("This is matrix.c B\n");
     print(B);
-    printf("This is matrix A + B\n");
+    printf("This is matrix.c A + B\n");
     print(addition(A,B));
-    printf("This is matrix A - B\n");
+    printf("This is matrix.c A - B\n");
     print(substraction(A,B));
-    printf("This is matrix A * B\n");
+    printf("This is matrix.c A * B\n");
     print(multiplication(A, B));
 
     return 0;

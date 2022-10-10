@@ -55,7 +55,7 @@ struct Matrix matrix_add(const struct Matrix *fst_matx, const struct Matrix *snd
     unsigned int cols = snd_matx->cols;
     unsigned int rows = fst_matx->rows;
     if (fst_matx->rows != snd_matx->rows || fst_matx->cols != snd_matx->cols){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return ZERO;
     }
     printf("Addition\n");
@@ -72,7 +72,7 @@ struct Matrix matrix_subt(const struct Matrix *fst_matx, const struct Matrix *sn
     unsigned int cols = snd_matx->cols;
     unsigned int rows = fst_matx->rows;
     if (fst_matx->rows != snd_matx->rows || fst_matx->cols != snd_matx->cols){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return ZERO;
     }
     printf("Subtraction\n");
@@ -89,7 +89,7 @@ struct Matrix matrix_mult(const struct Matrix *fst_matx, const struct Matrix *sn
     unsigned int cols = snd_matx->cols;
     unsigned int rows = fst_matx->rows;
     if (fst_matx->cols != snd_matx->rows){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return ZERO;
     }
     printf("Multiplication\n");
@@ -119,41 +119,41 @@ void print_matx(struct Matrix matrix){
 
 #endif //MATRIX_MATRIX_H
 /*
-void create_empty_matrix(struct Matrix *matrix, unsigned int mat_cols, unsigned int mat_rows, char name[]){
-    matrix->name = malloc(sizeof *name);
-    matrix->name = name;
-    matrix->cols = mat_cols;
-    matrix->rows = mat_rows;
-    matrix->values = malloc(matrix->rows * sizeof *matrix->values);
-    matrix->ZERO = malloc(matrix->rows * sizeof *matrix->values);
+void create_empty_matrix(struct Matrix *matrix.c, unsigned int mat_cols, unsigned int mat_rows, char name[]){
+    matrix.c->name = malloc(sizeof *name);
+    matrix.c->name = name;
+    matrix.c->cols = mat_cols;
+    matrix.c->rows = mat_rows;
+    matrix.c->values = malloc(matrix.c->rows * sizeof *matrix.c->values);
+    matrix.c->ZERO = malloc(matrix.c->rows * sizeof *matrix.c->values);
     int k;
     for(k = 0; k < mat_rows; k++){
-        matrix->values[k] = malloc(matrix->cols * sizeof *matrix->values);
-        matrix->ZERO[k] = malloc(matrix->cols * sizeof *matrix->values);
+        matrix.c->values[k] = malloc(matrix.c->cols * sizeof *matrix.c->values);
+        matrix.c->ZERO[k] = malloc(matrix.c->cols * sizeof *matrix.c->values);
         int j;
         for(j = 0; j < mat_cols; j++){
-            matrix->values[k][j] = 0;
-            matrix->ZERO[k][j] = 0;
+            matrix.c->values[k][j] = 0;
+            matrix.c->ZERO[k][j] = 0;
         }
     }
 }
 
-void fill_matrix_summ(struct Matrix *matrix){
+void fill_matrix_summ(struct Matrix *matrix.c){
     int k;
-    for(k = 0; k < matrix->rows; k++){
+    for(k = 0; k < matrix.c->rows; k++){
         int j;
-        for(j = 0; j < matrix->cols; j++){
-            matrix->values[k][j] = k+j;
+        for(j = 0; j < matrix.c->cols; j++){
+            matrix.c->values[k][j] = k+j;
         }
     }
 }
 
-void fill_matrix_mult(struct Matrix *matrix){
+void fill_matrix_mult(struct Matrix *matrix.c){
     int k;
-    for(k = 0; k < matrix->rows; k++){
+    for(k = 0; k < matrix.c->rows; k++){
         int j;
-        for(j = 0; j < matrix->cols; j++){
-            matrix->values[k][j] = k*j;
+        for(j = 0; j < matrix.c->cols; j++){
+            matrix.c->values[k][j] = k*j;
         }
     }
 }
@@ -164,7 +164,7 @@ struct Matrix matrix_add(const struct Matrix *fst_matx, const struct Matrix *snd
     unsigned int rows = fst_matx->rows;
     create_empty_matrix(&res_matx,cols,rows,"Res_Add");
     if (fst_matx->rows != snd_matx->rows || fst_matx->cols != snd_matx->cols){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return res_matx;
     }
     res_matx.values = malloc(rows * sizeof *res_matx.values);
@@ -185,7 +185,7 @@ struct Matrix matrix_subt(const struct Matrix *fst_matx, const struct Matrix *sn
     unsigned int rows = fst_matx->rows;
     create_empty_matrix(&res_matx,cols,rows,"Res_Subt");
     if (fst_matx->rows != snd_matx->rows || fst_matx->cols != snd_matx->cols){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return res_matx;
     }
     res_matx.values = malloc(rows * sizeof *res_matx.values);
@@ -206,7 +206,7 @@ struct Matrix matrix_mult(const struct Matrix *fst_matx, const struct Matrix *sn
     unsigned int rows = fst_matx->rows;
     create_empty_matrix(&res_matx,cols,rows,"Res_Mult");
     if (fst_matx->cols != snd_matx->rows){
-        printf("Incompatible matrix sizes!\n");
+        printf("Incompatible matrix.c sizes!\n");
         return res_matx;
     }
     res_matx.values = malloc(rows * sizeof *res_matx.values);
@@ -225,14 +225,14 @@ struct Matrix matrix_mult(const struct Matrix *fst_matx, const struct Matrix *sn
     return res_matx;
 }
 
-void print_matx(struct Matrix matrix){
-    printf("%s \n", matrix.name);
+void print_matx(struct Matrix matrix.c){
+    printf("%s \n", matrix.c.name);
     int k;
-    for(k = 0; k < matrix.rows; k++){
+    for(k = 0; k < matrix.c.rows; k++){
         printf("(");
         int j;
-        for(j = 0; j < matrix.cols; j++){
-            printf("%f; ",matrix.values[k][j]);
+        for(j = 0; j < matrix.c.cols; j++){
+            printf("%f; ",matrix.c.values[k][j]);
         }
         printf(")\n");
     }

@@ -342,9 +342,9 @@ void test_of_reverse(){
     }
 
     if (flag){
-        printf("Test of reverse matrix was successful\n");
+        printf("Test of reverse matrix.c was successful\n");
     } else {
-        printf("Test of reverse matrix was faild\n");
+        printf("Test of reverse matrix.c was faild\n");
     }
 }
 
@@ -403,34 +403,34 @@ int main() {
 
     printf("This is empty Matrix\n");
     output(Empty());
-    printf("This is Zero matrix\n");
+    printf("This is Zero matrix.c\n");
     output(Zero(5,5));
-    printf("This is Unit matrix\n");
+    printf("This is Unit matrix.c\n");
     output(Unit(5));
 
-    printf("This is matrix A\n");
+    printf("This is matrix.c A\n");
     output(A);
-    printf("This is matrix B\n");
+    printf("This is matrix.c B\n");
     output(B);
 
-    printf("This is transporation of matrix A\n");
+    printf("This is transporation of matrix.c A\n");
     output(transponation(A));
 
-    printf("This is matrix A + B\n");
+    printf("This is matrix.c A + B\n");
     output(addition(A,B));
-    printf("This is matrix A - B\n");
+    printf("This is matrix.c A - B\n");
     output(subtraction(A,B));
-    printf("This is matrix A * B\n");
+    printf("This is matrix.c A * B\n");
     output(multiplication(A, B));
-    printf("This is matrix A * 0.33\n");
+    printf("This is matrix.c A * 0.33\n");
     output(multy_k(A, 0.33));
 
-    printf("This is det of matrix A\n");
+    printf("This is det of matrix.c A\n");
     printf("%.2lf\n\n", det(A));
 
-    printf("This is reverse of matrix A\n");
+    printf("This is reverse of matrix.c A\n");
     output(reverse(A));
-    printf("This is matrix A in degree 3\n");
+    printf("This is matrix.c A in degree 3\n");
     output(pow_mat(A, 3));
 
     printf("This is exp of Matrix A\n");
