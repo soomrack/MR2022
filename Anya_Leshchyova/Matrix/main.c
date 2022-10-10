@@ -5,11 +5,11 @@
 
 
 
-typedef struct {  // структура задаёт размеры матрицы и саму матрицу
+typedef struct {
     unsigned int row; // число строк, целое положительное
     unsigned int col; // число столбцов, целое положительное
     double ** massive;
-}matrix;
+}matrix;  // структура задаёт размеры матрицы и саму матрицу
 
 matrix A = {3, 3};
 matrix B = {3, 3};
