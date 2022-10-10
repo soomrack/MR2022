@@ -1,102 +1,102 @@
-#include <stdio.h>
+#include <stdio.h> //вывод засунуть в ещё одну функцию, форматирование текста.
 
 
  typedef struct Person {
-     long long kapital, perviy_vznos, ezh_vznos, rashody, stoimost_kv, dohod, dolg;
-     unsigned int  stavka_vklada, stavka_ipoteki;
+     unsigned long long int capital;
+     unsigned long long int first_fee;
+     unsigned long long int annual_fee;
+     unsigned long long int expenses;
+     unsigned long long int real_estate_price;
+     unsigned long long int income;
+     unsigned long long int debt;
+     unsigned int  deposit_rate;
+     unsigned int  mortgage_rate;
 } Person;
 
-int const MONTHS = 12, YEARS = 20, FIRST_PRICE = 9*1000*1000*100, FIRST_STAVKA_VKLADA = 5, FIRST_STAVKA_IPOTEKI = 12; //все вычисления происходят в копейках
-int const EZH_VZNOS_PURE = FIRST_STAVKA_IPOTEKI / 12 / 20; //значение ежемесячного взнооса без процентов
+unsigned int const YEARS = 20;
+unsigned int const FIRST_PRICE = 9*1000*1000*100;//все вычисления происходят в копейках
+unsigned int const START_CAPITAL = 1*1000*1000*100;
+unsigned int const FIRST_FEE = 300*1000*100;
+unsigned int const START_DEPOSIT_RATE = 5;
+unsigned int const START_MORTGAGE_RATE = 12;
+unsigned int const ANNUAL_FEE_PURE = (FIRST_PRICE - FIRST_FEE) / 12 / YEARS; //значение ежемесячного взнооса без процентов
 
-
-void tax (Person *person){
-    person->kapital -= 0.005 * person->stoimost_kv;
+void tax_payment(Person *person){
+    person->capital -= 0.005 * person->real_estate_price;
 }
 
-
-void stavkaVkladaRise( Person *person ){
-    person->stavka_vklada += 2;
+void deposit_rate_rise(Person *person){
+    person->deposit_rate += 2;
 }
 
-
-void priceRise(Person *person){
-    person->kapital -= person->stoimost_kv;
-    person->stoimost_kv = (long long)(person->stoimost_kv * 1.5);
-    person->kapital += person->stoimost_kv;
+void price_rise(Person *person){
+    person->real_estate_price = (unsigned long long int)(person->real_estate_price * 1.5);
 }
 
-
-void dohodFall(Person *person) {
-    person->dohod -= 30*100*1000;
+void income_fall(Person *person) {
+    person->income -= 30 * 1000 * 100;
 }
 
-
-void obrabotchikYear (int year, Person *person ){
-    if (year == 2) stavkaVkladaRise( person );
-    if (year == 4) priceRise( person );
-    if (year == 6) dohodFall( person );
+void expenses_income(Person *person){
+    person->capital += person->income - person->expenses;
 }
 
-
-void rashodyDohody ( Person *person ){
-    person->kapital += person->dohod - person->rashody;
+void mortgage_payment(Person *person){
+    if(person->debt > person->annual_fee){
+    person->capital -= (person->annual_fee + person->debt * 0.01 * person->mortgage_rate / 12);
+    person->debt -= person->annual_fee;
+    }
+    else{
+        person->capital -= person->debt;
+        person->debt = 0;
+    }
 }
 
-
-void ipotekaPayment( Person *person ){
-    person->kapital -= (person->ezh_vznos + person->dolg * 0.01 * person->stavka_ipoteki / 12);
-    person->dolg -= person->ezh_vznos;
+void deposit_income(Person *person) {
+    person->capital *= (long double)(1 + 0.01 * person->deposit_rate / 12);
 }
 
-
-void vkladIncome( Person *person ) {
-    person->kapital *= (double)(1 + 0.01 * person->stavka_vklada / 12);
+void full_print(int year, Person alice,Person bob){
+    printf("year:%d\tAlice:%.2lf  \tBob:%.2lf  \tdifference:%.2lf \n",year, (alice.capital + alice.real_estate_price)/ 100.0, (unsigned long long int)(bob.capital + bob.real_estate_price) / 100.0,(long long int)((alice.capital + alice.real_estate_price) - (bob.capital + bob.real_estate_price)) / 100.0);
 }
-
-
-void obrabotchikMonth ( Person *person ){
-    rashodyDohody (person);
-    ipotekaPayment (person);
-    vkladIncome (person);
-}
-
-
-void personPrint ( Person person ){
-    printf("%.2lf  \t",(person.kapital + person.stoimost_kv) / 100.0);
-}
-
-void diffPrint ( Person person1, Person person2 ){
-    printf("difference:%.2lf \n",(person1.kapital - person2.stoimost_kv) / 100.0);
-}
-
 
 int main() {
     Person Alice = {
-           1000*1000*100, 0, 0, 4*1000*1000, FIRST_PRICE, 150*1000*100, 0,FIRST_STAVKA_VKLADA,0,
+            START_CAPITAL, 0, 0, 40*1000*100, 0, 150*1000*100, 0, START_DEPOSIT_RATE, 0,
    };
-     Person Bob = {
-            1000*1000*100, 300*1000*100, EZH_VZNOS_PURE, 4*1000*1000, FIRST_PRICE, 150*1000*100, 0,FIRST_STAVKA_VKLADA,FIRST_STAVKA_IPOTEKI
+    Person Bob = {
+            START_CAPITAL, FIRST_FEE, ANNUAL_FEE_PURE, 40*1000*100, FIRST_PRICE, 150*1000*100, 0, START_DEPOSIT_RATE, START_MORTGAGE_RATE
     };
-    Bob.kapital -= Bob.perviy_vznos; //платёж первого взноса
-    Bob.dolg += Bob.stoimost_kv - Bob.perviy_vznos;
-    printf("year:0\tAlice:"); //вывод
-    personPrint(Alice);
-    printf("Bob:");
-    personPrint(Bob);
-    diffPrint(Alice,Bob);
-    for (int year = 0; year < YEARS; year++) { //годовая итерация
-        for (int month = 0; month < MONTHS; month++) { //месячная итерация
-            obrabotchikMonth(&Alice);
-            obrabotchikMonth(&Bob);
+    for (int year = 0; year <= YEARS; year++) { //годовая итерация
+        for (int month = 0; month < 12; month++) { //месячная итерация
+            if(year > 0) {
+                expenses_income(&Alice);
+                mortgage_payment(&Alice);
+                deposit_income(&Alice);
+                expenses_income(&Bob);
+                mortgage_payment(&Bob);
+                deposit_income(&Bob);
+            }
         }
-        obrabotchikYear ( year,  &Alice );
-        obrabotchikYear ( year,  &Bob );
-        tax(&Bob);
-        printf("year:%d\tAlice:",year + 1); //вывод
-        personPrint(Alice);
-        printf("Bob:");
-        personPrint(Bob);
-        diffPrint(Alice,Bob);
+        switch (year) {
+            case 0:
+                Bob.capital -= Bob.first_fee; //платёж первого взноса
+                Bob.debt += Bob.real_estate_price - Bob.first_fee;
+                break;
+            case 2:
+                deposit_rate_rise(&Alice);
+                deposit_rate_rise(&Bob);
+                break;
+            case 4:
+                price_rise(&Alice);
+                price_rise(&Bob);
+                break;
+            case 6:
+                income_fall(&Alice);
+                income_fall(&Bob);
+                break;
+        }
+        tax_payment(&Bob);
+        full_print(year,Alice,Bob);
     }
 }
