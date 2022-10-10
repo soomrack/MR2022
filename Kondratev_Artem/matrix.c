@@ -29,10 +29,10 @@ Matrix matrix_init(int rows, int cols) {
         matrix.array[row] = start + row * matrix.cols;
     }
 
-    /*matrix.array = (double**)malloc(rows * sizeof(double*));
+    /*matrix.c.array = (double**)malloc(rows * sizeof(double*));
 
     for(int row = 0; row <= rows - 1; row++) {
-     matrix.array[row] = (double*)malloc(cols * sizeof(double));
+     matrix.c.array[row] = (double*)malloc(cols * sizeof(double));
     }*/
 
     return matrix;
@@ -60,7 +60,7 @@ void matrix_output(Matrix *matrix, int filling_key) {
 
 void matrix_filling(Matrix *matrix) {
 
-    printf("fill matrix:\n");
+    printf("fill matrix.c:\n");
 
     for(int row = 0; row <= matrix->rows-1; row++)
         for(int col = 0; col <= matrix->cols-1; col++)
@@ -75,7 +75,7 @@ Matrix new_matrix() {
 
     int  rows, cols;
 
-    printf("input new matrix sizes:\n");
+    printf("input new matrix.c sizes:\n");
     scanf("%dx%d", &rows, &cols);
     printf("sizes: %dx%d\n", rows, cols);
 
@@ -88,8 +88,8 @@ Matrix new_matrix() {
 
 void mem_clearing(Matrix *matrix) {
 
-    /*for(int row = 0; row <= matrix->rows - 1; row ++)
-        free(matrix->array[row]);*/
+    /*for(int row = 0; row <= matrix.c->rows - 1; row ++)
+        free(matrix.c->array[row]);*/
 
     free(matrix->array);
 
@@ -285,7 +285,7 @@ void matrix_determinant_output() {
     Matrix matrix = new_matrix();
 
     if(matrix_square_checker(&matrix) == -1) {
-        printf("You need to input square matrix\n");
+        printf("You need to input square matrix.c\n");
         return;
     }
 
@@ -395,7 +395,7 @@ void inverse_matrix_output() {
     Matrix matrix = new_matrix();
 
     if(matrix_square_checker(&matrix) == -1) {
-        printf("You need to input square matrix\n");
+        printf("You need to input square matrix.c\n");
         return;
     }
 
@@ -574,9 +574,9 @@ void test() {
 void start_menu() {
 
     printf("Choose operation\n");
-    printf("1: matrix addition; 2: matrix subtraction; 3: number addition; 4: number multiplication;\n");
-    printf("5: matrix multiplication; 6: matrix determinant; 7: matrix transposition; 8: matrix inversion;\n");
-    printf("9: matrix inverse multiplication;\n");
+    printf("1: matrix.c addition; 2: matrix.c subtraction; 3: number addition; 4: number multiplication;\n");
+    printf("5: matrix.c multiplication; 6: matrix.c determinant; 7: matrix.c transposition; 8: matrix.c inversion;\n");
+    printf("9: matrix.c inverse multiplication;\n");
 
     int operation_key;
     scanf("%d", &operation_key);

@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
+#include <string.h>
+
+
+
 struct Matrix {
     unsigned int row;
     unsigned int col;
@@ -9,7 +14,7 @@ struct Matrix {
 };
 
 
-// Очистка памяти
+// Очистка памяти и зануление указателя
 double ** free_memory (double ** values, unsigned int size){
     for (int i = 0; i < size; i++){
         free(values[i]);
@@ -43,21 +48,23 @@ void output(const char* function_name, struct Matrix A){
     }
 }
 
-// Введение значений
+// Введение значений в массив
 double** input_values(struct Matrix A) {
+    srand(time(NULL));
     A.values = dual_array_initialization(A.row, A.col);
     for (int i = 0; i<A.row; i++)  // цикл по строкам
     {
         for (int j = 0; j<A.col; j++) // цикл по столбцам
         {
-            printf("a[%d][%d] = ", i, j);
-            scanf("%lf", &A.values[i][j]);
+            /*printf("a[%d][%d] = ", i, j);
+            scanf("%lf", &A.values[i][j]);*/
+            A.values[i][j] = rand()%10;
         }
     }
     return A.values;
 }
 
-
+// Нулевая матрица в случае ошибочного ввода
 struct Matrix zero(unsigned int size){
     struct Matrix s = {size,size};
     s.values = dual_array_initialization(s.row,s.col);
@@ -69,7 +76,7 @@ struct Matrix zero(unsigned int size){
     return s;
 }
 
-
+// Единичная матрица
 struct Matrix single(unsigned int size){
     struct Matrix s = {size,size};
     s.values = dual_array_initialization(s.row,s.col);
@@ -83,7 +90,6 @@ struct Matrix single(unsigned int size){
     }
     return s;
 }
-
 
 struct Matrix transposition (const struct Matrix trans){ // Транспонирование матрицы
     struct Matrix a = {trans.row,trans.col};
@@ -113,7 +119,6 @@ struct Matrix addition(const struct Matrix m1, const struct Matrix m2) { // Сл
         }
         return sum;
     }
-
 }
 
 
@@ -143,7 +148,8 @@ struct Matrix multiplication(const struct Matrix m1, const struct Matrix m2) { /
     if (m1.col != m2.row) {
         printf("For Multiplication First Matrix Cols should equal to Second Matrix Row");
         return multiplication;
-    } else {
+    } else
+    {
         multiplication.row = m1.row;
         multiplication.col = m2.col;
         multiplication.values = dual_array_initialization(multiplication.row, multiplication.col);
@@ -161,31 +167,42 @@ struct Matrix multiplication(const struct Matrix m1, const struct Matrix m2) { /
     }
 }
 
+struct Matrix multy(const struct Matrix matrix, const double k){ // Умножение матрицы на число
+    struct Matrix multy = {matrix.row, matrix.col};
+    multy.values = dual_array_initialization(multy.row, multy.col);
+    for (int i = 0; i < multy.row; i++){
+        for (int j = 0; j < multy.col; j++){
+            multy.values[i][j] = matrix.values[i][j] * k;
+        }
+    }
+    return multy;
+}
 
-//Возвращает матрицу matrix.c без row-ой строки и col-того столбца
+
+//Возвращает матрицу matrix без row-ой строки и col-того столбца
 struct Matrix getMatrixhoutRowAndCol(const struct Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col) {
     struct Matrix m1 = {size - 1,size - 1};
     m1.values = dual_array_initialization(size - 1,size-1);
-    int offsetRow = 0; //Смещение индекса строки в матрице
-    int offsetCol; //Смещение индекса столбца в матрице
+    int shiftRow = 0; //Смещение индекса строки в матрице
+    int shiftCol; //Смещение индекса столбца в матрице
     for (int i = 0; i < size - 1; i++) {
         //Пропустить row-ую строку
         if (i == row) {
-            offsetRow = 1; //Как только встретили строку, которую надо пропустить, делаем смещение для исходной матрицы
+            shiftRow = 1; //Как только встретили строку, которую надо пропустить, делаем смещение для исходной матрицы
         }
-        offsetCol = 0; //Обнулить смещение столбца
+        shiftCol = 0; //Обнулить смещение столбца
         for (int j = 0; j < size - 1; j++) {
             if (j == col) {
-                offsetCol = 1;
+                shiftCol= 1;
             }
-            m1.values[i][j] = matrix.values[i + offsetRow][j + offsetCol];
+            m1.values[i][j] = matrix.values[i + shiftRow][j + shiftCol];
         }
     }
     return m1;
 }
 
 
-double matrixDet(const struct Matrix m, const unsigned int size) {
+double matrixDet(const struct Matrix m, const unsigned int size) { // Определитель с рекурсивным вызовом
     if (m.row != m.col) {
         printf("Matrix should be nxn");
         return 0;
@@ -197,31 +214,17 @@ double matrixDet(const struct Matrix m, const unsigned int size) {
             return (m.values[0][0] * m.values[1][1] - m.values[0][1] * m.values[1][0]);
         } else {
             for (int j = 0; j < size; j++) {
-                det += (pow(-1, j) * m.values[0][j] * matrixDet(getMatrixhoutRowAndCol(m, size, 0, j), size - 1));
+                struct Matrix temp = getMatrixhoutRowAndCol(m,size,0,j);
+                det += (pow(-1, j) * m.values[0][j] * matrixDet(temp, size - 1));
+                temp.values = free_memory(temp.values,temp.row);
             }
         }
-        for (int i = 0; i < size; i++){
-            free(m.values[i]);
-        }
-        free(m.values);
         return det;
     }
 }
 
 
-struct Matrix multy(const struct Matrix x, const double k){
-    struct Matrix rez = {x.row, x.col};
-    rez.values = dual_array_initialization(rez.row, rez.col);
-    for (int i = 0; i < rez.row; i++){
-        for (int j = 0; j < rez.col; j++){
-            rez.values[i][j] = x.values[i][j] * k;
-        }
-    }
-    return rez;
-}
-
-
-struct Matrix reverse_matrix (const struct  Matrix rev,const unsigned int size) {
+struct Matrix reverse_matrix (const struct  Matrix rev,const unsigned int size) { // Функция нахождения обратной матрицы
     struct Matrix a = {rev.row, rev.col};
     double d = matrixDet(rev,size);
     if (rev.row != rev.col) {
@@ -232,7 +235,8 @@ struct Matrix reverse_matrix (const struct  Matrix rev,const unsigned int size) 
         printf("Matrix is degenerative, determinate = 0");
         return zero(size);
     }
-    else {
+    else
+    {
         a.values = dual_array_initialization(a.row, a.col);
         for (int i = 0; i < a.row; i++) {
             for (int j = 0; j < a.col; j++) {
@@ -245,7 +249,7 @@ struct Matrix reverse_matrix (const struct  Matrix rev,const unsigned int size) 
 }
 
 
-struct Matrix exponent_matrix (const struct Matrix expon, const unsigned int size) {
+struct Matrix exponent_matrix (const struct Matrix expon, const unsigned int size) { // Функция нахождения экспоненты матрицы
     if (expon.row != expon.col) {
         printf("Matrix should have size nxn");
         return zero(size);
@@ -275,7 +279,7 @@ struct Matrix exponent_matrix (const struct Matrix expon, const unsigned int siz
 }
 
 
-void menu(struct Matrix A, struct  Matrix B){
+void menu(struct Matrix A, struct  Matrix B){ //Меню управления программой
     struct Matrix addiction;
     struct Matrix sub;
     struct Matrix multi;
@@ -307,12 +311,12 @@ void menu(struct Matrix A, struct  Matrix B){
                 break;
             case 5:
                 reverse = reverse_matrix(A,A.row);
-                output("reverse matrix.c", reverse);
+                output("reverse matrix", reverse);
                 reverse.values = free_memory(reverse.values,reverse.row);
                 break;
             case 6:
                 exponent = exponent_matrix(A,A.row);
-                output("exponent matrix.c",exponent);
+                output("exponent matrix",exponent);
                 exponent.values = free_memory(exponent.values,exponent.row);
                 break;
             default:
@@ -330,7 +334,7 @@ int main() {
     struct Matrix reverse;
     struct Matrix exponent;*/
 
-   struct Matrix A = {3, 3};
+   struct Matrix A = {4, 4};
     A.values = input_values(A);
     output("First Matrix", A);
 
@@ -342,12 +346,15 @@ int main() {
            "1. Addiction of two Matrix\n"
            "2. Subtraction of two Matrix\n"
            "3. Multiplication of two Matrix\n"
-           "4. Find det of matrix.c\n"
-           "5. Find reverse matrix.c\n"
-           "6. Find exponent matrix.c\n");
+           "4. Find det of matrix\n"
+           "5. Find reverse matrix\n"
+           "6. Find exponent matrix\n");
     menu(A,B);
-    A.values = free_memory(A.values,A.row); // Указатель обнулен уже в функции;
+
+    A.values = free_memory(A.values,A.row);
+    A.values = NULL;
     B.values = free_memory(B.values,B.row);
+    B.values = NULL;
 /*
     addiction = addition(A,B);
     output("addiction", addiction);
@@ -368,15 +375,13 @@ int main() {
 
 
     reverse = reverse_matrix(A,A.row);
-    output("reverse matrix.c", reverse);
+    output("reverse matrix", reverse);
     reverse.values = free_memory(reverse.values,reverse.row);
 
 
     exponent = exponent_matrix(A,A.row);
-    output("exponent matrix.c",exponent);
-    exponent.values = free_memory(exponent.values,exponent.row);
+    output("exponent matrix",exponent);
+    exponent.values = free_memory(exponent.values,exponent.row);*/
 
-    A.values = free_memory(A.values,A.row);
-    B.values = free_memory(B.values,B.row);*/
     return 0;
 }
