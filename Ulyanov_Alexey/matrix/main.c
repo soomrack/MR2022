@@ -23,9 +23,8 @@ struct Matrix undefined(const unsigned int rows, const unsigned int cols){
     rez.data = (double*)malloc(rows * cols * sizeof (double *));
     rez.value = (void**)malloc(rows * sizeof(void *));
 
-    for (unsigned int row = 0; row < rows; row ++){
+    for (unsigned int row = 0; row < rows; row++){
         rez.value[row] = rez.data + row * cols;
-        // не знаю почему, но иначе не работает
     }
     return rez;
 }
@@ -72,25 +71,10 @@ struct Matrix tran(struct Matrix x){
 
 struct Matrix minor(unsigned int cur_row, unsigned int cur_col, struct Matrix x){
     struct Matrix rez = undefined( x.rows - 1, x.cols - 1);
-
-    for (int row = 0; row < cur_row; row++){
-        for (int col = 0; col < cur_col; col++){
-            rez.value[row][col] = x.value[row][col];
-        }
-    }
-    for (int row = 0; row < cur_row; row++){
-        for (int col = cur_col; col < rez.cols; col++){
-            rez.value[row][col] = x.value[row][col+1];
-        }
-    }
-    for (int row = cur_row; row < rez.rows; row++){
-        for (int col = 0; col < cur_col; col++){
-            rez.value[row][col] = x.value[row+1][col];
-        }
-    }
-    for (int row = cur_row; row < rez.rows; row++){
-        for (int col = cur_col; col < rez.cols; col++){
-            rez.value[row][col] = x.value[row+1][col+1];
+    unsigned int k = 0;
+    for (int idx = 0; idx < x.rows * x.cols; idx++){
+        if ((idx % x.cols != cur_col) && (idx / x.cols != cur_row)){
+            rez.data[k++] = x.data[idx];
         }
     }
     return rez;
@@ -232,7 +216,6 @@ void output(struct Matrix x){
 
 
 void test_of_add(){
-
     struct Matrix first = undefined(2, 3);
     struct Matrix second = undefined(2,3);
 
@@ -402,7 +385,7 @@ void block_output(){
     printf("This is empty Matrix\n");
     output(empty());
     printf("This is zero matrix\n");
-    output(zero(5, 5));
+    output(zero(5,5));
     printf("This is one matrix\n");
     output(one(5, 5));
 
@@ -437,7 +420,7 @@ void block_output(){
 
 
 int main() {
-    //srand(time(NULL));
+    srand(time(NULL));
 
     block_tests();
     block_output();
