@@ -42,7 +42,7 @@ void init_Bob(struct Client *bob){
     bob->name = "Bob";
     bob->bank_account = 1 * 1000 * 1000 * 100;
     bob->bank_deposit_percent = 0.08;
-    bob->monthly_arenda_payments = 40 * 1000 * 100;
+    bob->monthly_arenda_payments = 0;
     bob->monthly_mortgage_payments = 30 * 1000 * 100;
     bob->salary = 150 * 1000 * 100;
     bob->monthly_house_bills = 10 * 1000 * 100;
