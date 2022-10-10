@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a9571232-ede3-432e-9f8e-a88bdc041688" name="Changes" comment="new 10.10" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2EfDbLVNwteEECz1pUHQzQrFBgx" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a9571232-ede3-432e-9f8e-a88bdc041688" name="Changes" comment="" />
+      <created>1662977820506</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1662977820506</updated>
+      <workItem from="1662977827037" duration="678000" />
+      <workItem from="1663079410449" duration="1880000" />
+      <workItem from="1663084828378" duration="426000" />
+      <workItem from="1663572140272" duration="722000" />
+      <workItem from="1663573964118" duration="73000" />
+      <workItem from="1663574454489" duration="996000" />
+      <workItem from="1663788559447" duration="2902000" />
+      <workItem from="1663952618525" duration="199000" />
+      <workItem from="1663952937874" duration="231000" />
+      <workItem from="1664398305071" duration="469000" />
+      <workItem from="1664781257744" duration="314000" />
+      <workItem from="1665343408471" duration="152000" />
+      <workItem from="1665343642983" duration="369000" />
+      <workItem from="1665396447342" duration="77000" />
+      <workItem from="1665396631135" duration="8000" />
+    </task>
+    <task id="LOCAL-00001" summary="Alice_and_Bob">
+      <created>1662977882368</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1662977882368</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Alice_and_Bob">
+      <created>1662977988541</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1662977988541</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Alice_and_Bob">
+      <created>1662978040505</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1662978040505</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Alice_and_Bob">
+      <created>1662978103507</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1662978103507</updated>
+    </task>
+    <task id="LOCAL-00005" summary="New">
+      <created>1663084896005</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1663084896005</updated>
+    </task>
+    <task id="LOCAL-00006" summary="New">
+      <created>1663084916775</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1663084916775</updated>
+    </task>
+    <task id="LOCAL-00007" summary="New">
+      <created>1663578533936</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1663578533936</updated>
+    </task>
+    <task id="LOCAL-00008" summary="New 23.09">
+      <created>1663952675371</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1663952675371</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Сorrected 28.09">
+      <created>1664398371056</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1664398371056</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Сorrected 28.09">
+      <created>1665343546829</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1665343546829</updated>
+    </task>
+    <task id="LOCAL-00011" summary="final">
+      <created>1665343724434</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1665343724434</updated>
+    </task>
+    <task id="LOCAL-00012" summary="final">
+      <created>1665343829728</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1665343829728</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Alice_and_Bob" />
+    <MESSAGE value="New" />
+    <MESSAGE value="New 23.09" />
+    <MESSAGE value="Сorrected 28.09" />
+    <MESSAGE value="final" />
+    <option name="LAST_COMMIT_MESSAGE" value="final" />
+  </component>
+</project>
