@@ -16,7 +16,7 @@ struct Matrix matrix_make (const unsigned int cols, const unsigned int rows, str
         matrix.values[idx] = 0.0;
     }
     return matrix;
-};
+}
 
 struct Matrix data_input(struct Matrix matrix, double arr[]){
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++){
@@ -61,15 +61,10 @@ void print_matrix(const struct Matrix X){// Вывод матрицы на эк�
 
 struct Matrix error(void){
     struct Matrix error;
-    error.cols = 2;
-    error.rows = 1;
+    error.cols = 0;
+    error.rows = 0;
     error.values = malloc(error.cols * error.rows * sizeof(double));
     printf("Wrong configuration\n");
-    for (unsigned int idx = 0; idx < error.cols * error.rows; idx++){
-        error.values[idx] = 0.0;
-        printf("%.1lf\t",error.values[idx]);
-    }
-    printf("\n");
     return error;
 }
 
@@ -86,42 +81,28 @@ struct Matrix matrix_output(const struct Matrix A,char symbol) {
 
 
 struct Matrix matrix_sum(const struct Matrix A,const struct Matrix B){
-    struct Matrix C;
-    C.cols = A.rows;
-    C.rows = A.cols;
-    C.values = malloc(C.cols * C.rows * sizeof(double));
-    for (unsigned int row = 0; row < A.rows; row++) {
-        for (unsigned int col = 0; col < B.cols; col++) {
-            C.values[col * C.rows + row] = 0;
-        }
-    }
-    if ((A.cols != B.cols)*(A.rows != B.rows)) return error();
+    struct Matrix C = matrix_make(A.cols,A.rows,C);
+    if ((A.cols != B.cols)||(A.rows != B.rows)) return error();
     for (unsigned int row = 0; row < A.rows; row++) {
         for (unsigned int col = 0; col < A.cols; col++) {
             C.values[row * C.cols + col] = A.values[row * A.cols + col] + B.values[row * B.cols + col];
 
         }
     }
+    matrix_output(C,'+');
     return C;
 }
 
 
 struct Matrix matrix_sub(const struct Matrix A, const struct Matrix B) {
-    struct Matrix C;
-    C.cols = A.rows;
-    C.rows = A.cols;
-    C.values = malloc(C.cols * C.rows * sizeof(double));
-    for (unsigned int row = 0; row < A.rows; row++){
-        for (unsigned int col = 0; col < B.cols; col++) {
-            C.values[col * C.rows + row] = 0;
-        }
-    }
-    if ((A.cols != B.cols)*(A.rows != B.rows)) return error();
+    if ((A.cols != B.cols)||(A.rows != B.rows)) return error();
+    struct Matrix C = matrix_make(A.cols,A.rows,C);
     for (unsigned int row = 0; row < A.rows; row++) {
         for (unsigned int col = 0; col < A.cols; col++) {
             C.values[row * C.cols + col] = A.values[row * A.cols + col] - B.values[row * B.cols + col];
         }
     }
+    matrix_output(C,'-');
     return C;
 }
 
@@ -138,14 +119,8 @@ struct Matrix matrix_output1(struct Matrix C) {
 
 
 struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
-
-    if ((A.cols != B.rows)+(A.rows != B.cols)) return error();
-
-    struct Matrix C;
-    C.cols = A.rows;
-    C.rows = B.cols;
-    C.values = malloc(C.cols * C.rows * sizeof(double));
-
+    if ((A.cols != B.rows)||(A.rows != B.cols)) return error();
+    struct Matrix C = matrix_make(B.cols,A.rows,C);
     for (unsigned int row = 0; row < A.rows; row++){
         for (unsigned int col = 0; col < B.cols; col++) {
             C.values[col * C.rows + row] = 0;
@@ -154,24 +129,50 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
             }
         }
     }
+    matrix_output1(C);
     return C;
 }
 
-void test(const struct Matrix One, const struct Matrix Zero){
+
+void test(){
+    struct Matrix Zero = zero(2,2);
+    struct Matrix One = one(2,2);
+
     struct Matrix sum = matrix_sum(One,Zero);
-    matrix_output(sum,'+');
+    int result_sum;
+    for (unsigned int idx = 0; idx < sum.cols * sum.rows; idx++){
+
+        if (sum.values[idx] == 1.0){result_sum = 1;}
+    }
+    if (result_sum == 1) {printf("Summ Correct\n");}
+    else printf("Summ Incorrect\n");
+    free(sum.values);
+
     struct Matrix sub = matrix_sub(Zero,One);
-    matrix_output(sub,'-');
+    int result_sub;
+    for (unsigned int idx = 0; idx < sub.cols * sub.rows; idx++){
+
+        if (sub.values[idx] == -1.0){result_sub = 1;}
+    }
+    if (result_sub == 1) {printf("Sub Correct\n");}
+    else printf("Sub Incorrect\n");
+    free(sub.values);
+
     struct Matrix mult = matrix_mult(One,Zero);
-    matrix_output1(mult);
+    int result_mult;
+    for (unsigned int idx = 0; idx < mult.cols * mult.rows; idx++){
+
+        if (mult.values[idx] == 0.0){result_mult = 1;}
+    }
+    if (result_mult == 1) {printf("Mult Correct\n");}
+    else printf("Mult Incorrect\n");
+    free(mult.values);
 }
 
 
 int main() {
 // тест функций
-    struct Matrix Zero = zero(2,2);
-    struct Matrix One = one(2,2);
-    test(One,Zero);
+    test();
 // создание первой матрицы
     struct Matrix A = matrix_make(3,3,A);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
@@ -184,11 +185,8 @@ int main() {
     print_matrix(B);
 // математические операции с матрицами
     struct Matrix sum = matrix_sum(A,B);  // сумма
-    matrix_output(sum,'+');
     struct Matrix sub = matrix_sub(A,B);  // разность
-    matrix_output(sub,'-');
     struct Matrix mult = matrix_mult(A,B);  // умножение
-    matrix_output1(mult);
 
     free(A.values);
     free(B.values);
