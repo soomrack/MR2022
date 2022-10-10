@@ -73,7 +73,7 @@ void mortgage(struct Client *client){ //плата по ипотеке
 
 
 void bank_deposit_income(struct Client *client){ //начислили проценты
-    client->bank_account = (unsigned long long int)(client->bank_account) + (client->bank_deposit_percent/12.0)*client->bank_account;
+    client->bank_account = (unsigned long long int)((client->bank_account) + (client->bank_deposit_percent/12.0)*client->bank_account);
 }
 
 
@@ -92,10 +92,18 @@ void house_value_increase(struct Client *client){ //повысиласть ст�
 }
 
 
-void print_result(struct Client *client){
-    printf("Name: %s\n", client->name);
-    printf("Bank account: %llu,", (client->bank_account/100)+(client->house_value/100));
-    printf("%llu\n", (client->bank_account%100)+(client->house_value%100));
+void print_result(struct Client *client1, struct Client *client2){
+    printf("Name: %s, Total: %llu.%llu\n", client1->name, client1->bank_account/100, client1->bank_account%100);
+    printf("Name: %s, Total: %llu.%llu\n", client2->name, client2->bank_account/100 + client2->house_value/100, client2->bank_account%100 + client2->bank_account%100);
+    if (client1->bank_account > (client2->bank_account + client2->house_value)){
+        printf("%s plan is more profitable than %s\n", client1->name, client2->name);
+    }
+    else if ((client2->bank_account+client2->house_value) > client1->bank_account){
+        printf("%s plan is more profitable than %s\n", client2->name, client1->name);
+    }
+    else {
+        printf ("They are equally profitable\n");
+    }
 }
 
 
@@ -141,8 +149,7 @@ void simulation (){
         }
 
         if (month % 12 == 0){
-            print_result(&alice);
-            print_result(&bob);
+            print_result(&alice, &bob);
             printf("%d year\n", month/12);
         }
     }
