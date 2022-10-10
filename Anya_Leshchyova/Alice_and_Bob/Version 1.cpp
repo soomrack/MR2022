@@ -145,7 +145,7 @@ void Itog (matrix A){
 
 //показывает на какой год клиент сможет купить квартиру, если возьмет вклад
 void Apartment_purchase(const money A, const percent B, const matrix C){
-    // matrix result={A.time_year, 1};
+    // matrix.c result={A.time_year, 1};
     //result.massive = memory(A.time_year, 1);
     matrix result=deposit ( money(A) ,  percent (B),  matrix (C));
     int k=0,n=0;

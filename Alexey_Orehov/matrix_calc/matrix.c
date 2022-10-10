@@ -72,7 +72,7 @@ Matrix m_sub(const Matrix m1, const Matrix m2){
 Matrix m_mul(const Matrix m1, const Matrix m2){
     // Умножение двух матриц
     if (m1.cols != m2.rows){
-        fprintf(stderr, "number of cols of matrix 1 should be equal to number of rows of second matrix");
+        fprintf(stderr, "number of cols of matrix.c 1 should be equal to number of rows of second matrix.c");
         exit(1);
     }
     Matrix ans = {m1.rows, m2.cols, (double*)malloc(sizeof(double) * m1.rows * m2.cols)};

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <math.h>
 #include <malloc.h>
 
 
@@ -87,25 +86,43 @@ struct Matrix matrix_output(const struct Matrix A,char symbol) {
 
 
 struct Matrix matrix_sum(const struct Matrix A,const struct Matrix B){
+    struct Matrix C;
+    C.cols = A.rows;
+    C.rows = A.cols;
+    C.values = malloc(C.cols * C.rows * sizeof(double));
+    for (unsigned int row = 0; row < A.rows; row++) {
+        for (unsigned int col = 0; col < B.cols; col++) {
+            C.values[col * C.rows + row] = 0;
+        }
+    }
     if ((A.cols != B.cols)*(A.rows != B.rows)) return error();
     for (unsigned int row = 0; row < A.rows; row++) {
         for (unsigned int col = 0; col < A.cols; col++) {
-            A.values[row * A.cols + col] += B.values[row * B.cols + col];
+            C.values[row * C.cols + col] = A.values[row * A.cols + col] + B.values[row * B.cols + col];
 
         }
     }
-    return A;
+    return C;
 }
 
 
 struct Matrix matrix_sub(const struct Matrix A, const struct Matrix B) {
+    struct Matrix C;
+    C.cols = A.rows;
+    C.rows = A.cols;
+    C.values = malloc(C.cols * C.rows * sizeof(double));
+    for (unsigned int row = 0; row < A.rows; row++){
+        for (unsigned int col = 0; col < B.cols; col++) {
+            C.values[col * C.rows + row] = 0;
+        }
+    }
     if ((A.cols != B.cols)*(A.rows != B.rows)) return error();
     for (unsigned int row = 0; row < A.rows; row++) {
         for (unsigned int col = 0; col < A.cols; col++) {
-            A.values[row * A.cols + col] -= B.values[row * B.cols + col];
+            C.values[row * C.cols + col] = A.values[row * A.cols + col] - B.values[row * B.cols + col];
         }
     }
-    return A;
+    return C;
 }
 
 
@@ -154,7 +171,6 @@ int main() {
 // тест функций
     struct Matrix Zero = zero(2,2);
     struct Matrix One = one(2,2);
-
     test(One,Zero);
 // создание первой матрицы
     struct Matrix A = matrix_make(3,3,A);

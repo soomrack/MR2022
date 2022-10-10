@@ -162,7 +162,7 @@ struct Matrix multiplication(const struct Matrix m1, const struct Matrix m2) { /
 }
 
 
-//Возвращает матрицу matrix без row-ой строки и col-того столбца
+//Возвращает матрицу matrix.c без row-ой строки и col-того столбца
 struct Matrix getMatrixhoutRowAndCol(const struct Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col) {
     struct Matrix m1 = {size - 1,size - 1};
     m1.values = dual_array_initialization(size - 1,size-1);
@@ -307,12 +307,12 @@ void menu(struct Matrix A, struct  Matrix B){
                 break;
             case 5:
                 reverse = reverse_matrix(A,A.row);
-                output("reverse matrix", reverse);
+                output("reverse matrix.c", reverse);
                 reverse.values = free_memory(reverse.values,reverse.row);
                 break;
             case 6:
                 exponent = exponent_matrix(A,A.row);
-                output("exponent matrix",exponent);
+                output("exponent matrix.c",exponent);
                 exponent.values = free_memory(exponent.values,exponent.row);
                 break;
             default:
@@ -342,9 +342,9 @@ int main() {
            "1. Addiction of two Matrix\n"
            "2. Subtraction of two Matrix\n"
            "3. Multiplication of two Matrix\n"
-           "4. Find det of matrix\n"
-           "5. Find reverse matrix\n"
-           "6. Find exponent matrix\n");
+           "4. Find det of matrix.c\n"
+           "5. Find reverse matrix.c\n"
+           "6. Find exponent matrix.c\n");
     menu(A,B);
     A.values = free_memory(A.values,A.row); // Указатель обнулен уже в функции;
     B.values = free_memory(B.values,B.row);
@@ -368,12 +368,12 @@ int main() {
 
 
     reverse = reverse_matrix(A,A.row);
-    output("reverse matrix", reverse);
+    output("reverse matrix.c", reverse);
     reverse.values = free_memory(reverse.values,reverse.row);
 
 
     exponent = exponent_matrix(A,A.row);
-    output("exponent matrix",exponent);
+    output("exponent matrix.c",exponent);
     exponent.values = free_memory(exponent.values,exponent.row);
 
     A.values = free_memory(A.values,A.row);
