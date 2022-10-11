@@ -5,11 +5,11 @@
 
 
 
-typedef struct {
+typedef struct {  // структура задаёт размеры матрицы и саму матрицу
     unsigned int row; // число строк, целое положительное
     unsigned int col; // число столбцов, целое положительное
     double ** massive;
-}matrix;  // структура задаёт размеры матрицы и саму матрицу
+}matrix;
 
 matrix A = {3, 3};
 matrix B = {3, 3};
@@ -32,7 +32,11 @@ matrix identity_matrix(unsigned int row,unsigned int col ){
     result.massive = memory(result.row, result.col);
     for (int i = 0; i < row; i++) {
         for (int j = 0; j <col; j++) {
-            result.massive[i][j]=1;
+           result.massive[i][j]=0;
+            if (i==j){
+               result.massive[i][j]=1;
+            }
+
         }
     }
     return result;
@@ -42,11 +46,16 @@ void mistake (){
     printf("This action is impossible\n");
 }
 
+matrix Zero_matrix(){
+    matrix zero = {0, 0};
+    return zero;
+}
 int comparison_matrix(matrix A, matrix B) {
     int n = 1;
+    if (A.col!=B.col || A.col!=B.col) return 0;
     for (int i = 0; i < A.row; i++) {
         for (int j = 0; j < A.col; j++) {
-            if (A.massive[i][j] != B.massive[i][j]) n = 0;
+            if (abs(A.massive[i][j] - B.massive[i][j])>0.00001 ) n = 0;
         }
     }
     return n;
@@ -56,17 +65,17 @@ int comparison_matrix(matrix A, matrix B) {
 matrix sum_matrix(const matrix A,const matrix B){
     if(!(A.row==B.row & A.col==B.col) ) {
         mistake();
-        matrix no = {0, 0};
-        return no;
-    }
+        //matrix no = {0, 0};
+        return Zero_matrix();
+        }
     matrix sum = {A.row, A.col};
     sum.massive = memory(sum.row, sum.col);
     for (int i = 0; i < sum.row; i++) {
         for (int j = 0; j < sum.col; j++) {
             sum.massive[i][j] = A.massive[i][j] + B.massive[i][j];
+            }
         }
-    }
-    return sum;
+        return sum;
 }
 
 
@@ -74,18 +83,18 @@ matrix sum_matrix(const matrix A,const matrix B){
 matrix mun_matrix(const matrix A,const matrix B){
     if(!(A.row==B.row & A.col==B.col) ) {
         mistake();
-        matrix no = {0, 0};
-        return no;
-    }
+        //matrix no = {0, 0};
+        return Zero_matrix();
+        }
     matrix mun = {A.row, A.col};
     mun.massive = memory(mun.row, mun.col);
     for (int i = 0; i < mun.row; i++) {
         for (int j = 0; j < mun.col; j++) {
             mun.massive[i][j] = A.massive[i][j] - B.massive[i][j];
+            }
         }
+        return mun;
     }
-    return mun;
-}
 
 
 
@@ -95,13 +104,10 @@ matrix ymn_matrix(const matrix A,const matrix B) {
     int n_B;
     if (A.row != B.col) {
         mistake();
-        matrix no = {0, 0};
-        return no;
-    }
-    n_A=comparison_matrix(identity_matrix(A.row,A.col),A);
-    n_B=comparison_matrix(identity_matrix(B.row,B.col),B);
-    if (n_A==1) return B;
-    if (n_B==1) return A;
+        //matrix no = {0, 0};
+        return Zero_matrix();
+        }
+
     matrix ymn = {A.row, B.col};
     ymn.massive = memory(ymn.row, ymn.col);
     for (int i = 0; i < ymn.row; i++) {
@@ -109,49 +115,49 @@ matrix ymn_matrix(const matrix A,const matrix B) {
             ymn.massive[i][j] = 0;
             for (int h = 0; h < A.col; h++) {
                 ymn.massive[i][j] = ymn.massive[i][j] + A.massive[i][h] * B.massive[h][j];
+                }
             }
-        }
 
+        }
+        return ymn;
     }
-    return ymn;
-}
 
 
 
 matrix minor (const matrix A,  int x,  int y)  {
-    matrix det_min= {A.row-1, A.col-1};
-    det_min.massive = memory(det_min.row, det_min.col);
+     matrix det_min= {A.row-1, A.col-1};
+     det_min.massive = memory(det_min.row, det_min.col);
 
-    for (int i=0; i<x;i++){
-        for (int j=0;j<y; j++){
-            det_min.massive[i][j]=A.massive[i][j];
-        }
-    }
-    for (int i = 0; i < x; i++){
+     for (int i=0; i<x;i++){
+         for (int j=0;j<y; j++){
+                  det_min.massive[i][j]=A.massive[i][j];
+         }
+     }
+      for (int i = 0; i < x; i++){
         for (int j = y; j < det_min.col; j++){
-            det_min.massive[i][j] = A.massive[i][j+1];
+           det_min.massive[i][j] = A.massive[i][j+1];
         }
     }
     for (int i = x; i < det_min.row; i++){
         for (int j = 0; j < y; j++){
-            det_min.massive[i][j] = A.massive[i+1][j];
+           det_min.massive[i][j] = A.massive[i+1][j];
         }
     }
     for (int i = x; i <det_min.row; i++){
         for (int j = y; j < det_min.col; j++){
-            det_min.massive[i][j] = A.massive[i+1][j+1];
+           det_min.massive[i][j] = A.massive[i+1][j+1];
+           }
         }
-    }
 
 
-    return det_min;
+return det_min;
 }
 
 double det_matrix (const matrix A){
     double znak = 1.00;
     if (A.col != A.row) {
         mistake();
-        return 0.0;
+        return 0.00;
     }
     if (A.col == 1){
         return A.massive[0][0];
@@ -161,10 +167,10 @@ double det_matrix (const matrix A){
         matrix minor_auxiliary = minor (A,0,i);
         det=det+znak*A.massive[0][i]* det_matrix(minor_auxiliary);
         znak *= -1.00;
-        //printf("fdfdfdf %f\n", det);
+
         free(minor_auxiliary.massive);
     }
-    return det;
+return det;
 }
 
 
@@ -215,10 +221,10 @@ matrix inverce_matrix (matrix A){
     result.massive = memory(result.row, result.col);
     matrix result_trans = {A.row, A.col};
     result_trans.massive = memory( result_trans.row,  result_trans.col);
-    matrix no={0,0};
+    //matrix no={0,0};
     if (det_A==0) {
         mistake();
-        return no;
+        return Zero_matrix();
     }
     if (A.row==A.col==2) {
         for (int i = 0; i < A.row; i++) {
@@ -256,6 +262,18 @@ matrix stepen (const matrix A,int  n){
 }
 
 
+matrix change_matrix( double A[3][3]) {
+    matrix result = {3, 3};
+    result.massive = memory(result.row, result.col);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result.massive[i][j] = A[i][j];
+        }
+    }
+    return result;
+}
+
+
 // функция вывода
 void Itog(matrix A){
     for (int i = 0; i < A.row; i++){
@@ -271,49 +289,51 @@ void Itog(matrix A){
 
 // break работает по-дурацки
 void test (matrix A, char metod){
-    matrix addition ={3,3};
-    addition.massive =memory(3,3);
-    addition.massive[0][0]=1.00;
-    addition.massive[0][1]=3.00;
-    addition.massive[0][2]=9.00;
-    addition.massive[1][0]=9.00;
-    addition.massive[1][1]=11.00;
-    addition.massive[1][2]=17.00;
-    addition.massive[2][0]=17.00;
-    addition.massive[2][1]=19.00;
-    addition.massive[2][2]=21.00;
+    double addition[3][3] ={{1.00,3.00,9.00},
+                            {9.00,11.00,17.00},
+                            {17.00,19.00,21.00}};
     double subtraction[3][3] ={{-1.00,-1.00,3.00},
                                {-1.00,-1.00,3.00},
                                {-1.00,-1.00,-1.00}};
     double multiplication[3][3] ={{59.00,66.00,73.00},
                                   {119.00,138.00,157.00},
                                   {143.00,170.00,197.00}};
-    int n=1;
+    double inverce[3][3] ={{-2.50,2.75,-1.25},
+                           {2.50,-3.00,1.50},
+                           {-0.25,0.50,-0.25}};
+    double stepen_3[3][3] ={{796.00,977.00,1602.00},
+                            {1868.00,2261.00,3530.00},
+                            {2476.00,2973.00,4506.00}};
+
+    int n;
     if (metod == '+') {
-        n=comparison_matrix(A,addition);
+        matrix sum=change_matrix(addition);
+        n=comparison_matrix(A,sum);
+    }
+    if (metod == '-') {
+        matrix min=change_matrix(subtraction);
+        n=comparison_matrix(A,min);
     }
 
-    for (int i = 0; i < A.row; i++) {
-        for (int j = 0; j < A.col; j++) {
-
-            if (metod == '-') {
-                if (A.massive[i][j] != subtraction[i][j]) {
-                    n=0;
-                }
-            }
-            if  (metod == '*') {
-                if (A.massive[i][j] != multiplication[i][j]) {
-                    n=0;
-                }
-            }
-        }
-        if (n==0){
-            printf("false\n");
-            break;
-        }
+    if  (metod == '*') {
+        matrix ymn=change_matrix(multiplication);
+        n=comparison_matrix(A,ymn);
     }
+    if  (metod == 'r') {
+        matrix inv=change_matrix(inverce);
+        n=comparison_matrix(A,inv);
+    }
+    if  (metod == '^') {
+        matrix step=change_matrix(stepen_3);
+        n=comparison_matrix(A,step);
+    }
+    if (n==0){
+        printf("Made a mistake\n");
+        printf("\n");
+        }
     if (n==1) {
-        printf("true\n");
+        printf("Operation performed correctly\n");
+        printf("\n");
     }
 }
 
@@ -328,7 +348,7 @@ int main() {
             n=n+1.00;
             A.massive[i][j] = k+n;
             A.massive[1][2] = 10;
-            A.massive[0][2] = 6;
+           A.massive[0][2] = 6;
         }
     }
     n=-1.00;
@@ -361,8 +381,9 @@ int main() {
 
     printf("Determinant A = %f\n", det_matrix(A));
     printf("Determinant B = %f\n", det_matrix(B));
+    printf("\n");
 
-    // printf("\n");
+
     printf("          Result A*5=\n");
     Itog (mult_k(A,5));
     printf("          Transpose matrix A =\n");
@@ -374,11 +395,13 @@ int main() {
 
     printf("          Inverce matrix A=\n");
     Itog(inverce_matrix(A));
+    test(inverce_matrix(A),'r');
     printf("          Inverce matrix B=\n");
     Itog(inverce_matrix(B));
 
     printf("          Result A^3=\n");
 
     Itog(stepen(A,3));
+    test(stepen(A,3),'^');
     return 0;
 }
