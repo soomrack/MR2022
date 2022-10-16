@@ -1,5 +1,4 @@
-#include <iostream>
-#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h> // под динамические масивы
 
@@ -7,7 +6,7 @@
 
 typedef struct {
      char *name;
-    bool wish;
+     char * wish;
 } Identification;  // структура имени и желания клиента (ипотека или вклад)
 
 
@@ -57,7 +56,7 @@ typedef struct {
 
 
 // первый клиент
-Identification сlient_1 ={"Alice", false};
+Identification Client_1 ={"Alice", "deposit"};
 const percent Alice_percent ={0.09,0.02,0.02};
 const money Alice_money  ={100000, 300000,16000500, 150000,40000,20};
 const matrix Alice_matrix={20,1};
@@ -67,7 +66,7 @@ const expenses Alice_expenses ={3, 55000};
 
 
 //второй клиент
-Identification client_2 ={"Bob", true};
+Identification Client_2 ={"Bob", "mortgages"};
 const percent Bob_percent ={0.09,0.0001,0.02};
 const money Bob_money  ={100000, 300000,12000500, 100000,25000,20};
 const matrix Bob_matrix={20,1};
@@ -97,14 +96,14 @@ int monthly_payment_F (const money A,const  percent B ) {
 
 //вычисления момента когда увеличивается процент по вкладу
 double percentage_increase(int i,int time_year, double percent_old,double percent_new ){
-    double rez;
+    double result;
     if( i>time_year/i){
-        rez=percent_old+percent_new;
+        result=percent_old+percent_new;
     }
     else {
-        rez=percent_old;
+        result=percent_old;
     }
-    return rez;
+    return result;
 }
 
 
@@ -120,6 +119,7 @@ double income_client (int i, int income_old, const income A){
 
 
 //учитывает повышение/понижение стоимости квартиры
+// i - это год
 double flat_client (int i, int flat_old,flat A) {
     int flat_new=flat_old;
     if (i==A.i){
@@ -150,8 +150,8 @@ matrix deposit (const money A, const percent B, const matrix C, const income D, 
     long long int residue = A.beginning;
     for (int i=1; i<=A.time_year;i++){
         per_increase=percentage_increase(i,A.time_year,B.deposit_interest,B.percentage_increase);
-        income_new=income_client(i,A.income, income (D));
-        expenses_new=expenses_client(i,A.expenses, expenses (E));
+        income_new=income_client(i,A.income,  (D));
+        expenses_new=expenses_client(i,A.expenses, (E));
         a= (residue+income_new*12-expenses_new*12);
         residue=a*per_increase+a;
         result.massive[i-1][0]=residue;
@@ -164,7 +164,7 @@ matrix deposit (const money A, const percent B, const matrix C, const income D, 
 matrix mortgages (const money A, const percent B, const matrix C, const income D, const expenses E ){
     matrix result = {C.row, C.col};
     result.massive = memory(result.row, result.col);
-    long long int monthly_payment=monthly_payment_F(money(A), percent(B));
+    long long int monthly_payment=monthly_payment_F((A), (B));
     long long int a;
     double per_increase;
     double income_new;
@@ -172,8 +172,8 @@ matrix mortgages (const money A, const percent B, const matrix C, const income D
     long long int residue = A.beginning - A.beginning_contribution;
     for (int i=1; i<=A.time_year;i++){
         per_increase=percentage_increase(i,A.time_year,B.deposit_interest,B.percentage_increase);
-        income_new=income_client(i,A.income, income (D));
-        expenses_new=expenses_client(i,A.expenses, expenses (E));
+        income_new=income_client(i,A.income,  (D));
+        expenses_new=expenses_client(i,A.expenses,  (E));
         a= (residue+(income_new- expenses_new-monthly_payment)*12);
         residue=a*per_increase+a;
         result.massive[i-1][0]=residue;
@@ -196,14 +196,14 @@ void Itog (matrix A){
 
 //показывает на какой год клиент сможет купить квартиру, если возьмет вклад
 void Apartment_purchase(const money A, const percent B, const matrix C, const income D, const flat E,const expenses F){
-    matrix result=deposit ( money(A) ,  percent (B),  matrix (C), income (D),  expenses (F));
+    matrix result=deposit ( (A) ,   (B),   (C),  (D),   (F));
     int k=0,n=0;
     double flat_new=A.flat;
     for (int i = 0; i < result.row; i++){
         for (int j = 0; j < result.col; j++){
             k=k+1;
-            flat_new=flat_client (i,flat_new,flat (E));
-            if(result.massive[i][j]>flat_new and n==0){
+            flat_new=flat_client (i,flat_new, (E));
+            if(result.massive[i][j]>flat_new & n==0){
                 printf ("You buy an apartment for %d years\n",k);
                 n=1;
             }
@@ -219,7 +219,7 @@ Identification name (const Identification A) {
     Identification B = {A.name, A.wish};
     printf("\n");
     printf("           Helloy  %s\n",A.name);
-    if( B.wish== true) {
+    if( B.wish== mortgages) {
         printf("           Mortgage calculator\n");
     }
     else {
@@ -231,12 +231,12 @@ Identification name (const Identification A) {
 
 
 int main() {
-    name(сlient_1);  // приветствие клиента Алиса
+    name(Client_1);  // приветствие клиента Алиса
     Itog(deposit(Alice_money,Alice_percent,Alice_matrix,
                  Alice_income, Alice_expenses ));  // вызов вклада
     Apartment_purchase(Alice_money,Alice_percent,Alice_matrix,
                        Alice_income,Alice_flat,Alice_expenses);  // через сколько купит квартиру
-    name(client_2);  // приветствие клиента Боб
+    name(Client_2);  // приветствие клиента Боб
     Itog(mortgages(Bob_money,Bob_percent,Bob_matrix, Bob_income, Bob_expenses));  // вызов ипотеки
     return 0;
 }
