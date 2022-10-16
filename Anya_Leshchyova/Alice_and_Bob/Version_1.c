@@ -1,41 +1,40 @@
-#include <iostream>
-#define _CRT_SECURE_NO_WARNINGS
+
 #include <malloc.h>
 #include <stdlib.h> // под динамические масивы
-
+//#include <iostream>
+#include <stdio.h>
 //структуры
 
 
 typedef struct {
     char *name;
-    bool wish;
+    char * wish;
 
-} Identification; // структура имени и желания клиента (ипотека или вклад)
+} Identification;  // структура имени и желания клиента (ипотека или вклад)
 
 
 typedef struct {
-    int beginning; // начальный капитал
-    int beginning_contribution; // начальная выплата по ипотеке
-    int flat; // стоимость квартиры
-    int income; // доходы
+    int beginning;  // начальный капитал
+    int beginning_contribution;  // начальная выплата по ипотеке
+    int flat;  // стоимость квартиры
+    int income;  // доходы
     int expenses;  // расходы
-    unsigned int time_year; // время на погашение ипотеки, год
-
+    unsigned int time_year;  // время на погашение ипотеки, год
 }money;
 
 
 typedef struct {
-    unsigned int row; // число строк, целое положительное
-    unsigned int col; // число столбцов, целое положительное
+    unsigned int row;  // число строк, целое положительное
+    unsigned int col;  // число столбцов, целое положительное
     long long int ** massive;
 }matrix;   // структура задаёт размеры матрицы и саму матрицу
 
 
 typedef struct {
-    double percent_mortgages; // процент ипотеки
+    double percent_mortgages;  // процент ипотеки
     double deposit_interest;  // процент вклада
-    double percentage_increase; // на сколько увеличивается процент по прошествию половины срока
-} percent; // структура процентов
+    double percentage_increase;  // на сколько увеличивается процент по прошествию половины срока
+} percent;  // структура процентов
 
 
 
@@ -43,7 +42,7 @@ typedef struct {
 
 
 // первый клиент
-Identification сlient_1 ={"Alice", false};
+Identification сlient_1 ={"Alice", "deposit"};
 
 const percent сlient_percent_1 ={0.09,0.02,0.02};
 
@@ -53,7 +52,7 @@ const matrix сlient_matrix_1={20,1};
 
 
 //второй клиент
-Identification client_2 ={"Bob", true};
+Identification client_2 ={"Bob", "mortgages"};
 
 const percent сlient_percent_2 ={0.09,0.0001,0.02};
 
@@ -118,7 +117,7 @@ matrix deposit (const money A, const percent B, const matrix C){
 matrix mortgages (const money A, const percent B, const matrix C){
     matrix result = {C.row, C.col};
     result.massive = memory(result.row, result.col);
-    long long int monthly_payment=monthly_payment_F(money(A), percent(B));
+    long long int monthly_payment=monthly_payment_F((A), (B));
     long long int a;
     double per_increase;
     long long int residue = A.beginning - A.beginning_contribution;
@@ -146,14 +145,14 @@ void Itog (matrix A){
 
 //показывает на какой год клиент сможет купить квартиру, если возьмет вклад
 void Apartment_purchase(const money A, const percent B, const matrix C){
-    // matrix result={A.time_year, 1};
+    // matrix.c result={A.time_year, 1};
     //result.massive = memory(A.time_year, 1);
-    matrix result=deposit ( money(A) ,  percent (B),  matrix (C));
+    matrix result=deposit ( (A) ,   (B),   (C));
     int k=0,n=0;
     for (int i = 0; i < result.row; i++){
         for (int j = 0; j < result.col; j++){
             k=k+1;
-            if(result.massive[i][j]>A.flat and n==0){
+            if(result.massive[i][j]>A.flat & n==0){
                 printf ("You buy an apartment for %d years\n",k);
                 n=1;
             }
@@ -168,7 +167,7 @@ Identification name (const Identification A) {
     //B.Cl = memory(2);
     printf("\n");
     printf("           Helloy  %s\n",A.name);
-    if( B.wish== true) {
+    if( B.wish== "mortgages") {
         printf("           Mortgage calculator\n");
         Itog(mortgages(сlient_money_2,сlient_percent_2,сlient_matrix_2));
     }
