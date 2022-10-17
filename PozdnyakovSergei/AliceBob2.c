@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+
 const int TOTAL_MONTH = 12*20;
 
 
@@ -14,8 +15,11 @@ struct Client {
     unsigned long long int monthly_mortgage_payments; //oplata ipoteki
     unsigned long long int monthly_arenda_payments; //рента
     //unsigned long long int income;
-    unsigned long long int salary;
-    unsigned long long int first_payment;
+    unsigned long long int salary; //зарплата
+    unsigned long long int first_payment; //первый платеж по ипотеке
+/*    unsigned long long int bank_roubles;
+    unsigned long long int bank_cops;
+*/
 };
 
 
@@ -38,7 +42,7 @@ void init_Bob(struct Client *bob){
     bob->name = "Bob";
     bob->bank_account = 1 * 1000 * 1000 * 100;
     bob->bank_deposit_percent = 0.08;
-    bob->monthly_arenda_payments = 40 * 1000 * 100;
+    bob->monthly_arenda_payments = 0;
     bob->monthly_mortgage_payments = 30 * 1000 * 100;
     bob->salary = 150 * 1000 * 100;
     bob->monthly_house_bills = 10 * 1000 * 100;
@@ -82,6 +86,16 @@ void deposit_increase(struct Client *client){ //ставка повысилас�
 }
 
 
+/*void bank_roubles(struct Client *client){
+    client->bank_roubles = client->bank_account/100 + client->house_value/100;
+}
+
+
+void bank_cops(struct Client *client){
+    client->bank_cops = client->bank_account%100 + client->house_value%100;
+}
+*/
+
 void salary_decrease(struct Client *client){ //получку урезали
     client->salary /= (unsigned long int) 1.05;
 }
@@ -94,7 +108,7 @@ void house_value_increase(struct Client *client){ //повысиласть ст�
 
 void print_result(struct Client *client1, struct Client *client2){
     printf("Name: %s, Total: %llu.%llu\n", client1->name, client1->bank_account/100, client1->bank_account%100);
-    printf("Name: %s, Total: %llu.%llu\n", client2->name, client2->bank_account/100 + client2->house_value/100, client2->bank_account%100 + client2->bank_account%100);
+    printf("Name: %s, Total: %llu.%llu\n", client2->name, client2->bank_account/100 + client2->house_value/100, client2->bank_account%100 + client2->house_value%100);
     if (client1->bank_account > (client2->bank_account + client2->house_value)){
         printf("%s plan is more profitable than %s\n", client1->name, client2->name);
     }
@@ -122,6 +136,20 @@ void simulation (){
             printf("0 year\n");
         }
 
+        if (month % 36 == 0){
+            deposit_increase(&alice);
+            deposit_increase(&bob);
+
+
+            salary_decrease(&alice);
+            salary_decrease(&bob);
+        }
+
+        if (month % 60 == 0){
+            house_value_increase(&alice);
+            house_value_increase(&bob);
+        }
+
         salary_income(&alice);
         salary_income(&bob);
 
@@ -137,25 +165,19 @@ void simulation (){
         bank_deposit_income(&alice);
         bank_deposit_income(&bob);
 
-        if (month % 36 == 0){
-            deposit_increase(&alice);
-            deposit_increase(&bob);
-
-            salary_decrease(&alice);
-            salary_decrease(&bob);
-        }
-
-        if (month % 60 == 0){
-            house_value_increase(&alice);
-            house_value_increase(&bob);
-        }
-
         if (month % 12 == 0){
             print_result(&alice, &bob);
             printf("%d year\n", month/12);
         }
-    }
 
+  /*      bank_roubles(&alice);
+        bank_roubles(&bob);
+
+        bank_cops(&alice);
+        bank_cops(&bob);
+*/
+
+    }
 }
 
 

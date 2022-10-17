@@ -16,14 +16,14 @@ struct Matrix matrix_make (const unsigned int cols, const unsigned int rows, str
     for (unsigned int idx = 0; idx < cols * rows; idx++){
         matrix.values[idx] = 0.0;
     }
-return matrix;
+    return matrix;
 };
 
 struct Matrix data_input(struct Matrix matrix, double arr[]){
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++){
         matrix.values[idx] = arr[idx];
     }
-return matrix;
+    return matrix;
 }
 
 struct Matrix zero(const unsigned int cols, const unsigned int rows){  // Инициализация нулевой матрицы
@@ -94,7 +94,6 @@ struct Matrix matrix_sum(const struct Matrix A,const struct Matrix B){
 
         }
     }
-    matrix_output(A,'+');
     return A;
 }
 
@@ -106,7 +105,6 @@ struct Matrix matrix_sub(const struct Matrix A, const struct Matrix B) {
             A.values[row * A.cols + col] -= B.values[row * B.cols + col];
         }
     }
-    matrix_output(A,'-');
     return A;
 }
 
@@ -133,45 +131,51 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
 
     for (unsigned int row = 0; row < A.rows; row++){
         for (unsigned int col = 0; col < B.cols; col++) {
-        C.values[col * C.rows + row] = 0;
+            C.values[col * C.rows + row] = 0;
             for(unsigned int k = 0; k < A.cols; k++) {
                 C.values[col * C.rows + row] += A.values[row * A.cols + k] * B.values[k * B.cols + col];
             }
         }
     }
-    matrix_output1(C);
     return C;
 }
 
-void test(struct Matrix One, struct Matrix Zero){
-    matrix_sum(One,Zero);
-    matrix_sub(Zero,One);
-    matrix_mult(One,Zero);
+void test(const struct Matrix One, const struct Matrix Zero){
+    struct Matrix sum = matrix_sum(One,Zero);
+    matrix_output(sum,'+');
+    struct Matrix sub = matrix_sub(Zero,One);
+    matrix_output(sub,'-');
+    struct Matrix mult = matrix_mult(One,Zero);
+    matrix_output1(mult);
 }
 
 
 int main() {
-
+// тест функций
     struct Matrix Zero = zero(2,2);
     struct Matrix One = one(2,2);
 
     test(One,Zero);
-
+// создание первой матрицы
     struct Matrix A = matrix_make(3,3,A);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     data_input(A, arr_A);
     print_matrix(A);
-
+// создание второй матрицы
     struct Matrix B = matrix_make(3,3,B);
     double arr_B[] = {9.0,8.0,7.0,6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
     data_input(B, arr_B);
     print_matrix(B);
-
-    matrix_sum(A,B);
-    matrix_sub(A,B);
-    matrix_mult(A,B);
+// математические операции с матрицами
+    struct Matrix sum = matrix_sum(A,B);  // сумма
+    matrix_output(sum,'+');
+    struct Matrix sub = matrix_sub(A,B);  // разность
+    matrix_output(sub,'-');
+    struct Matrix mult = matrix_mult(A,B);  // умножение
+    matrix_output1(mult);
 
     free(A.values);
     free(B.values);
     return 0;
 }
+
