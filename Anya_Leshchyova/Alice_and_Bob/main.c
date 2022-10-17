@@ -57,22 +57,22 @@ typedef struct {
 
 
 // первый клиент
-Identification Client_1 ={"Alice", "deposit"};
-const Percent Alice_percent ={0.09,0.02,0.02};
-const Money Alice_money  ={100000, 300000,16000500, 150000,40000,20};
-const Matrix Alice_matrix={20,1};
-const Income Alice_income ={5, -70000};
-const Flat Alice_flat ={4, 2.00};
-const Expenses Alice_expenses ={3, 55000};
+Identification Client_1 = {"Alice", "deposit"};
+const Percent Alice_percent = {0.09,0.02,0.02};
+const Money Alice_money  = {100000, 300000,16000500, 150000,40000,20};
+const Matrix Alice_matrix= {20,1};
+const Income Alice_income = {5, -70000};
+const Flat Alice_flat = {4, 2.00};
+const Expenses Alice_expenses = {3, 55000};
 
 
 //второй клиент
-Identification Client_2 ={"Bob", "mortgages"};
-const Percent Bob_percent ={0.09,0.0001,0.02};
-const Money Bob_money  ={100000, 300000,12000500, 100000,25000,20};
-const Matrix Bob_matrix={20,1};
-const Income Bob_income ={11, -70000};
-const Expenses Bob_expenses ={5, 20000};
+Identification Client_2 = {"Bob", "mortgages"};
+const Percent Bob_percent = {0.09,0.0001,0.02};
+const Money Bob_money  = {100000, 300000,12000500, 100000,25000,20};
+const Matrix Bob_matrix = {20,1};
+const Income Bob_income = {11, -70000};
+const Expenses Bob_expenses = {5, 20000};
 
 
 //row строка, col столбец
