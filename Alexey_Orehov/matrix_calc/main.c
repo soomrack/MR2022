@@ -18,7 +18,7 @@ void test_add(){
     Matrix matrix1 = {2, 3, data1};
     Matrix matrix2 = {2, 3, data2};
     Matrix ans = {2, 3, ans_d};
-    if (equal(add(copy(matrix1), matrix2), ans)){
+    if (is_equal(add(copy(matrix1), matrix2), ans)){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Addition test passed\n");
     }
@@ -40,7 +40,7 @@ void test_sub(){
     Matrix matrix1 = {2, 3, data1};
     Matrix matrix2 = {2, 3, data2};
     Matrix ans = {2, 3, ans_d};
-    if (equal(sub(copy(matrix1), matrix2), ans)){
+    if (is_equal(sub(copy(matrix1), matrix2), ans)){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Subtraction test passed\n");
     }
@@ -63,7 +63,7 @@ void test_mul(){
     Matrix matrix1 = {2, 3, data1};
     Matrix matrix2 = {3, 3, data2};
     Matrix ans = {2, 3, ans_data};
-    if (equal(mul(copy(matrix1), matrix2), ans)){
+    if (is_equal(mul(copy(matrix1), matrix2), ans)){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Multiplication test passed\n");
     }
@@ -85,7 +85,7 @@ void test_s_mul(){
                           22.4, 25.6, 28.8};
     Matrix matrix = {3, 3, data1};
     Matrix ans = {3, 3, ans_data};
-    if (equal( s_mul(matrix, scalar), ans)){
+    if (is_equal(s_mul(matrix, scalar), ans)){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Scalar multiplication test passed\n");
     }
@@ -123,7 +123,7 @@ void test_trans(){
                        3, 4, -3};
     Matrix matrix = {3, 3, data};
     Matrix ans = {3, 3, ans_d};
-    if (equal(transpose(copy(matrix)), ans)){
+    if (is_equal(transpose(copy(matrix)), ans)){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Transposition test passed\n");
     }
@@ -135,12 +135,31 @@ void test_trans(){
 }
 
 
-void inv_mul_test(){
-    int size = 4;
+void test_inv(){
+    double data[9] = {1, -2, 1,
+                      2, 1, -1,
+                      3, 2, -2};
+    double ans_data[9] = {0, 2, -1,
+                          -1, 5, -3,
+                          -1, 8, -5};
+    Matrix matrix = {3, 3, data};
+    Matrix ans = {3, 3, ans_data};
+    if (is_equal(m_inv(copy(matrix)), ans)){
+        SetConsoleTextAttribute(hConsole, TEST_PASSED);
+        printf("Matrix inversion test passed\n");
+    }
+    else{
+        SetConsoleTextAttribute(hConsole, TEST_FAILED);
+        printf("Matrix inversion test hasn't been passed\n");
+    }
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
+
+void test_inv_mul(){
+    int size = 20;
     Matrix mat = create_random(size, size, 5);
-    printm(mat);
-    printm(mul(copy(mat), m_inv(copy(mat))));
-    if (equal( mul(copy(mat), m_inv(mat)), create_identity(size))){
+    if (is_equal(mul(copy(mat), m_inv(copy(mat))), create_identity(size))){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Inverse matrix multiplication test passed\n");
     }
@@ -152,13 +171,44 @@ void inv_mul_test(){
 }
 
 
-int main(){
+void test_triangle(){
+    double data[16] = {-1, 2, 1, 2,
+                       -1, 3, 2, 4,
+                       -3, 5, 4, 8,
+                       -2, 3, 2, 3};
+    double ans_data[16] = {-1, 2, 1, 2,
+                           0, 1, 1, 2,
+                           0, 0, 2, 4,
+                           0, 0, 0, -1};
+    Matrix mat = {4, 4, data};
+    Matrix ans = {4, 4, ans_data};
+    if (is_equal(upper_triangle(mat), ans)){
+        SetConsoleTextAttribute(hConsole, TEST_PASSED);
+        printf("upper triangle matrix transformation test passed\n");
+    }
+    else{
+        SetConsoleTextAttribute(hConsole, TEST_FAILED);
+        printf("upper triangle matrix transformation hasn't been passed\n");
+    }
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
+
+void test(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     test_add();
     test_sub();
     test_mul();
     test_s_mul();
+    test_triangle();
     test_det();
     test_trans();
+    test_inv();
+    test_inv_mul();
+}
+
+
+int main(){
+    test();
     return 0;
 }
