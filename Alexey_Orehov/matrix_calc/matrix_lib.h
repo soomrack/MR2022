@@ -11,15 +11,6 @@ typedef struct Matrix{
 } Matrix;
 
 
-/*
- TODO:
- Создавать нулевую матрицу, после чего добавлять ей значения
- починить везде unsigned int
- в случае ошибки по вводу выводить пустую матрицу
- В миноре пропускать целиком строки
- Минор в определителе и обратной матрице создавать не теряя память
- */
-
 // Вывод матрицы в консоль
 void printm(struct Matrix mat){
     printf("\n");
@@ -193,7 +184,6 @@ Matrix minor(Matrix mat, const unsigned int minor_row, const unsigned int minor_
 Matrix upper_triangle(Matrix mat){
     for (int col = 0; col < mat.cols - 1; col++){
         for (int row = col + 1; row < mat.rows; row++){
-//            printf("%f   %f\n", mat.values[row * mat.rows + col], mat.values[col * mat.rows + col]);
             double factor = mat.values[row * mat.rows + col] / mat.values[col * mat.rows + col];
             for (int idx = col; idx < mat.cols; idx++){
                 mat.values[row * mat.cols + idx] -= mat.values[col * mat.rows + idx] * factor;
@@ -219,7 +209,7 @@ double m_det(const Matrix mat){
 // Рекурсивная функция определителя матрицы
 double recursive_det(const Matrix mat){
     if (mat.cols != mat.rows){
-        return 0.0;
+        return NAN;
     }
     double ans = 0.0;
     if (mat.rows == 2){
@@ -240,7 +230,7 @@ double recursive_det(const Matrix mat){
 // След (trace) матрицы
 double m_tr(Matrix mat){
     if (mat.cols != mat.rows){
-        return 0;
+        return NAN;
     }
     unsigned int size = mat.cols;
     double trace = 0.0;
@@ -266,7 +256,6 @@ Matrix m_inv(Matrix mat){
                                                m_det(temp) / determinant;
         }
     }
-
     free(mat.values);
     free(temp.values);
     mat = ans;
