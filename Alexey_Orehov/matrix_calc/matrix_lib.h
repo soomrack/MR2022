@@ -66,7 +66,7 @@ Matrix copy(const Matrix mat){
 
 
 // Проверяет равны ли две матрицы
-int equal(const Matrix mat1, const Matrix mat2){
+int is_equal(const Matrix mat1, const Matrix mat2){
     double eps = 10e-6;
     if (mat1.cols != mat2.cols || mat1.rows != mat2.rows) return 0;
     for (int idx = 0; idx < mat1.cols * mat1.rows; idx++){
@@ -75,6 +75,16 @@ int equal(const Matrix mat1, const Matrix mat2){
     return 1;
 }
 
+
+int is_identity(const Matrix matrix){
+    if (matrix.cols != matrix.rows) return 0;
+    unsigned int size = matrix.rows;
+    for (int idx = 0; idx < size * size; idx++){
+        if (idx % (size + 1) == 0 && matrix.values[idx] != 1) return 0;
+        if (idx % (size + 1) != 0 && matrix.values[idx] != 0) return 0;
+    }
+    return 1;
+}
 
 // Создание матрицы со случайными значениями от 0 до max_value
 Matrix create_random(const unsigned int rows, const unsigned int cols, const double max_value){
@@ -179,10 +189,37 @@ Matrix minor(Matrix mat, const unsigned int minor_row, const unsigned int minor_
 }
 
 
-// Определитель матрицы
+// Превращает матрицу в верхнюю треугольную
+Matrix upper_triangle(Matrix mat){
+    for (int col = 0; col < mat.cols - 1; col++){
+        for (int row = col + 1; row < mat.rows; row++){
+//            printf("%f   %f\n", mat.values[row * mat.rows + col], mat.values[col * mat.rows + col]);
+            double factor = mat.values[row * mat.rows + col] / mat.values[col * mat.rows + col];
+            for (int idx = col; idx < mat.cols; idx++){
+                mat.values[row * mat.cols + idx] -= mat.values[col * mat.rows + idx] * factor;
+            }
+        }
+    }
+    return mat;
+}
+
+
 double m_det(const Matrix mat){
     if (mat.cols != mat.rows){
-        return 0;
+        return NAN;
+    }
+    double ans = 1;
+    Matrix temp = upper_triangle(copy(mat));
+    for (unsigned int idx = 0; idx < temp.rows * temp.cols; idx += temp.cols + 1) ans *= temp.values[idx];
+    free(temp.values);
+    return ans;
+}
+
+
+// Рекурсивная функция определителя матрицы
+double recursive_det(const Matrix mat){
+    if (mat.cols != mat.rows){
+        return 0.0;
     }
     double ans = 0.0;
     if (mat.rows == 2){
@@ -192,19 +229,13 @@ double m_det(const Matrix mat){
     for (int idx = 0; idx < mat.rows; idx++){
         if (mat.values[idx] != 0){
             Matrix temp = minor(copy(mat), 0, idx);
-            ans += mat.values[idx] * pow(-1, idx) * m_det(temp);
+            ans += mat.values[idx] * pow(-1, idx) * recursive_det(temp);
             free(temp.values);
         }
     }  // Определители матриц больших порядков считаются разложением по первой строке
     return ans;
 }
 
-
-// Превращает матрицу в верхнюю треугольную
-Matrix upper_triangle(Matrix mat){
-
-    return mat;
-}
 
 // След (trace) матрицы
 double m_tr(Matrix mat){
@@ -231,7 +262,7 @@ Matrix m_inv(Matrix mat){
     for (int row = 0; row < mat.rows; row++){
         for (int col = 0; col < mat.cols; col++){
             temp = minor(copy(mat), row, col);
-            ans.values[row * ans.cols + col] = pow(-1, row + col) *
+            ans.values[col * ans.rows + row] = pow(-1, row + col) *
                                                m_det(temp) / determinant;
         }
     }
