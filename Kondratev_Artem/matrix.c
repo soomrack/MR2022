@@ -271,6 +271,45 @@ Matrix matrix_inverse_multiplication(Matrix *matrix1, Matrix *matrix2) {
 }
 
 
+Matrix identity_matrix(int rows) {
+
+    int cols = rows;
+    Matrix id_matrix = matrix_init(rows, rows);
+
+    for(int row = 0; row <= rows - 1; row++)
+        for(int col = 0; col <= cols - 1; col++)
+            id_matrix.array[row][col] = (row == col) ? 1 : 0;
+
+    return id_matrix;
+
+}
+
+
+Matrix matrix_exponentiation(Matrix *matrix) {
+
+    Matrix res_matrix = matrix_init(matrix->rows, matrix->cols);
+
+//  rfrfrfrfrf
+
+}
+
+
+Matrix noy_matrix_exp(Matrix *matrix) {
+
+    Matrix exp_matrix = identity_matrix(matrix->rows);
+    matrix_output(&exp_matrix);
+
+    int factorial = 1;
+    double error = 0.0001;
+    double max = 1 + error;
+
+
+
+
+
+}
+
+
 int matrix_filling(Matrix *matrix, const double array[]) {
 
     int array_index = 0;
@@ -408,14 +447,26 @@ void test2() {
     matrix_filling(&matrix2, array2);
 
     Matrix res = matrix_multiplication(&matrix1, &matrix2);
+
     matrix_output(&res);
+
+}
+
+
+void exp_test() {
+
+    Matrix matrix1 = matrix_init(3,3);
+    double array1[] = {1,2,3,4,5,6,7,8,9};
+    matrix_filling(&matrix1, array1);
+
+    matrix_exp(&matrix1);
 
 }
 
 
 int main() {
 
-    test();
+    exp_test();
 
     return 0;
 
