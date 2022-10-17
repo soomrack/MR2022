@@ -19,8 +19,8 @@ Matrix m_setsize(int rows, int cols) {
     Matrix matrix;
     matrix.cols = cols;
     matrix.rows = rows;
-    int n_values = matrix.cols * matrix.rows;
-    matrix.values = malloc(sizeof(double) * n_values);
+    int values = matrix.cols * matrix.rows;
+    matrix.values = malloc(sizeof(double) * values);
     return matrix;
 }
 
