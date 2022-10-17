@@ -6,7 +6,7 @@ double Bob_count();
 double mortgage_pay();
 double deposit(int sum, int time_month, int add, double rate);
 
-const int months = 20 * 12; // time bound
+const int months = 20 * 12;  // time bound
 
 const int start_capital = 1000 * 100000;  // money in kopeks
 const int flat_beg = 0.8 * start_capital;  // first mortgage pay (minimal value depend on flat_price)
