@@ -8,7 +8,7 @@ struct Matrix{
     int cols;
 };
 typedef struct Matrix Matrix;
-Matrix matrix_1, matrix_2, adde, subt, mult;
+Matrix matrix_1, matrix_2, adde, subt, mult, powe;
 
 void m_rows_cols(Matrix *matrix) {
     scanf("%d", &matrix->rows);
@@ -19,8 +19,8 @@ Matrix m_setsize(int rows, int cols) {
     Matrix matrix;
     matrix.cols = cols;
     matrix.rows = rows;
-    int n_values = matrix.cols * matrix.rows;
-    matrix.values = malloc(sizeof(double) * n_values);
+    int values = matrix.cols * matrix.rows;
+    matrix.values = malloc(sizeof(double) * values);
     return matrix;
 }
 
@@ -142,6 +142,29 @@ double determinant(Matrix matrix) {
     return deter;
 }
 
+Matrix power(Matrix matrix, int n) {
+    int rows = matrix.rows;
+    int cols = matrix.cols;
+    int k = 0;
+    Matrix resultmatrix = matrix;
+    if (n == 1) {
+        return resultmatrix;
+    }
+    if (n > 1) {
+        if (rows == cols) {
+            k = 1;
+            do {
+                resultmatrix = multiply(resultmatrix, matrix);
+                k =k + 1;
+            } while (k < n);
+        } else {
+            printf("imp");
+            exit(EXIT_FAILURE);
+        }
+    }
+    return resultmatrix;
+}
+
 void start_calculating() {
     printf("select an action\n");
     printf("q - out1\nw - out2\ne - add\nt - subt\ny - tran1\nu - tran2\ni - det\no - mult\n1 - init\n");
@@ -198,8 +221,13 @@ void start_calculating() {
                 matrix_2 = m_setsize(matrix_2.rows, matrix_2.cols);
                 m_init(&matrix_2);
                 printf("complete\n");
+            case '2':
+                printf("power");
+                powe = power(matrix_1, 3);
+                m_output(powe);
             default:
                 printf("...\n");
+                break;
         }
     }
         while (condition != 'f');
@@ -207,5 +235,15 @@ void start_calculating() {
 }
 
 int main() {
-    start_calculating();
+    //start_calculating();
+    printf("--initialization\n");
+    printf("Enter ows and cols\n");
+    m_rows_cols(&matrix_1);
+    matrix_1 = m_setsize(matrix_1.rows, matrix_1.cols);
+    m_init(&matrix_1);
+    m_output(matrix_1);
+
+
+    powe = power(matrix_1, 4);
+    m_output(powe);
 }

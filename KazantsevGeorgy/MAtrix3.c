@@ -6,7 +6,7 @@
 struct Matrix{
     char *name;
     double **mas;
-    int rows; //строка (i)
+    int rows;  // строка (i)
     int cols; //столбец (j)
 };
 
@@ -40,26 +40,23 @@ void Init_T(Matr *mas3){ //задание кол-ва рядов и стобцо
     mas3->name = "ThirdMatrix";
 }
 
-void arinitF(Matr *mas1) { // выделение памяти под первую матрицу
+void arinit(Matr *mas1, Matr *mas2) { // выделение памяти под матрицы
     mas1->mas = (double **) malloc(sizeof(double *) * mas1->rows);
     for (int i = 0; i < mas1->rows; i++) {
         mas1->mas[i] = (double *) malloc(sizeof(double *) * mas1->cols);
+        mas2->mas = (double **) malloc(sizeof(double *) * mas2->rows);
+        for (int j = 0; j < mas2->rows; j++) {
+            mas2->mas[i] = (double *) malloc(sizeof(double *) * mas2->cols);
+        }
     }
 }
 
-void arinitS(Matr *mas2) { // выделение памяти под вторую матрицу
-    mas2->mas = (double **) malloc(sizeof(double *) * mas2->rows);
-    for (int i = 0; i < mas2->rows; i++) {
-        mas2->mas[i] = (double *) malloc(sizeof(double *) * mas2->cols);
+void arinitT(Matr *mas3) { // выделение памяти под третью матрицу
+    mas3->mas = (int **) malloc(sizeof(int *) * mas3->rows);
+    for (int i = 0; i < mas3->rows; i++) {
+        mas3->mas[i] = (int *) malloc(sizeof(int *) * mas3->cols);
     }
 }
-
-//void arinitT(Matr *mas3) { // выделение памяти под третью матрицу
-//    mas3->mas = (int **) malloc(sizeof(int *) * mas3->rows);
-//    for (int i = 0; i < mas3->rows; i++) {
-//        mas3->mas[i] = (int *) malloc(sizeof(int *) * mas3->cols);
-//    }
-//}
 
 void MasZap_F(Matr *mas1) { //заполнение первой матрицы значениями
     printf("\n%s", mas1->name);
@@ -217,11 +214,10 @@ double determinant(double **mas, int n) {
 int main() {
     srand(time(NULL));
     Init_F(&First_Matrix);
-    arinitF(&First_Matrix);
+    arinit(&First_Matrix, &Second_Matrix);
     MasZap_F(&First_Matrix);
 
     Init_S(&Second_Matrix);
-    arinitS(&Second_Matrix);
     MasZap_S(&Second_Matrix);
 
     Init_T(&Third_Matrix);
@@ -236,4 +232,3 @@ int main() {
         determinant(First_Matrix.mas, First_Matrix.rows);
     }
 }
-
