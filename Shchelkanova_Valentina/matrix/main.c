@@ -15,6 +15,12 @@ Matrix A = {5,5};
 Matrix B = {5,5};
 int max_value = 10;
 int coefficient = 4;
+int n = 5;
+
+Matrix empty(){
+    Matrix Null = {0,0};
+    return Null;
+}
 
 
 double ** array_initialization(const unsigned int col, const unsigned int row) {
@@ -25,11 +31,37 @@ double ** array_initialization(const unsigned int col, const unsigned int row) {
     return rez;
 }
 
+Matrix minor (int r_row,  int r_col, const Matrix a)  {
+    Matrix rez= {A.rows-1, A.cols-1};
+    rez.values = array_initialization(rez.rows,rez.cols);
+
+    for (int row=0; row<r_row;row++){
+        for (int col=0;col<r_col; col++){
+            rez.values[row][col]= a.values[row][col];
+        }
+    }
+    for (int row = 0; row < r_row; row++){
+        for (int col = r_col; col < rez.cols; col++){
+            rez.values[row][col] = a.values[row][col+1];
+        }
+    }
+    for (int row = r_row; row < rez.rows; row++){
+        for (int col = 0; col < r_col; col++){
+            rez.values[row][col] = a.values[row+1][col];
+        }
+    }
+    for (int row = r_row ; row <rez.rows; row++){
+        for (int col = r_col; col < rez.cols; col++){
+            rez.values[row][col] = a.values[row+1][col+1];
+        }
+    }
+    return rez;
+}
 
 Matrix addition(const Matrix a, const Matrix b) {// Сложение двух матриц
     Matrix rez = {0,0};
     if (a.rows!=b.rows || a.cols != b.cols) {
-        return rez;
+        return empty();
     } else{
         rez.rows = a.rows;
         rez.cols = a.cols;
@@ -46,7 +78,7 @@ Matrix addition(const Matrix a, const Matrix b) {// Сложение двух м
 Matrix substraction(const Matrix a, const Matrix b) {  // Вычитание двух матриц
     Matrix rez = {0,0};
     if (a.rows!=b.rows || a.cols != b.cols) {
-        return rez;
+        return empty();
     } else{
         rez.rows = a.rows;
         rez.cols = a.cols;
@@ -62,7 +94,7 @@ Matrix substraction(const Matrix a, const Matrix b) {  // Вычитание д�
 
 Matrix multiplication(const Matrix a, const Matrix b) { //  Произведение двух матриц
     Matrix rez = {0,0};
-    if (a.cols!=b.rows){ return rez;
+    if (a.cols!=b.rows){ return empty();
     } else{
         rez.rows = a.rows;
         rez.cols = b.cols;
@@ -80,22 +112,20 @@ Matrix multiplication(const Matrix a, const Matrix b) { //  Произведен
     return rez;
 }
 
-Matrix det(Matrix a) {  // Определитель матрицы
-    Matrix rez = {0,0};
-    if (a.cols!=a.rows){ return rez;
-    } else{
-        rez.rows=a.rows;
-        rez.cols=a.cols;
-        rez.values = array_initialization(rez.cols,rez.rows);
-        for (int row=0; row < rez.rows; row++) {
-            for (int col=0; col < rez.cols; col++){
-
-            }
-
-        }
-
+double det(const Matrix a) {  // Определитель матрицы
+    if (a.cols != a.rows){ return 0.00;}
+    if (n == 1){return 0.00;}
+    double rez = 0.00;
+    int znak = 1;
+    for(int row = 0; row < a.rows; row++){
+        Matrix minor_a = minor(0,row,a);
+        rez = rez + znak * a.values[0][row] * det(minor_a);
+        znak *= -1.00;
+        free(minor_a.values);
     }
+    return rez;
 }
+
 
 Matrix mult_d(const Matrix a, const double k ){
     Matrix rez = {0,0};
@@ -150,7 +180,9 @@ int main() {
     print(multiplication(A, B));
     printf("This is matrix.c A * k\n");
     print(mult_d(A,coefficient));
-
+    printf("This is matrix.c A minor\n");
+    print(minor(4,4,A));
+    printf("This is matrix.c A det%g\n", det(A));
     return 0;
 
 }
