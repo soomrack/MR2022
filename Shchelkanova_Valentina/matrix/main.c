@@ -14,6 +14,7 @@ typedef struct {
 Matrix A = {5,5};
 Matrix B = {5,5};
 int max_value = 10;
+int coefficient = 4;
 
 
 double ** array_initialization(const unsigned int col, const unsigned int row) {
@@ -24,9 +25,6 @@ double ** array_initialization(const unsigned int col, const unsigned int row) {
     return rez;
 }
 
-void liberation(Matrix one){
-    free(one.values);
-}
 
 Matrix addition(const Matrix a, const Matrix b) {// Сложение двух матриц
     Matrix rez = {0,0};
@@ -99,6 +97,19 @@ Matrix det(Matrix a) {  // Определитель матрицы
     }
 }
 
+Matrix mult_d(const Matrix a, const double k ){
+    Matrix rez = {0,0};
+    rez.cols=a.cols;
+    rez.rows=a.rows;
+    rez.values = array_initialization(rez.cols,rez.rows);
+    for (int row = 0; row < rez.rows; row++){
+        for (int col = 0; col < rez.cols; col++){
+            rez.values[row][col] = a.values[row][col] * k;
+        }
+    }
+    return rez;
+}
+
 
 void print(Matrix a){
 
@@ -137,6 +148,8 @@ int main() {
     print(substraction(A,B));
     printf("This is matrix.c A * B\n");
     print(multiplication(A, B));
+    printf("This is matrix.c A * k\n");
+    print(mult_d(A,coefficient));
 
     return 0;
 
