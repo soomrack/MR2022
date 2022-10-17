@@ -18,8 +18,8 @@ int coefficient = 4;
 int n = 5;
 
 Matrix empty(){
-    Matrix Null = {0,0};
-    return Null;
+    Matrix Null_Matrix = {0,0, NULL};
+    return Null_Matrix;
 }
 
 
@@ -59,10 +59,10 @@ Matrix minor (int r_row,  int r_col, const Matrix a)  {
 }
 
 Matrix addition(const Matrix a, const Matrix b) {// Сложение двух матриц
-    Matrix rez = {0,0};
+    Matrix rez = {0,0, NULL};
     if (a.rows!=b.rows || a.cols != b.cols) {
         return empty();
-    } else{
+    }
         rez.rows = a.rows;
         rez.cols = a.cols;
         rez.values = array_initialization(rez.cols,rez.rows);
@@ -71,20 +71,19 @@ Matrix addition(const Matrix a, const Matrix b) {// Сложение двух м
                 rez.values[i][j] = a.values[i][j] + b.values[i][j];
             }
         }
-    }
     return rez;
 }
 
 Matrix substraction(const Matrix a, const Matrix b) {  // Вычитание двух матриц
-    Matrix rez = {0,0};
+    Matrix rez = {0,0, NULL};
     if (a.rows!=b.rows || a.cols != b.cols) {
         return empty();
     } else{
         rez.rows = a.rows;
         rez.cols = a.cols;
         rez.values = array_initialization(rez.cols,rez.rows);
-        for (int i = 0; i < rez.rows; i++){
-            for (int j = 0; j < rez.cols; j++){
+        for (unsigned int i = 0; i < rez.rows; i++){
+            for (unsigned int j = 0; j < rez.cols; j++){
                 rez.values[i][j] = a.values[i][j] - b.values[i][j];
             }
         }
@@ -92,45 +91,43 @@ Matrix substraction(const Matrix a, const Matrix b) {  // Вычитание д�
     return rez;
 }
 
-Matrix multiplication(const Matrix a, const Matrix b) { //  Произведение двух матриц
-    Matrix rez = {0,0};
+Matrix multiplication(const Matrix A, const Matrix B) { //  Произведение двух матриц
+    Matrix rez = empty();
     if (a.cols!=b.rows){ return empty();
-    } else{
-        rez.rows = a.rows;
-        rez.cols = b.cols;
+    }
+        rez.rows = A.rows;
+        rez.cols = A.cols;
         rez.values = array_initialization(rez.cols,rez.rows);
-        for (int row = 0; row < rez.rows; row++){
-            for (int col = 0; col < rez.cols; col++){
+        for (unsigned int row = 0; row < rez.rows; row++){
+            for (unsigned int col = 0; col < rez.cols; col++){
                 rez.values[row][col] = 0.00;
-                for (int k = 0; k < a.cols; k++) {
-                    rez.values[row][col] += a.values[row][k] * b.values[k][col];
+                for (int k = 0; k < A.cols; k++) {
+                    rez.values[row][col] += A.values[row][k] * B.values[k][col];
                 }
 
             }
         }
-    }
     return rez;
 }
 
-double det(const Matrix a) {  // Определитель матрицы
-    if (a.cols != a.rows){ return 0.00;}
-    if (n == 1){return 0.00;}
+double det(const Matrix A) {  // Определитель матрицы
+    if (A.cols != A.rows){ return 0.00;}
+    if (n == 1 || n==0){return 0.00;}
     double rez = 0.00;
     int znak = 1;
-    for(int row = 0; row < a.rows; row++){
+    for(unsigned int row = 0; row < A.rows; row++){
         Matrix minor_a = minor(0,row,a);
-        rez = rez + znak * a.values[0][row] * det(minor_a);
+        rez = rez + znak * A.values[0][row] * det(minor_a);
         znak *= -1.00;
-        free(minor_a.values);
     }
     return rez;
 }
 
 
-Matrix mult_d(const Matrix a, const double k ){
-    Matrix rez = {0,0};
-    rez.cols=a.cols;
-    rez.rows=a.rows;
+Matrix mult_d(const Matrix A, const double k ){
+    Matrix rez = {0,0, NULL};
+    rez.cols=A.cols;
+    rez.rows=A.rows;
     rez.values = array_initialization(rez.cols,rez.rows);
     for (int row = 0; row < rez.rows; row++){
         for (int col = 0; col < rez.cols; col++){
@@ -182,7 +179,7 @@ int main() {
     print(mult_d(A,coefficient));
     printf("This is matrix.c A minor\n");
     print(minor(4,4,A));
-    printf("This is matrix.c A det%g\n", det(A));
+    printf("This is matrix.c A det %f\n", det(A));
     return 0;
 
 }
