@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
 
@@ -76,11 +77,10 @@ const Expenses Bob_expenses ={5, 20000};
 
 //row строка, col столбец
 // функция возвращает память для матрицы
-long long int **memory (unsigned int row,unsigned int col ){
+long long int **memory (unsigned int row,unsigned int col ) {
     long long int **a;
     a = (long long int**)malloc(row * sizeof(long long int*)); //выделение памяти под указатели на строки
-    for (int i = 0; i < row; i++)  // цикл по строкам
-    {
+    for (int i = 0; i < row; i++)  { // цикл по строкам
         a[i] = (long long int *) malloc(col * sizeof(long long int));// Выделение памяти под хранение строк
     }
     return a;
@@ -97,7 +97,7 @@ int monthly_payment_F (const Money A,const  Percent B ) {
 //вычисления момента когда увеличивается процент по вкладу
 double percentage_increase(int current_year,int time_year, double percent_old,double percent_new ){
     double result;
-    if( current_year > time_year / current_year){
+    if( current_year > time_year / current_year) {
         result = percent_old + percent_new;
     }
     else {
@@ -111,7 +111,7 @@ double percentage_increase(int current_year,int time_year, double percent_old,do
 // i - это год
 double income_client (int current_year, int income_old, const Income A){
     double income_new=income_old;
-    if (current_year == A.i){
+    if (current_year == A.i) {
         income_new = income_old + A.income_new;
     }
     return income_new;
@@ -120,9 +120,9 @@ double income_client (int current_year, int income_old, const Income A){
 
 //учитывает повышение/понижение стоимости квартиры
 double flat_client (int current_year, int flat_old,Flat A) {
-    int flat_new=flat_old;
-    if (current_year==A.i){
-        flat_new=flat_old*A.flat_new;
+    int flat_new = flat_old;
+    if (current_year == A.i) {
+        flat_new = flat_old * A.flat_new;
     }
     return flat_new;
 }
@@ -132,7 +132,7 @@ double flat_client (int current_year, int flat_old,Flat A) {
 double expenses_client (int current_year, int expenses_old,Expenses A) {
     int expenses_new=expenses_old;
     if (current_year == A.i){
-        expenses_new=expenses_old+A.expenses_new;
+        expenses_new = expenses_old + A.expenses_new;
     }
     return expenses_new;
 }
@@ -148,9 +148,9 @@ Matrix deposit (const Money A, const Percent B, const Matrix C, const Income D, 
     double expenses_new;
     long long int residue = A.beginning;
     for (int i = 1; i <= A.time_year; i++){
-        per_increase=percentage_increase(i,A.time_year,B.deposit_interest,B.percentage_increase);
-        income_new=income_client(i,A.income,  (D));
-        expenses_new=expenses_client(i,A.expenses, (E));
+        per_increase = percentage_increase(i, A.time_year, B.deposit_interest, B.percentage_increase);
+        income_new = income_client(i,A.income,  (D));
+        expenses_new = expenses_client(i,A.expenses, (E));
         auxiliary_1 = (residue + income_new * 12 - expenses_new * 12);
         residue = auxiliary_1 * per_increase + auxiliary_1;
         result.massive[i-1][0] = residue;
@@ -229,11 +229,11 @@ Identification name (const Identification A) {
 
 int main() {
     name(Client_1);  // приветствие клиента Алиса
-    itog(deposit(Alice_money,Alice_percent,Alice_matrix,
+    itog(deposit(Alice_money, Alice_percent, Alice_matrix,
                  Alice_income, Alice_expenses ));  // вызов вклада
-    apartment_purchase(Alice_money,Alice_percent,Alice_matrix,
-                       Alice_income,Alice_flat,Alice_expenses);  // через сколько купит квартиру
+    apartment_purchase(Alice_money, Alice_percent, Alice_matrix,
+                       Alice_income, Alice_flat, Alice_expenses);  // через сколько купит квартиру
     name(Client_2);  // приветствие клиента Боб
-    itog(mortgages(Bob_money,Bob_percent,Bob_matrix, Bob_income, Bob_expenses));  // вызов ипотеки
+    itog(mortgages(Bob_money, Bob_percent, Bob_matrix, Bob_income, Bob_expenses));  // вызов ипотеки
     return 0;
 }
