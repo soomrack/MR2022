@@ -7,7 +7,7 @@
 typedef struct {
      char *name;
      char *wish;
-} Identification;  // структура имени и желания клиента (ипотека или вклад)
+} Identification;  // структура имени и желания клиента (ипотека или вклаl)
 
 
 typedef struct {
