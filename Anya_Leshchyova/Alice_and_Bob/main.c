@@ -21,8 +21,8 @@ typedef struct {
 
 
 typedef struct {
-    unsigned int row; // число строк, целое положительное
-    unsigned int col; // число столбцов, целое положительное
+    unsigned int row; // число строк, целое положительное соответствует числу лет
+    unsigned int col; // число столбцов, целое положительное всегда 1
     long long int **massive;
 } Matrix;   // структура задаёт размеры матрицы и саму матрицу
 
