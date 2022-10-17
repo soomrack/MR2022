@@ -116,10 +116,10 @@ double determinant(Matrix matrix) {
         printf("imp");
         exit(EXIT_FAILURE);
     }
-    double resultmatrix = 0;
+    double deter = 0;
     int size = matrix.cols;
     if (size == 1) {
-        resultmatrix = matrix.values[0];
+        deter = matrix.values[0];
     }
     else {
         for (int i = 0; i < size; i++) {
@@ -136,10 +136,10 @@ double determinant(Matrix matrix) {
                     minor.values[row * (size - 1) + col] = matrix.values[(row + row_temp) * size + (col + col_temp)];
                 }
             }
-            resultmatrix += pow(-1, i + j) * matrix.values[i * size + j] * determinant(minor);
+            deter += pow(-1, i + j) * matrix.values[i * size + j] * determinant(minor);
         }
     }
-    return resultmatrix;
+    return deter;
 }
 
 void start_calculating() {
