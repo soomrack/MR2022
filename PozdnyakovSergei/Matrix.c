@@ -2,7 +2,7 @@
 #include <math.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include <time.h>
+/*#include <time.h>*/
 
 
 typedef struct Matrix {
@@ -31,9 +31,9 @@ void mistake (char* name_of_operation, char* error) {  // ЕСТЬ ОШИБКА 
 
 
 void matrix_input (Matrix* matrix) {  // РАНДОМНЫЙ ВВОД МАТРИЦ
-    srand(time(NULL));
+    //srand(time(NULL));
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
-        matrix->value[number] = (double )rand();  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
+        matrix->value[number] = rand()%100;  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
     }
 }
 
@@ -70,6 +70,7 @@ Matrix summation (const Matrix matrix1, const Matrix matrix2) {  // СУММИР
     if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
         mistake("Summation", "Not equal matrix size");
         return ZERO;
+        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -84,6 +85,7 @@ Matrix subtraction (const Matrix matrix1, const Matrix matrix2) {  // ВЫЧИТ
     if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
         mistake("Subtraction", "Not equal matrix size");
         return ZERO;
+        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -106,9 +108,10 @@ Matrix multiply_by_num (const Matrix matrix, double num) {  // УМНОЖЕНИ�
 
 Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) {  // УМНОЖЕНИЕ МАТРИЦЫ НА МАТРИЦУ
     if (matrix1.cols != matrix2.rows) {
-        mistake("Multiply matrix on matrix", "Matrix 1 cols should be equal\n");
-        printf("to matrix 2 rows");
+        mistake("Multiply matrix on matrix", "Matrix 1 cols should be equal");
+        printf("to matrix 2 rows\n");
         return ZERO;
+        printf("\n");
     }
     unsigned int itog_cols = matrix2.cols;
     unsigned int itog_rows = matrix1.rows;
@@ -127,7 +130,28 @@ Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) { 
 }
 
 
+/*
+Matrix determinant (const Matrix matrix) { // ОПРЕДЕЛИТЕЛЬ МАТРИЦЫ
 
+    return itog;
+}
+*/
+
+/*Matrix matrix_exponent (const Matrix matrix, unsigned int ) {
+
+    return itog;
+}*/
+
+
+Matrix transponation (const Matrix matrix) {
+    Matrix itog = initialization(matrix.rows, matrix.cols);
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = matrix.value[col * itog.rows + row];
+        }
+    }
+    return itog;
+}
 
 
 int main() {
@@ -139,7 +163,7 @@ int main() {
     matrix_output(mat1);
 
     printf("Second matrix\n");
-    mat2 = initialization(3, 3);
+    mat2 = initialization(3, 4);
     matrix_input(&mat2);
     matrix_output(mat2);
 
@@ -154,7 +178,7 @@ int main() {
     matrix_output(summa);
     clean_memory(&summa);
 
-    printf("Matrix division\n");
+    printf("Sub of matrices\n");
     Matrix sub;
     sub = subtraction(mat1, mat2);
     matrix_output(sub);
@@ -178,6 +202,49 @@ int main() {
     matrix_output(multiply_M_by_M);
     clean_memory(&multiply_M_by_M);
 
-    printf("I HOPE IT'S WORKs RIGHT\n");  // НЕ ФУРЫЧИТ, ВВОДИТ ОДИНАКОВЫЕ МАТРИЦЫ КАЖДЫЙ РАЗ,
+    printf("Transponated first matrix");
+    Matrix trans1;
+    trans1 = transponation(mat1);
+    matrix_output(trans1);
+    clean_memory(&trans1);
+
+    printf("Transponated second matrix");
+    Matrix trans2;
+    trans2 = transponation(mat2);
+    matrix_output(trans2);
+    clean_memory(&trans2);
+
+
+
+    /*printf("Determinant of the first matrix");
+    Matrix det1;
+    det1 = determinant(mat1);
+    matrix_output(det1);
+    clean_memory(&det1);
+
+    printf("Determinant of the second matrix");
+    Matrix det2;
+    det2 = determinant(mat2);
+    matrix_output(det2);
+    clean_memory(&det2);
+
+    printf("Exponent of the first matrix");
+    Matrix exp1;
+    exp1 = matrix_exponent(mat1);
+    matrix_output(exp1);
+    clean_memory(&exp1);
+
+    printf("Exponent of the second matrix");
+    Matrix exp2;
+    exp2 = matrix_exponent(exp2);
+    matrix_output(exp2);
+    clean_memory(&exp2);*/
+
+    printf("\nI HOPE IT'S WORKs RIGHT\n");
+
+    /* ЕСЛИ ИСПОЛЬЗОВАТЬ SRAND И БИБЛИОТЕКУ TIME, ТО ВВОДЯТСЯ "РАНДОМНО"
+     * ДВЕ ОДИНАКОВЫЕ МАТРИЦЫ, ЕСЛИ ЗАКОММИТИТЬ ПРЕДЫДУЩИЕ И ИСПОЛЬЗОВАТЬ
+     * MATRIX->VALUE[NUMBER] = RAND()%100, ТО ВВОДИТ 2 РАЗНЫЕ МАТРИЦЫ,
+     * НО ПРИ КАЖДОМ ПРОГОНЕ ОДНИ И ТЕ ЖЕ*/
 
 }
