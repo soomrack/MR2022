@@ -14,6 +14,7 @@ typedef struct {
     double **massive;
 } Matrix;
 
+
 void free_matrix (Matrix A){
     free(A.line);
     free(A.massive);
