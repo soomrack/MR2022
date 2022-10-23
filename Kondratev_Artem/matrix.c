@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <malloc.h>
-//#include <iso646.h>
 
 
 typedef struct Matrix {
@@ -29,59 +28,22 @@ Matrix matrix_init(int rows, int cols) {
         matrix.array[row] = start + row * matrix.cols;
     }
 
-    /*matrix.c.array = (double**)malloc(rows * sizeof(double*));
-
-    for(int row = 0; row <= rows - 1; row++) {
-     matrix.c.array[row] = (double*)malloc(cols * sizeof(double));
-    }*/
-
     return matrix;
 
 }
 
 
-void matrix_output(Matrix *matrix, int filling_key) {
+void matrix_output(Matrix matrix) {
 
-    if(filling_key == 0)
-        printf("You get: \n");
-    else
-        printf("You entered:\n");
+    for(int row = 0; row <= matrix.rows-1; row++) {
 
-    for(int row = 0; row <= matrix->rows-1; row++) {
-
-        for(int col = 0; col <= matrix->cols-1; col++)
-            printf("%14.4lf", matrix->array[row][col]);
+        for(int col = 0; col <= matrix.cols-1; col++)
+            printf("%14.4lf", matrix.array[row][col]);
 
         printf("\n");
     }
 
-}
-
-
-void matrix_filling(Matrix *matrix) {
-
-    printf("fill matrix.c:\n");
-
-    for(int row = 0; row <= matrix->rows-1; row++)
-        for(int col = 0; col <= matrix->cols-1; col++)
-            scanf("%lf", &matrix->array[row][col]);
-
-    matrix_output(matrix, 1);
-
-}
-
-
-Matrix new_matrix() {
-
-    int  rows, cols;
-
-    printf("input new matrix.c sizes:\n");
-    scanf("%dx%d", &rows, &cols);
-    printf("sizes: %dx%d\n", rows, cols);
-
-    Matrix matrix = matrix_init(rows, cols);
-
-    return matrix;
+    printf("\n");
 
 }
 
@@ -92,53 +54,36 @@ void mem_clearing(Matrix *matrix) {
         free(matrix.c->array[row]);*/
 
     free(matrix->array);
+    matrix->rows = 0;
+    matrix->cols = 0;
 
 }
 
 
-Matrix matrix_addition(int sign, Matrix *matrix1, Matrix *matrix2) {
+Matrix matrix_addition(Matrix matrix1, Matrix matrix2, int plus_key) {
 
-    Matrix sum_matrix = matrix_init(matrix1->rows, matrix1->rows);
+    Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
 
-    for(int row = 0; row <= matrix1->rows-1; row++)
-        for(int col = 0; col <= matrix1->cols-1; col++)
-            sum_matrix.array[row][col] = 1 * matrix1->array[row][col] + sign * matrix2->array[row][col];
+    for(int row = 0; row <= matrix1.rows-1; row++)
+        for(int col = 0; col <= matrix1.cols-1; col++)
+            sum_matrix.array[row][col] = 1 * matrix1.array[row][col] + plus_key * matrix2.array[row][col];
 
     return sum_matrix;
 
 }
 
 
-void matrix_addition_output(int sign) {
+int is_rows1_equal_rows2(Matrix matrix1, Matrix matrix2) {
 
-    Matrix matrix1 = new_matrix();
-    Matrix matrix2 = matrix_init(matrix1.rows, matrix1.cols);
-
-    matrix_filling(&matrix1);
-    matrix_filling(&matrix2);
-
-    Matrix sum_matrix = matrix_addition(sign, &matrix1, &matrix2);
-
-    matrix_output(&sum_matrix, 0);
-
-    mem_clearing(&matrix1);
-    mem_clearing(&matrix2);
-    mem_clearing(&sum_matrix);
+    uint64_t delta = matrix1.cols - matrix2.rows;
+    return (delta != 0) ? 1 : 0;
 
 }
 
 
-int matrix_size_comparer(Matrix *matrix1, Matrix *matrix2) {
+Matrix matrix_multiplication(Matrix matrix1, Matrix matrix2) {
 
-        uint64_t delta = matrix1->cols - matrix2->rows;
-        return (delta != 0) ? -1 : 0;
-
-}
-
-
-Matrix matrix_multiplication(Matrix *matrix1, Matrix *matrix2) {
-
-    Matrix multiplied_matrix = matrix_init(matrix1->rows, matrix2->cols);
+    Matrix multiplied_matrix = matrix_init(matrix1.rows, matrix2.cols);
 
     for(int row = 0; row <= multiplied_matrix.rows - 1; row++)
 
@@ -146,8 +91,8 @@ Matrix matrix_multiplication(Matrix *matrix1, Matrix *matrix2) {
 
             multiplied_matrix.array[row][col] = 0;
 
-            for (int k = 0; k <= matrix1->cols - 1; k++)
-                multiplied_matrix.array[row][col] += matrix1->array[row][k] * matrix2->array[k][col];
+            for (int k = 0; k <= matrix1.cols - 1; k++)
+                multiplied_matrix.array[row][col] += matrix1.array[row][k] * matrix2.array[k][col];
         }
 
     return multiplied_matrix;
@@ -155,70 +100,25 @@ Matrix matrix_multiplication(Matrix *matrix1, Matrix *matrix2) {
 }
 
 
-void multiplication_output() {
+Matrix matrix_number_operation(Matrix matrix, double number, int plus_key) {
 
-    Matrix matrix1 = new_matrix();
+    Matrix operated_matrix = matrix_init(matrix.rows, matrix.cols);
 
-    Matrix matrix2 = new_matrix();
-
-    if(matrix_size_comparer(&matrix1, &matrix2) == -1) {
-        printf("Sizes of matrices are not equals");
-        return;
-    }
-
-    matrix_filling(&matrix1);
-    matrix_filling(&matrix2);
-
-    Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
-
-    matrix_output(&multiplied_matrix, 0);
-
-    mem_clearing(&matrix1);
-    mem_clearing(&matrix2);
-    mem_clearing(&multiplied_matrix);
-
-}
-
-
-Matrix matrix_number_operation(Matrix *matrix, double number, int plus_key) {
-
-    Matrix operated_matrix = matrix_init(matrix->rows, matrix->cols);
-
-    for(int row = 0; row <= matrix->rows - 1; row++)
-        for(int col = 0; col <= matrix->cols - 1; col++)
+    for(int row = 0; row <= matrix.rows - 1; row++)
+        for(int col = 0; col <= matrix.cols - 1; col++)
             if(plus_key == 1)
-                operated_matrix.array[row][col] = matrix->array[row][col] + number;
+                operated_matrix.array[row][col] = matrix.array[row][col] + number;
             else
-                operated_matrix.array[row][col] = matrix->array[row][col] * number;
+                operated_matrix.array[row][col] = matrix.array[row][col] * number;
 
     return operated_matrix;
 
 }
 
 
-void number_operation_output(int key) {
+Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col, int det_key) {
 
-    Matrix matrix = new_matrix();
-    matrix_filling(&matrix);
-
-    double number;
-
-    printf("Enter a number:\n");
-    scanf("%lf", &number);
-
-    Matrix operated_matrix = matrix_number_operation(&matrix, number, key);
-
-    matrix_output(&operated_matrix, 0);
-
-    mem_clearing(&matrix);
-    mem_clearing(&operated_matrix);
-
-}
-
-
-Matrix minor_init(Matrix *matrix, int crossed_row, int crossed_col, int det_key) {
-
-    Matrix minor = matrix_init(matrix->rows-1, matrix->cols-1);
+    Matrix minor = matrix_init(matrix.rows-1, matrix.cols-1);
 
     int row_link = det_key;
     int col_link;
@@ -233,7 +133,7 @@ Matrix minor_init(Matrix *matrix, int crossed_row, int crossed_col, int det_key)
         for (int j = 0; j <= minor.cols - 1; j++) {
             if(j == crossed_col)
                 col_link += 1;
-            minor.array[i][j] = matrix->array[i + row_link][j + col_link];
+            minor.array[i][j] = matrix.array[i + row_link][j + col_link];
         }
 
     }
@@ -243,23 +143,23 @@ Matrix minor_init(Matrix *matrix, int crossed_row, int crossed_col, int det_key)
 }
 
 
-double recursive_determinant_evaluation(Matrix *matrix) {
+double recursive_determinant(Matrix matrix) {
 
     double determinant;
 
-    if(matrix->rows == 1) {
-        determinant = matrix->array[0][0];
+    if(matrix.rows == 1) {
+        determinant = matrix.array[0][0];
         return determinant;
     }
 
-    for(int col = 0; col <= matrix->cols - 1; col++) {
+    for(int col = 0; col <= matrix.cols - 1; col++) {
 
         Matrix minor = minor_init(matrix, -1, col, 1);
 
         int k;
         k = (col % 2 != 0) ? -1 : 1;
 
-        determinant += k * matrix->array[0][col] * recursive_determinant_evaluation(&minor);
+        determinant += k * matrix.array[0][col] * recursive_determinant(minor);
 
         mem_clearing(&minor);
 
@@ -270,9 +170,9 @@ double recursive_determinant_evaluation(Matrix *matrix) {
 }
 
 
-int matrix_square_checker(Matrix *matrix) {
+int is_square_matrix(Matrix matrix) {
 
-    if(matrix->rows - matrix->cols != 0)
+    if(matrix.rows - matrix.cols != 0)
         return -1;
 
     return 0;
@@ -280,73 +180,40 @@ int matrix_square_checker(Matrix *matrix) {
 }
 
 
-void matrix_determinant_output() {
+Matrix matrix_transposition(Matrix matrix) {
 
-    Matrix matrix = new_matrix();
+    int rows = matrix.cols;
+    int cols = matrix.rows;
 
-    if(matrix_square_checker(&matrix) == -1) {
-        printf("You need to input square matrix.c\n");
-        return;
-    }
-
-    matrix_filling(&matrix);
-
-    double determinant = recursive_determinant_evaluation(&matrix);
-
-    printf("You get: ");
-    printf("determinant = %.3lf\n", determinant);
-
-    mem_clearing(&matrix);
-
-}
-
-
-Matrix matrix_transposition(Matrix *matrix) {
-
-    Matrix transposed_matrix = matrix_init(matrix->cols, matrix->rows);
+    Matrix transposed_matrix = matrix_init(rows, cols);
 
     for(int row = 0; row <= transposed_matrix.rows - 1; row++)
         for(int col = 0; col <= transposed_matrix.cols - 1; col++)
-            transposed_matrix.array[row][col] = matrix->array[col][row];
+            transposed_matrix.array[row][col] = matrix.array[col][row];
 
     return transposed_matrix;
 
 }
 
 
-void transposition_output() {
+Matrix minor_transformation(Matrix matrix) {
 
-    Matrix matrix = new_matrix();
-    matrix_filling(&matrix);
+    Matrix inverse_added_matrix = matrix_init(matrix.rows, matrix.cols);
 
-    Matrix transposed_matrix = matrix_transposition(&matrix);
-
-    matrix_output(&transposed_matrix, 0);
-
-    mem_clearing(&matrix);
-    mem_clearing(&transposed_matrix);
-
-}
-
-
-Matrix each_element_minor_transformation(Matrix *matrix) {
-
-    Matrix inverse_added_matrix = matrix_init(matrix->rows, matrix->cols);
-
-    if(matrix->rows == 1) {
-        inverse_added_matrix = *matrix;
+    if(matrix.rows == 1) {
+        inverse_added_matrix = matrix;
         return inverse_added_matrix;
     }
 
-    for(int row = 0; row <= matrix->rows - 1; row++) {
+    for(int row = 0; row <= matrix.rows - 1; row++) {
 
-        for(int col = 0; col <= matrix->cols - 1; col++) {
+        for(int col = 0; col <= matrix.cols - 1; col++) {
 
             Matrix minor = minor_init(matrix,row, col, 0);
 
             int k = ((row + col) % 2 == 0) ? 1 : -1;
 
-            inverse_added_matrix.array[row][col] = k * recursive_determinant_evaluation(&minor);
+            inverse_added_matrix.array[row][col] = k * recursive_determinant(minor);
 
             mem_clearing(&minor);
 
@@ -359,17 +226,17 @@ Matrix each_element_minor_transformation(Matrix *matrix) {
 }
 
 
-Matrix matrix_inversion(Matrix *matrix) {
+Matrix matrix_inversion(Matrix matrix) {
 
-    double determinant = recursive_determinant_evaluation(matrix);
+    double determinant = recursive_determinant(matrix);
 
     double inverse_coef = 1 / determinant;
 
     Matrix transposed_matrix = matrix_transposition(matrix);
 
-    Matrix transformed_matrix = each_element_minor_transformation(&transposed_matrix);
+    Matrix transformed_matrix = minor_transformation(transposed_matrix);
 
-    Matrix inverse_matrix = matrix_number_operation(&transformed_matrix, inverse_coef, 0);
+    Matrix inverse_matrix = matrix_number_operation(transformed_matrix, inverse_coef, 0);
 
     mem_clearing(&transposed_matrix);
     mem_clearing(&transformed_matrix);
@@ -379,88 +246,118 @@ Matrix matrix_inversion(Matrix *matrix) {
 }
 
 
-int zero_determinant(Matrix *matrix) {
+int is_zero_determinant(Matrix matrix) {
 
-    double determinant = recursive_determinant_evaluation(matrix);
+    double determinant = recursive_determinant(matrix);
 
     if((int)((determinant - (int)determinant) * 1000) == 0)
         return -1;
     else
         return 0;
-}
-
-
-void inverse_matrix_output() {
-
-    Matrix matrix = new_matrix();
-
-    if(matrix_square_checker(&matrix) == -1) {
-        printf("You need to input square matrix.c\n");
-        return;
-    }
-
-    matrix_filling(&matrix);
-
-    if(zero_determinant(&matrix) == -1) {
-        printf("Error: determinant = 0\n");
-        return;
-    }
-
-    Matrix inverse_matrix = matrix_inversion(&matrix);
-
-    matrix_output(&inverse_matrix, 0);
-
-    mem_clearing(&matrix);
-    mem_clearing(&inverse_matrix);
 
 }
 
 
 Matrix matrix_inverse_multiplication(Matrix *matrix1, Matrix *matrix2) {
 
-    Matrix inverse_matrix = matrix_inversion(matrix2);printf("ok\n");
-    matrix_output(&inverse_matrix, 0);printf("ok\n");
+    Matrix inverse_matrix = matrix_inversion(*matrix2);
 
-    Matrix inverse_multiplied_matrix = matrix_multiplication(matrix1, &inverse_matrix);printf("ok");
-    mem_clearing(&inverse_matrix);printf("ok");
+    Matrix inverse_multiplied_matrix = matrix_multiplication(*matrix1, inverse_matrix);
+    mem_clearing(&inverse_matrix);
 
     return inverse_multiplied_matrix;
 
 }
 
 
-void inverse_multiplication_output() {
+Matrix identity_matrix(int rows) {
 
-    Matrix matrix1 = new_matrix();
+    int cols = rows;
+    Matrix id_matrix = matrix_init(rows, rows);
 
-    Matrix matrix2 = new_matrix();
+    for(int row = 0; row <= rows - 1; row++)
+        for(int col = 0; col <= cols - 1; col++)
+            id_matrix.array[row][col] = (row == col) ? 1 : 0;
 
-    if(matrix_square_checker(&matrix2) == -1) {
-        printf("You need to input square matrix2\n");
-        return;
-    }
-
-    matrix_filling(&matrix1);
-    matrix_filling(&matrix2);
-
-    double determinant = recursive_determinant_evaluation(&matrix2);
-    if((int)((determinant - (int)determinant) * 1000) == 0) {
-        printf("Error: determinant2 = 0\n");
-        return;
-    }
-
-    Matrix inverse_multiplied_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
-
-    matrix_output(&inverse_multiplied_matrix, 0);
-
-    mem_clearing(&matrix1);
-    mem_clearing(&matrix2);
-    mem_clearing(&inverse_multiplied_matrix);
+    return id_matrix;
 
 }
 
 
-int test_filling(Matrix *matrix, const double array[]) {
+Matrix matrix_number_filling(int rows, int cols, double number) {
+
+    Matrix filled_matrix = matrix_init(rows, cols);
+
+    for(int row = 0; row <= rows - 1; row++)
+        for(int col = 0; col <= cols - 1; col++)
+            filled_matrix.array[row][col] = number;
+
+    return filled_matrix;
+
+}
+
+
+Matrix matrix_power(Matrix matrix, int pow) {
+
+    Matrix powered_matrix = matrix_init(matrix.rows, matrix.cols);
+    for(int row = 0; row <= matrix.rows - 1; row++)
+        for(int col = 0; col <= matrix.cols - 1; col++)
+            powered_matrix.array[row][col] = matrix.array[row][col];
+
+    Matrix buffer;
+
+    if(pow == 1)
+        return powered_matrix;
+
+    for (int k = 1; k < pow; k++) {
+        buffer = matrix_multiplication(powered_matrix, matrix);
+        mem_clearing(&powered_matrix);
+        powered_matrix = buffer;
+    }
+
+    return powered_matrix;
+
+}
+
+
+Matrix matrix_exp(Matrix matrix) {
+
+    Matrix exp_matrix = identity_matrix(matrix.rows);
+
+    Matrix powered_matrix;
+    Matrix multiplied_matrix;
+    Matrix sum_matrix;
+
+    int factorial = 1;
+    int clk = 1;
+    double k;
+
+    while(clk < 9) {
+
+        factorial *= clk;
+        k = 1.0 / factorial;
+
+        powered_matrix = matrix_power(matrix, clk);
+
+        multiplied_matrix = matrix_number_operation(powered_matrix, k, 0);
+        mem_clearing(&powered_matrix);
+
+        sum_matrix = matrix_addition(exp_matrix, multiplied_matrix, 1);
+        mem_clearing(&exp_matrix);
+        mem_clearing(&multiplied_matrix);
+
+        exp_matrix = sum_matrix;
+
+        clk += 1;
+
+    }
+
+    return exp_matrix;
+
+}
+
+
+int test_matrix_filling(Matrix *matrix, const double array[]) {
 
     int array_index = 0;
     for(int row = 0; row <= matrix->rows-1; row++)
@@ -472,44 +369,49 @@ int test_filling(Matrix *matrix, const double array[]) {
 }
 
 
-/*int test_check_array(const double true_array[], int len, Matrix *res_matrix) {
+void exp_test() {
 
-    double res_array[len];
+    Matrix matrix = matrix_init(2,2);
+    double array[] = {2,2,2,2};
+    test_matrix_filling(&matrix, array);
+
+    Matrix res = matrix_exp(matrix);
+    mem_clearing(&matrix);
+
+    matrix_output(res);
+    mem_clearing(&res);
+
+}
+
+
+int test_check_array(const double true_array[], Matrix res_matrix) {
+
+    int len = res_matrix.rows * res_matrix.cols;
+
+    double result_array[len];
     int array_index = 0;
 
     double delta;
     int error_flag = 0;
 
-    for(int row = 0; row <= res_matrix->rows-1; row++)
-        for(int col = 0; col <= res_matrix->cols-1; col++) {
-            res_array[array_index] = res_matrix->array[row][col];
+    for(int row = 0; row <= res_matrix.rows-1; row++)
+        for(int col = 0; col <= res_matrix.cols-1; col++) {
+            result_array[array_index] = res_matrix.array[row][col];
             array_index += 1;
         }
 
     for(array_index = 0; array_index <= len - 1; array_index++) {
 
-        if(res_array[array_index] > true_array[array_index]) {
-            delta = res_array[array_index] - true_array[array_index];
-            printf("res bigger ");
-        }
-        else {
-            delta = true_array[array_index] - res_array[array_index];
-            printf("true bigger ");
-        }
-        printf("res: %lf // ", res_array[array_index]);
+        delta = result_array[array_index] - true_array[array_index];
+
+        printf("res: %lf // ", result_array[array_index]);
         printf("true: %lf // ", true_array[array_index]);
-        printf("delta: %lf // ", delta);
+        printf("delta: %lf //\n", delta);
 
         delta = (delta < 0) ? -delta : delta;
-        printf("delta2: %lf // ", delta);
-        printf("delta3: %lf // ", delta * 10000);
-        if(delta * 10000 >= 10) {
+
+        if(delta * 1000 >= 1.0)
             error_flag += 1;
-            printf("error_flag: +1 //");
-            printf("yes\n");
-        }
-        else
-            printf("error_flag: +0 //\n");
 
     }
 
@@ -518,99 +420,82 @@ int test_filling(Matrix *matrix, const double array[]) {
 }
 
 
-int test_matrix_addition(Matrix matrix1, Matrix matrix2, const double sum_true_array[]) {
+void test_matrix_operation(double true_array[], Matrix res_matrix, char text[]) {
 
-    Matrix sum_matrix  = matrix_addition(1, &matrix1, &matrix2);
+    int error_flag = test_check_array(true_array, res_matrix);
 
-    int sum_len = matrix1.rows * matrix1.cols;
+    mem_clearing(&res_matrix);
 
-    int error_flag = test_check_array(sum_true_array, sum_len, &sum_matrix);
-
-    return error_flag;
+    printf("%s. Errors: %d\n", text, error_flag);
 
 }
-
-
-int test_matrix_multiplication(Matrix matrix1, Matrix matrix2, const double multi_true_array[]) {
-
-    Matrix multiplied_matrix = matrix_multiplication(&matrix1, &matrix2);
-
-    int multi_len = matrix1.rows * matrix1.cols;
-
-    int error_flag = test_check_array(multi_true_array, multi_len, &multiplied_matrix);
-
-    return error_flag;
-
-}*/
 
 
 void test() {
 
     Matrix matrix1 = matrix_init(2, 2);
-    double array1[] = {3.1, 8, 1, 2.659};
-    test_filling(&matrix1, array1);
-
+    double array1[] = {2, 8, 1, 3};
+    test_matrix_filling(&matrix1, array1);
 
     Matrix matrix2 = matrix_init(2, 2);
-    double array2[] = {13.314, 9, 21, 46.928};
-    test_filling(&matrix2, array2);
+    double array2[] = {4, 9, 21, 13};
+    test_matrix_filling(&matrix2, array2);
 
+    //  addition test
+    double add_true_array[] = {6, 17, 22, 16};
+    Matrix sum_matrix  = matrix_addition(matrix1, matrix2, 1);
+    test_matrix_operation(add_true_array, sum_matrix, "Addition");
 
-    /*int error_flag;
+    //  multiplication test
+    double multi_true_array[] = {176, 122, 67, 48};
+    Matrix multiplied_matrix = matrix_multiplication(matrix1, matrix2);
+    test_matrix_operation(multi_true_array, multiplied_matrix, "Multiplication");
 
-    double sum_true_array[] = {16.415, 16.999, 22, 49.587};
-    error_flag = test_matrix_addition(matrix1, matrix2, sum_true_array);
-    printf("Addition. Errors: %d\n", error_flag);
+    //  number addition test
+    double add_number = 2;
+    double number_add_true_array[] = {4, 10, 3, 5};
+    Matrix number_sum_matrix = matrix_number_operation(matrix1, add_number, 1);
+    test_matrix_operation(number_add_true_array, number_sum_matrix, "Number addition");
 
-    double multi_true_array[] = {209.273, 403.324, 69.153, 133.782};
-    error_flag = test_matrix_multiplication(matrix1, matrix2, multi_true_array);
-    printf("Multiplication. Errors: %d\n", error_flag);*/
+    //  number multiplication test
+    double multi_number = 2;
+    double number_multi_true_array[] = {4, 16, 2, 6};
+    Matrix number_multi_matrix = matrix_number_operation(matrix1, multi_number, 0);
+    test_matrix_operation(number_multi_true_array, number_multi_matrix, "Number multiplication");
 
-    Matrix result = matrix_addition(1, &matrix1, &matrix2);
-    matrix_output(&result, 0);
-}
+    //  determinant test
+    double determinant_true_array[] = {-2};
+    double determinant = recursive_determinant(matrix1);
+    Matrix det_matrix = matrix_init(1, 1);
+    det_matrix.array[0][0] = determinant;
+    test_matrix_operation(determinant_true_array, det_matrix, "Matrix determinant");
 
+    //  transposition test
+    double transposition_true_array[] = {2, 1, 8, 3};
+    Matrix transposed_matrix = matrix_transposition(matrix1);
+    test_matrix_operation(transposition_true_array, transposed_matrix, "Matrix transposition");
 
-void start_menu() {
+    //  inversion test
+    double inversion_true_array[] = {-1.5, 4, 0.5, -1};
+    Matrix inverse_matrix = matrix_inversion(matrix1);
+    test_matrix_operation(inversion_true_array, inverse_matrix, "Matrix inversion");
 
-    printf("Choose operation\n");
-    printf("1: matrix.c addition; 2: matrix.c subtraction; 3: number addition; 4: number multiplication;\n");
-    printf("5: matrix.c multiplication; 6: matrix.c determinant; 7: matrix.c transposition; 8: matrix.c inversion;\n");
-    printf("9: matrix.c inverse multiplication;\n");
+    //  inverse multiplication test
+    double inverse_multipl_true_array[] = {1.0365, -0.1022, 0.3650, -0.0219};
+    Matrix inverse_multipl_matrix = matrix_inverse_multiplication(&matrix1, &matrix2);
+    test_matrix_operation(inverse_multipl_true_array, inverse_multipl_matrix,
+                          "Matrix inverse multiplication");
 
-    int operation_key;
-    scanf("%d", &operation_key);
-    switch(operation_key)
-    {
-        case 0:
-            test(); break;
-        case 1:
-            matrix_addition_output(1); break;
-        case 2:
-            matrix_addition_output(-1); break;
-        case 3:
-            number_operation_output(1); break;
-        case 4:
-            number_operation_output(0); break;
-        case 5:
-            multiplication_output(); break;
-        case 6:
-            matrix_determinant_output(); break;
-        case 7:
-            transposition_output(); break;
-        case 8:
-            inverse_matrix_output(); break;
-        case 9:
-            inverse_multiplication_output(); break;
-    }
+    mem_clearing(&matrix1);
+    mem_clearing(&matrix2);
 
 }
 
 
 int main() {
 
-    start_menu();
-    //test();
+    exp_test();
 
     return 0;
+
 }

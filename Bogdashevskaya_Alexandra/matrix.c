@@ -25,11 +25,23 @@ void set_matrix_values(Matrix* matrix) {
 	}
 }
 
+
 void error_size(char* operation_name, char* error) {
 	printf("%s is impossible. %s\n", operation_name, error);
 }
 
+int is_null(const Matrix matrix) {
+	if (matrix.cols == 0 && matrix.rows == 0) {
+		return 1;
+	}
+	return 0;
+}
+
 void print_matrix(const Matrix matrix) {
+	if (is_null(matrix)) {
+		printf("The matrix doesn't exist\n\n");
+		return;
+	}
 	for (unsigned int row = 0; row < matrix.rows; ++row) {
 		for (unsigned int col = 0; col < matrix.cols; ++col) {
 			printf("%.2f ", matrix.values[row * matrix.cols + col]);
@@ -132,7 +144,7 @@ double det(const Matrix matrix) {
 	return result;
 }
 
-Matrix transponent(const Matrix matrix) {
+Matrix transpose(const Matrix matrix) {
 	Matrix result = init_matrix(matrix.rows, matrix.cols);
 	for (unsigned int row = 0; row < result.rows; ++row) {
 		for (unsigned int col = 0; col < result.cols; ++col) {
@@ -162,7 +174,7 @@ Matrix invertible(const Matrix matrix) {
 		error_size("Getting invertible matrix", "Matrix should be square");
 		return EMPTY;
 	}
-	Matrix result = multiply_by_double(transponent(matrix), 1. / det(matrix));
+	Matrix result = multiply_by_double(transpose(matrix), 1. / det(matrix));
 	return result;
 }
 
@@ -185,6 +197,7 @@ Matrix expo(const Matrix matrix, int accuracy) {
 void main() {
 	Matrix m1, m2;
 
+
 	m1 = init_matrix(3, 3);
 	set_matrix_values(&m1);
 	print_matrix(m1);
@@ -206,12 +219,10 @@ void main() {
 
 	double determinant;
 	determinant = det(m1);
-	printf("%.2f\n", determinant);
+	printf("%.2f\n\n", determinant);
 
 	determinant = det(m2);
-	printf("%.2f\n", determinant);
-
-	printf("\n");
+	printf("%.2f\n\n", determinant);
 
 	Matrix multiplication1;
 	multiplication1 = multiply_by_double(m1, 5.);
@@ -226,7 +237,7 @@ void main() {
 
 
 	Matrix trans;
-	trans = transponent(m1);
+	trans = transpose(m1);
 	print_matrix(trans);
 	free_matrix(&trans);
 
@@ -243,6 +254,5 @@ void main() {
 	free_matrix(&m1);
 	free_matrix(&m2);
 
-	
 
 }

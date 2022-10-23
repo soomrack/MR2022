@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <stdbool.h>
+/*#include <math.h>
+#include <stdbool.h>*/
+#include <time.h>
 
 
 typedef struct Matrix{
@@ -11,27 +12,30 @@ typedef struct Matrix{
 } Matrix;
 
 
-Matrix initialization(unsigned int cols, unsigned int rows){
+double* initialization(unsigned int cols, unsigned int rows){
     Matrix matrix;
     matrix.cols;
     matrix.rows;
     unsigned int total_size = matrix.cols * matrix.rows;
     matrix.values = malloc(total_size * sizeof(double ));
-    return matrix;
+    return matrix.values;
 }
 
 
-void enter_values(Matrix* matrix){
-    for (int number = 0; number < matrix->cols * matrix->rows ; ++number){
-        matrix->values[number] = (double)rand();  // Рандомный ввод элементов матрицы
+double* enter_values(Matrix matrix){
+    srand(time(NULL));
+    matrix.values = initialization(matrix.cols,matrix.rows);
+    for (int number = 0; number < matrix.cols * matrix.rows ; number++){
+        matrix.values[number] = rand()%100;  // Рандомный ввод элементов матрицы
     }
+    return matrix.values;
 }
 
 
 void matrix_print (const Matrix matrix){
     for (int row = 0; row < matrix.rows; row++){
         for (int col = 0; col < matrix.cols; col++){
-            printf("%.3f", matrix.values[row * matrix.cols + col]);
+            printf("%.2f ", matrix.values[row * matrix.cols + col]);
         }
         printf("\n");
     }
@@ -50,7 +54,8 @@ Matrix summation (const Matrix matr1, const Matrix matr2){
         exit(1);
     }
     else{
-        Matrix itog = initialization(matr1.cols, matr1.rows);
+        Matrix itog;
+        itog.values = initialization(matr1.cols, matr1.rows);
         unsigned int total_size = itog.cols * itog.rows;
         itog.values = malloc(total_size * sizeof (double ));
         for (int number = 0; number < total_size; ++number){
@@ -67,7 +72,8 @@ Matrix subtraction (const Matrix matr1, const Matrix matr2){
         exit(1);
     }
     else{
-        Matrix itog = initialization(matr1.cols, matr1.rows);
+        Matrix itog;
+        itog.values = initialization(matr1.cols, matr1.rows);
         unsigned int total_size = itog.cols * itog.rows;
         itog.values = malloc(total_size * sizeof (double ));
         for (int number = 0; number < total_size; ++number){
@@ -79,7 +85,8 @@ Matrix subtraction (const Matrix matr1, const Matrix matr2){
 
 
 Matrix multiptication_on_num (const Matrix matr, double num){
-    Matrix itog = initialization(matr.cols, matr.rows);
+    Matrix itog;
+    itog.values = initialization(matr.cols, matr.rows);
     unsigned int total_size = itog.cols * itog.rows;
     itog.values = malloc(total_size * sizeof(double));
     for (int number = 0; number < total_size; ++number){
@@ -97,7 +104,8 @@ Matrix multiplication (const Matrix matr1, const Matrix matr2){
     }
     unsigned int itog_cols = matr2.cols;
     unsigned int itog_rows = matr1.rows;
-    Matrix itog = initialization (itog_cols, itog_rows);
+    Matrix itog;
+    itog.values = initialization (itog_cols, itog_rows);
     for (int row = 0; row < itog_rows; ++row){
         for (int col = 0; col < itog_cols; ++col){
             float sum = 0;
@@ -107,51 +115,55 @@ Matrix multiplication (const Matrix matr1, const Matrix matr2){
             itog.values[row * itog_cols + col] = sum;
         }
     }
+    return itog;
 }
 
 
-void main() {
-    struct Matrix mat1, mat2, summat, subtract, mult_on_num, multiply;
+int main() {
 
+    struct Matrix mat1 = {2,2};
     printf("Matrix 1\n");
-    mat1 = initialization (4, 4);
-    enter_values(&mat1);
+    mat1.values = enter_values(mat1);
     matrix_print(mat1);
 
+    struct Matrix mat2 = {2, 2};
     printf("Matrix 2\n");
-    mat2 = initialization (4, 4);
-    enter_values(&mat2);
+    mat2.values = enter_values(mat2);
     matrix_print(mat2);
 
+    struct Matrix summat;
     printf("Summa\n");
     summat = summation(mat1, mat2);
     matrix_print(summat);
+    clean_memory(&summat);
 
-    printf("Suntraction\n");
+    struct Matrix subtract;
+    printf("Subtraction\n");
     subtract = subtraction (mat1, mat2);
     matrix_print(subtract);
+    clean_memory(&subtract);
 
+    struct Matrix mult_on_num;
     printf("Multiplication on num 1\n");
     mult_on_num = multiptication_on_num (mat1, 3);
     matrix_print(mult_on_num);
+    clean_memory(&mult_on_num);
 
     printf("Multiplication on num 2\n");
     mult_on_num = multiptication_on_num (mat2, 6);
     matrix_print(mult_on_num);
+    clean_memory(&mult_on_num);
+    clean_memory(&mult_on_num);
 
+
+    struct Matrix multiply;
     printf("Multiplication\n");
     multiply = multiplication(mat1, mat2);
     matrix_print(multiply);
+    clean_memory(&multiply);
 
     clean_memory(&mat1);
     clean_memory(&mat2);
-
-    clean_memory(&summat);
-    clean_memory(&subtract);
-
-    clean_memory(&mult_on_num);
-    clean_memory(&multiply);
-
 
     //return 0;
 }
