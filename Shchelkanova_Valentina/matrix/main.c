@@ -11,8 +11,6 @@ typedef struct {
     double **values;
 } Matrix;
 
-Matrix A = {5,5};
-Matrix B = {5,5};
 int max_value = 10;
 int coefficient = 4;
 int n = 5;
@@ -147,11 +145,10 @@ void print(Matrix A){
     printf("\n");
 
 }
-
 int main() {
     srand(time(NULL));
-    A.values = matrix_initialization(A.cols, A.rows);
-    B.values = matrix_initialization(B.cols, B.rows);
+    A.values = matrix_initialization(5, 5);
+    B.values = matrix_initialization(5, 5);
     for (unsigned int row = 0; row < A.rows; row++){
         for (unsigned int col = 0; col < A.cols; col++){
             A.values[row][col] = rand() % max_value ;
