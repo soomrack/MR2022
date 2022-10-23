@@ -8,7 +8,7 @@ typedef struct Matrix {
     int rows;
     int cols;
 
-    double **array;
+    double **values;
 
 } Matrix;
 
@@ -20,12 +20,12 @@ Matrix matrix_init(int rows, int cols) {
     matrix.rows = rows;
     matrix.cols  = cols;
 
-    matrix.array = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
+    matrix.values = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
 
-    double* start = (double*)((char*)matrix.array + matrix.rows * sizeof(double*));
+    double* start = (double*)((char*)matrix.values + matrix.rows * sizeof(double*));
 
     for(int row = 0; row <= matrix.rows - 1; row++) {
-        matrix.array[row] = start + row * matrix.cols;
+        matrix.values[row] = start + row * matrix.cols;
     }
 
     return matrix;
@@ -38,7 +38,7 @@ void matrix_output(Matrix matrix) {
     for(int row = 0; row <= matrix.rows-1; row++) {
 
         for(int col = 0; col <= matrix.cols-1; col++)
-            printf("%14.4lf", matrix.array[row][col]);
+            printf("%14.4lf", matrix.values[row][col]);
 
         printf("\n");
     }
@@ -51,9 +51,9 @@ void matrix_output(Matrix matrix) {
 void mem_clearing(Matrix *matrix) {
 
     /*for(int row = 0; row <= matrix.c->rows - 1; row ++)
-        free(matrix.c->array[row]);*/
+        free(matrix.c->values[row]);*/
 
-    free(matrix->array);
+    free(matrix->values);
 
 }
 
@@ -64,7 +64,7 @@ Matrix matrix_addition(Matrix matrix1, Matrix matrix2, int plus_key) {
 
     for(int row = 0; row <= matrix1.rows-1; row++)
         for(int col = 0; col <= matrix1.cols-1; col++)
-            sum_matrix.array[row][col] = 1 * matrix1.array[row][col] + plus_key * matrix2.array[row][col];
+            sum_matrix.values[row][col] = 1 * matrix1.values[row][col] + plus_key * matrix2.values[row][col];
 
     return sum_matrix;
 
@@ -87,10 +87,10 @@ Matrix matrix_multiplication(Matrix matrix1, Matrix matrix2) {
 
         for(int col = 0; col <= multiplied_matrix.cols - 1; col++) {
 
-            multiplied_matrix.array[row][col] = 0;
+            multiplied_matrix.values[row][col] = 0;
 
             for (int k = 0; k <= matrix1.cols - 1; k++)
-                multiplied_matrix.array[row][col] += matrix1.array[row][k] * matrix2.array[k][col];
+                multiplied_matrix.values[row][col] += matrix1.values[row][k] * matrix2.values[k][col];
         }
 
     return multiplied_matrix;
@@ -105,9 +105,9 @@ Matrix matrix_number_operation(Matrix matrix, double number, int plus_key) {
     for(int row = 0; row <= matrix.rows - 1; row++)
         for(int col = 0; col <= matrix.cols - 1; col++)
             if(plus_key == 1)
-                operated_matrix.array[row][col] = matrix.array[row][col] + number;
+                operated_matrix.values[row][col] = matrix.values[row][col] + number;
             else
-                operated_matrix.array[row][col] = matrix.array[row][col] * number;
+                operated_matrix.values[row][col] = matrix.values[row][col] * number;
 
     return operated_matrix;
 
@@ -131,7 +131,7 @@ Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col, int det_key) 
         for (int j = 0; j <= minor.cols - 1; j++) {
             if(j == crossed_col)
                 col_link += 1;
-            minor.array[i][j] = matrix.array[i + row_link][j + col_link];
+            minor.values[i][j] = matrix.values[i + row_link][j + col_link];
         }
 
     }
@@ -146,7 +146,7 @@ double recursive_determinant(Matrix matrix) {
     double determinant;
 
     if(matrix.rows == 1) {
-        determinant = matrix.array[0][0];
+        determinant = matrix.values[0][0];
         return determinant;
     }
 
@@ -157,7 +157,7 @@ double recursive_determinant(Matrix matrix) {
         int k;
         k = (col % 2 != 0) ? -1 : 1;
 
-        determinant += k * matrix.array[0][col] * recursive_determinant(minor);
+        determinant += k * matrix.values[0][col] * recursive_determinant(minor);
 
         mem_clearing(&minor);
 
@@ -187,7 +187,7 @@ Matrix matrix_transposition(Matrix matrix) {
 
     for(int row = 0; row <= transposed_matrix.rows - 1; row++)
         for(int col = 0; col <= transposed_matrix.cols - 1; col++)
-            transposed_matrix.array[row][col] = matrix.array[col][row];
+            transposed_matrix.values[row][col] = matrix.values[col][row];
 
     return transposed_matrix;
 
@@ -211,7 +211,7 @@ Matrix minor_transformation(Matrix matrix) {
 
             int k = ((row + col) % 2 == 0) ? 1 : -1;
 
-            inverse_added_matrix.array[row][col] = k * recursive_determinant(minor);
+            inverse_added_matrix.values[row][col] = k * recursive_determinant(minor);
 
             mem_clearing(&minor);
 
@@ -275,7 +275,7 @@ Matrix identity_matrix(int rows) {
 
     for(int row = 0; row <= rows - 1; row++)
         for(int col = 0; col <= cols - 1; col++)
-            id_matrix.array[row][col] = (row == col) ? 1 : 0;
+            id_matrix.values[row][col] = (row == col) ? 1 : 0;
 
     return id_matrix;
 
@@ -288,7 +288,7 @@ Matrix matrix_number_filling(int rows, int cols, double number) {
 
     for(int row = 0; row <= rows - 1; row++)
         for(int col = 0; col <= cols - 1; col++)
-            filled_matrix.array[row][col] = number;
+            filled_matrix.values[row][col] = number;
 
     return filled_matrix;
 
@@ -300,7 +300,7 @@ Matrix matrix_power(Matrix matrix, int pow) {
     Matrix powered_matrix = matrix_init(matrix.rows, matrix.cols);
     for(int row = 0; row <= matrix.rows - 1; row++)
         for(int col = 0; col <= matrix.cols - 1; col++)
-            powered_matrix.array[row][col] = matrix.array[row][col];
+            powered_matrix.values[row][col] = matrix.values[row][col];
 
     Matrix buffer;
 
@@ -361,7 +361,7 @@ int test_matrix_filling(Matrix *matrix, const double array[]) {
     int array_index = 0;
     for(int row = 0; row <= matrix->rows-1; row++)
         for(int col = 0; col <= matrix->cols-1; col++) {
-            matrix->array[row][col] = array[array_index];
+            matrix->values[row][col] = array[array_index];
             array_index += 1;
         }
 
@@ -395,7 +395,7 @@ int test_check_array(const double true_array[], Matrix res_matrix) {
 
     for(int row = 0; row <= res_matrix.rows-1; row++)
         for(int col = 0; col <= res_matrix.cols-1; col++) {
-            result_array[array_index] = res_matrix.array[row][col];
+            result_array[array_index] = res_matrix.values[row][col];
             array_index += 1;
         }
 
@@ -466,7 +466,7 @@ void test() {
     double determinant_true_array[] = {-2};
     double determinant = recursive_determinant(matrix1);
     Matrix det_matrix = matrix_init(1, 1);
-    det_matrix.array[0][0] = determinant;
+    det_matrix.values[0][0] = determinant;
     test_matrix_operation(determinant_true_array, det_matrix, "Matrix determinant");
 
     //  transposition test
