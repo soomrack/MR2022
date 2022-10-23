@@ -54,8 +54,6 @@ void mem_clearing(Matrix *matrix) {
         free(matrix.c->array[row]);*/
 
     free(matrix->array);
-    matrix->rows = 0;
-    matrix->cols = 0;
 
 }
 
@@ -332,10 +330,11 @@ Matrix matrix_exp(Matrix matrix) {
     int clk = 1;
     double k;
 
-    while(clk < 9) {
+    while(clk < 17) {
 
         factorial *= clk;
         k = 1.0 / factorial;
+        //printf("clk=%d   k = %lf\n", clk, k);
 
         powered_matrix = matrix_power(matrix, clk);
 
@@ -486,15 +485,24 @@ void test() {
     test_matrix_operation(inverse_multipl_true_array, inverse_multipl_matrix,
                           "Matrix inverse multiplication");
 
+    //  exp test
+    Matrix matrix3 = matrix_init(2, 2);
+    double array3[] = {2, 2, 2, 2};
+    test_matrix_filling(&matrix3, array3);
+    double exp_true_array[] = {29.2533, 28.2533, 28.2533, 29.2533};
+    Matrix exp_matrix = matrix_exp(matrix3);
+    test_matrix_operation(exp_true_array, exp_matrix, "Matrix exp");
+
     mem_clearing(&matrix1);
     mem_clearing(&matrix2);
+    mem_clearing(&matrix3);
 
 }
 
 
 int main() {
 
-    exp_test();
+    test();
 
     return 0;
 
