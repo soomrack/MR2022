@@ -4,8 +4,6 @@
 #include <stdlib.h>
 
 
-// TODO: unsigned int во всех for
-
 const double EPS = 10e-6;
 
 
@@ -55,7 +53,7 @@ Matrix create_identity(const unsigned int size){
 // Создание матрицы со случайными значениями от 0 до max_value
 Matrix create_random(const unsigned int rows, const unsigned int cols, const double max_value){
     Matrix mat = create_empty(rows, cols);
-    for (int idx = 0; idx < rows * cols; idx++){
+    for (unsigned int idx = 0; idx < rows * cols; idx++){
         mat.values[idx] = ((double)rand() / (double)(RAND_MAX)) * max_value;
     }
     return mat;
@@ -82,7 +80,7 @@ Matrix copy(const Matrix mat){
 // Проверяет равны ли две матрицы
 int is_equal(const Matrix mat1, const Matrix mat2){
     if (mat1.cols != mat2.cols || mat1.rows != mat2.rows) return 0;
-    for (int idx = 0; idx < mat1.cols * mat1.rows; idx++){
+    for (unsigned int idx = 0; idx < mat1.cols * mat1.rows; idx++){
         if (fabs(mat1.values[idx] - mat2.values[idx]) > EPS) return 0;
     }
     return 1;
@@ -92,7 +90,7 @@ int is_equal(const Matrix mat1, const Matrix mat2){
 int is_identity(const Matrix matrix){
     if (matrix.cols != matrix.rows) return 0;
     unsigned int size = matrix.rows;
-    for (int idx = 0; idx < size * size; idx++){
+    for (unsigned int idx = 0; idx < size * size; idx++){
         if (idx % (size + 1) == 0){
             if (fabs(matrix.values[idx] - 1) > EPS)  return 0;
         }
@@ -109,7 +107,7 @@ Matrix add(Matrix m1, const Matrix m2){
     if (m1.cols != m2.cols || m1.rows != m2.rows){
         return create_null();
     }
-    for (int idx = 0; idx < m1.rows * m1.cols; idx++){
+    for (unsigned int idx = 0; idx < m1.rows * m1.cols; idx++){
         m1.values[idx] = m1.values[idx] + m2.values[idx];
     }
     return m1;
@@ -121,7 +119,7 @@ Matrix sub(Matrix m1, const Matrix m2){
     if (m1.cols != m2.cols || m1.rows != m2.rows){
         return create_null();
     }
-    for (int idx = 0; idx < m1.rows * m1.cols; idx++){
+    for (unsigned int idx = 0; idx < m1.rows * m1.cols; idx++){
         m1.values[idx] = m1.values[idx] - m2.values[idx];
     }
     return m1;
@@ -134,10 +132,10 @@ Matrix mul(Matrix m1, const Matrix m2){
         return create_null();
     }
     Matrix temp = create_empty(m1.rows, m1.cols);
-    for (int row = 0; row < temp.rows; row++){
-        for (int col = 0; col < temp.cols; col++){
+    for (unsigned int row = 0; row < temp.rows; row++){
+        for (unsigned int col = 0; col < temp.cols; col++){
             double summa = 0.0;
-            for (int idx = 0; idx < m1.cols; idx++){
+            for (unsigned int idx = 0; idx < m1.cols; idx++){
                 summa += m1.values[row * m1.cols + idx] * m2.values[idx * m2.cols + col];
             }
             temp.values[temp.cols * row + col] = summa;
@@ -151,7 +149,7 @@ Matrix mul(Matrix m1, const Matrix m2){
 
 // Умножение матрицы на скаляр
 Matrix s_mul(const Matrix mat, const double scal){
-    for (int idx = 0; idx < mat.rows * mat.cols; idx++){
+    for (unsigned int idx = 0; idx < mat.rows * mat.cols; idx++){
         mat.values[idx] = mat.values[idx] * scal;
     }
     return mat;
@@ -160,7 +158,7 @@ Matrix s_mul(const Matrix mat, const double scal){
 
 // Деление матрицы на скаляр
 Matrix s_div(const Matrix mat, const double scal){
-    for (int idx = 0; idx < mat.rows * mat.cols; idx++){
+    for (unsigned int idx = 0; idx < mat.rows * mat.cols; idx++){
         mat.values[idx] = mat.values[idx] / scal;
     }
     return mat;
@@ -170,8 +168,8 @@ Matrix s_div(const Matrix mat, const double scal){
 // Транспонирование матрицы
 Matrix transpose(Matrix mat){
     Matrix temp = create_empty(mat.cols, mat.rows);
-    for (int row = 0; row < mat.rows; row++){
-        for (int col = 0; col < mat.cols; col++){
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++){
             temp.values[col * temp.rows + row] = mat.values[row * temp.cols + col];
         }
     }
@@ -185,8 +183,8 @@ Matrix transpose(Matrix mat){
 Matrix minor(Matrix mat, const unsigned int minor_row, const unsigned int minor_col){
     Matrix temp = create_empty(mat.rows - 1, mat.cols - 1);
     int minor_index = 0;
-    for (int row = 0; row < mat.rows; row++){
-        for (int col = 0; col < mat.cols; col++) {
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++) {
             if (row != minor_row && col != minor_col) {
                 temp.values[minor_index++] = mat.values[row * mat.rows + col];
             }
@@ -200,10 +198,11 @@ Matrix minor(Matrix mat, const unsigned int minor_row, const unsigned int minor_
 
 // Превращает матрицу в верхнюю треугольную
 Matrix upper_triangle(Matrix mat){
-    for (int col = 0; col < mat.cols - 1; col++){
-        for (int row = col + 1; row < mat.rows; row++){
+    // TODO: Обработка случаев когда есть нулевые элементы
+    for (unsigned int col = 0; col < mat.cols - 1; col++){
+        for (unsigned int row = col + 1; row < mat.rows; row++){
             double factor = mat.values[row * mat.rows + col] / mat.values[col * mat.rows + col];
-            for (int idx = col; idx < mat.cols; idx++){
+            for (unsigned int idx = col; idx < mat.cols; idx++){
                 mat.values[row * mat.cols + idx] -= mat.values[col * mat.rows + idx] * factor;
             }
         }
@@ -234,7 +233,7 @@ double recursive_det(const Matrix mat){
         ans = mat.values[0] * mat.values[3] - mat.values[1] * mat.values[2];
         return ans;
     }  // Определитель матрицы порядка 2 считается по формуле
-    for (int idx = 0; idx < mat.rows; idx++){
+    for (unsigned int idx = 0; idx < mat.rows; idx++){
         if (mat.values[idx] != 0){
             Matrix temp = minor(copy(mat), 0, idx);
             ans += mat.values[idx] * pow(-1, idx) * recursive_det(temp);
@@ -265,8 +264,8 @@ Matrix m_inv(Matrix mat){
     Matrix ans = create_empty(mat.rows, mat.cols);
     double determinant = m_det(mat);
     Matrix temp;
-    for (int row = 0; row < mat.rows; row++){
-        for (int col = 0; col < mat.cols; col++){
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++){
             temp = minor(copy(mat), row, col);
             ans.values[col * ans.rows + row] = pow(-1, row + col) *
                                                m_det(temp) / determinant;
@@ -293,7 +292,7 @@ void iterate_exp(const Matrix* ans, const Matrix mat){
         factorial *= ++counter;
         power = mul(power, mat);
     }
-    for (int idx = 0; idx < ans->rows * ans->cols; idx++) ans->values[idx] = temp.values[idx];
+    for (unsigned int idx = 0; idx < ans->rows * ans->cols; idx++) ans->values[idx] = temp.values[idx];
     free(temp.values);
 }
 
@@ -302,8 +301,8 @@ void iterate_exp(const Matrix* ans, const Matrix mat){
 Matrix m_exp(Matrix mat){
     if (mat.cols != mat.rows) return create_null();
     Matrix ans = create_empty(mat.rows, mat.cols);
-    for (int row = 0; row < mat.rows; row++){
-        for (int col = 0; col < mat.cols; col++){
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++){
             if (row != col){
                 if (mat.values[row * mat.cols + col] != 0){
                     iterate_exp(&ans, mat);
