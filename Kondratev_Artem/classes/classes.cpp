@@ -13,12 +13,14 @@ class Matrix {
 
 public:
     Matrix(uint64_t init_rows, uint64_t init_cols){
-        rows = init_rows;
-        cols = init_cols;
-        values = (double**)malloc(rows * sizeof(double*) + rows * cols * sizeof(double));
-        auto* start = (double*)((char*)values + rows * sizeof(double*));
-        for(uint64_t row = 0; row < rows; row++)
-            values[row] = start + row * cols;
+        if(init_rows > 0 and init_cols > 0) {
+            rows = init_rows;
+            cols = init_cols;
+            values = (double **) malloc(rows * sizeof(double *) + rows * cols * sizeof(double));
+            auto *start = (double *) ((char *) values + rows * sizeof(double *));
+            for (uint64_t row = 0; row < rows; row++)
+                values[row] = start + row * cols;
+        }
     }
 
     void filling(double number) {
@@ -42,8 +44,13 @@ public:
         cols = 0;
     }
 
+    int are_row_col_zero() const {
+        return (int)(rows + cols);
+    }
+
     static Matrix addition(Matrix matrix1, Matrix matrix2) {
-        if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols) {
+        if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols or
+        matrix1.are_row_col_zero() == 0 or matrix2.are_row_col_zero() == 0) {
             Matrix error(0, 0);
             return error;
         }
@@ -54,8 +61,20 @@ public:
         return sum_matrix;
     }
 
+    static Matrix addition(Matrix matrix1, double number) {
+        if(matrix1.are_row_col_zero() == 0) {
+            Matrix error(0, 0);
+            return error;
+        }
+        Matrix sum_matrix(matrix1.rows, matrix1.cols);
+        for(int row = 0; row < sum_matrix.rows; row++)
+            for(int col = 0; col < sum_matrix.cols; col++)
+                sum_matrix.values[row][col] = matrix1.values[row][col] + number;
+        return sum_matrix;
+    }
+
     static Matrix subtraction(Matrix matrix1, Matrix matrix2) {
-        if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols) {
+        if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols or matrix1.rows == 0 or matrix1.rows) {
             Matrix error(0, 0);
             return error;
         }
@@ -81,6 +100,18 @@ public:
         return multiplied_matrix;
     }
 
+    static Matrix multiplication(Matrix matrix1, double number) {
+        if(matrix1.are_row_col_zero() == 0) {
+            Matrix error(0, 0);
+            return error;
+        }
+        Matrix sum_matrix(matrix1.rows, matrix1.cols);
+        for(int row = 0; row < sum_matrix.rows; row++)
+            for(int col = 0; col < sum_matrix.cols; col++)
+                sum_matrix.values[row][col] = matrix1.values[row][col] * number;
+        return sum_matrix;
+    }
+
 };
 
 
@@ -88,22 +119,21 @@ public:
 
 int main() {
 
-    Matrix A(2, 2);
-    A.filling(2);
-    A.output();
+    Matrix A(0, 2);
+    //A.output();
 
     Matrix B(2, 2);
     B.filling(2);
-    B.output();
+    //B.output();
 
     Matrix C = Matrix::addition(A, B);
     C.output();
 
-    C = Matrix::subtraction(A, B);
+    /*C = Matrix::subtraction(A, B);
     C.output();
 
     C = Matrix::multiplication(A, B);
-    C.output();
+    C.output();*/
 
     return 0;
 
