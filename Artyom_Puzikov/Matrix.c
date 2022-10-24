@@ -45,15 +45,6 @@ double detMatrix(const struct Matrix matrix){
   return answer;
 }
 
-//void inputMatrix(struct Matrix *matrix)
-//{
-//  double value;
-//  for (int i = 0; i < matrix->rows * matrix->columns; ++i)
-//  {
-//    scanf("%f", value);
-//    matrix->values[i] = value;
-//  }
-//}
 void fillMatrix(struct Matrix *matrix)
 {
   for (int i = 0; i < matrix->rows * matrix->columns; ++i)
@@ -150,6 +141,7 @@ void printMatrix(const struct Matrix *matrix)
     }
     printf("\n");
   }
+  printf("\n");
 }
 
 int main()
@@ -161,8 +153,6 @@ int main()
   matrix2.columns = 3;
   matrix2.rows = 3;
   matrix2.values = malloc(sizeof(double) * matrix2.columns * matrix2.rows);
-//  inputMatrix(&matrix1);
-//  inputMatrix(&matrix2);
   fillMatrix(&matrix1);
   fillMatrix(&matrix2);
   struct Matrix matrix3 = sumMatrix(&matrix1, &matrix2);
