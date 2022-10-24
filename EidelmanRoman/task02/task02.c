@@ -1,38 +1,69 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-int **MatrixA;
+#include "time.h"
 
 typedef struct matrix_size {
-    unsigned int lines;
-    unsigned int columns;
+    unsigned int rows;
+    unsigned int cols;
+    double **Matrix;
 } matrix_size;
 
-matrix_size size = {2, 2};
+matrix_size A = {2, 2};
+matrix_size B = {2, 2};
+matrix_size addition_matrix = {2, 2};
 
-void array_creation_A {
-    MatrixA = (int **)malloc(size.lines * sizeof(int *));
-    for (int i = 0; i < lines; i++)
-        MatrixA[i] = (int *)malloc(size.columns * sizeof(int));
-    for (int i = 0; i < size.lines; i++)
+void array_creation(matrix_size *name)
+{
+    srand(time(NULL));
+    name->Matrix = (int**)malloc(name->rows * sizeof(int*));
+    for (int i = 0; i < name->rows; i++)
+        name->Matrix[i] = (int*)malloc(name->cols * sizeof(int));
+    for (int i = 0; i < name->rows; i++)
     {
-        for(int j = 0; j < size.columns)
+        for(int j = 0; j < name->cols; j++)
         {
-            MatrixA[i][j] = rand() % 9;
+            name->Matrix[i][j] = rand() % 9;
         }
     }
 }
 
-
-
-void total() {
-    array_creation_A();
-    addition();
-    subtraction();
-    multiplication();
+void addition()
+{
 
 }
 
-int main() {
+void start_output(matrix_size *name)
+{
+    printf("Matrix %s \n", name);
+    for (int i = 0; i < name -> rows; i++)
+    {
+        for(int j = 0; j < name -> cols; j++)
+        {
+            printf("%lf ", name -> Matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void total_output()
+{
+    start_output(&A);
+    //addition_output();
+    //subtraction_output();
+    //multiplication_output();
+}
+
+void total()
+{
+    array_creation(&A);
+    //addition();
+    //subtraction();
+    //multiplication();
+    total_output();
+
+}
+
+int main()
+{
     total();
 }
