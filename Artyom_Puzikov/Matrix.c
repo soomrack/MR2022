@@ -28,13 +28,16 @@ struct Matrix minor(const struct Matrix *matrix, const unsigned int minor_row, c
   return answer;
 }
 
-double detMatrix(const struct Matrix matrix){
-  if (matrix.rows != matrix.columns){
+double detMatrix(const struct Matrix matrix)
+{
+  if (matrix.rows != matrix.columns)
+  {
     printf("The determinant cannot be calculated");
     exit(1);
   }
   double answer = 0;
-  if (matrix.rows == 2){
+  if (matrix.rows == 2)
+  {
     answer = matrix.values[0] * matrix.values[3] - matrix.values[1] * matrix.values[2];
     return answer;
   }
@@ -131,6 +134,22 @@ struct Matrix multScalar(const struct Matrix *matrix1, const double scalar)
   return result;
 }
 
+struct Matrix transposeMatrix(const struct Matrix *matrix)
+{
+  struct Matrix result;
+  result.rows = matrix->rows;
+  result.columns = matrix->columns;
+  result.values = calloc(matrix->columns * matrix->rows, sizeof(double));
+  for (int i = 0; i < result.rows; ++i)
+  {
+    for (int j = 0; j < result.columns; ++j)
+    {
+      result.values[i * result.columns + j] = matrix->values[j * result.rows + i];
+    }
+  }
+  return result;
+}
+
 void printMatrix(const struct Matrix *matrix)
 {
   for (int i = 0; i < matrix->rows; ++i)
@@ -153,17 +172,27 @@ int main()
   matrix2.columns = 3;
   matrix2.rows = 3;
   matrix2.values = malloc(sizeof(double) * matrix2.columns * matrix2.rows);
+
   fillMatrix(&matrix1);
   fillMatrix(&matrix2);
+
   struct Matrix matrix3 = sumMatrix(&matrix1, &matrix2);
   printMatrix(&matrix3);
+
   matrix3 = subMatrix(&matrix1, &matrix2);
   printMatrix(&matrix3);
+
   matrix3 = multMatrix(&matrix1, &matrix2);
   printMatrix(&matrix3);
+
   matrix3 = multScalar(&matrix1, 5.0);
   printMatrix(&matrix3);
-  printf("%f",detMatrix(matrix1));
+
+  matrix3 = transposeMatrix(&matrix1);
+  printMatrix(&matrix3);
+
+  printf("%f", detMatrix(matrix1));
+
   free(matrix1.values);
   free(matrix2.values);
   free(matrix3.values);
