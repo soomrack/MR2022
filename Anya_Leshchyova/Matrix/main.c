@@ -62,14 +62,12 @@ Matrix identity_matrix(unsigned int row,unsigned int col ){
 
 
 int comparison_matrix(Matrix A, Matrix B) {
-    int n = 1;
     if (A.rowS != B.rowS || A.colS != B.colS) return 0;
     for (int i = 0; i < A.rowS; i++) {
         for (int j = 0; j < A.colS; j++) {
-            if (fabs (A.massive[i][j] - B.massive[i][j])>Delta ) n = 0;
+            if (fabs (A.massive[i][j] - B.massive[i][j])>Delta )return 1;
         }
     }
-    return n;
 }
 
 
