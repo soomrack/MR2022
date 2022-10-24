@@ -15,9 +15,15 @@ Matrix A = {5,5};
 Matrix B = {5,5};
 int max_value = 10;
 int coefficient = 4;
+int n = 5;
+
+Matrix empty(){
+    Matrix Null_Matrix = {0,0, NULL};
+    return Null_Matrix;
+}
 
 
-double ** array_initialization(const unsigned int col, const unsigned int row) {
+double ** matrix_initialization(const unsigned int col, const unsigned int row) {
     double **rez = (double **) malloc(row * sizeof(double *));
     for (int i = 0; i < row; i++) {
         rez[i] = (double *) malloc(col * sizeof(double *));
@@ -25,97 +31,116 @@ double ** array_initialization(const unsigned int col, const unsigned int row) {
     return rez;
 }
 
+Matrix minor (unsigned int r_row, unsigned int r_col, const Matrix A)  {
+    Matrix rez= {A.rows-1, A.cols-1};
+    rez.values = matrix_initialization(rez.rows,rez.cols);
 
-Matrix addition(const Matrix a, const Matrix b) {// Сложение двух матриц
-    Matrix rez = {0,0};
-    if (a.rows!=b.rows || a.cols != b.cols) {
-        return rez;
-    } else{
-        rez.rows = a.rows;
-        rez.cols = a.cols;
-        rez.values = array_initialization(rez.cols,rez.rows);
-        for (int i = 0; i < rez.rows; i++){
-            for (int j = 0; j < rez.cols; j++){
-                rez.values[i][j] = a.values[i][j] + b.values[i][j];
-            }
+    for (unsigned int row=0; row<r_row;row++){
+        for (unsigned int col=0;col<r_col; col++){
+            rez.values[row][col]= A.values[row][col];
+        }
+    }
+    for (unsigned int row = 0; row < r_row; row++){
+        for (unsigned int col = r_col; col < rez.cols; col++){
+            rez.values[row][col] = A.values[row][col+1];
+        }
+    }
+    for (unsigned int row = r_row; row < rez.rows; row++){
+        for (unsigned int col = 0; col < r_col; col++){
+            rez.values[row][col] = A.values[row+1][col];
+        }
+    }
+    for (unsigned int row = r_row ; row <rez.rows; row++){
+        for (unsigned int col = r_col; col < rez.cols; col++){
+            rez.values[row][col] = A.values[row+1][col+1];
         }
     }
     return rez;
 }
 
-Matrix substraction(const Matrix a, const Matrix b) {  // Вычитание двух матриц
-    Matrix rez = {0,0};
-    if (a.rows!=b.rows || a.cols != b.cols) {
-        return rez;
-    } else{
-        rez.rows = a.rows;
-        rez.cols = a.cols;
-        rez.values = array_initialization(rez.cols,rez.rows);
-        for (int i = 0; i < rez.rows; i++){
-            for (int j = 0; j < rez.cols; j++){
-                rez.values[i][j] = a.values[i][j] - b.values[i][j];
+Matrix addition(const Matrix A, const Matrix B) {// Сложение двух матриц
+    Matrix rez = {0,0, NULL};
+    if (A.rows!=B.rows || A.cols != B.cols) {
+        return empty();
+    }
+        rez.rows = A.rows;
+        rez.cols = A.cols;
+        rez.values = matrix_initialization(rez.cols,rez.rows);
+        for (unsigned int row = 0; row < rez.rows; row++){
+            for (unsigned int col = 0; col < rez.cols; col++){
+                rez.values[row][col] = A.values[row][col] + B.values[row][col];
             }
         }
-    }
     return rez;
 }
 
-Matrix multiplication(const Matrix a, const Matrix b) { //  Произведение двух матриц
-    Matrix rez = {0,0};
-    if (a.cols!=b.rows){ return rez;
-    } else{
-        rez.rows = a.rows;
-        rez.cols = b.cols;
-        rez.values = array_initialization(rez.cols,rez.rows);
-        for (int row = 0; row < rez.rows; row++){
-            for (int col = 0; col < rez.cols; col++){
+Matrix substraction(const Matrix A, const Matrix B) {  // Вычитание двух матриц
+    Matrix rez = {0,0, NULL};
+    if (A.rows!=B.rows || A.cols != B.cols) {
+        return empty();
+    }
+        rez.rows = A.rows;
+        rez.cols = A.cols;
+        rez.values = matrix_initialization(rez.cols,rez.rows);
+        for (unsigned int row = 0; row < rez.rows; row++){
+            for (unsigned int col = 0; col < rez.cols; col++){
+                rez.values[row][col] = A.values[row][col] - B.values[row][col];
+            }
+        }
+    return rez;
+}
+
+Matrix multiplication(const Matrix A, const Matrix B) { //  Произведение двух матриц
+    Matrix rez = empty();
+    if (A.cols!=B.rows){ return empty();
+    }
+        rez.rows = A.rows;
+        rez.cols = A.cols;
+        rez.values = matrix_initialization(rez.cols,rez.rows);
+        for (unsigned int row = 0; row < rez.rows; row++){
+            for (unsigned int col = 0; col < rez.cols; col++){
                 rez.values[row][col] = 0.00;
-                for (int k = 0; k < a.cols; k++) {
-                    rez.values[row][col] += a.values[row][k] * b.values[k][col];
+                for (int k = 0; k < A.cols; k++) {
+                    rez.values[row][col] += A.values[row][k] * B.values[k][col];
                 }
 
             }
         }
-    }
     return rez;
 }
 
-Matrix det(Matrix a) {  // Определитель матрицы
-    Matrix rez = {0,0};
-    if (a.cols!=a.rows){ return rez;
-    } else{
-        rez.rows=a.rows;
-        rez.cols=a.cols;
-        rez.values = array_initialization(rez.cols,rez.rows);
-        for (int row=0; row < rez.rows; row++) {
-            for (int col=0; col < rez.cols; col++){
-
-            }
-
-        }
-
+double determinant( Matrix A) {  // Определитель матрицы
+    if (A.cols != A.rows){ return 0.00;}
+    if (n == 1 || n==0){return 0.00;}
+    double det = 0.00;
+    int sign = -1;
+    for(unsigned int row = 0; row < A.rows; row++){
+        Matrix minor_A = minor(0,row,A);
+        det += pow(sign,row) * A.values[0][row] * determinant(minor_A);
     }
+    return det;
 }
 
-Matrix mult_d(const Matrix a, const double k ){
-    Matrix rez = {0,0};
-    rez.cols=a.cols;
-    rez.rows=a.rows;
-    rez.values = array_initialization(rez.cols,rez.rows);
-    for (int row = 0; row < rez.rows; row++){
-        for (int col = 0; col < rez.cols; col++){
-            rez.values[row][col] = a.values[row][col] * k;
+
+Matrix mult_d(const Matrix A, const double k ){
+    Matrix rez = {0,0, NULL};
+    rez.cols=A.cols;
+    rez.rows=A.rows;
+    rez.values = matrix_initialization(rez.cols,rez.rows);
+    for (unsigned int row = 0; row < rez.rows; row++){
+        for (unsigned int col = 0; col < rez.cols; col++){
+            rez.values[row][col] = A.values[row][col] * k;
         }
     }
     return rez;
 }
 
 
-void print(Matrix a){
+void print(Matrix A){
 
-    for (int i = 0; i < a.rows; i++){
-        for (int j = 0; j < a.cols; j++){
-            printf("%.2lf ", a.values[i][j]);
+    for (unsigned int row = 0; row < A.rows; row++){
+        for (unsigned int col = 0; col < A.cols; col++){
+            printf("%.2lf ", A.values[row][col]);
         }
         printf("\n");
     }
@@ -125,16 +150,16 @@ void print(Matrix a){
 
 int main() {
     srand(time(NULL));
-    A.values = array_initialization(A.cols, A.rows);
-    B.values = array_initialization(B.cols, B.rows);
-    for (int i = 0; i < A.rows; i++){
-        for (int j = 0; j < A.cols; j++){
-            A.values[i][j] = rand() % max_value ;
+    A.values = matrix_initialization(A.cols, A.rows);
+    B.values = matrix_initialization(B.cols, B.rows);
+    for (unsigned int row = 0; row < A.rows; row++){
+        for (unsigned int col = 0; col < A.cols; col++){
+            A.values[row][col] = rand() % max_value ;
         }
     }
-    for (int i = 0; i < B.rows; i++){
-        for (int j = 0; j < B.cols; j++){
-            B.values[i][j] = rand() % max_value;
+    for (unsigned int row = 0; row < B.rows; row++){
+        for (unsigned int col = 0; col < B.cols; col++){
+            B.values[row][col] = rand() % max_value;
         }
     }
 
@@ -150,7 +175,9 @@ int main() {
     print(multiplication(A, B));
     printf("This is matrix.c A * k\n");
     print(mult_d(A,coefficient));
-
+    printf("This is matrix.c A minor\n");
+    print(minor(4,4,A));
+    printf("This is matrix.c A det %f\n", determinant(A));
     return 0;
 
 }
