@@ -17,8 +17,8 @@ public:
         cols = init_cols;
         values = (double**)malloc(rows * sizeof(double*) + rows * cols * sizeof(double));
         auto* start = (double*)((char*)values + rows * sizeof(double*));
-        for(uint64_t row_cells = 0; row_cells < rows; row_cells++)
-            values[row_cells] = start + row_cells*cols;
+        for(uint64_t row = 0; row < rows; row++)
+            values[row] = start + row * cols;
     }
 
     void filling(double number) {
@@ -44,10 +44,9 @@ public:
 
     static Matrix addition(Matrix matrix1, Matrix matrix2) {
         if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols) {
-            Matrix sum_matrix(0, 0);
-            return sum_matrix;
+            Matrix error(0, 0);
+            return error;
         }
-
         Matrix sum_matrix(matrix1.rows, matrix1.cols);
         for(int row = 0; row < sum_matrix.rows; row++)
             for(int col = 0; col < sum_matrix.cols; col++)
@@ -55,7 +54,32 @@ public:
         return sum_matrix;
     }
 
+    static Matrix subtraction(Matrix matrix1, Matrix matrix2) {
+        if(matrix1.rows != matrix2.rows or matrix1.cols != matrix2.cols) {
+            Matrix error(0, 0);
+            return error;
+        }
+        Matrix sum_matrix(matrix1.rows, matrix1.cols);
+        for(int row = 0; row < sum_matrix.rows; row++)
+            for(int col = 0; col < sum_matrix.cols; col++)
+                sum_matrix.values[row][col] = matrix1.values[row][col] - matrix2.values[row][col];
+        return sum_matrix;
+    }
 
+    static Matrix multiplication(Matrix matrix1, Matrix matrix2) {
+        if(matrix1.cols != matrix2.rows){
+            Matrix error(0, 0);
+            return error;
+        }
+        Matrix multiplied_matrix(matrix1.rows, matrix2.cols);
+        for(int row = 0; row < multiplied_matrix.rows; row++)
+            for(int col = 0; col < multiplied_matrix.cols; col++) {
+                multiplied_matrix.values[row][col] = 0;
+                for (int k = 0; k < matrix1.cols; k++)
+                    multiplied_matrix.values[row][col] += matrix1.values[row][k] * matrix2.values[k][col];
+            }
+        return multiplied_matrix;
+    }
 
 };
 
@@ -75,6 +99,11 @@ int main() {
     Matrix C = Matrix::addition(A, B);
     C.output();
 
+    C = Matrix::subtraction(A, B);
+    C.output();
+
+    C = Matrix::multiplication(A, B);
+    C.output();
 
     return 0;
 
