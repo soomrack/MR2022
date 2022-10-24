@@ -1,38 +1,77 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "time.h"
 
-int **MatrixA;
+typedef struct {
+    unsigned int rows;
+    unsigned int cols;
+    double **values;
+} Matrix;
 
-typedef struct matrix_size {
-    unsigned int lines;
-    unsigned int columns;
-} matrix_size;
+Matrix A = {2, 2};
+Matrix B = {2, 2};
 
-matrix_size size = {2, 2};
-
-void array_creation_A {
-    MatrixA = (int **)malloc(size.lines * sizeof(int *));
-    for (int i = 0; i < lines; i++)
-        MatrixA[i] = (int *)malloc(size.columns * sizeof(int));
-    for (int i = 0; i < size.lines; i++)
+void array_creation(Matrix *name)
+{
+    name->values = (double**)malloc(name->rows * sizeof(double*));
+    for (int i = 0; i < name->rows; i++)
+        name->values[i] = (double*)malloc(name->cols * sizeof(double));
+    for (int i = 0; i < name->rows; i++)
     {
-        for(int j = 0; j < size.columns)
+        for(int j = 0; j < name->cols; j++)
         {
-            MatrixA[i][j] = rand() % 9;
+            name->values[i][j] = rand() % 9;
         }
     }
 }
 
+void addition (Matrix A, Matrix B)
+{
+    Matrix addition_matrix = {2, 2};
+    for (int i = 0; i < addition_matrix.rows; i++)
+    {
+        for (int j = 0; j < addition_matrix.cols; j++)
+        {
+            addition_matrix.values[i][j] = A.values[i][j] + B.values[i][j];
+            printf("%lf ", addition_matrix.values[i][j]);
+        }
+        printf("\n");
+    }
+}
 
+void start_output(Matrix *name)
+{
+    for (int i = 0; i < name -> rows; i++)
+    {
+        for(int j = 0; j < name -> cols; j++)
+            printf("%lf ", name -> values[i][j]);
+        printf("\n");
+    }
+    printf("\n");
+}
 
-void total() {
-    array_creation_A();
-    addition();
-    subtraction();
-    multiplication();
+void total_output()
+{
+    start_output(&A);
+    start_output(&B);
+    //addition_output();
+    //subtraction_output();
+    //multiplication_output();
+}
+
+void total()
+{
+    array_creation(&A);
+    array_creation(&B);
+    addition(A, B);
+    //subtraction();
+    //multiplication();
+    total_output();
 
 }
 
-int main() {
+int main()
+{
+    srand(time(NULL));
     total();
 }
