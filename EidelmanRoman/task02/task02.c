@@ -2,52 +2,58 @@
 #include <stdlib.h>
 #include "time.h"
 
-typedef struct matrix_size {
+typedef struct {
     unsigned int rows;
     unsigned int cols;
-    double **Matrix;
-} matrix_size;
+    double **values;
+} Matrix;
 
-matrix_size A = {2, 2};
-matrix_size B = {2, 2};
-matrix_size addition_matrix = {2, 2};
+Matrix A = {2, 2};
+Matrix B = {2, 2};
 
-void array_creation(matrix_size *name)
+void array_creation(Matrix *name)
 {
-    srand(time(NULL));
-    name->Matrix = (int**)malloc(name->rows * sizeof(int*));
+    name->values = (double**)malloc(name->rows * sizeof(double*));
     for (int i = 0; i < name->rows; i++)
-        name->Matrix[i] = (int*)malloc(name->cols * sizeof(int));
+        name->values[i] = (double*)malloc(name->cols * sizeof(double));
     for (int i = 0; i < name->rows; i++)
     {
         for(int j = 0; j < name->cols; j++)
         {
-            name->Matrix[i][j] = rand() % 9;
+            name->values[i][j] = rand() % 9;
         }
     }
 }
 
-void addition()
+void addition (Matrix A, Matrix B)
 {
-
-}
-
-void start_output(matrix_size *name)
-{
-    printf("Matrix %s \n", name);
-    for (int i = 0; i < name -> rows; i++)
+    Matrix addition_matrix = {2, 2};
+    for (int i = 0; i < addition_matrix.rows; i++)
     {
-        for(int j = 0; j < name -> cols; j++)
+        for (int j = 0; j < addition_matrix.cols; j++)
         {
-            printf("%lf ", name -> Matrix[i][j]);
+            addition_matrix.values[i][j] = A.values[i][j] + B.values[i][j];
+            printf("%lf ", addition_matrix.values[i][j]);
         }
         printf("\n");
     }
 }
 
+void start_output(Matrix *name)
+{
+    for (int i = 0; i < name -> rows; i++)
+    {
+        for(int j = 0; j < name -> cols; j++)
+            printf("%lf ", name -> values[i][j]);
+        printf("\n");
+    }
+    printf("\n");
+}
+
 void total_output()
 {
     start_output(&A);
+    start_output(&B);
     //addition_output();
     //subtraction_output();
     //multiplication_output();
@@ -56,7 +62,8 @@ void total_output()
 void total()
 {
     array_creation(&A);
-    //addition();
+    array_creation(&B);
+    addition(A, B);
     //subtraction();
     //multiplication();
     total_output();
@@ -65,5 +72,6 @@ void total()
 
 int main()
 {
+    srand(time(NULL));
     total();
 }
