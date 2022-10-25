@@ -27,15 +27,42 @@ Matrix::Matrix(unsigned int r_num, unsigned int c_num, double default_value) {
 }
 
 
+Matrix Matrix::copy(){
+    Matrix res = Matrix(rows, cols);
+    memcpy(res.values, values, rows * cols * sizeof(double));
+    return res;
+}
+
+
+double Matrix::get(unsigned int row, unsigned int col){
+    if (row > rows || col > cols) return NAN;
+    return values[col + row * cols];
+}
+
+
+void Matrix::set(unsigned int row, unsigned int col, double value){
+    if (row > rows || col > cols) return;
+    values[col + row * cols] = value;
+}
+
+
 double* Matrix::operator[](unsigned int idx){
-    if (idx > rows){
-        return nullptr;
-    }
+    if (idx > rows) return nullptr;
     return values + idx * cols;
 }
 
 
-Matrix Matrix::random(int min_value, int max_value) {
+bool Matrix::operator==(Matrix mat2) {
+    Matrix mat1 = *this;
+    if (mat1.cols != mat2.cols || mat1.rows != mat2.rows) return false;
+    for (unsigned int idx = 0; idx < mat1.cols * mat1.rows; idx++){
+        if (abs(mat1.values[idx] - mat2.values[idx]) > EPS) return false;
+    }
+    return true;
+}
+
+
+Matrix Matrix::fill_random(int min_value, int max_value) {
     std::srand(std::time(nullptr));
     for (int idx = 0; idx < rows * cols; idx++){
         values[idx] = min_value + (double) rand() / (double) RAND_MAX * (max_value - min_value);
@@ -43,7 +70,8 @@ Matrix Matrix::random(int min_value, int max_value) {
     return {rows, cols, values};
 }
 
-Matrix Matrix::identity(){
+
+Matrix Matrix::fill_identity(){
     if (rows != cols){
         return {0, 0, nullptr};
     }
@@ -54,9 +82,35 @@ Matrix Matrix::identity(){
 }
 
 
-Matrix Matrix::from_array(double* array){
+Matrix Matrix::fill_from_array(double* array){
     memcpy(values, array, rows * cols * sizeof(double));
     return {rows, cols, values};
+}
+
+
+bool Matrix::is_identity() {
+    if (cols != rows) return false;
+    for (unsigned int idx = 0; idx < rows * cols; idx++){
+        if (idx % (rows + 1) == 0){
+            if (abs(values[idx] - 1) > EPS)  return false;
+        }
+        else{
+            if (abs(values[idx]) > EPS) return false;
+        }
+    }
+    return true;
+}
+
+
+Matrix Matrix::add(Matrix mat) {
+    if (cols != mat.cols || rows != mat.rows){
+        return null();
+    }
+    Matrix res = this->copy();
+    for (unsigned int idx = 0; idx < rows * cols; idx++){
+        res.values[idx] += mat.values[idx];
+    }
+    return res;
 }
 
 
