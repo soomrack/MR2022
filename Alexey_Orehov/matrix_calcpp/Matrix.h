@@ -10,53 +10,56 @@
 
 const double EPS = 10e-6;  // Точность при сравнении величин с плавающей точкой
 
+
 class Matrix{
 private:
     double* values;
-
-//    TODO: Аттрибуты класса могут содержать в себе определенные значения матрицы,
-//     которые можно вызывать, не пересчитывая
-//    bool redacted = true;
-//    double* inv_values = nullptr;
-//    double det = NAN;
-
-    Matrix(unsigned int, unsigned int, double*);
 
 public:
     unsigned int rows;
     unsigned int cols;
 
-    // Базовый конструктор, создает матрицу m строк и n столбцов и заполняет каждую ячейку default_value
-    Matrix(unsigned int m, unsigned int n, double default_value = NAN);
-    static Matrix null() {return {0, 0, nullptr};}               // Пустая матрица
-    Matrix copy();                                               // Возвращает копию данной матрицы
+    Matrix();
+    Matrix(unsigned int rows, unsigned int cols);
+    Matrix(const Matrix&);
 
-    double get(unsigned int, unsigned int);                      // Доступ к произвольному элементу матрицы
-    void set(unsigned int, unsigned int, double);                // Изменение произвольного элемента матрицы
+    Matrix fill_number(double);                                      // Заполнение созданной матрицы одним числом
+    Matrix fill_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
+    Matrix fill_identity();                                          // Преобразование матрицы в единичную
+    Matrix fill_from_array(double* array);                           // Заполнение матрицы значениями из массива
 
-    Matrix fill_random(int min_value, int max_value);            // Заполняет созданную матрицу случайными значениями
-    Matrix fill_identity();                                      // Делает матрицу единичной
-    Matrix fill_from_array(double* array);                       // Заполняет матрицу значениями из заданного массива
+    double get(unsigned int, unsigned int);                          // Получение произвольного элемента матрицы
+    void set(unsigned int, unsigned int, double);                    // Изменение произвольного элемента матрицы
 
-    Matrix add(Matrix);                                          // Сложение матриц
+    bool operator==(const Matrix& mat);
+    bool operator!=(const Matrix& mat) {return !(*this == mat);}
+    double* operator[](unsigned int row);                            // Доступ к заданной строке матрицы
+    bool is_identity();
 
-    bool operator==(Matrix mat);
+    Matrix operator+(const Matrix&) const;
+    Matrix operator-(const Matrix&) const;
 
-    double* operator[](unsigned int idx);
-    Matrix operator+(const Matrix& mat) {return this->add(mat);}
+    friend std::ostream& operator<<(std::ostream& os, Matrix& mat){  // Перегрузка << для вывода матрицы через std::cout
+        os << "\n";
+        for (unsigned int row = 0; row < mat.rows; row++){
+            for (unsigned int col = 0; col < mat.cols; col++){
+                os << mat.values[col + row * mat.cols] << " ";
+            }
+            if (row != mat.rows - 1) os << "\n";
+        }
+        return os;
+    }
 
-    explicit operator bool() {                                   // Определение преобразования матрицы в логический тип
+    explicit operator bool() {  // Определение преобразования матрицы в логический тип
         for (int idx = 0; idx < rows * cols; idx++){
             if (!(bool)values[idx]) return false;
         }
         return true;
     }
 
-    bool is_identity();
-    void print();
+    void print() {std::cout << *this << std::endl;}
+    ~Matrix(){delete[] this->values;}
 };
 
-
-void printm(Matrix mat);
 
 #endif //PROGRAMMING_MATRIX_H
