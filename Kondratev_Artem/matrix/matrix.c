@@ -134,16 +134,15 @@ Matrix matrix_number_multiplication(Matrix matrix, double number) {
 }
 
 
-Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col, int det_key) {
+Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col) {
     /*Если crossed_row == -1, row_link == 1, т.к. det_key == 1, т.е. зачеркнута будет строка [0] (вычисление
      * определителя). Иначе det_key = 0, тогда зачеркивается строка crossed_row*/
     Matrix minor = matrix_init(matrix.rows-1, matrix.cols-1);
-    int row_link = det_key;
-    int col_link;
+    int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {
         if(crossed_row == i)
             row_link += 1;
-        col_link = 0;
+        int col_link = 0;
         for (int j = 0; j < minor.cols; j++) {
             if(j == crossed_col)
                 col_link += 1;
@@ -165,7 +164,7 @@ Matrix recursive_determinant(Matrix matrix) {
     }
     int k = 1;
     for(int col = 0; col < matrix.cols; col++) {
-        Matrix minor = minor_init(matrix, -1, col, 1);
+        Matrix minor = minor_init(matrix, 0, col);
         determinant.values[0][0] += k * matrix.values[0][col] * recursive_determinant(minor).values[0][0];
         k = -k;
         free_memory(&minor);
@@ -196,7 +195,7 @@ Matrix minor_transformation(Matrix matrix) {
     }
     for(int row = 0; row < matrix.rows; row++) {
         for(int col = 0; col < matrix.cols; col++) {
-            Matrix minor = minor_init(matrix,row, col, 0);
+            Matrix minor = minor_init(matrix,row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
             inverse_added_matrix.values[row][col] = k * recursive_determinant(minor).values[0][0];
             free_memory(&minor);
