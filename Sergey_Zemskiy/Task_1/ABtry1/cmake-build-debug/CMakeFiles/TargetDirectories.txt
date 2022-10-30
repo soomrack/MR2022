@@ -1,0 +1,3 @@
+C:/progr/ABtry1/cmake-build-debug/CMakeFiles/ABtry1.dir
+C:/progr/ABtry1/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/progr/ABtry1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
