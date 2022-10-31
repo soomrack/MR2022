@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 #include "matrix_lib.h"
 
 #define TEST_PASSED 2

@@ -31,11 +31,17 @@ void mistake (char* name_of_operation, char* error) {  // ЕСТЬ ОШИБКА 
 
 
 void matrix_input (Matrix* matrix) {  // РАНДОМНЫЙ ВВОД МАТРИЦ
-    srand(time(NULL));
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
-        matrix->value[number] = (double )rand();  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
+        matrix->value[number] = rand()%100;  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
     }
 }
+
+
+/*void matrix_input (Matrix* matrix) {
+    for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
+
+    }
+}*/
 
 
 int is_null (const Matrix matrix) {  // МАТРИЦЫ НЕТ
@@ -70,6 +76,7 @@ Matrix summation (const Matrix matrix1, const Matrix matrix2) {  // СУММИР
     if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
         mistake("Summation", "Not equal matrix size");
         return ZERO;
+        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -84,6 +91,7 @@ Matrix subtraction (const Matrix matrix1, const Matrix matrix2) {  // ВЫЧИТ
     if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
         mistake("Subtraction", "Not equal matrix size");
         return ZERO;
+        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -106,9 +114,10 @@ Matrix multiply_by_num (const Matrix matrix, double num) {  // УМНОЖЕНИ�
 
 Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) {  // УМНОЖЕНИЕ МАТРИЦЫ НА МАТРИЦУ
     if (matrix1.cols != matrix2.rows) {
-        mistake("Multiply matrix on matrix", "Matrix 1 cols should be equal\n");
-        printf("to matrix 2 rows");
+        mistake("Multiply matrix on matrix", "Matrix 1 cols should be equal");
+        printf("to matrix 2 rows\n");
         return ZERO;
+        printf("\n");
     }
     unsigned int itog_cols = matrix2.cols;
     unsigned int itog_rows = matrix1.rows;
@@ -127,11 +136,62 @@ Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) { 
 }
 
 
+double determinant (const Matrix matrix) { // ОПРЕДЕЛИТЕЛЬ МАТРИЦЫ
+    if (matrix.cols != matrix.rows) {
+        mistake("Determinant", "Cols must be equal to rows");
+        return 0.0;
+    }
+    double itog = 0.0;
+    if (matrix.cols == 1) {
+        itog = matrix.value [0];
+    }
+    else {
+        for (unsigned int row = 0; row < matrix.cols; row++) {
+                unsigned int col = 0;
+                Matrix subm = initialization(matrix.cols - 1, matrix.cols - 1);
+                unsigned int col_of = 0;
+                unsigned int row_of = 0;
+                for (unsigned int subm_row = 0; subm_row < matrix.cols - 1; subm_row++) {
+                    for (unsigned int subm_col = 0; subm_col < matrix.cols - 1; subm_col++) {
+                        if (subm_row == row) {
+                            row_of = 1;
+                        }
+                        if (subm_col == col) {
+                            col_of = 1;
+                        }
+                        subm.value [subm_row * (matrix.cols - 1) + subm_col] =
+                                matrix.value [(subm_col + row_of) * matrix.cols + (subm_col + col_of)];
+                    }
+                }
+                itog += pow(-1, row + col) * matrix.value[row * matrix.cols + col] * determinant(subm);
+                clean_memory(&subm);
+        }
+    }
+    return itog;
+}
 
+/*Matrix matrix_exponent (const Matrix matrix, unsigned int ) {
+
+    return itog;
+}*/
+
+
+Matrix transponation (const Matrix matrix) {
+    Matrix itog = initialization(matrix.rows, matrix.cols);
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = matrix.value[col * itog.rows + row];
+        }
+    }
+    return itog;
+}
 
 
 int main() {
-    Matrix mat1, mat2, mat3;
+
+    Matrix mat1, mat2;
+
+    srand(time(NULL));
 
     printf("\nFirst martix\n");
     mat1 = initialization(3, 3);
@@ -139,14 +199,9 @@ int main() {
     matrix_output(mat1);
 
     printf("Second matrix\n");
-    mat2 = initialization(3, 3);
+    mat2 = initialization(3, 4);
     matrix_input(&mat2);
     matrix_output(mat2);
-
-    /*printf("Third matrix\n");
-    mat3 = initialization(4, 3);
-    matrix_input(&mat3);
-    matrix_output(mat3);*/
 
     printf("Sum of matrices\n");
     Matrix summa;
@@ -154,7 +209,7 @@ int main() {
     matrix_output(summa);
     clean_memory(&summa);
 
-    printf("Matrix division\n");
+    printf("Sub of matrices\n");
     Matrix sub;
     sub = subtraction(mat1, mat2);
     matrix_output(sub);
@@ -178,6 +233,37 @@ int main() {
     matrix_output(multiply_M_by_M);
     clean_memory(&multiply_M_by_M);
 
-    printf("I HOPE IT'S WORKs RIGHT\n");  // НЕ ФУРЫЧИТ, ВВОДИТ ОДИНАКОВЫЕ МАТРИЦЫ КАЖДЫЙ РАЗ,
+    printf("Transponated first matrix\n");
+    Matrix trans1;
+    trans1 = transponation(mat1);
+    matrix_output(trans1);
+    clean_memory(&trans1);
+
+    printf("Transponated second matrix\n");
+    Matrix trans2;
+    trans2 = transponation(mat2);
+    matrix_output(trans2);
+    clean_memory(&trans2);
+
+    printf("Determinant of the first matrix\n");
+    double det;
+    det = determinant(mat1);
+    printf("%.2f\n", det);
+
+    printf("Determinant of the second matrix\n");
+    det = determinant(mat2);
+    printf("%.2f\n", det);
+
+    /*printf("Exponent of the first matrix");
+    Matrix exp1;
+    exp1 = matrix_exponent(mat1);
+    matrix_output(exp1);
+    clean_memory(&exp1);
+
+    printf("Exponent of the second matrix");
+    Matrix exp2;
+    exp2 = matrix_exponent(exp2);
+    matrix_output(exp2);
+    clean_memory(&exp2);*/
 
 }
