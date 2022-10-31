@@ -262,7 +262,7 @@ Matrix pow_matrix (const Matrix A, unsigned int n){
         free_matrix(power);
         power = multiplication_matrix(result,A);
         free_matrix(result);
-        result = copy_matrix(power); 
+        result = copy_matrix(power);
     }
     return  power;
 }
