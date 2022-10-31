@@ -21,9 +21,9 @@ Matrix empty(){
 }
 
 
-double ** matrix_initialization(const unsigned int col, const unsigned int row) {
+double** matrix_initialization(const unsigned int col, const unsigned int row) {
     double **rez = (double **) malloc(row * sizeof(double *));
-    for (int i = 0; i < row; i++) {
+    for (unsigned int i = 0; i < row; i++) {
         rez[i] = (double *) malloc(col * sizeof(double *));
     }
     return rez;
@@ -145,7 +145,8 @@ void print(Matrix A){
     printf("\n");
 }
 
-int test(){One.values = matrix_initialization(One.cols, One.rows);
+int test(){
+    One.values = matrix_initialization(One.cols, One.rows);
     Two.values = matrix_initialization(Two.cols, Two.rows);
     Add.values = matrix_initialization(Add.cols, Add.rows);
     Sub.values = matrix_initialization(Sub.cols, Sub.rows);
@@ -160,11 +161,11 @@ int test(){One.values = matrix_initialization(One.cols, One.rows);
             Sub.values[row][col] = 0.00;
             Mu.values[row][col] = 5.00;
             Mud.values[row][col] = 1.00 * coefficient;
-            if (addition(One, Two).values[row][col] == Add.values[row][col]) { s += 1; }
-            if (substraction(One,Two).values[row][col] == Sub.values[row][col]){s+=1;}
-            if (addition(One,Two).values[row][col] == Add.values[row][col]){s+=1;}
-            if (multiplication(One,Two).values[row][col] == Mu.values[row][col]){s+=1;}
-            if (mult_d(One,coefficient).values[row][col] == Mud.values[row][col]) {s+=1;}
+            if abs((addition(One, Two).values[row][col]) == abs(Add.values[row][col])) { s += 1; }
+            if abs((substraction(One,Two).values[row][col]) == abs(Sub.values[row][col])){s+=1;}
+            if abs((addition(One,Two).values[row][col]) == abs(Add.values[row][col])){s+=1;}
+            if abs((multiplication(One,Two).values[row][col]) == abs(Mu.values[row][col])){s+=1;}
+            if abs((mult_d(One,coefficient).values[row][col]) == abs(Mud.values[row][col])) {s+=1;}
         }
     }
     return s;
