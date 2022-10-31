@@ -11,7 +11,7 @@ struct Matrix{
     unsigned int rows;
     double* values;
     double** item;
-}Matrix;
+} Matrix;
 
 Matrix EMPTY = {0, 0, NULL, NULL};  // return if error
 
@@ -24,7 +24,13 @@ char *MESSAGES[6] = {"\nIncompatible matrix sizes!\n",
                       "\nDeterminant\n",
                       "\nExponent\n"};
 
+const double DETERMINANT_ACCURACY = 0.000001;
+const double EXPONENT_ACCURACY = 0.001;
+const int EXPONENT_STEPS = 100;
+
 Matrix create_zero_matrix(unsigned int rows, unsigned int cols);
+
+Matrix create_one_matrix(unsigned int rows, unsigned int cols);
 
 void fill_matrix_summ(Matrix *matrix);
 
@@ -32,17 +38,23 @@ void fill_matrix_mult(Matrix *matrix);
 
 void fill_matrix_val(Matrix *matrix, const double* value);
 
-Matrix matrix_add(const Matrix *fst_matx, const Matrix *snd_matx);
+Matrix matrix_add(Matrix fst_matx, Matrix snd_matx);
 
-Matrix matrix_subt(const Matrix *fst_matx, const Matrix *snd_matx);
+Matrix matrix_subt(Matrix fst_matx, Matrix snd_matx);
 
-Matrix matrix_mult(const Matrix *fst_matx, const Matrix *snd_matx);
+Matrix matrix_mult(Matrix fst_matx, Matrix snd_matx);
 
-Matrix matrix_mult_by_num(double a, const Matrix *matrix);
+Matrix matrix_mult_by_num(double a, Matrix matrix);
 
 void matrix_change_rows(Matrix *matrix, int fst_row, int snd_row);
 
 double matrix_det(Matrix matrix);
+
+Matrix matrix_pow(Matrix matrix, int power);
+
+double check_max_dif(Matrix fst_mat, Matrix snd_mat);
+
+Matrix matrix_exp(Matrix matrix);
 
 void free_mat(Matrix *matrix);
 

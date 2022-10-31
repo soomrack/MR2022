@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <math.h>
+#include <minmax.h>
 
 
 double DELTA=0.000001;
@@ -43,10 +44,11 @@ Matrix memory_matrix (const unsigned int rows, const unsigned int cols){
 
 
 void mistake (ERROR kod_mistake){
-    if(kod_mistake == 0) printf("Matrix sizes are different\n");
-    if(kod_mistake == 1) printf("Determinant is zero\n");
-    if(kod_mistake == 2) printf("Matrix data cannot be multiplied\n");
-    if(kod_mistake == 3) printf("The matrix is not square\n");
+    if(kod_mistake == Matrix_sizes_are_different) printf("Matrix sizes are different\n");
+    if(kod_mistake ==  Determinant_is_zero) printf("Determinant is zero\n");
+    if(kod_mistake == Matrix_data_cannot_be_multiplied) printf("Matrix data cannot be multiplied\n");
+    if(kod_mistake == The_matrix_is_not_square) printf("The matrix is not square\n");
+
 }
 
 
@@ -58,7 +60,7 @@ Matrix empty_matrix(){
 
 Matrix zero_matrix(unsigned int rows,unsigned int cols ){
     Matrix result =memory_matrix (rows, cols);
-    for(unsigned int number = 0; number <= rows * cols; number++) {
+    for(unsigned int number = 0; number < rows * cols; number++) {
         result.line[number] = 0.00;
     }
     return result;
@@ -67,10 +69,8 @@ Matrix zero_matrix(unsigned int rows,unsigned int cols ){
 
 Matrix identity_matrix(unsigned int rows,unsigned int cols ){
     Matrix result = zero_matrix (rows, cols);
-    for(unsigned int i_row = 0; i_row < result.rowS; i_row++) {
-        for(unsigned int j_col = 0; j_col < result.colS; j_col++) {
-            if(i_row == j_col) result.massive[i_row][j_col] = 1.00;
-        }
+    for(unsigned int i_row = 0; i_row < min(result.rowS, result.colS); i_row++) {
+        result.massive[i_row][i_row] = 1.00;
     }
     return result;
 }
@@ -91,8 +91,8 @@ Matrix addition_matrix(const Matrix A,const Matrix B){
     }
     Matrix sum = memory_matrix(A.rowS, A.colS);
     for(unsigned int number = 0; number < sum.rowS * sum.colS; number++) {
-        sum.line[number] = A.line[number] + B.line[number];
-    }
+            sum.line[number] = A.line[number] + B.line[number];
+        }
     return sum;
 }
 
@@ -104,7 +104,7 @@ Matrix subtraction_matrix(const Matrix A,const Matrix B){
     }
     Matrix mun = memory_matrix(A.rowS, A.colS);
     for(unsigned int number = 0; number < mun.rowS * mun.colS; number++) {
-        mun.line[number] = A.line[number] + B.line[number];
+        mun.line[number] = A.line[number] - B.line[number];
     }
     return mun;
 }
@@ -151,11 +151,6 @@ Matrix minor_matrix (const Matrix A, unsigned int  x, unsigned int y)  {
 }
 
 
-double determinant_2matrix(const Matrix A){
-    return A.massive[0][0] * A.massive[1][1] - A.massive[1][0] * A.massive[0][1];
-}
-
-
 double determinant_matrix (const Matrix A){
     double znak = 1.00;
     if(A.colS != A.rowS) {
@@ -166,7 +161,7 @@ double determinant_matrix (const Matrix A){
         return A.massive[0][0];
     }
     if( A.colS == 2){
-        return determinant_2matrix( A );
+        return A.massive[0][0] * A.massive[1][1] - A.massive[1][0] * A.massive[0][1];
     }
     double det = 0.00;
     for(unsigned int i = 0; i < A.colS; i++){
@@ -223,11 +218,14 @@ Matrix inverce_matrix (Matrix A){
 
 Matrix pow_matrix (const Matrix A, unsigned int n){
     if (n == 0) return identity_matrix(A.rowS,A.colS);
-    Matrix result=identity_matrix(A.rowS,A.colS);
-    Matrix help =memory_matrix(result.rowS,result.colS);
-    for (unsigned  int i = 0; i <= n; i++){
-        help = multiplication_matrix(result,A);
-        result = help;
+    Matrix result = identity_matrix(A.rowS,A.colS);
+    Matrix help2 = empty_matrix();
+    for (unsigned  int i = 0; i < n; i++){
+        Matrix help = multiplication_matrix(result,A);
+        free_matrix(result );
+        free_matrix(help2);
+        help2=help;
+        result = help2;
         free_matrix(help);
     }
     return  result;
@@ -254,24 +252,29 @@ double factorial (unsigned int k){
         result *= i;
     }
     return result;
-
 }
 
 
 Matrix exponent_matrix( const Matrix A, unsigned int step) {
-    if(A.colS != A.rowS)
-        mistake( The_matrix_is_not_square);
-    return empty_matrix();
-    Matrix result = memory_matrix(A.rowS, A.colS);;
-    result = A;
+    if(A.colS != A.rowS) {
+        mistake(The_matrix_is_not_square);
+        return empty_matrix();
+    }
+    Matrix result_exp = memory_matrix(A.rowS, A.colS);
+    Matrix help_exp = zero_matrix(A.rowS, A.colS);
+    free_matrix(result_exp);
+    result_exp = A;
     double factor = 0.5;
     for(int unsigned i = 2; i <= step; i++) {
+        free_matrix(help_exp);
         Matrix beginning = pow_matrix(A, i);
-        Matrix help =addition_matrix( result,multiplication_k_matrix( beginning, factor));
-        result = help;
+        help_exp =addition_matrix( result_exp, multiplication_k_matrix( beginning, factor));
+        free_matrix(result_exp);
+        result_exp = help_exp;
+        free_matrix(beginning);
         factor = 1/factorial(i+1);
     }
-    return result;
+    return addition_matrix(result_exp, identity_matrix( A.rowS, A.colS ));
 }
 
 
@@ -287,7 +290,6 @@ void output_matrix (Matrix A){
 
 
 void test_matrix (Matrix A, char metod){
-
     double addition[3][3] ={{1.00,3.00,9.00},
                             {9.00,11.00,17.00},
                             {17.00,19.00,21.00}};
@@ -306,7 +308,6 @@ void test_matrix (Matrix A, char metod){
     double exponent[3][3] ={{26.00,30.50,41.00},
                             {54.00,64.5,97.00},
                             {66.00,80.50,129.00}};
-
     int auxiliary;
     if(metod == '+') {
         Matrix sum = change_matrix(addition);
@@ -316,7 +317,6 @@ void test_matrix (Matrix A, char metod){
         Matrix min = change_matrix(subtraction);
         auxiliary = comparison_matrix(A,min);
     }
-
     if(metod == '*') {
         Matrix ymn = change_matrix(multiplication);
         auxiliary = comparison_matrix(A,ymn);
@@ -356,7 +356,6 @@ int main() {
    Matrix A=change_matrix(AA);
    Matrix B=change_matrix(BB);
     */
-
 
     Matrix A= memory_matrix(3, 3);
     Matrix B = memory_matrix(3, 3);
@@ -423,6 +422,7 @@ int main() {
     printf("          Result exp=\n");
     output_matrix(exponent_matrix(A,2));
     test_matrix(exponent_matrix(A,2),'e');
+
 
     return 0;
 }
