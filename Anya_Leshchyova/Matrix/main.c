@@ -4,6 +4,12 @@
 #include <math.h>
 #include <minmax.h>
 
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <math.h>
+#include <minmax.h>
+
 
 double DELTA=0.000001;
 
@@ -44,11 +50,22 @@ Matrix memory_matrix (const unsigned int rows, const unsigned int cols){
 
 
 void mistake (ERROR kod_mistake){
-    if(kod_mistake == Matrix_sizes_are_different) printf("Matrix sizes are different\n");
-    if(kod_mistake ==  Determinant_is_zero) printf("Determinant is zero\n");
-    if(kod_mistake == Matrix_data_cannot_be_multiplied) printf("Matrix data cannot be multiplied\n");
-    if(kod_mistake == The_matrix_is_not_square) printf("The matrix is not square\n");
-
+    switch (kod_mistake){
+        case Matrix_sizes_are_different:
+            printf("Matrix sizes are different\n");
+            break;
+        case Determinant_is_zero:
+            printf("Determinant is zero\n");
+            break;
+        case Matrix_data_cannot_be_multiplied:
+            printf("Matrix data cannot be multiplied\n");
+            break;
+        case The_matrix_is_not_square:
+            printf("The matrix is not square\n");
+            break;
+        default:
+            printf("Another error\n");
+    }
 }
 
 
@@ -69,18 +86,38 @@ Matrix zero_matrix(unsigned int rows,unsigned int cols ){
 
 Matrix identity_matrix(unsigned int rows,unsigned int cols ){
     Matrix result = zero_matrix (rows, cols);
-    for(unsigned int i_row = 0; i_row < min(result.rowS, result.colS); i_row++) {
-        result.massive[i_row][i_row] = 1.00;
+    for(unsigned int number = 0; number < min(result.rowS, result.colS); number++) {
+        result.massive[number][number] = 1.00;
     }
     return result;
 }
 
 
-int comparison_matrix(Matrix A, Matrix B) {
+int are_the_matrices_equal(Matrix A, Matrix B) {
     if(A.rowS != B.rowS || A.colS != B.colS) return 0;
     for(unsigned int number = 0; number <= A.rowS * A.colS; number++) {
         if(fabs(A.massive[number] - B.massive[number]) > DELTA)return 1;
     }
+}
+
+Matrix copy_matrix( const Matrix A ){
+    Matrix copy = memory_matrix(A.rowS, A.colS);
+    for(unsigned int number = 0; number <= A.rowS * A.colS; number++) {
+        copy.line[number] = A.line[number] ;
+    }
+    return copy;
+}
+
+
+//работает только с матрицами 3 на 3
+Matrix change_matrix( double A[3][3]) {
+    Matrix result = memory_matrix(3,3);
+    for(int i_row = 0; i_row < 3; i_row++) {
+        for(int j_col = 0; j_col < 3; j_col++) {
+            result.massive[i_row][j_col] = A[i_row][j_col];
+        }
+    }
+    return result;
 }
 
 
@@ -219,28 +256,15 @@ Matrix inverce_matrix (Matrix A){
 Matrix pow_matrix (const Matrix A, unsigned int n){
     if (n == 0) return identity_matrix(A.rowS,A.colS);
     Matrix result = identity_matrix(A.rowS,A.colS);
+    Matrix power = empty_matrix();
     Matrix help2 = empty_matrix();
     for (unsigned  int i = 0; i < n; i++){
-        Matrix help = multiplication_matrix(result,A);
-        free_matrix(result );
-        free_matrix(help2);
-        help2=help;
-        result = help2;
-        free_matrix(help);
+        free_matrix(power);
+        power = multiplication_matrix(result,A);
+        free_matrix(result);
+        result = copy_matrix(power); 
     }
-    return  result;
-}
-
-
-//работает только с матрицами 3 на 3
-Matrix change_matrix( double A[3][3]) {
-    Matrix result = memory_matrix(3,3);
-    for(int i_row = 0; i_row < 3; i_row++) {
-        for(int j_col = 0; j_col < 3; j_col++) {
-            result.massive[i_row][j_col] = A[i_row][j_col];
-        }
-    }
-    return result;
+    return  power;
 }
 
 
@@ -263,16 +287,16 @@ Matrix exponent_matrix( const Matrix A, unsigned int step) {
     Matrix result_exp = memory_matrix(A.rowS, A.colS);
     Matrix help_exp = zero_matrix(A.rowS, A.colS);
     free_matrix(result_exp);
-    result_exp = A;
+    result_exp = copy_matrix (A);
     double factor = 0.5;
     for(int unsigned i = 2; i <= step; i++) {
         free_matrix(help_exp);
-        Matrix beginning = pow_matrix(A, i);
-        help_exp =addition_matrix( result_exp, multiplication_k_matrix( beginning, factor));
+        Matrix power = pow_matrix(A, i);
+        help_exp =addition_matrix( result_exp, multiplication_k_matrix( power, factor));
         free_matrix(result_exp);
-        result_exp = help_exp;
-        free_matrix(beginning);
-        factor = 1/factorial(i+1);
+        result_exp = copy_matrix(help_exp) ;
+        free_matrix(power);
+        factor = 1 / factorial(i+1);
     }
     return addition_matrix(result_exp, identity_matrix( A.rowS, A.colS ));
 }
@@ -289,58 +313,75 @@ void output_matrix (Matrix A){
 }
 
 
-void test_matrix (Matrix A, char metod){
-    double addition[3][3] ={{1.00,3.00,9.00},
-                            {9.00,11.00,17.00},
-                            {17.00,19.00,21.00}};
-    double subtraction[3][3] ={{-1.00,-1.00,3.00},
-                               {-1.00,-1.00,3.00},
-                               {-1.00,-1.00,-1.00}};
-    double multiplication[3][3] ={{59.00,66.00,73.00},
-                                  {119.00,138.00,157.00},
-                                  {143.00,170.00,197.00}};
-    double inverce[3][3] ={{-2.50,2.75,-1.25},
-                           {2.50,-3.00,1.50},
-                           {-0.25,0.50,-0.25}};
-    double stepen_3[3][3] ={{796.00,977.00,1602.00},
-                            {1868.00,2261.00,3530.00},
-                            {2476.00,2973.00,4506.00}};
-    double exponent[3][3] ={{26.00,30.50,41.00},
-                            {54.00,64.5,97.00},
-                            {66.00,80.50,129.00}};
+void test_matrix (Matrix A, char metod) {
+    double addition[3][3] = {{1.00,  3.00,  9.00},
+                             {9.00,  11.00, 17.00},
+                             {17.00, 19.00, 21.00}};
+    double subtraction[3][3] = {{-1.00, -1.00, 3.00},
+                                {-1.00, -1.00, 3.00},
+                                {-1.00, -1.00, -1.00}};
+    double multiplication[3][3] = {{59.00,  66.00,  73.00},
+                                   {119.00, 138.00, 157.00},
+                                   {143.00, 170.00, 197.00}};
+    double inverce[3][3] = {{-2.50, 2.75,  -1.25},
+                            {2.50,  -3.00, 1.50},
+                            {-0.25, 0.50,  -0.25}};
+    double stepen_3[3][3] = {{796.00,  977.00,  1602.00},
+                             {1868.00, 2261.00, 3530.00},
+                             {2476.00, 2973.00, 4506.00}};
+    double exponent[3][3] = {{27.00, 30.50, 41.00},
+                             {54.00, 65.5,  97.00},
+                             {66.00, 80.50, 130.00}};
     int auxiliary;
-    if(metod == '+') {
-        Matrix sum = change_matrix(addition);
-        auxiliary = comparison_matrix(A,sum);
-    }
-    if(metod == '-') {
-        Matrix min = change_matrix(subtraction);
-        auxiliary = comparison_matrix(A,min);
-    }
-    if(metod == '*') {
-        Matrix ymn = change_matrix(multiplication);
-        auxiliary = comparison_matrix(A,ymn);
-    }
-    if(metod == 'r') {
-        Matrix inv = change_matrix(inverce);
-        auxiliary = comparison_matrix(A,inv);
-    }
-    if(metod == '^') {
-        Matrix step=change_matrix(stepen_3);
-        auxiliary=comparison_matrix(A,step);
-    }
-    if(metod == 'e') {
-        Matrix exp = change_matrix(exponent);
-        auxiliary = comparison_matrix(A,exp);
-    }
-    if(auxiliary == 0){
-        printf("Made a mistake --> %c\n",metod);
-        printf("\n");
+    for(int i = 0; i < 1; i++){
+        if(metod == '+') {
+            Matrix sum = change_matrix(addition);
+            auxiliary = are_the_matrices_equal(A, sum);
+            break;
+        }
+        if(metod == '-') {
+            Matrix min = change_matrix(subtraction);
+            auxiliary = are_the_matrices_equal(A, min);
+            break;
+        }
+        if(metod == '*') {
+            Matrix ymn = change_matrix(multiplication);
+            auxiliary = are_the_matrices_equal(A, ymn);
+            break;
+        }
+        if(metod == 'r') {
+            Matrix inv = change_matrix(inverce);
+            auxiliary = are_the_matrices_equal(A, inv);
+            break;
+        }
+        if(metod == '^') {
+            Matrix step = change_matrix(stepen_3);
+            auxiliary = are_the_matrices_equal(A, step);
+            break;
+        }
+        if(metod == 'e') {
+            Matrix exp = change_matrix(exponent);
+            auxiliary = are_the_matrices_equal(A, exp);
+            break;
+        }
+        else {
+            printf("Unknown check\n");
+            printf("\n");
+        }
 
     }
-    if(auxiliary == 1) {
-        printf("Operation performed correctly\n");
-        printf("\n");
+    switch (auxiliary) {
+        case 0:
+            printf("Made a mistake --> %c\n", metod);
+            printf("\n");
+            break;
+        case 1:
+            printf("Operation --> %c <-- performed correctly\n", metod);
+            printf("\n");
+            break;
+        default:
+            printf("Error in test program\n", metod);
+            printf("\n");
     }
 }
 
@@ -379,21 +420,21 @@ int main() {
         }
     }
 
-    printf("          Matrix A=\n");
+    printf("          Matrix A =\n");
     output_matrix(A);
 
-    printf("          Matrix B=\n");
+    printf("          Matrix B =\n");
     output_matrix(B);
 
-    printf("          Result A+B=\n");
+    printf("          Result A + B =\n");
     output_matrix (addition_matrix (A,B));
     test_matrix(addition_matrix (A,B),'+');
 
-    printf("          Result A-B=\n");
+    printf("          Result A - B =\n");
     output_matrix (subtraction_matrix (A,B));
     test_matrix(subtraction_matrix (A,B),'-');
 
-    printf("          Result A*B=\n");
+    printf("          Result A * B =\n");
     output_matrix(multiplication_matrix(A,B));
     test_matrix(multiplication_matrix (A,B),'*');
 
@@ -401,7 +442,7 @@ int main() {
     printf("Determinant B = %f\n", determinant_matrix(B));
     printf("\n");
 
-    printf("          Result A*5=\n");
+    printf("          Result A * 5 =\n");
     output_matrix (multiplication_k_matrix(A,5));
 
     printf("          Transpose matrix A =\n");
@@ -409,20 +450,19 @@ int main() {
     printf("          Transpose matrix B =\n");
     output_matrix(transposition_matrix(B));
 
-    printf("          Inverce matrix A=\n");
+    printf("          Inverce matrix A =\n");
     output_matrix(inverce_matrix(A));
     test_matrix(inverce_matrix(A),'r');
-    printf("          Inverce matrix B=\n");
+    printf("          Inverce matrix B =\n");
     output_matrix(inverce_matrix(B));
 
-    printf("          Result A^3=\n");
+    printf("          Result A ^ 3 =\n");
     output_matrix(pow_matrix(A,3));
     test_matrix(pow_matrix(A,3),'^');
 
-    printf("          Result exp=\n");
+    printf("          Result exp = \n");
     output_matrix(exponent_matrix(A,2));
     test_matrix(exponent_matrix(A,2),'e');
-
 
     return 0;
 }
