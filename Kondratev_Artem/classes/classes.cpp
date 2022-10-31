@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdint>
 
-#define EPSILON 0.001
+#define EPSILON 0.0001
 
 class Matrix {
 private:
@@ -35,8 +35,8 @@ public:
         values = new double *[rows];
         for (int row = 0; row < rows; row++)
             values[row] = new double[cols];
-        for (int row = 0; row < matrix.rows; row++)
-            for (int col = 0; col < matrix.cols; col++)
+        for (int row = 0; row <= matrix.rows-1; row++)
+            for (int col = 0; col <= matrix.cols-1; col++)
                 values[row][col] = matrix.values[row][col];
     }
 
@@ -80,6 +80,7 @@ public:
                 //sum_matrix.values[row][col] = matrix1.values[row][col] + matrix2.values[row][col];
                 //return sum_matrix;
                 int a;
+
     }
 
     static Matrix addition(Matrix matrix1, double number) {
@@ -147,5 +148,4 @@ int main() {
     Matrix::addition(A, B);
 
     return 0;
-
 }
