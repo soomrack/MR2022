@@ -4,13 +4,6 @@
 #include <math.h>
 #include <minmax.h>
 
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <math.h>
-#include <minmax.h>
-
-
 double DELTA=0.000001;
 
 
