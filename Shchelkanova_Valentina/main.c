@@ -140,6 +140,8 @@ void simulation() {
     print_report(&Alice);
     print_report(&Bob);
     print_comparison(&Alice, &Bob);
+    free(&Alice);
+    free(&Bob);
 }
 
 void main() {
