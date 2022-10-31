@@ -52,8 +52,8 @@ int is_null (const Matrix matrix) {  // МАТРИЦЫ НЕТ
 }
 
 
-void clean_memory (Matrix* matrix) {  // ОЧИСТКА ПАМЯТИ ПОСЛЕ ВЫПОЛНЕНИЯ ОПЕРАЦИИ
-    free (matrix->value);
+void clean_memory (Matrix matrix) {  // ОЧИСТКА ПАМЯТИ ПОСЛЕ ВЫПОЛНЕНИЯ ОПЕРАЦИИ
+    free (matrix.value);
 }
 
 
@@ -110,6 +110,15 @@ Matrix one_matrix (const unsigned int cols, const unsigned int rows) {
             itog.value[num] = 1.0;
         }
     }
+}
+
+
+Matrix copy_matrix (const Matrix matrix) {
+    Matrix itog = initialization(matrix.cols, matrix.rows);
+    for (unsigned int number = 0; number < matrix.cols * matrix.rows; number ++) {
+        itog.value [number] = matrix.value [number];
+    }
+    return itog;
 }
 
 
@@ -206,7 +215,7 @@ double determinant (const struct Matrix matrix) {
     for (unsigned int number = 0; number < matrix.cols; number ++) {
         struct Matrix min = minor(number, 0, matrix);
         itog += pow((-1), number) * matrix.value [number] * determinant(min);
-        clean_memory(&min);
+        clean_memory(min);
     }
     return itog;
 }
@@ -231,13 +240,12 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
     if (num == 0) {
         return one_matrix(matrix.cols, matrix.rows);
     }
-    Matrix itog = initialization(matrix.cols, matrix.rows);
-    itog.value = matrix.value;
+    Matrix itog = copy_matrix(matrix);
     for (unsigned int number = 1; number < num; number ++) {
         Matrix new = multiply_matrix_by_matrix(matrix, itog);
         itog = new;
         if (number == num) {
-        clean_memory(&new);
+        clean_memory(new);
       }
     }
     return itog;
@@ -274,41 +282,41 @@ int main() {
     Matrix summa;
     summa = summation(mat1, mat2);
     matrix_output(summa);
-    clean_memory(&summa);
+    clean_memory(summa);
 
     printf("Sub of matrices\n");
     Matrix sub;
     sub = subtraction(mat1, mat2);
     matrix_output(sub);
-    clean_memory(&sub);
+    clean_memory(sub);
 
     printf("Multiplying the first matrix by a number\n");
     Matrix mult_on_num;
     mult_on_num = multiply_by_num(mat1, 3);
     matrix_output(mult_on_num);
-    clean_memory(&mult_on_num);
+    clean_memory(mult_on_num);
 
     printf("Multiplying the second matrix by a number\n");
     mult_on_num = multiply_by_num(mat2, 5);
     matrix_output(mult_on_num);
-    clean_memory(&mult_on_num);
+    clean_memory(mult_on_num);
 
     printf("Multiplying the first matrix by a second martix\n");
     Matrix multiply_M_by_M;
     multiply_M_by_M = multiply_matrix_by_matrix(mat1, mat2);
     matrix_output(multiply_M_by_M);
-    clean_memory(&multiply_M_by_M);
+    clean_memory(multiply_M_by_M);
 
     printf("Transponated first matrix\n");
     Matrix trans;
     trans = transponation(mat1);
     matrix_output(trans);
-    clean_memory(&trans);
+    clean_memory(trans);
 
     printf("Transponated second matrix\n");
     trans = transponation(mat2);
     matrix_output(trans);
-    clean_memory(&trans);
+    clean_memory(trans);
 
     printf("Determinant of the first matrix\n");
     double det;
@@ -323,23 +331,23 @@ int main() {
     Matrix inv;
     inv = invert_matrix(mat1);
     matrix_output(inv);
-    clean_memory(&inv);
+    clean_memory(inv);
 
     printf("Second inverse matrix \n");
     inv = invert_matrix(mat2);
     matrix_output(inv);
-    clean_memory(&inv);
+    clean_memory(inv);
 
     printf("First matrix power\n");
     Matrix pow;
     pow = matrix_power(mat1, 2);
     matrix_output(pow);
-    clean_memory(&pow);
+    clean_memory(pow);
 
     printf("Second matrix power\n");
     pow = matrix_power(mat2, 2);
     matrix_output(pow);
-    clean_memory(&pow);
+    clean_memory(pow);
 
     /*printf("Exponent of the first matrix");
     Matrix exp1;
@@ -357,5 +365,5 @@ int main() {
     Matrix ed;
     ed = one_matrix(3, 3);
     matrix_output(ed);
-    clean_memory(&ed);
+    clean_memory(ed);
 }
