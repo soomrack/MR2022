@@ -223,7 +223,7 @@ Matrix transponation (const Matrix matrix) {
 }
 
 
-struct Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
+Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
     if (matrix.cols != matrix.rows) {
         mistake("Power", "Cols must be equal to rows");
         return ZERO;
