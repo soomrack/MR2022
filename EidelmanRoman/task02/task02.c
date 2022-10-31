@@ -8,8 +8,8 @@ typedef struct {
     double **values;
 } Matrix;
 
-Matrix A = {2, 2};
-Matrix B = {2, 2};
+Matrix A = {2, 2, NULL};
+Matrix B = {2, 2, NULL};
 
 void array_creation(Matrix *name)
 {
@@ -21,13 +21,20 @@ void array_creation(Matrix *name)
         for(int j = 0; j < name->cols; j++)
         {
             name->values[i][j] = rand() % 9;
+            printf("%lf ", name -> values[i][j]);
         }
+        printf("\n");
     }
+    printf("\n");
 }
 
 void addition (Matrix A, Matrix B)
 {
-    Matrix addition_matrix = {2, 2};
+    printf("SUM:\n");
+    Matrix addition_matrix = {2, 2, NULL};
+    addition_matrix.values = (double**)malloc(addition_matrix.rows * sizeof(double*));
+    for (int i = 0; i < addition_matrix.rows; i++)
+        addition_matrix.values[i] = (double*)malloc(addition_matrix.cols * sizeof(double));
     for (int i = 0; i < addition_matrix.rows; i++)
     {
         for (int j = 0; j < addition_matrix.cols; j++)
@@ -37,26 +44,26 @@ void addition (Matrix A, Matrix B)
         }
         printf("\n");
     }
-}
-
-void start_output(Matrix *name)
-{
-    for (int i = 0; i < name -> rows; i++)
-    {
-        for(int j = 0; j < name -> cols; j++)
-            printf("%lf ", name -> values[i][j]);
-        printf("\n");
-    }
     printf("\n");
 }
 
-void total_output()
+void subtraction (Matrix A, Matrix B)
 {
-    start_output(&A);
-    start_output(&B);
-    //addition_output();
-    //subtraction_output();
-    //multiplication_output();
+    printf("SUBTRACTION:\n");
+    Matrix subtraction_matrix = {2, 2, NULL};
+    subtraction_matrix.values = (double**)malloc(subtraction_matrix.rows * sizeof(double*));
+    for (int i = 0; i < subtraction_matrix.rows; i++)
+        subtraction_matrix.values[i] = (double*)malloc(subtraction_matrix.cols * sizeof(double));
+    for (int i = 0; i < subtraction_matrix.rows; i++)
+    {
+        for (int j = 0; j < subtraction_matrix.cols; j++)
+        {
+            subtraction_matrix.values[i][j] = A.values[i][j] - B.values[i][j];
+            printf("%lf ", subtraction_matrix.values[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
 
 void total()
@@ -64,9 +71,8 @@ void total()
     array_creation(&A);
     array_creation(&B);
     addition(A, B);
-    //subtraction();
+    subtraction(A, B);
     //multiplication();
-    total_output();
 
 }
 

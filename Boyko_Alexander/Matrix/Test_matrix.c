@@ -21,6 +21,13 @@ double MAT_VAL[9] = {0.0,2.0, 2.0,
 
 double DET_VAL = -10;
 
+double EXP_VAL[9] = {91.183965,160.707182,231.230400,
+                     160.707182,286.340779,409.974376,
+                     231.230400,409.974376,589.718351};
+Matrix MAT_EXP = {3,3,EXP_VAL};
+
+double EQUAL_ACCURACY = 0.001;
+
 int is_mat_equal(const Matrix A, const Matrix B){
     if(A.cols != B.cols){
         return 0;
@@ -29,7 +36,7 @@ int is_mat_equal(const Matrix A, const Matrix B){
         return 0;
     }
     for(int k = 0; k < A.cols * A.rows; k++){
-        if (A.values[k] != B.values[k]) {
+        if ((A.values[k] - B.values[k]) > EQUAL_ACCURACY) {
             return 0;
         }
     }
@@ -43,7 +50,7 @@ void check_add(){
     Matrix B = create_zero_matrix(3, 3);
     fill_matrix_mult(&B);
 
-    res = matrix_add(&A,&B);
+    res = matrix_add(A,B);
     if (!is_mat_equal(res,MAT_ADD)){
         printf("ERROR: ADDITION INCORRECT\n");
         free_mat(&A);
@@ -64,7 +71,7 @@ void check_sub(){
     Matrix B = create_zero_matrix(3, 3);
     fill_matrix_mult(&B);
 
-    res = matrix_subt(&A,&B);
+    res = matrix_subt(A,B);
     if (!is_mat_equal(res,MAT_SUB)){
         printf("ERROR: SUBTRACTION INCORRECT\n");
         free_mat(&A);
@@ -85,7 +92,7 @@ void check_mult(){
     Matrix B = create_zero_matrix(4, 3);
     fill_matrix_mult(&B);
 
-    res = matrix_mult(&A,&B);
+    res = matrix_mult(A,B);
     if (!is_mat_equal(res,MAT_MUL)){
         printf("ERROR: MULTIPLICATION INCORRECT\n");
         free_mat(&A);
@@ -110,6 +117,21 @@ void check_det(){
     printf("DETERMINANT CORRECT\n");
 }
 
+void check_exp(){
+    Matrix A = create_zero_matrix(3,3);
+    fill_matrix_summ(&A);
+    Matrix res = matrix_exp(A);
+    if (!is_mat_equal(res,MAT_EXP)){
+        printf("ERROR: EXPONENT INCORRECT\n");
+        free_mat(&A);
+        free_mat(&res);
+        return;
+    }
+    free_mat(&A);
+    free_mat(&res);
+    printf("EXPONENT CORRECT\n");
+}
+
 int main() {
     check_add();
 
@@ -118,6 +140,8 @@ int main() {
     check_mult();
 
     check_det();
+
+    check_exp();
 
     return 0;
 }
