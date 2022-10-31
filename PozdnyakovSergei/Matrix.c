@@ -32,7 +32,7 @@ void mistake (char* name_of_operation, char* error) {  // ЕСТЬ ОШИБКА 
 
 void matrix_input (Matrix* matrix) {  // РАНДОМНЫЙ ВВОД МАТРИЦ
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
-        matrix->value[number] = rand()%100;  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
+        matrix->value[number] = rand()%10;  // НАДО ИСПРАВИТЬ РАНДОМАЙЗЕР, НЕ ФУРЫЧИТ
     }
 }
 
@@ -102,6 +102,17 @@ Matrix subtraction (const Matrix matrix1, const Matrix matrix2) {  // ВЫЧИТ
 }
 
 
+Matrix one_matrix (const unsigned int cols, const unsigned int rows) {
+    Matrix itog = initialization(cols, rows);
+    for (unsigned int number = 0; number < cols * rows; number ++) {
+        itog.value [number] = 0.0;
+        for ( unsigned int num = 0; num <= number; num = num + cols + 1) {
+            itog.value[num] = 1.0;
+        }
+    }
+}
+
+
 Matrix multiply_by_num (const Matrix matrix, double num) {  // УМНОЖЕНИЕ МАТРИЦЫ НА ЧИСЛО
     Matrix itog = initialization(matrix.cols, matrix.rows);
     unsigned int total_number = matrix.cols * matrix.rows;
@@ -136,7 +147,7 @@ Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) { 
 }
 
 
-double determinant (const Matrix matrix) { // ОПРЕДЕЛИТЕЛЬ МАТРИЦЫ
+/*double determinant (const Matrix matrix) { // ОПРЕДЕЛИТЕЛЬ МАТРИЦЫ
     if (matrix.cols != matrix.rows) {
         mistake("Determinant", "Cols must be equal to rows");
         return 0.0;
@@ -168,12 +179,37 @@ double determinant (const Matrix matrix) { // ОПРЕДЕЛИТЕЛЬ МАТР�
         }
     }
     return itog;
+}*/
+
+
+Matrix minor (const unsigned int cols, const unsigned int rows, const struct Matrix matrix) {
+    struct Matrix itog = initialization(matrix.cols - 1, matrix.rows - 1);
+    unsigned int k=0;
+    for (unsigned int number = 0; number < matrix.cols * matrix.rows; number ++) {
+        if ((number % matrix.cols != cols) && (number / matrix.cols != rows)) {
+            itog.value[k++] = matrix.value[number];
+        }
+    }
+    return itog;
 }
 
-/*Matrix matrix_exponent (const Matrix matrix, unsigned int ) {
 
+double determinant (const struct Matrix matrix) {
+    if (matrix.cols != matrix.rows) {
+        mistake("Determinant", "Cols must be equal to rows");
+        return 0.0;
+    }
+    if (matrix.cols == 1) {
+        return matrix.value [0];
+    }
+    double itog = 0.0;
+    for (unsigned int number = 0; number < matrix.cols; number ++) {
+        struct Matrix min = minor(number, 0, matrix);
+        itog += pow((-1), number) * matrix.value [number] * determinant(min);
+        clean_memory(&min);
+    }
     return itog;
-}*/
+}
 
 
 Matrix transponation (const Matrix matrix) {
@@ -183,6 +219,37 @@ Matrix transponation (const Matrix matrix) {
             itog.value[row * itog.cols + col] = matrix.value[col * itog.rows + row];
         }
     }
+    return itog;
+}
+
+
+struct Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
+    if (matrix.cols != matrix.rows) {
+        mistake("Power", "Cols must be equal to rows");
+        return ZERO;
+    }
+    if (num == 0) {
+        return one_matrix(matrix.cols, matrix.rows);
+    }
+    Matrix itog = initialization(matrix.cols, matrix.rows);
+    itog.value = matrix.value;
+    for (unsigned int number = 1; number < num; number ++) {
+        Matrix new = multiply_matrix_by_matrix(matrix, itog);
+        itog = new;
+        if (number == num) {
+        clean_memory(&new);
+      }
+    }
+    return itog;
+}
+
+
+Matrix invert_matrix (const Matrix matrix) {
+    if (matrix.cols != matrix.rows && determinant(matrix) == 0) {
+        mistake("Getting the inverse matrix", "Matrix must be square and with zero determinant");
+        return ZERO;
+    }
+    Matrix itog = multiply_by_num(transponation(matrix), 1. / determinant(matrix));
     return itog;
 }
 
@@ -199,7 +266,7 @@ int main() {
     matrix_output(mat1);
 
     printf("Second matrix\n");
-    mat2 = initialization(3, 4);
+    mat2 = initialization(3, 3);
     matrix_input(&mat2);
     matrix_output(mat2);
 
@@ -216,16 +283,15 @@ int main() {
     clean_memory(&sub);
 
     printf("Multiplying the first matrix by a number\n");
-    Matrix mult_on_num1;
-    mult_on_num1 = multiply_by_num(mat1, 3);
-    matrix_output(mult_on_num1);
-    clean_memory(&mult_on_num1);
+    Matrix mult_on_num;
+    mult_on_num = multiply_by_num(mat1, 3);
+    matrix_output(mult_on_num);
+    clean_memory(&mult_on_num);
 
     printf("Multiplying the second matrix by a number\n");
-    Matrix mult_on_num2;
-    mult_on_num2 = multiply_by_num(mat2, 5);
-    matrix_output(mult_on_num2);
-    clean_memory(&mult_on_num2);
+    mult_on_num = multiply_by_num(mat2, 5);
+    matrix_output(mult_on_num);
+    clean_memory(&mult_on_num);
 
     printf("Multiplying the first matrix by a second martix\n");
     Matrix multiply_M_by_M;
@@ -234,16 +300,15 @@ int main() {
     clean_memory(&multiply_M_by_M);
 
     printf("Transponated first matrix\n");
-    Matrix trans1;
-    trans1 = transponation(mat1);
-    matrix_output(trans1);
-    clean_memory(&trans1);
+    Matrix trans;
+    trans = transponation(mat1);
+    matrix_output(trans);
+    clean_memory(&trans);
 
     printf("Transponated second matrix\n");
-    Matrix trans2;
-    trans2 = transponation(mat2);
-    matrix_output(trans2);
-    clean_memory(&trans2);
+    trans = transponation(mat2);
+    matrix_output(trans);
+    clean_memory(&trans);
 
     printf("Determinant of the first matrix\n");
     double det;
@@ -253,6 +318,28 @@ int main() {
     printf("Determinant of the second matrix\n");
     det = determinant(mat2);
     printf("%.2f\n", det);
+
+    printf("First inverse matrix \n");
+    Matrix inv;
+    inv = invert_matrix(mat1);
+    matrix_output(inv);
+    clean_memory(&inv);
+
+    printf("Second inverse matrix \n");
+    inv = invert_matrix(mat2);
+    matrix_output(inv);
+    clean_memory(&inv);
+
+    printf("First matrix power\n");
+    Matrix pow;
+    pow = matrix_power(mat1, 2);
+    matrix_output(pow);
+    clean_memory(&pow);
+
+    printf("Second matrix power\n");
+    pow = matrix_power(mat2, 2);
+    matrix_output(pow);
+    clean_memory(&pow);
 
     /*printf("Exponent of the first matrix");
     Matrix exp1;
@@ -266,4 +353,9 @@ int main() {
     matrix_output(exp2);
     clean_memory(&exp2);*/
 
+    printf("Unit matrix\n");
+    Matrix ed;
+    ed = one_matrix(3, 3);
+    matrix_output(ed);
+    clean_memory(&ed);
 }
