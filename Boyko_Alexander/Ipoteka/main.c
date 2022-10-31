@@ -5,120 +5,146 @@
 const int START_CASH = 1000000 * 100; // FIRST INPUT IN BANK (KOP)
 const int FIRST_INPUT = 450000 * 100; // BOB'S INPUT IN FLAT (KOP)
 const int FLAT_PRICE = 3000000 * 100; // FLAT'S PRICE (KOP)
-const int SALARY = 150000 * 100; // SALARY FOR BOTH (KOP)
-const int MONTH_CASH = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
+const int MONTH_PAY = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
 const int PERIOD = 20; // YEARS
-const int ALICE_WASTE = 40000 * 100; // ALICE'S MONTHLY WASTE (KOP)
-const int BOB_WASTE = 10000 * 100; // BOB'S MONTHLY WASTE (KOP)
-
-int year_percent = 7; // BANK'S PERCENT
 
 struct Client {
     char *name;
     unsigned int month_increase; // KOP
-    unsigned long long int bank; // KOP
+    unsigned long long int bank_account; // KOP
+    unsigned int month_cash; // CASH THAT IS AVAILABLE UNTIL END OF THE MONTH (KOP)
+    int salary; // KOP
+    int waste; // MONTHLY WASTE (KOP)
+    int year_percent; // BANK'S PERCENT
 };
 
-struct Client Alice, Bob;
+struct Client Alice;
+struct Client Bob;
 
-// PROCs AND FUNCs
-void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year);
-void print_res_string(unsigned long long int client_year);
-void init();
-unsigned long long int month_calc(unsigned long long int bank, unsigned int month_increase);
-void year_cycle();
-void month_cycle(int year);
+void init_bob(struct Client *init_Bob);
+
+void init_alice(struct Client *init_Alice);
+
 void year_event(int year);
 
-// MAIN FUNC
-int main() {
-    // VARs INITIALIZATION
-    init();
+void add_bank_percents(struct Client *client);
 
-    // CYCLE START
-    year_cycle();
+void add_salary(struct Client *client);
 
-    return 0;
+void remove_wastes(struct Client *client);
+
+void remove_month_payment(struct Client *client);
+
+void deposit(struct Client *client);
+
+void print_client_line(unsigned long long int client_year_cash);
+
+void print_out(unsigned long long int bob_year_cash, unsigned long long int alice_year_cash, int year);
+
+void simulation();
+
+void init_bob(struct Client *init_Bob) {
+    // BOB IPOTEKA
+    init_Bob->name = malloc(6);
+    init_Bob->name = "Bob";
+    init_Bob->bank_account = START_CASH - FIRST_INPUT;
+    init_Bob->month_cash = 0;
+    init_Bob->salary = 150000 * 100;
+    init_Bob->waste = 10000 * 100;
+    init_Bob->month_increase = init_Bob->salary - init_Bob->waste - MONTH_PAY;
+    init_Bob->year_percent = 7;
 }
 
-// INITIALIZATION BLOCK
-void init(){
-    // BOB START IPOTEKA
-    Bob.name = malloc(6);
-    Bob.name = "Bob";
-    Bob.bank = START_CASH - FIRST_INPUT;
-    Bob.month_increase = SALARY - BOB_WASTE - MONTH_CASH;
-
-    // ALICE START BANK
-    Alice.name = malloc(6);
-    Alice.name = "Alice";
-    Alice.bank = START_CASH;
-    Alice.month_increase = SALARY - ALICE_WASTE;
+void init_alice(struct Client *init_Alice) {
+    // ALICE SAVINGS
+    init_Alice->name = malloc(6);
+    init_Alice->name = "Alice";
+    init_Alice->bank_account = START_CASH;
+    init_Alice->month_cash = 0;
+    init_Alice->salary = 150000 * 100;
+    init_Alice->waste = 40000 * 100;
+    init_Alice->month_increase = init_Alice->salary - init_Alice->waste;
+    init_Alice->year_percent = 7;
 }
 
-// YEAR CYCLE BLOCK
-void year_cycle(){
-    int i;
-    for (i = 0; i < PERIOD; i++) {
-        // SOMETHING CHANGED
-        year_event(i);
-
-        month_cycle(i);
-    }
-}
-
-// MONTH CYCLE BLOCK
-void month_cycle(int year){
-    int j;
-    for (j = 0; j < 12; j++) {
-
-        // ALICE MONTH
-        Alice.bank = month_calc(Alice.bank, Alice.month_increase);
-
-        // BOB MONTH
-        Bob.bank = month_calc(Bob.bank, Bob.month_increase);
-    }
-
-    // RESULTS
-    print_out(Bob.bank + FLAT_PRICE, Alice.bank, year);
-}
-
-// YEAR EVENT BLOCK
-void year_event(int year){
+void year_event(int year) {
     // PERCENT CHANGE AFTER 5 YEARS
     if (year == 4) {
-        year_percent = 8;
+        Bob.year_percent = 8;
+        Alice.year_percent = 8;
     }
 }
 
-// CALCULATION FOR MONTH BLOCK
-unsigned long long int month_calc(unsigned long long int bank, unsigned int month_increase){
-    bank = (unsigned long long int)((long double)(bank + month_increase) * (1.f + year_percent * 0.01 / 12));
-    return bank;
+void add_bank_percents(struct Client *client) {
+    double month_percent = client->year_percent * 0.01 / 12;
+    client->month_cash += (unsigned int)((double)client->bank_account * month_percent);
 }
 
-// OUTPUT BLOCK
-void print_out(unsigned long long int bob_year, unsigned long long int alice_year, int year) {
+void add_salary(struct Client *client) {
+    client->month_cash += client->salary;
+}
+
+void remove_wastes(struct Client *client) {
+    client->month_cash -= client->waste;
+}
+
+void remove_month_payment(struct Client *client) {
+    client->month_cash -= MONTH_PAY;
+}
+
+void deposit(struct Client *client) {
+    client->bank_account += client->month_cash;
+    client->month_cash = 0;
+}
+// INDIVIDUAL OUTPUT BLOCK
+void print_client_line(unsigned long long int client_year_cash) {
+    unsigned long long int client_rub = client_year_cash / 100;
+    int client_kop = (int)(client_year_cash % 100);
+    printf("%0.2llu Rub %0.2d Kop       ", client_rub,client_kop);
+}
+
+void print_out(unsigned long long int bob_year_cash, unsigned long long int alice_year_cash, int year) {
     // TABLE HEAD
     if(year == 0){
         printf("%s                     %s                     Year \n",Bob.name,Alice.name);
     }
 
-    // BOB'S RESULT
-    print_res_string(bob_year);
+    print_client_line(bob_year_cash);
 
-    // ALICE"S RESULT
-    print_res_string(alice_year);
+    print_client_line(alice_year_cash);
 
-    // YEAR OUTPUT
     printf("%0.2d \n", year + 1);
 }
 
-// INDIVIDUAL OUTPUT BLOCK
-void print_res_string(unsigned long long int client_year) {
-    unsigned long long int client_rub = client_year / 100;
-    int client_kop = (int)(client_year % 100);
-    printf("%0.2llu Rub %0.2d Kop       ", client_rub,client_kop);
+void simulation() {
+    // YEAR CYCLE STARTS
+    for (int year = 0; year < PERIOD; year++) {
+        // SOMETHING CHANGED
+        year_event(year);
+        for (int mon = 0; mon < 12; mon++) {
+            // BOB
+            add_bank_percents(&Bob);
+            add_salary(&Bob);
+            remove_wastes(&Bob);
+            remove_month_payment(&Bob);
+            deposit(&Bob);
+            // ALICE
+            add_bank_percents(&Alice);
+            add_salary(&Alice);
+            remove_wastes(&Alice);
+            deposit(&Alice);
+        }
+
+        print_out(Bob.bank_account + FLAT_PRICE, Alice.bank_account, year);
+    }
 }
 
+int main() {
 
+    init_bob(&Bob);
+    init_alice(&Alice);
+
+    simulation();
+
+    return 0;
+}
