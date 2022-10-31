@@ -44,11 +44,17 @@ Matrix matrix_subt(Matrix fst_matx, Matrix snd_matx);
 
 Matrix matrix_mult(Matrix fst_matx, Matrix snd_matx);
 
-Matrix matrix_mult_by_num(long double a, Matrix matrix);
+Matrix matrix_mult_by_num(double a, Matrix matrix);
 
 void matrix_change_rows(Matrix *matrix, int fst_row, int snd_row);
 
 double matrix_det(Matrix matrix);
+
+Matrix matrix_pow(Matrix matrix, int power);
+
+double check_max_dif(Matrix fst_mat, Matrix snd_mat);
+
+Matrix matrix_exp(Matrix matrix);
 
 void free_mat(Matrix *matrix);
 

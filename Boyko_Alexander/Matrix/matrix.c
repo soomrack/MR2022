@@ -116,26 +116,13 @@ Matrix matrix_mult(const Matrix fst_matx, const Matrix snd_matx) {
     return res_matx;
 }
 
-Matrix matrix_mult_by_num(const long double a, const Matrix matrix) {
+Matrix matrix_mult_by_num(const double a, const Matrix matrix) {
     unsigned int cols = matrix.cols;
     unsigned int rows = matrix.rows;
     Matrix res_matx = create_zero_matrix(rows,cols);
     //message(MULT);
     for(int k = 0; k < rows * cols; k++) {
         res_matx.values[k] = a * matrix.values[k];
-    }
-    //printf("\nMultiplicated Matrix");
-    //print_matx(res_matx);
-    return res_matx;
-}
-
-Matrix matrix_div_by_two_num(const unsigned long long int a, const unsigned long long int b, const Matrix matrix) {
-    unsigned int cols = matrix.cols;
-    unsigned int rows = matrix.rows;
-    Matrix res_matx = create_zero_matrix(rows,cols);
-    //message(MULT);
-    for(int k = 0; k < rows * cols; k++) {
-        res_matx.values[k] = matrix.values[k] / a / b;
     }
     //printf("\nMultiplicated Matrix");
     //print_matx(res_matx);
@@ -193,16 +180,6 @@ Matrix matrix_pow(Matrix matrix, const int power){
     return res_mat;
 }
 
-unsigned long long int fac(int fst_num,int num){
-    unsigned long long int fac = 1;
-    for(int k = fst_num; k <= num; k++){
-        fac = fac * k;
-    }
-    //printf("\nFactorial\n");
-    //printf("%lli",fac);
-    return fac;
-}
-
 double check_max_dif(const Matrix fst_mat, const Matrix snd_mat){
     double dif = 0.0;
     for(int k = 0; k < fst_mat.cols * fst_mat.rows; k++){
@@ -216,27 +193,25 @@ double check_max_dif(const Matrix fst_mat, const Matrix snd_mat){
     return dif;
 }
 
-
 Matrix matrix_exp(const Matrix matrix){
     if(matrix.rows != matrix.cols){
         message(EX);
         message(ERR);
         return EMPTY;
     }
-    Matrix res_mat = create_zero_matrix(matrix.rows,matrix.cols);
+    Matrix res_mat = create_one_matrix(matrix.rows,matrix.cols);
+    Matrix n_member = create_one_matrix(matrix.rows,matrix.cols);
+    Matrix n1_member = create_zero_matrix(0,0);
     Matrix prev_mat;
-    for(int k = 0; k <= EXPONENT_STEPS; k++){
+    for(int k = 1; k <= EXPONENT_STEPS; k++){
         prev_mat = copy_mat(res_mat);
-        double* val_mem = res_mat.values;
-        double** item_mem = res_mat.item;
-        if(k > 12){
-            res_mat = matrix_add(res_mat, matrix_div_by_two_num(fac(1, 11), fac(12, k), matrix_pow(matrix, k)));
-        }
-        else{
-            res_mat = matrix_add(res_mat,matrix_div_by_two_num(fac(1,k),1, matrix_pow(matrix, k)));
-        }
-        free(val_mem);
-        free(item_mem);
+        Matrix mem_mat = res_mat;
+        free_mat(&n1_member);
+        n1_member = matrix_mult(n_member,matrix_mult_by_num(1.0 / k, matrix));
+        res_mat = matrix_add(res_mat,n1_member);
+        free_mat(&n_member);
+        n_member = n1_member;
+        free_mat(&mem_mat);
         if(fabs(check_max_dif(res_mat,prev_mat)) < EXPONENT_ACCURACY){
             free_mat(&prev_mat);
             //printf("%d",k);

@@ -109,6 +109,7 @@ struct Matrix matrix_sub(const struct Matrix A, const struct Matrix B) {
     return C;
 }
 
+
 struct Matrix matrix_output1(struct Matrix C) {
     printf("Exponent A =\n");
     for (unsigned int row = 0; row < C.rows; row++) {
@@ -133,51 +134,28 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
     return C;
 }
 
-
-void test(){
-    struct Matrix Zero = zero(2,2);
-    struct Matrix One = one(2,2);
-
-    struct Matrix sum = matrix_sum(One,Zero);
-    int result_sum;
-    for (unsigned int idx = 0; idx < sum.cols * sum.rows; idx++){
-
-        if (sum.values[idx] == 1.0){result_sum = 1;}
-    }
-    if (result_sum == 1) {printf("Summ Correct\n");}
-    else printf("Summ Incorrect\n");
-    free(sum.values);
-
-    struct Matrix sub = matrix_sub(Zero,One);
-    int result_sub;
-    for (unsigned int idx = 0; idx < sub.cols * sub.rows; idx++){
-
-        if (sub.values[idx] == -1.0){result_sub = 1;}
-    }
-    if (result_sub == 1) {printf("Sub Correct\n");}
-    else printf("Sub Incorrect\n");
-    free(sub.values);
-
-    struct Matrix mult = matrix_mult(One,Zero);
-    int result_mult;
-    for (unsigned int idx = 0; idx < mult.cols * mult.rows; idx++){
-
-        if (mult.values[idx] == 0.0){result_mult = 1;}
-    }
-    if (result_mult == 1) {printf("Mult Correct\n");}
-    else printf("Mult Incorrect\n");
-    free(mult.values);
+int similar_is(struct Matrix A, struct Matrix B){
+    for (int index = 0; index < A.rows * A.cols; index++){
+            if ((int)(A.values[index] * 1000) != (int)(B.values[index] * 1000)){
+                return 0;
+            }
+        }
+    return 1;
 }
-
 
 struct Matrix matrix_exp (const struct Matrix A) {
     struct Matrix exp1 = one(A.cols, A.rows);
     struct Matrix exp = matrix_sum(exp1,A);
     free(exp1.values);
     int factorial = 1;
-    struct Matrix numerator = A;
+    struct Matrix numerator = matrix_make(A.cols, A.rows);
+    for (unsigned int row = 0; row < A.rows; row++) {
+        for (unsigned int col = 0; col < A.cols; col++) {
+            numerator.values[row * A.cols + col] = A.values[row * A.cols + col];
+        }
+    }
     struct Matrix numerator1;
-    for (int n = 2; n < 4; n++) {
+    for (int n = 2; n < 11; n++) {
         factorial *= n;
         numerator1 = matrix_mult(numerator,A);
         free(numerator.values);
@@ -185,12 +163,71 @@ struct Matrix matrix_exp (const struct Matrix A) {
         for (unsigned int idx = 0; idx < numerator.cols * numerator.rows; idx++){
             numerator.values[idx] /= factorial;
         }
-        exp = matrix_sum(exp,numerator);
+        exp1 = matrix_sum(exp,numerator);
+        free(exp.values);
+        exp = exp1;
         for (unsigned int idx = 0; idx < numerator.cols * numerator.rows; idx++){
             numerator.values[idx] *= factorial;
         }
-    }
+    }free(numerator.values);
     return exp;
+
+}
+void incorrect_case (int a, int b, int c , int d) {
+    if (a == 0) {
+        printf("Sum work incorrectly\n");
+    }
+    if (b == 0) {
+        printf("Substruction work incorrectly\n");
+    }
+    if (c == 0) {
+        printf("Multiplication work incorrectly\n");
+    }
+    if (d == 0) {
+        printf("Matrix exponent work incorrectly\n");
+    }
+}
+void test(){
+    struct Matrix Zero = zero(3,3);
+    struct Matrix One = one(3,3);
+
+    struct Matrix summa = matrix_make(3,3);
+    double arr_summa[] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+    data_input(summa, arr_summa);
+    struct  Matrix sum = matrix_sum(One,Zero);
+    int sum_clk = similar_is(sum, summa);
+    free(summa.values);
+    free(sum.values);
+
+    struct Matrix substruction = matrix_make(3,3);
+    double arr_substruction[] = {-1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -1.0};
+    data_input(substruction, arr_substruction);
+    int sub_clk =similar_is(matrix_sub(Zero,One), substruction);
+    free(substruction.values);
+
+    struct Matrix mult = matrix_make(3,3);
+    double arr_mult[] = {6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 8.0, 7.0, 0.0};
+    data_input(mult, arr_mult);
+    int mult_clk =similar_is(matrix_mult(mult,One),mult);
+    free(mult.values);
+
+    struct Matrix exp = matrix_make(3,3);
+    double arr_exp[] = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
+    data_input(exp, arr_exp);
+    struct Matrix real_exp = matrix_make(3,3);
+    double arr_real_exp[] = {129.411, 128.411, 128.411, 128.411, 129.411, 128.411, 128.411, 128.411, 129.411};
+    data_input(real_exp, arr_real_exp);
+    int exp_clk = similar_is(matrix_exp(exp),real_exp);
+    free(exp.values);
+    free(real_exp.values);
+
+    if (sum_clk * sub_clk * mult_clk * exp_clk == 1){
+        printf("Functions work correctly\n");
+    }
+    else{
+        printf("Functions work incorrectly\n");
+        incorrect_case(sum_clk, sub_clk, mult_clk, exp_clk);
+    }
 }
 
 int main() {
@@ -215,8 +252,12 @@ int main() {
     matrix_output(mult,'*');
     struct Matrix exp = matrix_exp(A);  // матричная экспонента
     matrix_output1(exp);
-
+// освобождение памяти
     free(A.values);
     free(B.values);
+    free(sum.values);
+    free(sub.values);
+    free(mult.values);
+    free(exp.values);
     return 0;
 }
