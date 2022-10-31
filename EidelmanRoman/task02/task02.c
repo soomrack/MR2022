@@ -66,14 +66,55 @@ void subtraction (Matrix A, Matrix B)
     printf("\n");
 }
 
+void multiplication (Matrix A, Matrix B)
+{
+    printf("MULTIPLICATION:\n");
+    Matrix multiplication_matrix = {2, 2, NULL};
+    multiplication_matrix.values = (double**)malloc(multiplication_matrix.rows * sizeof(double*));
+    for (int i = 0; i < multiplication_matrix.rows; i++)
+        multiplication_matrix.values[i] = (double*)malloc(multiplication_matrix.cols * sizeof(double));
+    for (int i = 0; i < multiplication_matrix.rows; i++)
+    {
+        for (int j = 0; j < multiplication_matrix.cols; j++)
+        {
+            for (int k = 0; k < multiplication_matrix.rows; k++)
+            {
+                multiplication_matrix.values[i][j] += A.values[i][k] * B.values[k][j];
+            }
+            printf("%lf ", multiplication_matrix.values[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void transposition (Matrix A, Matrix B)
+{
+    printf("TRANSPOSITION:\n");
+    Matrix copy_matrix = {2, 2, NULL};
+    copy_matrix.values = (double**)malloc(copy_matrix.rows * sizeof(double*));
+    for (int i = 0; i < copy_matrix.rows; i++)
+        copy_matrix.values[i] = (double*)malloc(copy_matrix.cols * sizeof(double));
+    for (int i = 0; i < copy_matrix.rows; i++)
+    {
+        for (int j = 0; j < copy_matrix.cols; j++)
+        {
+            copy_matrix.values[i][j] = A.values[j][i];
+            printf("%lf ", copy_matrix.values[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 void total()
 {
     array_creation(&A);
     array_creation(&B);
     addition(A, B);
     subtraction(A, B);
-    //multiplication();
-
+    multiplication(A, B);
+    transposition(A, B);
 }
 
 int main()
