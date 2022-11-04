@@ -1,7 +1,9 @@
 #include <iostream>
 #include <cmath>
 
+
 #define EPSILON 0.0001
+
 
 class Matrix {
 private:
@@ -17,14 +19,21 @@ public:
     Matrix(Matrix const &matrix);
     void output() const;
     void filling(double number) const;
+    int filling(double const array[]) const;
 
     //Matrix operator = (double i);
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
     Matrix operator + (double number) const;
     Matrix operator - (Matrix matrix) const;
-    Matrix operator - (double number) const;
+    Matrix operator * (Matrix matrix) const;
 };
+
+
+/*unsigned int len(double array[]) {
+    printf("%lu\n", std::begin(array));
+    printf("%lu\n", std::end(array));
+}*/
 
 
 Matrix::Matrix(int input_rows, int input_cols) {
@@ -77,6 +86,13 @@ void Matrix::filling(double number) const {
 }
 
 
+int Matrix::filling(double const array[]) const {
+    for (int cell = 0; cell < size; cell++)
+        start[cell] = array[cell];
+    return NAN;
+}
+
+
 /*Matrix Matrix::operator = (double i) {
 
 }*/
@@ -119,15 +135,19 @@ Matrix Matrix::operator - (Matrix const matrix) const {
 }
 
 
-Matrix Matrix::operator - (double number) const {
-    Matrix sum_matrix(2,2);
-    for (int cell = 0; cell < size; cell++)
-        sum_matrix.start[cell] = start[cell] - number;
-    return sum_matrix;
+Matrix Matrix::operator * (Matrix const matrix) const {
+    Matrix multiplied_matrix(cols, matrix.rows);
+    for(int row = 0; row < multiplied_matrix.rows; row++)
+        for(int col = 0; col < multiplied_matrix.cols; col++) {
+            multiplied_matrix.values[row][col] = 0;
+            for (int k = 0; k < cols; k++)
+                multiplied_matrix.values[row][col] += values[row][k] * matrix.values[k][col];
+        }
+    return multiplied_matrix;
 }
 
 
-void arrays_compare(double true_array[], Matrix matrix, std::string text) {
+void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " check:\n";
     for (int cell = 0; cell < matrix.size; cell++) {
@@ -148,19 +168,40 @@ void test() {
     res_matrix.filling(NAN);
 
     Matrix matrix1(2,2);
-    matrix1.filling(2);
+    double array1[] = {2, 8, 1, 3};
+    matrix1.filling(array1);
 
     Matrix matrix2(2,2);
-    matrix2.filling(-2);
+    double array2[] = {4, 9, 21, 13};
+    matrix2.filling(array2);
 
     //проверка перегрузки =
     res_matrix = matrix1;
-    double eq_true_array[] = {2, 2, 2, 2};
-    arrays_compare(eq_true_array, res_matrix, "= overload");
+    double eq_true_array[] = {2, 8, 1, 3};
+    calculation_check(eq_true_array, res_matrix, "= overload");
 
-
-    //проверка перегрузки +
+    //проверка перегрузки + (matrix)
     res_matrix = matrix1 + matrix2;
+    double sum_true_array[] = {6, 17, 22, 16};
+    calculation_check(sum_true_array, res_matrix, "+ overload (matrix)");
+
+    //проверка перегрузки + (number)
+    res_matrix = matrix1 + 2;
+    double snum_true_array[] = {4, 10, 3, 5};
+    calculation_check(snum_true_array, res_matrix, "+ overload (number)");
+
+    //проверка перегрузки -
+    res_matrix = matrix1 - matrix2;
+    double sub_true_array[] = {-2, -1, -20, -10};
+    calculation_check(sub_true_array, res_matrix, "- overload");
+
+    //проверка перегрузки *
+    res_matrix = matrix1 * matrix2;
+    double multi_true_array[] = {176, 122, 67, 48};
+    calculation_check(multi_true_array, res_matrix, "* overload");
+
+
+
 }
 
 
