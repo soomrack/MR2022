@@ -29,6 +29,7 @@ public:
     Matrix operator * (double number) const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
+    Matrix transposition() const;
 };
 
 
@@ -193,6 +194,17 @@ double Matrix::determinant() const{
 }
 
 
+Matrix Matrix::transposition() const {
+    int new_rows = cols;
+    int new_cols = rows;
+    Matrix transposed_matrix(new_rows, new_cols);
+    for(int row = 0; row < transposed_matrix.rows; row++)
+        for(int col = 0; col < transposed_matrix.cols; col++)
+            transposed_matrix.values[row][col] = values[col][row];
+    return transposed_matrix;
+}
+
+
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
@@ -257,6 +269,11 @@ void test() {
     double determinant = matrix1.determinant();
     det_matrix.filling(determinant);
     calculation_check(determinant_true_array, det_matrix, "determinant");
+
+    //transposition test
+    double transp_true_array[] = {2, 1, 8, 3};
+    res_matrix = matrix1.transposition();
+    calculation_check(transp_true_array, res_matrix, "transposition");
 
 }
 
