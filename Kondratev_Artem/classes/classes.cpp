@@ -9,19 +9,22 @@ class Matrix {
 private:
     unsigned int rows;
     unsigned int cols;
-public:
     unsigned int size;
+public:
     double **values;
     double *start;
 
     Matrix(unsigned int input_rows, unsigned int input_cols);
     Matrix(unsigned int input_rows, unsigned int input_cols, double number);  //  number filled matrix
     explicit Matrix(unsigned int row_num);  //  identity matrix
+    Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
+    unsigned int out_rows() const;
+    unsigned int out_cols() const;
+    unsigned int out_size() const;
+    static Matrix error();
     void output() const;
-    int filling(double const array[]) const;
-    //Matrix operator = (double i);
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
     Matrix operator + (double number) const;
@@ -35,20 +38,14 @@ public:
     Matrix inversion() const;
     Matrix operator / (Matrix matrix) const;
     Matrix operator / (double number) const;
-    static Matrix power(Matrix matrix,int power);
+    Matrix power(int power) const;
     static Matrix exp(Matrix matrix);
 };
 
 
-/*unsigned int len(double array[]) {
-    printf("%lu\n", std::begin(array));
-    printf("%lu\n", std::end(array));
-}*/
-
-
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
-    rows = input_rows;
-    cols = input_cols;
+    rows = (input_rows > 0) ? input_rows : 0;
+    cols = (input_cols > 0) ? input_cols : 0;
     size = rows * cols;
     values = new double *[rows];
     start = new double [size];
@@ -58,8 +55,8 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
 
 
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double number) {
-    rows = input_rows;
-    cols = input_cols;
+    rows = (input_rows > 0) ? input_rows : 0;
+    cols = (input_cols > 0) ? input_cols : 0;
     size = rows * cols;
     values = new double *[rows];
     start = new double [size];
@@ -70,9 +67,26 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double number) 
 }
 
 
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]) {
+    rows = (input_rows > 0) ? input_rows : 0;
+    cols = (input_cols > 0) ? input_cols : 0;
+    size = rows * cols;
+    values = new double *[rows];
+    start = new double [size];
+    for (int row = 0; row < rows; row++)
+        values[row] = start + row * cols;
+    for (int cell = 0; cell < size; cell++)
+        start[cell] = array[cell];
+
+
+    for (int cell = 0; cell < size; cell++)
+        start[cell] = array[cell];
+}
+
+
 Matrix::Matrix(unsigned int row_num) {
-    rows = row_num;
-    cols = row_num;
+    rows = (row_num > 0) ? row_num : 0;
+    cols = rows;
     size = rows * cols;
     values = new double *[rows];
     start = new double [size];
@@ -106,6 +120,27 @@ Matrix::Matrix(Matrix const &matrix) {
 }
 
 
+unsigned int Matrix::out_rows() const {
+    return rows;
+}
+
+
+unsigned int Matrix::out_cols() const {
+    return cols;
+}
+
+
+unsigned int Matrix::out_size() const {
+    return size;
+}
+
+
+Matrix Matrix::error() {
+    Matrix error(0,0);
+    return error;
+}
+
+
 void Matrix::output() const {
 
     for (int row = 0; row < rows; row++) {
@@ -117,19 +152,7 @@ void Matrix::output() const {
 }
 
 
-int Matrix::filling(double const array[]) const {
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = array[cell];
-    return NAN;
-}
-
-
-/*Matrix Matrix::operator = (double i) {
-
-}*/
-
-
-Matrix &Matrix::operator = (Matrix const &matrix) {
+Matrix &Matrix::operator = (Matrix const &matrix) {///####################################################
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
@@ -143,6 +166,9 @@ Matrix &Matrix::operator = (Matrix const &matrix) {
 
 
 Matrix Matrix::operator + (Matrix const matrix) const {
+    if(rows != matrix.rows || cols != matrix.cols) {
+        return error();
+    }
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + matrix.start[cell];
@@ -159,6 +185,9 @@ Matrix Matrix::operator + (double number) const {
 
 
 Matrix Matrix::operator - (Matrix const matrix) const {
+    if(rows != matrix.rows || cols != matrix.cols) {
+        return error();
+    }
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];
@@ -167,6 +196,9 @@ Matrix Matrix::operator - (Matrix const matrix) const {
 
 
 Matrix Matrix::operator * (Matrix const matrix) const {
+    if (cols != matrix.rows) {
+        return error();
+    }
     Matrix multiplied_matrix(cols, matrix.rows);
     for(int row = 0; row < multiplied_matrix.rows; row++)
         for(int col = 0; col < multiplied_matrix.cols; col++) {
@@ -187,6 +219,9 @@ Matrix Matrix::operator * (double number) const {
 
 
 Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
+    if (crossed_row < 0 || crossed_col < 0) {
+        return error();
+    }
     Matrix minor(rows-1, cols-1);
     int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {
@@ -233,7 +268,10 @@ Matrix Matrix::transposition() const {
 }
 
 
-Matrix Matrix::minor_transformation(Matrix matrix) { //////////////////////////////////////////////////////////////////////
+Matrix Matrix::minor_transformation(Matrix matrix) {
+    if (matrix.rows != matrix.cols) {
+        return error();
+    }
     Matrix inverse_added_matrix(matrix.rows, matrix.cols);
     if(matrix.rows == 1) {
         inverse_added_matrix = matrix;
@@ -250,9 +288,11 @@ Matrix Matrix::minor_transformation(Matrix matrix) { ///////////////////////////
 }
 
 
-Matrix Matrix::inversion() const {////////////////////////////////////////////////////////////////////////////////////////////////////
+Matrix Matrix::inversion() const {
+    if (rows != cols || std::abs(this->determinant()) < EPSILON) {
+        return error();
+    }
     double determinant = this->determinant();
-
     double inv_det = 1 / determinant;
     Matrix transformed_matrix = minor_transformation(this->transposition());
     Matrix inverse_matrix = transformed_matrix * inv_det;
@@ -260,7 +300,10 @@ Matrix Matrix::inversion() const {//////////////////////////////////////////////
 }
 
 
-Matrix Matrix::operator / (Matrix matrix) const {///////////////////////////////////////////////////////////////////////////////////
+Matrix Matrix::operator / (Matrix matrix) const {
+    if (matrix.rows != matrix.cols || std::abs(matrix.determinant()) < EPSILON) {
+        return error();
+    }
     Matrix inverse_matrix = matrix.inversion();
     Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
     for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
@@ -273,7 +316,7 @@ Matrix Matrix::operator / (Matrix matrix) const {///////////////////////////////
 }
 
 
-Matrix Matrix::operator / (double number) const {
+Matrix Matrix::operator / (double number) const {/////////////////////////////////////////////////////////////
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
         operated_matrix.start[cell] = start[cell] / number;
@@ -281,28 +324,31 @@ Matrix Matrix::operator / (double number) const {
 }
 
 
-Matrix Matrix::power(Matrix matrix, int power) {/////////////////////////////////////////////////////
-    Matrix powered_matrix = matrix;
+Matrix Matrix::power(int power) const {
+    Matrix matrix(rows, cols);
+    for (int cell = 0; cell < size; cell++)
+        matrix.start[cell] = this->start[cell];
+
     if (power == 0) {
         Matrix identity_matrix(matrix.rows);
         return identity_matrix;
     }
     if (power == 1) {
-        return powered_matrix;
+        return matrix;
     }
     if (power > 1) {
+        Matrix powered_matrix = matrix;
         for (int k = 1; k < power; k++) {
             powered_matrix = powered_matrix * matrix;
         }
         return powered_matrix;
     }
-    Matrix inverse_matrix = powered_matrix.inversion();
-    Matrix start_matrix = powered_matrix.inversion();
+    Matrix inverse_matrix = matrix.inversion();
+    Matrix start_matrix = matrix.inversion();
     for (int k = 1; k < -power; k++) {
         inverse_matrix = inverse_matrix * start_matrix;
     }
     return inverse_matrix;
-
 }
 
 
@@ -311,7 +357,7 @@ Matrix Matrix::exp(Matrix matrix) {
     int factorial = 1;
     for(int s = 1; s < 17; s++) {
         factorial *= s;
-        exp_matrix = exp_matrix + Matrix::power(matrix, s) / factorial;
+        exp_matrix = exp_matrix + matrix.power(s) / factorial;
     }
     return exp_matrix;
 }
@@ -320,7 +366,7 @@ Matrix Matrix::exp(Matrix matrix) {
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
-    for (int cell = 0; cell < matrix.size; cell++) {
+    for (int cell = 0; cell < matrix.out_size(); cell++) {
         int cell_flag = 0;
         if (std::abs(true_array[cell] - matrix.start[cell]) > EPSILON) {
             cell_flag = 1;
@@ -336,13 +382,11 @@ void calculation_check(double true_array[], Matrix matrix, std::string text) {
 void test() {
     Matrix res_matrix(2, 2, NAN);
 
-    Matrix matrix1(2,2);
     double array1[] = {2, 8, 1, 3};
-    matrix1.filling(array1);
+    Matrix matrix1(2,2, array1);
 
-    Matrix matrix2(2,2);
     double array2[] = {4, 9, 21, 13};
-    matrix2.filling(array2);
+    Matrix matrix2(2,2, array2);
 
     //  = overload test
     res_matrix = matrix1;
@@ -398,23 +442,22 @@ void test() {
 
     //  power 0 test
     double pow0_true_array[] = {1, 0, 0, 1};
-    res_matrix = Matrix::power(matrix1, 0);
+    res_matrix = matrix1.power(0);
     calculation_check(pow0_true_array, res_matrix, "power 0");
 
     //  power 3 test
     double pow3_true_array[] = {64, 216, 27, 91};
-    res_matrix = Matrix::power(matrix1, 3);
+    res_matrix = matrix1.power(3);
     calculation_check(pow3_true_array, res_matrix, "power 3");
 
     //  power -4 test
     double pow4_true_array[] = {30.5625, -72.5, -9.0625, 21.5};
-    res_matrix = Matrix::power(matrix1, -4);
+    res_matrix = matrix1.power(-4);
     calculation_check(pow4_true_array, res_matrix, "power -4");
 
     //  exp test
-    Matrix matrix3(2, 2);
     double array3[] = {2, 2, 2, 2};
-    matrix3.filling(array3);
+    Matrix matrix3(2, 2, array3);
     double exp_true_array[] = {29.2533, 28.2533, 28.2533, 29.2533};
     res_matrix = Matrix::exp(matrix3);
     calculation_check(exp_true_array, res_matrix, "Matrix exp");
