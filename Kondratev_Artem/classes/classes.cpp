@@ -34,7 +34,9 @@ public:
     static Matrix minor_transformation(Matrix matrix);
     Matrix inversion() const;
     Matrix operator / (Matrix matrix) const;
+    Matrix operator / (double number) const;
     static Matrix power(Matrix matrix,int power);
+    static Matrix exp(Matrix matrix);
 };
 
 
@@ -271,6 +273,14 @@ Matrix Matrix::operator / (Matrix matrix) const {///////////////////////////////
 }
 
 
+Matrix Matrix::operator / (double number) const {
+    Matrix operated_matrix(rows, cols);
+    for(int cell = 0; cell < size; cell++)
+        operated_matrix.start[cell] = start[cell] / number;
+    return operated_matrix;
+}
+
+
 Matrix Matrix::power(Matrix matrix, int power) {/////////////////////////////////////////////////////
     Matrix powered_matrix = matrix;
     if (power == 0) {
@@ -293,6 +303,17 @@ Matrix Matrix::power(Matrix matrix, int power) {////////////////////////////////
     }
     return inverse_matrix;
 
+}
+
+
+Matrix Matrix::exp(Matrix matrix) {
+    Matrix exp_matrix(matrix.rows);
+    int factorial = 1;
+    for(int s = 1; s < 17; s++) {
+        factorial *= s;
+        exp_matrix = exp_matrix + Matrix::power(matrix, s) / factorial;
+    }
+    return exp_matrix;
 }
 
 
@@ -390,6 +411,13 @@ void test() {
     res_matrix = Matrix::power(matrix1, -4);
     calculation_check(pow4_true_array, res_matrix, "power -4");
 
+    //  exp test
+    Matrix matrix3(2, 2);
+    double array3[] = {2, 2, 2, 2};
+    matrix3.filling(array3);
+    double exp_true_array[] = {29.2533, 28.2533, 28.2533, 29.2533};
+    res_matrix = Matrix::exp(matrix3);
+    calculation_check(exp_true_array, res_matrix, "Matrix exp");
 }
 
 
