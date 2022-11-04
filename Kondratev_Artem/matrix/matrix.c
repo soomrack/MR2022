@@ -151,7 +151,7 @@ double recursive_determinant(Matrix matrix) {
     if(matrix.rows != matrix.cols) {
         return NAN;
     }
-    double determinant = NAN;
+    double determinant = 0;
     if(matrix.rows == 1) {
         determinant = matrix.values[0][0];
         return determinant;

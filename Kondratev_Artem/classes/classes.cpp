@@ -20,13 +20,14 @@ public:
     void output() const;
     void filling(double number) const;
     int filling(double const array[]) const;
-
     //Matrix operator = (double i);
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
     Matrix operator + (double number) const;
     Matrix operator - (Matrix matrix) const;
     Matrix operator * (Matrix matrix) const;
+    Matrix minor_init(int crossed_row, int crossed_col) const;
+    double determinant() const;
 };
 
 
@@ -147,12 +148,48 @@ Matrix Matrix::operator * (Matrix const matrix) const {
 }
 
 
+Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
+    Matrix minor(rows-1, cols-1);
+    int row_link = 0;
+    for(int i = 0; i < minor.rows; i++) {
+        if(crossed_row == i)
+            row_link += 1;
+        int col_link = 0;
+        for (int j = 0; j < minor.cols; j++) {
+            if(j == crossed_col)
+                col_link += 1;
+            minor.values[i][j] = values[i + row_link][j + col_link];
+        }
+    }
+    return minor;
+}
+
+
+double Matrix::determinant() const{
+    if(rows != cols) {
+        return NAN;
+    }
+    double determinant = 0;
+    if(rows == 1) {
+        determinant = values[0][0];
+        return determinant;
+    }
+    int k = 1;
+    for(int col = 0; col < cols; col++) {
+        Matrix minor = minor_init(0, col);
+        determinant += k * values[0][col] * minor.determinant();
+        k = -k;
+    }
+    return determinant;
+}
+
+
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " check:\n";
     for (int cell = 0; cell < matrix.size; cell++) {
         int cell_flag = 0;
-        if (std::abs(true_array[cell] - matrix.start[cell]) > EPSILON) {
+        if (std::abs(true_array[cell] - matrix.start[cell]) > EPSILON || matrix.start[cell] == NAN) {
             cell_flag = 1;
             error_flag += 1;
         }
@@ -175,32 +212,37 @@ void test() {
     double array2[] = {4, 9, 21, 13};
     matrix2.filling(array2);
 
-    //проверка перегрузки =
+    //overload =
     res_matrix = matrix1;
     double eq_true_array[] = {2, 8, 1, 3};
-    calculation_check(eq_true_array, res_matrix, "= overload");
+    calculation_check(eq_true_array, res_matrix, "overload =");
 
-    //проверка перегрузки + (matrix)
+    //addition check (matrix)
     res_matrix = matrix1 + matrix2;
     double sum_true_array[] = {6, 17, 22, 16};
-    calculation_check(sum_true_array, res_matrix, "+ overload (matrix)");
+    calculation_check(sum_true_array, res_matrix, "addition check (matrix)");
 
-    //проверка перегрузки + (number)
+    //addition check (number)
     res_matrix = matrix1 + 2;
     double snum_true_array[] = {4, 10, 3, 5};
-    calculation_check(snum_true_array, res_matrix, "+ overload (number)");
+    calculation_check(snum_true_array, res_matrix, "addition check (number)");
 
-    //проверка перегрузки -
+    //subtraction check
     res_matrix = matrix1 - matrix2;
     double sub_true_array[] = {-2, -1, -20, -10};
-    calculation_check(sub_true_array, res_matrix, "- overload");
+    calculation_check(sub_true_array, res_matrix, "subtraction check");
 
-    //проверка перегрузки *
+    //multiplication check
     res_matrix = matrix1 * matrix2;
     double multi_true_array[] = {176, 122, 67, 48};
-    calculation_check(multi_true_array, res_matrix, "* overload");
+    calculation_check(multi_true_array, res_matrix, "multiplication check");
 
-
+    //determinant check
+    double determinant_true_array[] = {-2};
+    Matrix det_matrix(1, 1);
+    double determinant = matrix1.determinant();
+    det_matrix.filling(determinant);
+    calculation_check(determinant_true_array, det_matrix, "determinant check");
 
 }
 
