@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cmath>
 
+#define EPSILON 0.0001
 
 class Matrix {
 private:
@@ -125,25 +127,44 @@ Matrix Matrix::operator - (double number) const {
 }
 
 
+void arrays_compare(double true_array[], Matrix matrix, std::string text) {
+    int error_flag = 0;
+    std::cout << text << " check:\n";
+    for (int cell = 0; cell < matrix.size; cell++) {
+        int cell_flag = 0;
+        if (std::abs(true_array[cell] - matrix.start[cell]) > EPSILON) {
+            cell_flag = 1;
+            error_flag += 1;
+        }
+        std::cout << "true: " << true_array[cell] << " res: " << matrix.start[cell] << " | " << cell_flag << "\n";
+    }
+    std::cout << "Errors: " << error_flag << "\n";
+    std::cout << "\n";
+}
+
+
+void test() {
+    Matrix res_matrix(2, 2);
+    res_matrix.filling(NAN);
+
+    Matrix matrix1(2,2);
+    matrix1.filling(2);
+
+    Matrix matrix2(2,2);
+    matrix2.filling(-2);
+
+    //проверка перегрузки =
+    res_matrix = matrix1;
+    double eq_true_array[] = {2, 2, 2, 2};
+    arrays_compare(eq_true_array, res_matrix, "= overload");
+
+
+    //проверка перегрузки +
+    res_matrix = matrix1 + matrix2;
+}
+
+
 int main() {
-
-    Matrix A(2,2);
-    A.filling(2);
-    A.output();
-
-    Matrix C(2,2);
-    C.filling(4);
-    C.output();
-
-
-    Matrix K = C + A;
-    K.output();
-
-    K = A - C;
-    K.output();
-
-    K = A + 10;
-    K.output();
-
+    test();
     return 0;
 }
