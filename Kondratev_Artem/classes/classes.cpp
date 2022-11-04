@@ -31,6 +31,7 @@ public:
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
     Matrix transposition() const;
+    static Matrix minor_transformation(Matrix matrix);
 };
 
 
@@ -224,6 +225,23 @@ Matrix Matrix::transposition() const {
         for(int col = 0; col < transposed_matrix.cols; col++)
             transposed_matrix.values[row][col] = values[col][row];
     return transposed_matrix;
+}
+
+
+Matrix Matrix::minor_transformation(Matrix matrix) { //////////////////////////////////////////////////////////////////////
+    Matrix inverse_added_matrix(matrix.rows, matrix.cols);
+    if(matrix.rows == 1) {
+        inverse_added_matrix = matrix;
+        return inverse_added_matrix;
+    }
+    for(int row = 0; row < matrix.rows; row++) {
+        for(int col = 0; col < matrix.cols; col++) {
+            Matrix minor = matrix.minor_init(row, col);
+            int k = ((row + col) % 2 == 0) ? 1 : -1;
+            inverse_added_matrix.values[row][col] = k * minor.determinant();
+        }
+    }
+    return inverse_added_matrix;
 }
 
 
