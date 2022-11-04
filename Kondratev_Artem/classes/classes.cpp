@@ -33,6 +33,7 @@ public:
     Matrix transposition() const;
     static Matrix minor_transformation(Matrix matrix);
     Matrix inversion() const;
+    Matrix operator / (Matrix matrix) const;
 };
 
 
@@ -256,6 +257,19 @@ Matrix Matrix::inversion() const {//////////////////////////////////////////////
 }
 
 
+Matrix Matrix::operator / (Matrix matrix) const {///////////////////////////////////////////////////////////////////////////////////
+    Matrix inverse_matrix = matrix.inversion();
+    Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
+    for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
+        for(int col = 0; col < inverse_multiplied_matrix.cols; col++) {
+            inverse_multiplied_matrix.values[row][col] = 0;
+            for (int k = 0; k < cols; k++)
+                inverse_multiplied_matrix.values[row][col] += values[row][k] * inverse_matrix.values[k][col];
+        }
+    return inverse_multiplied_matrix;
+}
+
+
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
@@ -283,52 +297,62 @@ void test() {
     double array2[] = {4, 9, 21, 13};
     matrix2.filling(array2);
 
-    //= overload test
+    //  = overload test
     res_matrix = matrix1;
     double eq_true_array[] = {2, 8, 1, 3};
     calculation_check(eq_true_array, res_matrix, "= overload");
 
-    //addition test (matrix)
+    //  addition test (matrix)
     res_matrix = matrix1 + matrix2;
     double sum_true_array[] = {6, 17, 22, 16};
     calculation_check(sum_true_array, res_matrix, "addition (matrix)");
 
-    //addition test (number)
+    //  addition test (number)
     res_matrix = matrix1 + 2;
     double snum_true_array[] = {4, 10, 3, 5};
     calculation_check(snum_true_array, res_matrix, "addition (number)");
 
-    //subtraction test
+    //  subtraction test
     res_matrix = matrix1 - matrix2;
     double sub_true_array[] = {-2, -1, -20, -10};
     calculation_check(sub_true_array, res_matrix, "subtraction");
 
-    //multiplication test
+    //  multiplication test
     res_matrix = matrix1 * matrix2;
     double multi_true_array[] = {176, 122, 67, 48};
     calculation_check(multi_true_array, res_matrix, "multiplication (matrix)");
 
-    //multiplication test (number)
+    //  multiplication test (number)
     res_matrix = matrix1 * 2;
     double mnum_true_array[] = {4, 16, 2, 6};
     calculation_check(mnum_true_array, res_matrix, "multiplication (number)");
 
-    //determinant test
+    //  determinant test
     double determinant_true_array[] = {-2};
 
     double determinant = matrix1.determinant();
     Matrix det_matrix(1, 1, determinant);
     calculation_check(determinant_true_array, det_matrix, "determinant");
 
-    //transposition test
+    //  transposition test
     double transp_true_array[] = {2, 1, 8, 3};
     res_matrix = matrix1.transposition();
     calculation_check(transp_true_array, res_matrix, "transposition");
+
+    //  inversion test
+    double inv_true_array[] = {-1.5, 4, 0.5, -1};
+    res_matrix = matrix1.inversion();
+    calculation_check(inv_true_array, res_matrix, "inversion");
+
+    //  inverse multiplication test
+    double inv_multi_true_array[] = {1.0365, -0.1022, 0.3650, -0.0219};
+    res_matrix = matrix1 / matrix2;
+    calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
 
 }
 
 
 int main() {
-    //test();
+    test();
     return 0;
 }
