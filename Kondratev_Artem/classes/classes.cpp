@@ -32,6 +32,7 @@ public:
     double determinant() const;
     Matrix transposition() const;
     static Matrix minor_transformation(Matrix matrix);
+    Matrix inversion() const;
 };
 
 
@@ -242,6 +243,16 @@ Matrix Matrix::minor_transformation(Matrix matrix) { ///////////////////////////
         }
     }
     return inverse_added_matrix;
+}
+
+
+Matrix Matrix::inversion() const {////////////////////////////////////////////////////////////////////////////////////////////////////
+    double determinant = this->determinant();
+
+    double inv_det = 1 / determinant;
+    Matrix transformed_matrix = minor_transformation(this->transposition());
+    Matrix inverse_matrix = transformed_matrix * inv_det;
+    return inverse_matrix;
 }
 
 
