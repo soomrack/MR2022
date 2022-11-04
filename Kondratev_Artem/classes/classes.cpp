@@ -20,24 +20,26 @@ public:
     Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
-    unsigned int out_rows() const;
-    unsigned int out_cols() const;
-    unsigned int out_size() const;
-    static Matrix error();
-    void output() const;
+    Matrix(Matrix const &&matrix) noexcept;
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
     Matrix operator + (double number) const;
     Matrix operator - (Matrix matrix) const;
     Matrix operator * (Matrix matrix) const;
     Matrix operator * (double number) const;
+    Matrix operator / (Matrix matrix) const;
+    Matrix operator / (double number) const;
+    unsigned int out_rows() const;
+    unsigned int out_cols() const;
+    unsigned int out_size() const;
+    static Matrix error();
+    void output() const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
     Matrix transposition() const;
     static Matrix minor_transformation(Matrix matrix);
     Matrix inversion() const;
-    Matrix operator / (Matrix matrix) const;
-    Matrix operator / (double number) const;
+
     Matrix power(int power) const;
     static Matrix exp(Matrix matrix);
 };
@@ -117,6 +119,15 @@ Matrix::Matrix(Matrix const &matrix) {
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
         start[cell] = matrix.start[cell];
+}
+
+
+Matrix::Matrix(Matrix const &&matrix)  noexcept {
+    rows = matrix.rows;
+    cols = matrix.cols;
+    size = matrix.size;
+    values = matrix.values;
+    start = matrix.start;
 }
 
 
