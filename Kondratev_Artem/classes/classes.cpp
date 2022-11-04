@@ -19,6 +19,7 @@ public:
     //Matrix operator = (double i);
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
+    Matrix operator - (Matrix matrix) const;
 };
 
 
@@ -98,6 +99,14 @@ Matrix Matrix::operator + (Matrix const matrix) const {
 }
 
 
+Matrix Matrix::operator - (Matrix const matrix) const {
+    Matrix sum_matrix(2,2);
+    for (int cell = 0; cell < size; cell++)
+        sum_matrix.start[cell] = start[cell] - matrix.start[cell];
+    return sum_matrix;
+}
+
+
 int main() {
 
     Matrix A(2,2);
@@ -110,6 +119,9 @@ int main() {
 
 
     Matrix K = C + A;
+    K.output();
+
+    K = A - C;
     K.output();
 
     return 0;
