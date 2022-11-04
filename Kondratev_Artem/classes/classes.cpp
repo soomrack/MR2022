@@ -7,18 +7,19 @@
 
 class Matrix {
 private:
-    int rows;
-    int cols;
+    unsigned int rows;
+    unsigned int cols;
 public:
-    int size;
+    unsigned int size;
     double **values;
     double *start;
 
-    Matrix(int input_rows, int input_cols);
+    Matrix(unsigned int input_rows, unsigned int input_cols);
+    Matrix(unsigned int input_rows, unsigned int input_cols, double number);  //  number filled matrix
+    explicit Matrix(unsigned int row_num);  //  identity matrix
     ~Matrix();
     Matrix(Matrix const &matrix);
     void output() const;
-    void filling(double number) const;
     int filling(double const array[]) const;
     //Matrix operator = (double i);
     Matrix &operator = (Matrix const &matrix);
@@ -39,7 +40,7 @@ public:
 }*/
 
 
-Matrix::Matrix(int input_rows, int input_cols) {
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -47,6 +48,33 @@ Matrix::Matrix(int input_rows, int input_cols) {
     start = new double [size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
+}
+
+
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double number) {
+    rows = input_rows;
+    cols = input_cols;
+    size = rows * cols;
+    values = new double *[rows];
+    start = new double [size];
+    for (int row = 0; row < rows; row++)
+        values[row] = start + row * cols;
+    for (int cell = 0; cell < size; cell++)
+        start[cell] = number;
+}
+
+
+Matrix::Matrix(unsigned int row_num) {
+    rows = row_num;
+    cols = row_num;
+    size = rows * cols;
+    values = new double *[rows];
+    start = new double [size];
+    for (int row = 0; row < rows; row++)
+        values[row] = start + row * cols;
+    for (int row = 0; row < rows; row++)
+        for (int col = 0; col < cols; col++)
+            values[row][col] = (row == col) ? 1 : 0;
 }
 
 
@@ -80,12 +108,6 @@ void Matrix::output() const {
         std::cout << "\n";
     }
     std::cout << "\n";
-}
-
-
-void Matrix::filling(double number) const {
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = number;
 }
 
 
@@ -195,8 +217,8 @@ double Matrix::determinant() const{
 
 
 Matrix Matrix::transposition() const {
-    int new_rows = cols;
-    int new_cols = rows;
+    unsigned int new_rows = cols;
+    unsigned int new_cols = rows;
     Matrix transposed_matrix(new_rows, new_cols);
     for(int row = 0; row < transposed_matrix.rows; row++)
         for(int col = 0; col < transposed_matrix.cols; col++)
@@ -222,8 +244,7 @@ void calculation_check(double true_array[], Matrix matrix, std::string text) {
 
 
 void test() {
-    Matrix res_matrix(2, 2);
-    res_matrix.filling(NAN);
+    Matrix res_matrix(2, 2, NAN);
 
     Matrix matrix1(2,2);
     double array1[] = {2, 8, 1, 3};
@@ -265,9 +286,9 @@ void test() {
 
     //determinant test
     double determinant_true_array[] = {-2};
-    Matrix det_matrix(1, 1);
+
     double determinant = matrix1.determinant();
-    det_matrix.filling(determinant);
+    Matrix det_matrix(1, 1, determinant);
     calculation_check(determinant_true_array, det_matrix, "determinant");
 
     //transposition test
@@ -279,6 +300,6 @@ void test() {
 
 
 int main() {
-    test();
+    //test();
     return 0;
 }
