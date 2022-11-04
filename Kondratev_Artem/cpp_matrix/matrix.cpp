@@ -20,7 +20,8 @@ public:
     Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
-    Matrix(Matrix const &&matrix) noexcept;
+    //Matrix(Matrix const &&matrix) noexcept;
+
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
     Matrix operator + (double number) const;
@@ -29,6 +30,7 @@ public:
     Matrix operator * (double number) const;
     Matrix operator / (Matrix matrix) const;
     Matrix operator / (double number) const;
+
     unsigned int out_rows() const;
     unsigned int out_cols() const;
     unsigned int out_size() const;
@@ -39,7 +41,6 @@ public:
     Matrix transposition() const;
     static Matrix minor_transformation(Matrix matrix);
     Matrix inversion() const;
-
     Matrix power(int power) const;
     static Matrix exp(Matrix matrix);
 };
@@ -122,13 +123,13 @@ Matrix::Matrix(Matrix const &matrix) {
 }
 
 
-Matrix::Matrix(Matrix const &&matrix)  noexcept {
+/*Matrix::Matrix(Matrix const &&matrix)  noexcept {
     rows = matrix.rows;
     cols = matrix.cols;
     size = matrix.size;
     values = matrix.values;
     start = matrix.start;
-}
+}*/
 
 
 unsigned int Matrix::out_rows() const {
@@ -391,7 +392,7 @@ void calculation_check(double true_array[], Matrix matrix, std::string text) {
 
 
 void test() {
-    Matrix res_matrix(2, 2, NAN);
+    Matrix res_matrix(2, 2, 0.0);
 
     double array1[] = {2, 8, 1, 3};
     Matrix matrix1(2,2, array1);
