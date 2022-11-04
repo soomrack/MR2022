@@ -34,6 +34,7 @@ public:
     static Matrix minor_transformation(Matrix matrix);
     Matrix inversion() const;
     Matrix operator / (Matrix matrix) const;
+    static Matrix power(Matrix matrix,int power);
 };
 
 
@@ -270,6 +271,31 @@ Matrix Matrix::operator / (Matrix matrix) const {///////////////////////////////
 }
 
 
+Matrix Matrix::power(Matrix matrix, int power) {/////////////////////////////////////////////////////
+    Matrix powered_matrix = matrix;
+    if (power == 0) {
+        Matrix identity_matrix(matrix.rows);
+        return identity_matrix;
+    }
+    if (power == 1) {
+        return powered_matrix;
+    }
+    if (power > 1) {
+        for (int k = 1; k < power; k++) {
+            powered_matrix = powered_matrix * matrix;
+        }
+        return powered_matrix;
+    }
+    Matrix inverse_matrix = powered_matrix.inversion();
+    Matrix start_matrix = powered_matrix.inversion();
+    for (int k = 1; k < -power; k++) {
+        inverse_matrix = inverse_matrix * start_matrix;
+    }
+    return inverse_matrix;
+
+}
+
+
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
@@ -348,6 +374,21 @@ void test() {
     double inv_multi_true_array[] = {1.0365, -0.1022, 0.3650, -0.0219};
     res_matrix = matrix1 / matrix2;
     calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
+
+    //  power 0 test
+    double pow0_true_array[] = {1, 0, 0, 1};
+    res_matrix = Matrix::power(matrix1, 0);
+    calculation_check(pow0_true_array, res_matrix, "power 0");
+
+    //  power 3 test
+    double pow3_true_array[] = {64, 216, 27, 91};
+    res_matrix = Matrix::power(matrix1, 3);
+    calculation_check(pow3_true_array, res_matrix, "power 3");
+
+    //  power -4 test
+    double pow4_true_array[] = {30.5625, -72.5, -9.0625, 21.5};
+    res_matrix = Matrix::power(matrix1, -4);
+    calculation_check(pow4_true_array, res_matrix, "power -4");
 
 }
 
