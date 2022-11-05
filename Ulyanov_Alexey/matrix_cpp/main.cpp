@@ -53,6 +53,7 @@ Matrix sub(const Matrix x, const Matrix y);
 Matrix multiplication(const Matrix x, const Matrix y);
 Matrix multy_k(const Matrix x, const double k);
 Matrix pow(const Matrix x, const unsigned int n);
+Matrix exponent(const Matrix x, const unsigned int p_degree = 3);
 
 
 Matrix operator+(const Matrix &x, const Matrix &y);
@@ -98,7 +99,7 @@ Matrix& Matrix::operator=(const Matrix &x) {
     rows = x.rows;
     cols = x.cols;
 
-    if (!data) // проверка data на пустоту
+    if (!data)
         delete[] data;
     data = new double[rows * cols];
 
@@ -293,11 +294,12 @@ void Matrix::pow(const unsigned int n){
 void Matrix::exponent(const unsigned int p_degree) {
     if (rows != cols) return;
 
-    struct Matrix rez = Matrix(rows, cols);
+    Matrix rez = Matrix(rows, cols);
     rez.one();
+
     double ratio = 1;
-    struct Matrix temp = rez;
-    for (unsigned int idx = 1; idx <= p_degree; idx++){
+    Matrix temp = rez;
+    for (unsigned int idx = 1; idx < p_degree; idx++){
         temp *= *this;
         ratio /= (idx);
         rez += ::multy_k(temp, ratio);
@@ -325,13 +327,6 @@ void Matrix::fill_certain(const unsigned int len, const double* arrey) {
 
 void Matrix::output(bool f){
     if (f) std::cout << rows << " " << cols << "\n";
-
-    /*
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        std::cout << data[idx] << "  ";
-    }
-    std::cout << "\n";
-    */
 
     for (unsigned int row = 0; row < rows; row++){
         for (unsigned int col = 0; col < cols; col++){
@@ -414,12 +409,21 @@ Matrix multy_k(const Matrix x, const double k){
 
 
 Matrix pow(const Matrix x, const unsigned int n){
-    Matrix rez = Matrix();
+    Matrix rez = Matrix(x.rows, x.cols);
     if (x.rows != x.cols) return rez;
 
-    rez = x;
+    rez.fill_certain(x.rows * x.cols, x.data);
     rez.pow(n);
 
+    return rez;
+}
+
+
+Matrix exponent(const Matrix x, const unsigned int p_degree){
+    Matrix rez = Matrix(x.rows, x.cols);
+    rez.fill_certain(x.rows * x.cols, x.data);
+
+    rez.exponent(p_degree);
     return rez;
 }
 
@@ -467,34 +471,152 @@ bool operator==(const Matrix &x, const Matrix &y){
 }
 
 
-void block_output(){
-    std::cout << std::fixed << std::setprecision(2);
-
+void test_sum(){
     Matrix A = Matrix(3, 3);
-    A.fill_random();
-    A.output(true);
-
-    Matrix B = Matrix(A.rows, A.cols);
-    B.one();
-    B.output(true);
-
-    Matrix C = 2 * A + A * B - B;
-    C.output(true);
+    Matrix B = Matrix(3, 3);
 
     double arrey_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    double arrey_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.9};
+    double arrey_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 
     A.fill_certain(9, arrey_a);
     B.fill_certain(9, arrey_b);
 
-    bool f = A == B;
-    std::cout << f << std::endl;
+    Matrix rez1 = sum(A, B);
+    Matrix rez2 = A + B;
 
+    Matrix standard = Matrix(3, 3);
+    double arrey_s[9] = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0};
+    standard.fill_certain(9, arrey_s);
+
+    bool final = ((rez1 == standard) and (rez2 == standard));
+    if (final){
+        std::cout << "Test of summation was successful\n";
+    } else {
+        std::cout << "Test of summation was failed\n";
+    }
 }
 
 
-int main() {
+void test_sub(){
+    Matrix A = Matrix(3, 3);
+    Matrix B = Matrix(3, 3);
 
+    double arrey_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    double arrey_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+
+    A.fill_certain(9, arrey_a);
+    B.fill_certain(9, arrey_b);
+
+    Matrix rez1 = sub(A, B);
+    Matrix rez2 = A - B;
+
+    Matrix standard = Matrix(3, 3);
+    double arrey_s[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    standard.fill_certain(9, arrey_s);
+
+    bool final = ((rez1 == standard) and (rez2 == standard));
+    if (final){
+        std::cout << "Test of subtraction was successful\n";
+    } else {
+        std::cout << "Test of subtraction was failed\n";
+    }
+}
+
+
+void test_mul(){
+    Matrix A = Matrix(3, 3);
+    Matrix B = Matrix(3, 3);
+
+    double arrey_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    double arrey_b[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+
+    A.fill_certain(9, arrey_a);
+    B.fill_certain(9, arrey_b);
+
+    Matrix rez1 = multiplication(A, B);
+    Matrix rez2 = A * B;
+
+    Matrix standard = Matrix(3, 3);
+    double arrey_s[9] = {30.0, 24.0, 18.0, 84.0, 69.0, 54.0, 138.0, 114.0, 90.0};
+    standard.fill_certain(9, arrey_s);
+
+    bool final = ((rez1 == standard) and (rez2 == standard));
+    if (final){
+        std::cout << "Test of summation was successful\n";
+    } else {
+        std::cout << "Test of summation was failed\n";
+    }
+}
+
+
+void test_reverse(){
+    const unsigned int n = 3;
+    Matrix A = Matrix(n, n);
+    A.fill_random();
+
+    Matrix B = A;
+    B.reverse();
+
+    Matrix standard = one(n, n);
+
+    bool final = (standard == multiplication(A, B));
+    if (final){
+        std::cout << "Test of reverse was successful\n";
+    } else {
+        std::cout << "Test of reverse was failed\n";
+    }
+}
+
+
+void test_exp(){
+    Matrix A = Matrix(3, 3);
+    A.fill_random();
+
+    Matrix B = exponent(A);
+
+    Matrix standard = Matrix(3, 3);
+    standard = one(3,3) + 1 * A + 0.5 * pow(A, 2);
+
+    A.exponent();
+
+    bool final = ((A == standard) and (B == standard));
+    if (final){
+        std::cout << "Test of exponent was successful\n";
+    } else {
+        std::cout << "Test of exponent was failed\n";
+    }
+}
+
+
+void block_tests(){
+    test_sum();
+    test_sub();
+    test_mul();
+    test_reverse();
+    test_exp();
+
+    std::cout << "\n";
+}
+
+
+void block_output(){
+    std::cout << std::fixed << std::setprecision(2);
+
+    Matrix F = Matrix(3, 3);
+    F.fill_random();
+
+    Matrix G = Matrix(3, 3);
+    G.fill_random();
+
+    Matrix rez = F + G;
+    rez = sum(F, G);
+    rez.output(true);
+}
+
+
+
+int main() {
+    block_tests();
     block_output();
 
     return 0;
