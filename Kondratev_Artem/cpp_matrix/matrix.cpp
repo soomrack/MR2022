@@ -369,10 +369,10 @@ Matrix Matrix::power(int power) const {
 
 Matrix Matrix::exp(Matrix matrix) {
     Matrix exp_matrix(matrix.rows);
-    int factorial = 1;
-    for(int s = 1; s < 17; s++) {
-        factorial *= s;
-        exp_matrix = exp_matrix + matrix.power(s) / factorial;
+    double k = 1.0;
+    for(int s = 1; s < 177; s++) {
+        k /= s;
+        exp_matrix = exp_matrix + matrix.power(s) * k;
     }
     return exp_matrix;
 }
@@ -473,13 +473,31 @@ void test() {
     //  exp test
     double array3[] = {2, 2, 2, 2};
     Matrix matrix3(2, 2, array3);
-    double exp_true_array[] = {29.2533, 28.2533, 28.2533, 29.2533};
+    double exp_true_array[] = {27.799, 26.799, 26.799, 27.799};
     res_matrix = Matrix::exp(matrix3);
     calculation_check(exp_true_array, res_matrix, "Matrix exp");
 }
 
 
+void find() {
+
+    int n = 1;
+    double k = 1;
+    double f = 1;
+    for (int i = 1; i < 1000; i++) {
+        n *= i;
+        k = 1.0 / n;
+        f = f / i;
+        std::cout << i << " " << n << " " << k << " " << f << "\n";
+
+    }
+
+
+}
+
+
 int main() {
     test();
+    //find();
     return 0;
 }
