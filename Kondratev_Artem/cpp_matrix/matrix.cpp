@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 
 
-#define EPSILON 0.0001
+#define EPSILON 0.000001
 
 
 class Matrix {
@@ -157,7 +158,7 @@ void Matrix::output() const {
 
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
-            std::cout << values[row][col] << "  ";
+            std::cout << std::scientific << std::setw(13) << values[row][col] << "  ";
         std::cout << "\n";
     }
     std::cout << "\n";
@@ -329,7 +330,7 @@ Matrix Matrix::operator / (Matrix matrix) const {
 
 
 Matrix Matrix::operator / (double number) const {
-    if (std::abs(number) < 0.0001) {
+    if (std::abs(number) < EPSILON) {
         return error();
     }
     Matrix operated_matrix(rows, cols);
@@ -387,7 +388,8 @@ void calculation_check(double true_array[], Matrix matrix, std::string text) {
             cell_flag = 1;
             error_flag += 1;
         }
-        std::cout << "true: " << true_array[cell] << " res: " << matrix.start[cell] << " | " << cell_flag << "\n";
+        std::cout << "true: " << std::scientific << std::setw(13) << true_array[cell];
+        std::cout << " res: " << std::scientific << std::setw(13) << matrix.start[cell] << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
@@ -451,7 +453,7 @@ void test() {
     calculation_check(inv_true_array, res_matrix, "inversion");
 
     //  inverse multiplication test
-    double inv_multi_true_array[] = {1.0365, -0.1022, 0.3650, -0.0219};
+    double inv_multi_true_array[] = {1.036496, -0.102189, 0.364963, -0.021897};
     res_matrix = matrix1 / matrix2;
     calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
 
@@ -473,31 +475,13 @@ void test() {
     //  exp test
     double array3[] = {2, 2, 2, 2};
     Matrix matrix3(2, 2, array3);
-    double exp_true_array[] = {27.799, 26.799, 26.799, 27.799};
+    double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
     res_matrix = Matrix::exp(matrix3);
     calculation_check(exp_true_array, res_matrix, "Matrix exp");
 }
 
 
-void find() {
-
-    int n = 1;
-    double k = 1;
-    double f = 1;
-    for (int i = 1; i < 1000; i++) {
-        n *= i;
-        k = 1.0 / n;
-        f = f / i;
-        std::cout << i << " " << n << " " << k << " " << f << "\n";
-
-    }
-
-
-}
-
-
 int main() {
     test();
-    //find();
     return 0;
 }
