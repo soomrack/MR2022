@@ -328,7 +328,10 @@ Matrix Matrix::operator / (Matrix matrix) const {
 }
 
 
-Matrix Matrix::operator / (double number) const {/////////////////////////////////////////////////////////////
+Matrix Matrix::operator / (double number) const {
+    if (std::abs(number) < 0.0001) {
+        return error();
+    }
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
         operated_matrix.start[cell] = start[cell] / number;
