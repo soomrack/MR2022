@@ -4,11 +4,11 @@
 
 
 typedef struct Matrix {
-
     int rows;
     int cols;
-
+    int size;
     double **values;
+    double *start;
 
 } Matrix;
 
@@ -17,10 +17,11 @@ Matrix matrix_init(int rows, int cols) {
     struct Matrix matrix;
     matrix.rows = rows;
     matrix.cols  = cols;
+    matrix.size = matrix.rows * matrix.cols;
     matrix.values = (double**)malloc(matrix.rows * sizeof(double*) + matrix.rows * matrix.cols * sizeof(double));
-    double* start = (double*)((char*)matrix.values + matrix.rows * sizeof(double*));
+    matrix.start = (double*)((char*)matrix.values + matrix.rows * sizeof(double*));
     for(int row = 0; row < matrix.rows; row++) {
-        matrix.values[row] = start + row * matrix.cols;
+        matrix.values[row] = matrix.start + row * matrix.cols;
     }
     return matrix;
 }
@@ -38,6 +39,7 @@ void matrix_output(Matrix matrix) {
 
 void free_memory(Matrix *matrix) {
     free(matrix->values);
+    matrix->size = 0;
     matrix->rows = 0;
     matrix->cols = 0;
 }
@@ -51,9 +53,8 @@ Matrix error() {
 
 Matrix matrix_copy(Matrix matrix) {
     Matrix copied_matrix = matrix_init(matrix.rows, matrix.cols);
-    for(int row = 0; row < matrix.rows; row++)
-        for(int col = 0; col < matrix.cols; col++)
-            copied_matrix.values[row][col] = matrix.values[row][col];
+    for(int cell = 0; cell < matrix.size; cell++)
+        copied_matrix.start[cell] = matrix.start[cell];
     return copied_matrix;
 }
 
@@ -70,9 +71,8 @@ Matrix identity_matrix(int rows) {
 
 Matrix matrix_number_filling(int rows, int cols, double number) {
     Matrix filled_matrix = matrix_init(rows, cols);
-    for(int row = 0; row < rows; row++)
-        for(int col = 0; col < cols; col++)
-            filled_matrix.values[row][col] = number;
+    for(int cell = 0; cell < rows; cell++)
+            filled_matrix.start[cell] = number;
     return filled_matrix;
 }
 
@@ -82,9 +82,8 @@ Matrix matrix_addition(Matrix matrix1, Matrix matrix2) {
         return error();
     }
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-    for(int row = 0; row < matrix1.rows; row++)
-        for(int col = 0; col < matrix1.cols; col++)
-            sum_matrix.values[row][col] = 1 * matrix1.values[row][col] + matrix2.values[row][col];
+    for(int cell = 0; cell < matrix1.size; cell++)
+            sum_matrix.start[cell] = 1 * matrix1.start[cell] + matrix2.start[cell];
     return sum_matrix;
 }
 
@@ -94,9 +93,8 @@ Matrix matrix_subtraction(Matrix matrix1, Matrix matrix2) {
         return error();
     }
     Matrix sum_matrix = matrix_init(matrix1.rows, matrix1.rows);
-    for(int row = 0; row < matrix1.rows; row++)
-        for(int col = 0; col < matrix1.cols; col++)
-            sum_matrix.values[row][col] = 1 * matrix1.values[row][col] - matrix2.values[row][col];
+    for(int cell = 0; cell < matrix1.size; cell++)
+        sum_matrix.start[cell] = 1 * matrix1.start[cell] - matrix2.start[cell];
     return sum_matrix;
 }
 
@@ -118,25 +116,21 @@ Matrix matrix_multiplication(Matrix matrix1, Matrix matrix2) {
 
 Matrix matrix_number_addition(Matrix matrix, double number) {
     Matrix operated_matrix = matrix_init(matrix.rows, matrix.cols);
-    for(int row = 0; row < matrix.rows; row++)
-        for(int col = 0; col < matrix.cols; col++)
-                operated_matrix.values[row][col] = matrix.values[row][col] + number;
+    for(int cell = 0; cell < matrix.size; cell++)
+                operated_matrix.start[cell] = matrix.start[cell] + number;
     return operated_matrix;
 }
 
 
 Matrix matrix_number_multiplication(Matrix matrix, double number) {
     Matrix operated_matrix = matrix_init(matrix.rows, matrix.cols);
-    for(int row = 0; row < matrix.rows; row++)
-        for(int col = 0; col < matrix.cols; col++)
-            operated_matrix.values[row][col] = matrix.values[row][col] * number;
+    for(int cell = 0; cell < matrix.size; cell++)
+        operated_matrix.start[cell] = matrix.start[cell] * number;
     return operated_matrix;
 }
 
 
 Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col) {
-    /*Если crossed_row == -1, row_link == 1, т.к. det_key == 1, т.е. зачеркнута будет строка [0] (вычисление
-     * определителя). Иначе det_key = 0, тогда зачеркивается строка crossed_row*/
     Matrix minor = matrix_init(matrix.rows-1, matrix.cols-1);
     int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {
@@ -153,19 +147,19 @@ Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col) {
 }
 
 
-Matrix recursive_determinant(Matrix matrix) {
+double recursive_determinant(Matrix matrix) {
     if(matrix.rows != matrix.cols) {
-        return error();
+        return NAN;
     }
-    Matrix determinant = matrix_init(1, 1);
+    double determinant = 0;
     if(matrix.rows == 1) {
-        determinant.values[0][0] = matrix.values[0][0];
+        determinant = matrix.values[0][0];
         return determinant;
     }
     int k = 1;
     for(int col = 0; col < matrix.cols; col++) {
         Matrix minor = minor_init(matrix, 0, col);
-        determinant.values[0][0] += k * matrix.values[0][col] * recursive_determinant(minor).values[0][0];
+        determinant += k * matrix.values[0][col] * recursive_determinant(minor);
         k = -k;
         free_memory(&minor);
     }
@@ -197,7 +191,7 @@ Matrix minor_transformation(Matrix matrix) {
         for(int col = 0; col < matrix.cols; col++) {
             Matrix minor = minor_init(matrix,row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
-            inverse_added_matrix.values[row][col] = k * recursive_determinant(minor).values[0][0];
+            inverse_added_matrix.values[row][col] = k * recursive_determinant(minor);
             free_memory(&minor);
         }
     }
@@ -209,8 +203,8 @@ Matrix matrix_inversion(Matrix matrix) {
     if(matrix.rows != matrix.cols) {
         return error();
     }
-    double determinant = recursive_determinant(matrix).values[0][0];
-    if(fabs(determinant) < 0.0001) {
+    double determinant = recursive_determinant(matrix);
+    if(fabs(determinant) < 0.0001 || determinant == NAN) {
         return error();
     }
     double inv_det = 1 / determinant;
@@ -351,7 +345,7 @@ void test() {
 
     //  determinant test
     double determinant_true_array[] = {-2};
-    double determinant = recursive_determinant(matrix1).values[0][0];
+    double determinant = recursive_determinant(matrix1);
     Matrix det_matrix = matrix_init(1, 1);
     det_matrix.values[0][0] = determinant;
     test_matrix_operation(determinant_true_array, det_matrix, "Matrix determinant");

@@ -45,9 +45,9 @@ struct Matrix one(const unsigned int cols, const unsigned int rows){  // Ини�
     for (unsigned int row = 0; row < One.rows; row++){
         for(unsigned int col = 0; col < One.cols; col++){
             if (row == col) {
-            One.values[row * One.cols + col] = 1.0;}
+                One.values[row * One.cols + col] = 1.0;}
             else {
-            One.values[row * One.cols + col] = 0.0;}
+                One.values[row * One.cols + col] = 0.0;}
         }
     }
     return One;
@@ -136,10 +136,10 @@ struct Matrix matrix_mult(const struct Matrix A, const struct Matrix B) {
 
 int similar_is(struct Matrix A, struct Matrix B){
     for (int index = 0; index < A.rows * A.cols; index++){
-            if ((int)(A.values[index] * 1000) != (int)(B.values[index] * 1000)){
-                return 0;
-            }
+        if ((int)(A.values[index] * 1000) != (int)(B.values[index] * 1000)){
+            return 0;
         }
+    }
     return 1;
 }
 
@@ -169,7 +169,8 @@ struct Matrix matrix_exp (const struct Matrix A) {
         for (unsigned int idx = 0; idx < numerator.cols * numerator.rows; idx++){
             numerator.values[idx] *= factorial;
         }
-    }free(numerator.values);
+    }
+    free(numerator.values);
     return exp;
 
 }
