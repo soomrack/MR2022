@@ -39,7 +39,7 @@ void matrix_input (Matrix* matrix) {  // РАНДОМНЫЙ ВВОД МАТРИ�
 
 /*void matrix_input (Matrix* matrix) {
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
-
+        scanf("%lf", &matrix->value[number]);
     }
 }*/
 
@@ -253,11 +253,32 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
 
 
 Matrix invert_matrix (const Matrix matrix) {
-    if (matrix.cols != matrix.rows && determinant(matrix) == 0) {
-        mistake("Getting the inverse matrix", "Matrix must be square and with zero determinant");
+    if (matrix.cols != matrix.rows || determinant(matrix) == 0) {
+        mistake("Getting the inverse matrix", "Matrix must be square and with not zero determinant\n");
         return ZERO;
     }
     Matrix itog = multiply_by_num(transponation(matrix), 1. / determinant(matrix));
+    return itog;
+}
+
+
+Matrix matrix_exponent (const Matrix matrix) {
+    if (matrix.cols != matrix.rows) {
+        mistake("Exponent", "Matrix must be square");
+        return ZERO;
+    }
+    unsigned int n = 20;
+    Matrix itog;
+    Matrix temp;
+    temp = one_matrix(matrix.cols, matrix.rows);
+    double r_factorial = 1.0;
+    itog = one_matrix(matrix.cols, matrix.rows);
+    for (unsigned int num = 0; num < n; num++) {
+        r_factorial /= num;
+        temp = multiply_matrix_by_matrix(temp, matrix);
+        itog = summation(itog, multiply_by_num(temp, r_factorial));
+    }
+    clean_memory(temp);
     return itog;
 }
 
@@ -269,12 +290,12 @@ int main() {
     srand(time(NULL));
 
     printf("\nFirst martix\n");
-    mat1 = initialization(3, 3);
+    mat1 = initialization(2, 2);
     matrix_input(&mat1);
     matrix_output(mat1);
 
     printf("Second matrix\n");
-    mat2 = initialization(3, 3);
+    mat2 = initialization(2, 2);
     matrix_input(&mat2);
     matrix_output(mat2);
 
@@ -348,18 +369,17 @@ int main() {
     pow = matrix_power(mat2, 2);
     matrix_output(pow);
     clean_memory(pow);
-    
-    /*printf("Exponent of the first matrix");
-    Matrix exp1;
-    exp1 = matrix_exponent(mat1);
-    matrix_output(exp1);
-    clean_memory(&exp1);
 
-    printf("Exponent of the second matrix");
-    Matrix exp2;
-    exp2 = matrix_exponent(exp2);
-    matrix_output(exp2);
-    clean_memory(&exp2);*/
+    printf("Exponent of the first matrix\n");
+    Matrix exp;
+    exp = matrix_exponent(mat1);
+    matrix_output(exp);
+    clean_memory(exp);
+
+    printf("Exponent of the second matrix\n");
+    exp = matrix_exponent(mat2);
+    matrix_output(exp);
+    clean_memory(exp);
 
    /* printf("Unit matrix\n");
     Matrix ed;
