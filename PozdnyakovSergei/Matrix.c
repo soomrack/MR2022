@@ -252,17 +252,35 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
 }
 
 
-Matrix invert_matrix (const Matrix matrix) {
+/*Matrix invert_matrix (const Matrix matrix, unsigned int size) {
     if (matrix.cols != matrix.rows || determinant(matrix) == 0) {
         mistake("Getting the inverse matrix", "Matrix must be square and with not zero determinant\n");
         return ZERO;
     }
-    Matrix itog = multiply_by_num(transponation(matrix), 1. / determinant(matrix));
+    Matrix itog = initialization(matrix.cols, matrix.rows);
+    for (int col = 0; col < matrix.cols; col++) {
+        for (int row = 0; row < matrix.rows; row++) {
+            matrix.value[col*size + row] = (pow(-1, col + row) * determinant(minor(matrix.cols, matrix.rows, matrix)));
+        }
+        itog = multiply_by_num(transponation(itog), 1.0 / determinant(matrix));
+        return itog;
+    }
+}*/
+
+
+Matrix invert_matrix (const Matrix matrix) {
+    if (matrix.cols != matrix.rows) {
+        mistake("Getting the inverse matrix", "Matrix must be square and with not zero determinant\n");
+        return ZERO;
+    }
+    Matrix transponent = transponation(matrix);
+    Matrix itog = multiply_by_num(transponent, 1. / determinant(matrix));
+    clean_memory(transponent);
     return itog;
 }
 
 
-Matrix matrix_exponent (const Matrix matrix) {
+/*Matrix matrix_exponent (const Matrix matrix) {
     if (matrix.cols != matrix.rows) {
         mistake("Exponent", "Matrix must be square");
         return ZERO;
@@ -280,6 +298,31 @@ Matrix matrix_exponent (const Matrix matrix) {
     }
     clean_memory(temp);
     return itog;
+}*/
+
+
+Matrix matrix_exponent (const Matrix matrix, int accuracy) { // экпонента
+    if (matrix.cols != matrix.rows) {
+        mistake("Exp", "Matrix should be square");
+        return ZERO;
+    }
+    Matrix new_result, new_powered, multiplied;
+    Matrix result = one_matrix(matrix.cols, matrix.rows);
+    Matrix powered = matrix;
+    int factorial = 1;
+    for (int acc = 1; acc <= accuracy; ++acc) {
+        factorial *= acc;
+        new_powered = multiply_matrix_by_matrix(powered, matrix);
+        powered = copy_matrix(new_powered);
+        clean_memory(new_powered);
+        multiplied = multiply_by_num(powered, 1. / factorial);
+        new_result = summation(result, multiplied);
+        result = copy_matrix(new_result);
+        clean_memory(new_result);
+        clean_memory(multiplied);
+    }
+    clean_memory(powered);
+    return result;
 }
 
 
@@ -372,12 +415,12 @@ int main() {
 
     printf("Exponent of the first matrix\n");
     Matrix exp;
-    exp = matrix_exponent(mat1);
+    exp = matrix_exponent(mat1, 5);
     matrix_output(exp);
     clean_memory(exp);
 
     printf("Exponent of the second matrix\n");
-    exp = matrix_exponent(mat2);
+    exp = matrix_exponent(mat2, 5);
     matrix_output(exp);
     clean_memory(exp);
 
