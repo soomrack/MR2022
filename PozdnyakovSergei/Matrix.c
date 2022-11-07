@@ -348,7 +348,7 @@ int main() {
     pow = matrix_power(mat2, 2);
     matrix_output(pow);
     clean_memory(pow);
-
+    
     /*printf("Exponent of the first matrix");
     Matrix exp1;
     exp1 = matrix_exponent(mat1);
@@ -361,9 +361,9 @@ int main() {
     matrix_output(exp2);
     clean_memory(&exp2);*/
 
-    printf("Unit matrix\n");
+   /* printf("Unit matrix\n");
     Matrix ed;
     ed = one_matrix(3, 3);
     matrix_output(ed);
-    clean_memory(ed);
+    clean_memory(ed);*/
 }
