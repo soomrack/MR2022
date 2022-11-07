@@ -10,12 +10,7 @@ int doxod = 15000000;
 char srok = 20;
 int mec = 20*12;
 double stavka_vklad = 0.1;
-unsigned long long int itogo;
-unsigned long long int chist;
-unsigned long long int percent;
-unsigned long long int yearitog_b;
-unsigned long long int cent_b;
-unsigned long long int celoe_b;
+
 
 
 int main () {
