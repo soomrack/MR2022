@@ -4,4 +4,4 @@ project(MR2022 C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(MR2022
-        task02.c)
+        task02.c ../task03/task03.cpp)
