@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
+
 int a_bank = 1000000;
 int b_bank = 1000000;
 int vklad = 300000;
