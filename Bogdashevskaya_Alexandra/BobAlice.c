@@ -4,34 +4,32 @@
 const int MAX_MONTH = 20 * 12;
 
 struct Client {
-	char *name;
-	unsigned long long account, account_history[20 * 12], deposit, salary, utility, 
+	char* name;
+	unsigned long long account, account_history[20 * 12], deposit, salary, utility,
 		rent, flat, mortage_monthly; // копейки
 	double interest_percentage, mortage_percentage; // 10%=0.1
 
 };
 
-void init_Alice(struct Client *Alice) {
-	Alice->name = malloc(5);
+void init_Alice(struct Client* Alice) {
 	Alice->name = "Alice";
-	Alice->account = 1000 * 1000 * 100; 
-	Alice->interest_percentage = 0.07;
-	Alice->salary = 150 * 1000 * 100; 
-	Alice->utility = 10 * 1000 * 100; 
-	Alice->rent = 30 * 1000 * 100; 
+	Alice->account = 1000 * 1000 * 100;
+	Alice->interest_percentage = 0.023;
+	Alice->salary = 150 * 1000 * 100;
+	Alice->utility = 10 * 1000 * 100;
+	Alice->rent = 30 * 1000 * 100;
 	Alice->flat = 0;
 
 }
 
 void init_Bob(struct Client* Bob) {
-	Bob->name = malloc(3);
 	Bob->name = "Bob";
-	Bob->account = 1000 * 1000 * 100; 
-	Bob->interest_percentage = 0.07;
-	Bob->salary = 150 * 1000 * 100; 
-	Bob->utility = 10 * 1000 * 100; 
+	Bob->account = 1000 * 1000 * 100;
+	Bob->interest_percentage = 0.023;
+	Bob->salary = 150 * 1000 * 100;
+	Bob->utility = 10 * 1000 * 100;
 	Bob->flat = 15 * 1000 * 1000 * 100;
-	Bob->utility = 10 * 1000 * 100; 
+	Bob->utility = 10 * 1000 * 100;
 	Bob->mortage_percentage = 0.05;
 	Bob->deposit = 100 * 1000 * 100;
 }
@@ -91,6 +89,9 @@ void print_comparison(struct Client client1, struct Client client2) {
 
 	}
 }
+void free_name(struct Client* client) {
+	free(client->name);
+}
 
 void simulation() {
 	struct Client Alice, Bob;
@@ -115,10 +116,10 @@ void simulation() {
 
 		interest_payment(&Alice);
 		interest_payment(&Bob);
-		
-		//на 5 году увеличиваем процент на вкладе
+
+		//на 5 году изменяем процент на вкладе
 		if (i == 12 * 5) {
-			Alice.interest_percentage = 0.8;
+			Alice.interest_percentage = 0.3;
 			Bob.interest_percentage = 0.1;
 		}
 
@@ -128,17 +129,20 @@ void simulation() {
 		}
 
 		if (i % 12 == 0) {
-			save_account_history(&Alice, (int)i / 12);
-			save_account_history(&Bob, (int)i / 12);
+			save_account_history(&Alice, i / 12);
+			save_account_history(&Bob, i / 12);
 		}
-		
+
 	}
 
 	print_report(Alice);
 	print_report(Bob);
 	print_comparison(Alice, Bob);
+	//free_name(&Alice);
+	//free_name(&Bob);
 }
 
 void main() {
 	simulation();
 }
+
