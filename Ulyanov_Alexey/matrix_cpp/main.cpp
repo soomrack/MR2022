@@ -3,8 +3,8 @@
 #include <iomanip>
 
 
-const unsigned int Max_range = 51;
-const double Comparation_const = 0.0001;
+const unsigned int MAX_RANGE = 51;
+const double COMPARATION_CONST = 0.0001;
 
 
 class Matrix {
@@ -16,16 +16,18 @@ public:
     double *data;
 
 
-    Matrix();
-    Matrix(const unsigned int row, const unsigned int col);
-    Matrix(const Matrix &x);
-    ~Matrix();
+    Matrix();  // конструктор создания пустых матриц
+    Matrix(const unsigned int n);  // конструктор создания квадратных матриц
+    Matrix(const unsigned int row, const unsigned int col);  //конструктор создания прямоугольных матриц
+    Matrix(const Matrix& x);  // оператор копирования
+    Matrix(Matrix&& x);  // оператор переноса
+    ~Matrix();  // деструктор
+
     Matrix& operator=(const Matrix &x);
     Matrix& operator+=(const Matrix &x);
     Matrix& operator-=(const Matrix &x);
     Matrix& operator*=(const double k);
     Matrix& operator*=(const Matrix &x);
-
 
     void zero();
     void one();
@@ -69,16 +71,19 @@ Matrix::Matrix() {
 }
 
 
+Matrix::Matrix(const unsigned int n) {
+    rows = n;
+    cols = n;
+
+    data = new double[n * n];
+}
+
+
 Matrix::Matrix(const unsigned int row, const unsigned int col) {
     rows = row;
     cols = col;
 
     data = new double[row * col];
-}
-
-
-Matrix::~Matrix() {
-    delete[] data;
 }
 
 
@@ -95,17 +100,37 @@ Matrix::Matrix(const Matrix &x) {
 }
 
 
-Matrix& Matrix::operator=(const Matrix &x) {
+Matrix::Matrix(Matrix&& x){
     rows = x.rows;
     cols = x.cols;
+    data = x.data;
 
-    if (!data)
-        delete[] data;
-    data = new double[rows * cols];
+    x.rows = 0;
+    x.cols = 0;
+    x.data = nullptr;
+}
 
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        data[idx] = x.data[idx];
+
+Matrix::~Matrix() {
+    delete[] data;
+}
+
+
+Matrix& Matrix::operator=(const Matrix &x) {
+    if (this != &x){
+        if (!data)
+            delete[] data;
+
+        rows = x.rows;
+        cols = x.cols;
+
+        this->data = new double[rows * cols];
+        for (unsigned int idx = 0; idx < rows * cols; idx++){
+            data[idx] = x.data[idx];
+        }
     }
+
+    return *this;
 }
 
 
@@ -184,19 +209,17 @@ void Matrix::tran(){
     unsigned int col = rows;
 
     double* temp_arrey = new double [rows * cols];
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        temp_arrey[idx] = data[idx];
-    }
 
     for (unsigned int row_idx = 0; row_idx < rows; row_idx++){
         for (unsigned int col_idx = 0; col_idx < cols; col_idx++){
-            data[col_idx * rows + row_idx] = temp_arrey[row_idx * cols + col_idx];
+            temp_arrey[col_idx * rows + row_idx] = data[row_idx * cols + col_idx];
         }
     }
 
+    delete[] data;
+    data = temp_arrey;
     rows = row;
     cols = col;
-    delete[] temp_arrey;
 }
 
 
@@ -220,9 +243,9 @@ Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
 void Matrix::triangle() {
     if (rows == 1) return;
 
-    bool f = false;
+    bool need_to_trans = false;
     if (rows > cols){
-        f = true;
+        need_to_trans = true;
         this->tran();
     }
 
@@ -235,7 +258,7 @@ void Matrix::triangle() {
         }
     }
 
-    if (f){
+    if (need_to_trans){
         this->tran();
     }
 }
@@ -311,7 +334,7 @@ void Matrix::exponent(const unsigned int p_degree) {
 
 void Matrix::fill_random() {
     for (unsigned int idx = 0; idx < rows * cols; idx++){
-        data[idx] = rand() % Max_range;
+        data[idx] = rand() % MAX_RANGE;
     }
 }
 
@@ -429,24 +452,12 @@ Matrix exponent(const Matrix x, const unsigned int p_degree){
 
 
 Matrix operator+(const Matrix &x, const Matrix &y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] + y.data[idx];
-    }
-    return rez;
+    return sum(x, y);
 }
 
 
 Matrix operator-(const Matrix &x, const Matrix &y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] - y.data[idx];
-    }
-    return rez;
+    return sub(x, y);
 }
 
 
@@ -465,7 +476,7 @@ bool operator==(const Matrix &x, const Matrix &y){
     if (!flag) return flag;
 
     for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
-        flag *= (abs(x.data[idx] - y.data[idx]) < Comparation_const);
+        flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
     }
     return flag;
 }
@@ -588,6 +599,27 @@ void test_exp(){
 }
 
 
+void block_output(){
+    std::cout << std::fixed << std::setprecision(2);
+
+    Matrix B = Matrix(3);
+    Matrix F = B;
+    F.fill_random();
+    Matrix G = Matrix(3);
+    G.fill_random();
+    Matrix rez = F + G - 2 * one(3, 3);
+    rez.output();
+    rez = one(2, 2);
+    rez = sum(F, G);
+    Matrix A = Matrix(100, 100);
+    A.fill_random();
+    Matrix C = A;
+    A.zero();
+    //C.output();
+
+}
+
+
 void block_tests(){
     test_sum();
     test_sub();
@@ -598,26 +630,11 @@ void block_tests(){
     std::cout << "\n";
 }
 
-
-void block_output(){
-    std::cout << std::fixed << std::setprecision(2);
-
-    Matrix F = Matrix(3, 3);
-    F.fill_random();
-
-    Matrix G = Matrix(3, 3);
-    G.fill_random();
-
-    Matrix rez = F + G;
-    rez = sum(F, G);
-    rez.output(true);
-}
-
-
-
 int main() {
+
     block_tests();
-    block_output();
+    for (unsigned int idx = 0; idx < 100; idx++)
+        block_output();
 
     return 0;
 }
