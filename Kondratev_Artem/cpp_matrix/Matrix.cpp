@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iomanip>
 #include <exception>
+#include "Matrix_exception.h"
 
 
 #define EPSILON 0.000001
@@ -48,81 +49,7 @@ public:
 };
 
 
-class Matrix_exception: public std::exception {
-private:
-    inline static std::string msg;
-    inline static int ex_number;
-public:
-    Matrix_exception() = default;
-    ~Matrix_exception() override = default;
-    static std::string get_msg() { return msg;};
-    static int get_ex_number() {return ex_number;};
-    static void positive_parameters(int input_rows, int input_cols);
-    static void is_values_null(double **values);
-    static void addition_check(int rows1, int cols1, int rows2, int cols2);
-    static void is_number_nan(double number);
-    static void multiplication_check(int cols1, int rows2);
-    static void division_by_zero(double number);
-    static void is_matrix_square(int rows, int cols);
-};
 
-
-void Matrix_exception::positive_parameters(int input_rows, int input_cols) {
-    if (input_rows < 0 || input_cols < 0) {
-        Matrix_exception::ex_number = 1;
-        Matrix_exception::msg = "matrix parameters are less than zero";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::is_values_null(double **values) {
-    if (nullptr == values) {
-        Matrix_exception::ex_number = 2;
-        Matrix_exception::msg = "values: memory is not allocated";
-        throw get_ex_number();
-    }
-}
-
-
-void Matrix_exception::addition_check(int rows1, int cols1, int rows2, int cols2) {
-    if (rows1 != rows2 || cols1 != cols2) {
-        Matrix_exception::ex_number = 3;
-        Matrix_exception::msg = "wrong matrix sizes for addition";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::is_number_nan(double number) {
-    if (std::isnan(number)) {
-        Matrix_exception::ex_number = 4;
-        Matrix_exception::msg = "number is NAN";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::multiplication_check(int cols1, int rows2) {
-    if (cols1 != rows2) {
-        Matrix_exception::ex_number = 5;
-        Matrix_exception::msg = "wrong matrix sizes for multiplication";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::division_by_zero(double number) {
-    if (std::abs(number) < EPSILON) {
-        Matrix_exception::ex_number = 6;
-        Matrix_exception::msg = "division_by_zero";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::is_matrix_square(int rows, int cols) {
-    if (rows != cols) {
-        Matrix_exception::ex_number = 7;
-        Matrix_exception::msg = "matrix is not square";
-        throw get_ex_number();
-    }
-}
 
 
 Matrix::Matrix(int input_rows, int input_cols) {
@@ -238,7 +165,7 @@ unsigned int Matrix::get_size(int print_flag) const {
 
 
 Matrix Matrix::error() {
-    Matrix error(0,0);
+    Matrix error(0, 0);
     return error;
 }
 
@@ -271,7 +198,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
 
 Matrix Matrix::operator + (Matrix const matrix) const {
     Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
-    Matrix sum_matrix(2,2);
+    Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + matrix.start[cell];
     return sum_matrix;
@@ -280,7 +207,7 @@ Matrix Matrix::operator + (Matrix const matrix) const {
 
 Matrix Matrix::operator + (double number) const {
     Matrix_exception::is_number_nan(number);
-    Matrix sum_matrix(2,2);
+    Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + number;
     return sum_matrix;
@@ -289,7 +216,7 @@ Matrix Matrix::operator + (double number) const {
 
 Matrix Matrix::operator - (Matrix const matrix) const {
     Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
-    Matrix sum_matrix(2,2);
+    Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];
     return sum_matrix;
@@ -322,7 +249,7 @@ Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
     if (crossed_row < 0 || crossed_col < 0) {
         return error();
     }
-    Matrix minor(rows-1, cols-1);
+    Matrix minor(rows - 1, cols - 1);
     int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {
         if(crossed_row == i)
@@ -367,41 +294,35 @@ Matrix Matrix::transposition() const {
 
 
 Matrix Matrix::minor_transformation(Matrix matrix) {
-    if (matrix.rows != matrix.cols) {
-        return error();
-    }
-    Matrix inverse_added_matrix(matrix.rows, matrix.cols);
+    Matrix_exception::is_matrix_square(matrix.rows, matrix.cols);
+    Matrix transformed_matrix(matrix.rows, matrix.cols);
     if(matrix.rows == 1) {
-        inverse_added_matrix = matrix;
-        return inverse_added_matrix;
+        transformed_matrix = matrix;
+        return transformed_matrix;
     }
     for(int row = 0; row < matrix.rows; row++) {
         for(int col = 0; col < matrix.cols; col++) {
             Matrix minor = matrix.minor_init(row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
-            inverse_added_matrix.values[row][col] = k * minor.determinant();
+            transformed_matrix.values[row][col] = k * minor.determinant();
         }
     }
-    return inverse_added_matrix;
+    return transformed_matrix;
 }
 
 
 Matrix Matrix::inversion() const {
-    if (rows != cols || std::abs(this->determinant()) < EPSILON) {
-        return error();
-    }
-    double determinant = this->determinant();
-    double inv_det = 1 / determinant;
+    Matrix_exception::is_matrix_square(rows, cols);
+    Matrix_exception::division_by_zero(this->determinant());
     Matrix transformed_matrix = minor_transformation(this->transposition());
-    Matrix inverse_matrix = transformed_matrix * inv_det;
+    Matrix inverse_matrix = transformed_matrix * (1 / this->determinant());
     return inverse_matrix;
 }
 
 
 Matrix Matrix::operator / (Matrix matrix) const {
-    if (matrix.rows != matrix.cols || std::abs(matrix.determinant()) < EPSILON) {
-        return error();
-    }
+    Matrix_exception::is_matrix_square(rows, cols);
+    Matrix_exception::division_by_zero(this->determinant());
     Matrix inverse_matrix = matrix.inversion();
     Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
     for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
@@ -480,100 +401,18 @@ void calculation_check(double true_array[], Matrix matrix, std::string text) {
 }
 
 
-void test() {
-    Matrix res_matrix(2, 2, 0.0);
 
-    double array1[] = {2, 8, 1, 3};
-    Matrix matrix1(2,2, array1);
-
-    double array2[] = {4, 9, 21, 13};
-    Matrix matrix2(2,2, array2);
-
-    //  = overload test
-    res_matrix = matrix1;
-    double eq_true_array[] = {2, 8, 1, 3};
-    calculation_check(eq_true_array, res_matrix, "= overload");
-
-    //  addition test (matrix)
-    res_matrix = matrix1 + matrix2;
-    double sum_true_array[] = {6, 17, 22, 16};
-    calculation_check(sum_true_array, res_matrix, "addition (matrix)");
-
-    //  addition test (number)
-    res_matrix = matrix1 + 2;
-    double snum_true_array[] = {4, 10, 3, 5};
-    calculation_check(snum_true_array, res_matrix, "addition (number)");
-
-    //  subtraction test
-    res_matrix = matrix1 - matrix2;
-    double sub_true_array[] = {-2, -1, -20, -10};
-    calculation_check(sub_true_array, res_matrix, "subtraction");
-
-    //  multiplication test
-    res_matrix = matrix1 * matrix2;
-    double multi_true_array[] = {176, 122, 67, 48};
-    calculation_check(multi_true_array, res_matrix, "multiplication (matrix)");
-
-    //  multiplication test (number)
-    res_matrix = matrix1 * 2;
-    double mnum_true_array[] = {4, 16, 2, 6};
-    calculation_check(mnum_true_array, res_matrix, "multiplication (number)");
-
-    //  determinant test
-    double determinant_true_array[] = {-2};
-
-    double determinant = matrix1.determinant();
-    Matrix det_matrix(1, 1, determinant);
-    calculation_check(determinant_true_array, det_matrix, "determinant");
-
-    //  transposition test
-    double transp_true_array[] = {2, 1, 8, 3};
-    res_matrix = matrix1.transposition();
-    calculation_check(transp_true_array, res_matrix, "transposition");
-
-    //  inversion test
-    double inv_true_array[] = {-1.5, 4, 0.5, -1};
-    res_matrix = matrix1.inversion();
-    calculation_check(inv_true_array, res_matrix, "inversion");
-
-    //  inverse multiplication test
-    double inv_multi_true_array[] = {1.036496, -0.102189, 0.364963, -0.021897};
-    res_matrix = matrix1 / matrix2;
-    calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
-
-    //  power 0 test
-    double pow0_true_array[] = {1, 0, 0, 1};
-    res_matrix = matrix1.power(0);
-    calculation_check(pow0_true_array, res_matrix, "power 0");
-
-    //  power 3 test
-    double pow3_true_array[] = {64, 216, 27, 91};
-    res_matrix = matrix1.power(3);
-    calculation_check(pow3_true_array, res_matrix, "power 3");
-
-    //  power -4 test
-    double pow4_true_array[] = {30.5625, -72.5, -9.0625, 21.5};
-    res_matrix = matrix1.power(-4);
-    calculation_check(pow4_true_array, res_matrix, "power -4");
-
-    //  exp test
-    double array3[] = {2, 2, 2, 2};
-    Matrix matrix3(2, 2, array3);
-    double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
-    res_matrix = Matrix::exp(matrix3);
-    calculation_check(exp_true_array, res_matrix, "Matrix exp");
-}
 
 
 int main() {
-    //test();
-    try {
-        Matrix A(2, 4, 3);
-        Matrix B(2, 2, 2);
-        A.determinant();
-    }
-    catch(int ex_number) {
-        std::cout << Matrix_exception::get_msg() << std::endl;
-    }
+
+//    try {
+//        Matrix A(2, 4, 3);
+//        Matrix B(2, 2, 2);
+//        A.determinant();
+//    }
+//    catch(int ex_number) {
+//        std::cout << Matrix_exception::get_msg() << std::endl;
+//    }
     return 0;
 }
