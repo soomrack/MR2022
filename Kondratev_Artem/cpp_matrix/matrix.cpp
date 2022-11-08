@@ -59,8 +59,9 @@ public:
     static int get_ex_number() {return ex_number;};
     static void positive_parameters(int input_rows, int input_cols);
     static void is_values_null(double **values);
-    static void are_sizes_equal(int rows1, int cols1, int rows2, int cols2);
+    static void addition_check(int rows1, int cols1, int rows2, int cols2);
     static void is_number_nan(double number);
+    static void multiplication_check(int cols1, int rows2);
 };
 
 
@@ -81,10 +82,10 @@ void Matrix_exception::is_values_null(double **values) {
 }
 
 
-void Matrix_exception::are_sizes_equal(int rows1, int cols1, int rows2, int cols2) {
+void Matrix_exception::addition_check(int rows1, int cols1, int rows2, int cols2) {
     if (rows1 != rows2 || cols1 != cols2) {
         Matrix_exception::ex_number = 3;
-        Matrix_exception::msg = "matrices sizes are not equal";
+        Matrix_exception::msg = "wrong matrix sizes for addition";
         throw get_ex_number();
     }
 }
@@ -92,7 +93,15 @@ void Matrix_exception::are_sizes_equal(int rows1, int cols1, int rows2, int cols
 void Matrix_exception::is_number_nan(double number) {
     if (number != number) {
         Matrix_exception::ex_number = 4;
-        Matrix_exception::msg = "number is NaN";
+        Matrix_exception::msg = "number is NAN";
+        throw get_ex_number();
+    }
+}
+
+void Matrix_exception::multiplication_check(int cols1, int rows2) {
+    if (cols1 != rows2) {
+        Matrix_exception::ex_number = 5;
+        Matrix_exception::msg = "wrong matrix sizes for multiplication";
         throw get_ex_number();
     }
 }
@@ -243,7 +252,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
 
 
 Matrix Matrix::operator + (Matrix const matrix) const {
-    Matrix_exception::are_sizes_equal(rows, cols, matrix.rows, matrix.cols);
+    Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + matrix.start[cell];
@@ -261,7 +270,7 @@ Matrix Matrix::operator + (double number) const {
 
 
 Matrix Matrix::operator - (Matrix const matrix) const {
-    Matrix_exception::are_sizes_equal(rows, cols, matrix.rows, matrix.cols);
+    Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];
@@ -270,9 +279,7 @@ Matrix Matrix::operator - (Matrix const matrix) const {
 
 
 Matrix Matrix::operator * (Matrix const matrix) const {
-    if (cols != matrix.rows) {
-        return error();
-    }
+    Matrix_exception::multiplication_check(cols, matrix.rows);
     Matrix multiplied_matrix(cols, matrix.rows);
     for(int row = 0; row < multiplied_matrix.rows; row++)
         for(int col = 0; col < multiplied_matrix.cols; col++) {
@@ -547,9 +554,9 @@ int main() {
     //test();
     //Matrix A(-1, 2);
     try {
-        Matrix A(2, 2, 3);
+        Matrix A(2, 4, 3);
         Matrix B(2, 2, 2);
-        Matrix C = A + NAN;
+        Matrix C = A * B;
         C.output();
     }
     catch(int ex_number) {
