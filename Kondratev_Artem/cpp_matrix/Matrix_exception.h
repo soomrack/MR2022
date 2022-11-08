@@ -2,10 +2,10 @@
 // Created by user on 08.11.22.
 //
 
+#include <iostream>
 
 #ifndef HELLO_WORLD_MATRIX_EXCEPTION_H
 #define HELLO_WORLD_MATRIX_EXCEPTION_H
-
 
 class Matrix_exception: public std::exception {
 private:
@@ -24,6 +24,5 @@ public:
     static void division_by_zero(double number);
     static void is_matrix_square(int rows, int cols);
 };
-
 
 #endif //HELLO_WORLD_MATRIX_EXCEPTION_H

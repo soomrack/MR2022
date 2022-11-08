@@ -2,10 +2,8 @@
 // Created by user on 08.11.22.
 //
 
-
 #ifndef HELLO_WORLD_MATRIX_H
 #define HELLO_WORLD_MATRIX_H
-
 
 class Matrix {
 private:
@@ -48,6 +46,5 @@ public:
     Matrix power(int power) const;
     static Matrix exp(Matrix matrix);
 };
-
 
 #endif //HELLO_WORLD_MATRIX_H
