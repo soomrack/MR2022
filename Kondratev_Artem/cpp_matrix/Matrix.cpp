@@ -80,13 +80,18 @@ Matrix::Matrix(Matrix const &matrix) {
         start[cell] = matrix.start[cell];
 }
 
-/*Matrix::Matrix(Matrix const &&matrix) noexcept {
+Matrix::Matrix(Matrix const &&matrix) noexcept {
     rows = matrix.rows;
     cols = matrix.cols;
     size = matrix.size;
-    values = matrix.values;
-    start = matrix.start;
-}*/
+    values = new double *[rows];
+    Matrix_exception::is_values_null(values);
+    start = new double[size];
+    for (int row = 0; row < rows; row++)
+        values[row] = start + row * cols;
+    for (int cell = 0; cell < size; cell++)
+        start[cell] = matrix.start[cell];
+}
 
 unsigned int Matrix::get_rows(int print_flag) const {
     if (print_flag == 1)

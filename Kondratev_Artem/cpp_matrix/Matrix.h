@@ -20,7 +20,7 @@ public:
     Matrix(int input_rows, int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
-    //Matrix(Matrix const &&matrix) noexcept;
+    Matrix(Matrix const &&matrix) noexcept;
 
     Matrix &operator = (Matrix const &matrix);
     Matrix operator + (Matrix matrix) const;
