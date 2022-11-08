@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <csignal>
+#include <exception>
 
 
 #define EPSILON 0.000001
@@ -8,17 +10,17 @@
 
 class Matrix {
 private:
-    unsigned int rows;
-    unsigned int cols;
-    unsigned int size;
+    int rows{};
+    int cols;
+    int size;
 public:
     double **values;
     double *start;
 
-    Matrix(unsigned int input_rows, unsigned int input_cols);
-    Matrix(unsigned int input_rows, unsigned int input_cols, double number);  //  number filled matrix
-    explicit Matrix(unsigned int row_num);  //  identity matrix
-    Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]);  // filling from array
+    Matrix(int input_rows, int input_cols);
+    Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
+    explicit Matrix(int row_num);  //  identity matrix
+    Matrix(int input_rows, int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
     //Matrix(Matrix const &&matrix) noexcept;
@@ -32,9 +34,9 @@ public:
     Matrix operator / (Matrix matrix) const;
     Matrix operator / (double number) const;
 
-    unsigned int out_rows() const;
-    unsigned int out_cols() const;
-    unsigned int out_size() const;
+    unsigned int get_rows(int print_flag) const;
+    unsigned int get_cols(int print_flag) const;
+    unsigned int get_size(int print_flag) const;
     static Matrix error();
     void output() const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
@@ -47,18 +49,34 @@ public:
 };
 
 
-Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
-    rows = (input_rows > 0) ? input_rows : 0;
-    cols = (input_cols > 0) ? input_cols : 0;
+class Matrix_exception: public std::exception {
+private:
+    std::string msg;
+public:
+
+};
+
+
+Matrix::Matrix(int input_rows, int input_cols) {
+    if (input_rows < 0 || input_cols < 0)
+        throw "Matrix parameters are less than zero";
+    rows = input_rows;
+    cols = input_cols;
     size = rows * cols;
     values = new double *[rows];
-    start = new double [size];
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+    if (values == nullptr) {
+        values = new double *[0];
+        start = new double [0];
+    }
+    else {
+        start = new double [size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+    }
 }
 
 
-Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double number) {
+Matrix::Matrix(int input_rows, int input_cols, double number) {
     rows = (input_rows > 0) ? input_rows : 0;
     cols = (input_cols > 0) ? input_cols : 0;
     size = rows * cols;
@@ -71,7 +89,7 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double number) 
 }
 
 
-Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double const array[]) {
+Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
     rows = (input_rows > 0) ? input_rows : 0;
     cols = (input_cols > 0) ? input_cols : 0;
     size = rows * cols;
@@ -81,14 +99,10 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double const ar
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
         start[cell] = array[cell];
-
-
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = array[cell];
 }
 
 
-Matrix::Matrix(unsigned int row_num) {
+Matrix::Matrix(int row_num) {
     rows = (row_num > 0) ? row_num : 0;
     cols = rows;
     size = rows * cols;
@@ -124,7 +138,7 @@ Matrix::Matrix(Matrix const &matrix) {
 }
 
 
-/*Matrix::Matrix(Matrix const &&matrix)  noexcept {
+/*Matrix::Matrix(Matrix const &&matrix) noexcept {
     rows = matrix.rows;
     cols = matrix.cols;
     size = matrix.size;
@@ -133,17 +147,26 @@ Matrix::Matrix(Matrix const &matrix) {
 }*/
 
 
-unsigned int Matrix::out_rows() const {
+unsigned int Matrix::get_rows(int print_flag) const {
+    if (print_flag == 1) {
+        std::cout << "rows: " << rows;
+    }
     return rows;
 }
 
 
-unsigned int Matrix::out_cols() const {
+unsigned int Matrix::get_cols(int print_flag) const {
+    if (print_flag == 1) {
+        std::cout << "cols: " << cols;
+    }
     return cols;
 }
 
 
-unsigned int Matrix::out_size() const {
+unsigned int Matrix::get_size(int print_flag) const {
+    if (print_flag == 1) {
+        std::cout << "size: " << size;
+    }
     return size;
 }
 
@@ -165,7 +188,7 @@ void Matrix::output() const {
 }
 
 
-Matrix &Matrix::operator = (Matrix const &matrix) {///####################################################
+Matrix& Matrix::operator = (Matrix const &matrix) {
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
@@ -271,8 +294,8 @@ double Matrix::determinant() const{
 
 
 Matrix Matrix::transposition() const {
-    unsigned int new_rows = cols;
-    unsigned int new_cols = rows;
+    int new_rows = cols;
+    int new_cols = rows;
     Matrix transposed_matrix(new_rows, new_cols);
     for(int row = 0; row < transposed_matrix.rows; row++)
         for(int col = 0; col < transposed_matrix.cols; col++)
@@ -382,7 +405,7 @@ Matrix Matrix::exp(Matrix matrix) {
 void calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
-    for (int cell = 0; cell < matrix.out_size(); cell++) {
+    for (int cell = 0; cell < matrix.get_size(0); cell++) {
         int cell_flag = 0;
         if (std::abs(true_array[cell] - matrix.start[cell]) > EPSILON) {
             cell_flag = 1;
@@ -482,6 +505,12 @@ void test() {
 
 
 int main() {
-    test();
+    //test();
+    try {
+        Matrix A(-1, 2);
+    }
+    catch(const char *msg) {
+        std::cout << msg << std::endl;
+    }
     return 0;
 }

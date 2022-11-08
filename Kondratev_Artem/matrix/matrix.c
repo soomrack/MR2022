@@ -262,7 +262,7 @@ Matrix matrix_exp(Matrix matrix) {
 }
 
 
-int test_matrix_filling(Matrix *matrix, const double array[]) {
+void test_matrix_filling(Matrix *matrix, const double array[]) {
     // получает на вход матрицу и массив, заполняет матрицу элементами массива
     int array_index = 0;
     for(int row = 0; row < matrix->rows; row++)
