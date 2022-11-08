@@ -63,6 +63,7 @@ public:
     static void is_number_nan(double number);
     static void multiplication_check(int cols1, int rows2);
     static void division_by_zero(double number);
+    static void is_matrix_square(int rows, int cols);
 };
 
 
@@ -92,7 +93,7 @@ void Matrix_exception::addition_check(int rows1, int cols1, int rows2, int cols2
 }
 
 void Matrix_exception::is_number_nan(double number) {
-    if (number != number) {
+    if (std::isnan(number)) {
         Matrix_exception::ex_number = 4;
         Matrix_exception::msg = "number is NAN";
         throw get_ex_number();
@@ -111,6 +112,14 @@ void Matrix_exception::division_by_zero(double number) {
     if (std::abs(number) < EPSILON) {
         Matrix_exception::ex_number = 6;
         Matrix_exception::msg = "division_by_zero";
+        throw get_ex_number();
+    }
+}
+
+void Matrix_exception::is_matrix_square(int rows, int cols) {
+    if (rows != cols) {
+        Matrix_exception::ex_number = 7;
+        Matrix_exception::msg = "matrix is not square";
         throw get_ex_number();
     }
 }
@@ -330,9 +339,7 @@ Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
 
 
 double Matrix::determinant() const{
-    if(rows != cols) {
-        return NAN;
-    }
+    Matrix_exception::is_matrix_square(rows, cols);
     double determinant = 0;
     if(rows == 1) {
         determinant = values[0][0];
@@ -563,8 +570,7 @@ int main() {
     try {
         Matrix A(2, 4, 3);
         Matrix B(2, 2, 2);
-        Matrix C = A * 2;
-        C.output();
+        A.determinant();
     }
     catch(int ex_number) {
         std::cout << Matrix_exception::get_msg() << std::endl;
