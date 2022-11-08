@@ -6,26 +6,30 @@
 class Matrix
 {
 
-
 public:
 
 	unsigned int rows;
 	unsigned int cols;
 
+	Matrix(unsigned int, unsigned int, double*);
 	Matrix(unsigned int, unsigned int);
 	Matrix();
 	Matrix(const Matrix&);
+	Matrix(Matrix&&) noexcept;
+	~Matrix();
+
 
 	void fill_Matrix();
 	void output();
 	
-	Matrix create_one_matrix();		//Преобразование матрицы в единичную
+	Matrix one();		//Преобразование матрицы в единичную
 	Matrix exponent_matrix();		//Нахождение экспоненты матрицы
 	Matrix transpose();				// Транспонирование матрицы
 	Matrix Minor(Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
 	Matrix reverse_matrix(const Matrix, unsigned int);		//Обратная матрица
 	double determinant(const Matrix, unsigned int);		//Определитель матрицы 
 
+	Matrix& operator=(Matrix&&) noexcept;
 	Matrix& operator=(const Matrix&);
 	Matrix& operator+=(const Matrix&);
 	Matrix& operator-=(const Matrix&);
@@ -34,9 +38,7 @@ public:
 	Matrix& operator/=(double);
 
 	friend std::ostream& operator<<(std::ostream& out, Matrix m);
-	double* operator[](unsigned int);
-
-	~Matrix();
+	/*double* operator[](unsigned int);*/
 
 
 private:
@@ -45,20 +47,32 @@ private:
 
 
 Matrix empty();
-Matrix operator+ (const Matrix&, const Matrix&);
+
+Matrix operator+ (const Matrix&);
 Matrix operator- (const Matrix&, const Matrix&);
 Matrix operator* (const Matrix&,const Matrix&);
 Matrix operator* (const Matrix&,const double);
 Matrix operator/ (const Matrix&,const double);
+Matrix& operator+=(const Matrix&,const Matrix&);
 void output(Matrix&);
-
 
 Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 
 
 Matrix::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols) {
 	values = new double[rows * cols];
-	memcpy(values, mat.values, rows * cols* sizeof(double));
+	memcpy(values, mat.values, rows * cols * sizeof(double));
+}
+
+
+Matrix::Matrix(unsigned int num_row, unsigned int num_col, double* value)
+{
+	rows = num_row;
+	cols = num_col;
+	unsigned int index = rows * cols;
+	for (unsigned int idx = 0; idx < index; idx++) {
+		values[index] = value[index];
+	}
 }
 
 
@@ -72,8 +86,15 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
 }
 
 
+Matrix::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols(mat.cols) {
+	mat.values = nullptr;
+	mat.rows = 0;
+	mat.cols = 0;
+}
+
+
 Matrix::~Matrix() {
-	std::cout << "destructor\n";
+	/*std::cout << "destructor\n";*/
 	delete[] this->values;
 }
 	
@@ -94,10 +115,12 @@ std::ostream& operator<<(std::ostream& out, Matrix m) {
 }
 
 
-double* Matrix::operator[](unsigned int idx) {
-	if (idx > rows) return nullptr;
-	return values + idx * cols;
-}
+//double* Matrix::operator[](unsigned int idx) {
+//	if (idx > rows) {
+//		return nullptr;
+//	}
+//	return values + idx * cols;
+//}
 
 
 void Matrix::fill_Matrix() {
@@ -108,14 +131,11 @@ void Matrix::fill_Matrix() {
 }
 
 
-Matrix Matrix::create_one_matrix() {
+Matrix Matrix::one() {
 	for (unsigned int index = 0; index < cols * rows; index++) {
 		values[index] = 0;
-	}
-	for (unsigned int row = 0; row < rows; row++) {
-		for (unsigned int col = 0; col < cols; col++) {
-			if (col == row)
-				values[row * cols + col] = 1.0;
+		for (unsigned int num = 0; num <= index; num+=cols+1) {
+			values[num] = 1.0;
 		}
 	}
 	return *this;
@@ -127,13 +147,14 @@ void Matrix::output()
 	std::cout << *this << std::endl;
 }
 
+
 void output(Matrix& m) {
-	std::cout << m << std::endl;
+		std::cout << m;
 }
 
 
 Matrix Matrix::Minor(Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col) {
-	Matrix m1 (size - 1, size -1);
+	Matrix m1(size - 1, size -1);
 	unsigned int shiftRow = 0; //Смещение индекса строки в матрице
 	unsigned int shiftCol; //Смещение индекса столбца в матрице
 	for (unsigned int rows = 0; rows < size - 1; rows++) {
@@ -154,40 +175,34 @@ Matrix Matrix::Minor(Matrix matrix,const unsigned int size, const unsigned int r
 
 
 Matrix Matrix::transpose() {
-	Matrix trans(rows,cols);
+	Matrix trans(cols,rows);
 	for (unsigned int row = 0; row < rows; row++) {
 		for (unsigned int col = 0; col < cols; col++) {
 			trans.values[col * trans.rows + row] = values[row * trans.cols + col];
 		}
 	}
-	return (*this = trans);
+	*this = trans;
+	return (*this);
 }
 
 
 Matrix empty() {
-	Matrix zero(0, 0);
+	Matrix zero(0, 0,NULL);
 	return zero;
 }
 
 
 Matrix operator+(const Matrix& A, const Matrix& B) {
-	if (A.rows != B.rows || A.cols != B.cols) {
-		std::cout << "Matrix should have a same size" << std::endl;
-		return empty();
-	}
 	Matrix add(A);
-return (add+=B);
+	add += B;
+return (add);
 }
 
 
 Matrix operator-(const Matrix& A, const Matrix& B) {
-	if (A.rows != B.rows || A.cols != B.cols) {
-		std::cout << "Matrix should have a same size" << std::endl;
-		return empty();
-	}
 	Matrix sub(A);
-	sub = A;
-	return (sub-=B);
+	sub -= B;
+	return (sub);
 }
 
 
@@ -198,45 +213,52 @@ Matrix operator*(const Matrix& A, const double k) { // Умножение матрицы на числ
 
 
 Matrix operator*(const Matrix& A, const Matrix& B) {
-	if (A.cols != B.rows) {
-		std::cout << "For Multiplication First Matrix Cols should equal to Second Matrix Row" << std::endl;
-		return empty();
-	}
 	Matrix temp(A);
-	return (temp*=B);
+	temp *= B;
+	return (temp);
 }
 
 
 Matrix operator/(const Matrix& A,const double k) { // Деление матрицы на число
 	Matrix multiply(A);
-	return multiply /=k;
+	multiply /= k;
+	return multiply;
 }
 
 
 Matrix& Matrix::operator*=(const Matrix& m2) { // Умножение матриц
-Matrix multiplication(rows, m2.cols);
-for (unsigned int row = 0; row < multiplication.rows; row++) {
-	for (unsigned int col = 0; col < multiplication.cols; col++) {
-		double sum = 0;
-		for (unsigned int k = 0; k < m2.rows; k++) {
-			sum += values[row * cols + k] * m2.values[k * m2.cols + col];
-			}
-		multiplication.values[row * multiplication.cols + col] = sum;
+	if (cols != m2.rows) {
+		throw std::domain_error("Error: first matrix cols not equal to second matrix row.");
 	}
-}
-	return (*this = multiplication);
+	Matrix multiplication(rows, m2.cols);
+	for (unsigned int row = 0; row < multiplication.rows; row++) {
+		for (unsigned int col = 0; col < multiplication.cols; col++) {
+			double sum = 0;
+			for (unsigned int k = 0; k < m2.rows; k++) {
+				sum += values[row * cols + k] * m2.values[k * m2.cols + col];
+				}
+			multiplication.values[row * multiplication.cols + col] = sum;
+		}
+	}
+		return (*this = multiplication);
 }
 
 
 Matrix& Matrix::operator+=(const Matrix& matrix) {
-	for (unsigned int index = 0; index < rows*cols; ++index) {
-			this->values[index] += matrix.values[index];
-		}
+	if (rows != matrix.rows || cols != matrix.cols) {
+		throw std::domain_error("Error: matrix should have a same size.");
+	}
+	for (unsigned int index = 0; index < rows * cols; ++index) {
+		this->values[index] += matrix.values[index];
+	}
 	return *this;
 }
 
 
 Matrix& Matrix::operator-=(const Matrix& matrix) {
+	if (rows != matrix.rows || cols != matrix.cols) {
+		throw std::domain_error("Error: matrix should have a same size.");
+	}
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] -= matrix.values[index];
 	}
@@ -272,10 +294,21 @@ Matrix& Matrix::operator=(const Matrix& A) {
 }
 
 
+Matrix& Matrix::operator=(Matrix&& A) noexcept {
+	if (this != &A) {
+		delete[] A.values;
+		rows = A.rows;
+		cols = A.cols;
+		values = A.values;
+		A.values = nullptr;
+	}
+	return *this;
+}
+
+
 double Matrix::determinant(const Matrix m, unsigned int size) {
 	if (m.rows != m.cols) {
-		printf("Matrix should be nxn");
-		return 0;
+		throw std::domain_error("Error: matrix should have nxn.");
 	}
 	double det = 0;
 	if (size == 0)
@@ -295,12 +328,10 @@ double Matrix::determinant(const Matrix m, unsigned int size) {
 Matrix Matrix::reverse_matrix(const Matrix rev, const unsigned int size) { // Функция нахождения обратной матрицы
 	double d = determinant(rev, size);
 	if (rev.rows != rev.cols) {
-		printf("Matrix should have size nxn");
-		return empty();
+		throw std::domain_error("Error: matrix should have nxn.");
 	}
 	if (d == 0) {
-	printf("Matrix is degenerative, determinate is not determined");
-	return empty();
+		throw std::domain_error("Error: matrix is degenative.");
 	}
 	Matrix A(rev.rows, rev.cols);
 	for (unsigned int row = 0; row < A.rows; row++) {
@@ -309,21 +340,20 @@ Matrix Matrix::reverse_matrix(const Matrix rev, const unsigned int size) { // Фу
 		}
 	}
 	A.transpose();
-	A/= d;
+	A /= d;
 	return A;
 }
 
 
 Matrix Matrix::exponent_matrix() {
 	if (rows != cols) {
-		printf("Matrix should have size nxn");
-		return empty();
+			throw std::domain_error("Error: matrix should be nxn\n.");
 	}
 	unsigned int n = 30; // Количество членов ряда
 	Matrix ex(rows,cols);
 	Matrix temp(rows,cols);
-	temp.create_one_matrix();
-	ex.create_one_matrix();
+	temp.one();
+	ex.one();
 	double fact = 1.0;
 	for (unsigned int i = 1; i < n; i++) {
 		fact *= i;
@@ -335,17 +365,44 @@ Matrix Matrix::exponent_matrix() {
 
 
 int main()
-{
+{ 
 	/*srand(time(NULL));*/
 	setlocale(LC_ALL, "ru");
-	Matrix A(3, 3);
-	Matrix B(3, 3);
+	Matrix A(5, 5);
+	Matrix B(5, 5);
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
-	std::cout << "Addiction of two matrix\n" << A + B;
-	std::cout << "Subtraction of two matrix\n" << A - B;
-	std::cout << "Multiplication of two matrix\n" << A * B;
-	std::cout << "Determinant\n" << A.determinant(A, A.rows) << std::endl;
-	std::cout << "Reverse Matrix\n" << A.reverse_matrix(A,A.rows);
-	std::cout << "Exponent Matrix\n" << A.exponent_matrix();
+	
+	
+	try {
+		std::cout << "Addiction of two matrix\n" << A + B;
+		std::cout << "Subtraction of two matrix\n" << A - B;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Caught: " << e.what() << std::endl;
+		std::cerr << "Type: " << typeid(e).name() << std::endl;
+	}
+
+	try {
+		std::cout << "Multiplication of two matrix\n" << A * B;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Caught: " << e.what() << std::endl;
+		std::cerr << "Type: " << typeid(e).name() << std::endl;
+	}
+
+
+	try {
+		std::cout << "Determinant\n" << A.determinant(A, A.rows) << std::endl;
+		std::cout << "Reverse Matrix\n" << A.reverse_matrix(A, A.rows) << std::endl;
+		std::cout << "Exponent Matrix\n" << A.exponent_matrix();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Caught: " << e.what() << std::endl;
+		std::cerr << "Type: " << typeid(e).name() << std::endl;
+	}
+
 }
