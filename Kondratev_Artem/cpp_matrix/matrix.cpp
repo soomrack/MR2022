@@ -60,6 +60,7 @@ public:
     static void positive_parameters(int input_rows, int input_cols);
     static void is_values_null(double **values);
     static void are_sizes_equal(int rows1, int cols1, int rows2, int cols2);
+    static void is_number_nan(double number);
 };
 
 
@@ -84,6 +85,14 @@ void Matrix_exception::are_sizes_equal(int rows1, int cols1, int rows2, int cols
     if (rows1 != rows2 || cols1 != cols2) {
         Matrix_exception::ex_number = 3;
         Matrix_exception::msg = "matrices sizes are not equal";
+        throw get_ex_number();
+    }
+}
+
+void Matrix_exception::is_number_nan(double number) {
+    if (number != number) {
+        Matrix_exception::ex_number = 4;
+        Matrix_exception::msg = "number is NaN";
         throw get_ex_number();
     }
 }
@@ -243,6 +252,7 @@ Matrix Matrix::operator + (Matrix const matrix) const {
 
 
 Matrix Matrix::operator + (double number) const {
+    Matrix_exception::is_number_nan(number);
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + number;
@@ -251,9 +261,7 @@ Matrix Matrix::operator + (double number) const {
 
 
 Matrix Matrix::operator - (Matrix const matrix) const {
-    if(rows != matrix.rows || cols != matrix.cols) {
-        return error();
-    }
+    Matrix_exception::are_sizes_equal(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];
@@ -277,6 +285,7 @@ Matrix Matrix::operator * (Matrix const matrix) const {
 
 
 Matrix Matrix::operator * (double number) const {
+    Matrix_exception::is_number_nan(number);
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
         operated_matrix.start[cell] = start[cell] * number;
@@ -540,7 +549,7 @@ int main() {
     try {
         Matrix A(2, 2, 3);
         Matrix B(2, 2, 2);
-        Matrix C = A + B;
+        Matrix C = A + NAN;
         C.output();
     }
     catch(int ex_number) {
