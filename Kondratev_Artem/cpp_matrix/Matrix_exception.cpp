@@ -13,6 +13,7 @@ private:
 public:
     Matrix_exception() = default;
     ~Matrix_exception() override = default;
+
     static std::string get_msg() { return msg;};
     static int get_ex_number() {return ex_number;};
     static void positive_parameters(int input_rows, int input_cols);
