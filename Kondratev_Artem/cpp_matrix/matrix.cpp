@@ -59,6 +59,7 @@ public:
     static int get_ex_number() {return ex_number;};
     static void positive_parameters(int input_rows, int input_cols);
     static void is_values_null(double **values);
+    static void are_sizes_equal(int rows1, int cols1, int rows2, int cols2);
 };
 
 
@@ -74,6 +75,15 @@ void Matrix_exception::is_values_null(double **values) {
     if (nullptr == values) {
         Matrix_exception::ex_number = 2;
         Matrix_exception::msg = "values: memory is not allocated";
+        throw get_ex_number();
+    }
+}
+
+
+void Matrix_exception::are_sizes_equal(int rows1, int cols1, int rows2, int cols2) {
+    if (rows1 != rows2 || cols1 != cols2) {
+        Matrix_exception::ex_number = 3;
+        Matrix_exception::msg = "matrices sizes are not equal";
         throw get_ex_number();
     }
 }
@@ -224,9 +234,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
 
 
 Matrix Matrix::operator + (Matrix const matrix) const {
-    if(rows != matrix.rows || cols != matrix.cols) {
-        return error();
-    }
+    Matrix_exception::are_sizes_equal(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2,2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + matrix.start[cell];
@@ -530,7 +538,10 @@ int main() {
     //test();
     //Matrix A(-1, 2);
     try {
-        Matrix A(1, 2);
+        Matrix A(2, 2, 3);
+        Matrix B(2, 2, 2);
+        Matrix C = A + B;
+        C.output();
     }
     catch(int ex_number) {
         std::cout << Matrix_exception::get_msg() << std::endl;
