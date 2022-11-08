@@ -1,8 +1,8 @@
-#include "Matrix_exception.h"
+#include "Matrix.h"
 #include <iostream>
 #include <iomanip>
 #include <exception>
-#include "Matrix.h"
+#include "Matrix_exception.h"
 
 Matrix::Matrix(int input_rows, int input_cols) {
     Matrix_exception::positive_parameters(input_rows, input_cols);
@@ -111,11 +111,6 @@ unsigned int Matrix::get_size(int print_flag) const {
     return size;
 }
 
-Matrix Matrix::error() {
-    Matrix error(0, 0);
-    return error;
-}
-
 void Matrix::output() const {
     if (values == nullptr)
     {}
@@ -125,19 +120,6 @@ void Matrix::output() const {
         std::cout << "\n";
     }
     std::cout << "\n";
-}
-
-void Matrix::filling(double number) const {
-    Matrix_exception::is_number_nan(number);
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = number;
-}
-
-void Matrix::filling(double array[]) const {
-    for (int cell = 0; cell < size; cell++) {
-        Matrix_exception::is_number_nan(array[cell]);
-        start[cell] = array[cell];
-    }
 }
 
 Matrix& Matrix::operator = (Matrix const &matrix) {
@@ -198,9 +180,7 @@ Matrix Matrix::operator * (double number) const {
 }
 
 Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
-    if (crossed_row < 0 || crossed_col < 0) {
-        return error();
-    }
+    Matrix_exception::positive_parameters(crossed_row, crossed_col);
     Matrix minor(rows - 1, cols - 1);
     int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {

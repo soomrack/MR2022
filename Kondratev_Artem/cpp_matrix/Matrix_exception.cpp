@@ -19,7 +19,6 @@ void Matrix_exception::is_values_null(double **values) {
     }
 }
 
-
 void Matrix_exception::addition_check(int rows1, int cols1, int rows2, int cols2) {
     if (rows1 != rows2 || cols1 != cols2) {
         Matrix_exception::ex_number = 3;

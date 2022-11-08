@@ -7,7 +7,7 @@
 
 class Matrix {
 private:
-    int rows{};
+    int rows;
     int cols;
     int size;
 public:
@@ -34,10 +34,7 @@ public:
     unsigned int get_rows(int print_flag) const;
     unsigned int get_cols(int print_flag) const;
     unsigned int get_size(int print_flag) const;
-    static Matrix error();
     void output() const;
-    void filling(double number) const;
-    void filling(double array[]) const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
     Matrix transposition() const;
