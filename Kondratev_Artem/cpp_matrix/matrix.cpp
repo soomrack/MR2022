@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
-#include <csignal>
 #include <exception>
 
 
@@ -19,7 +18,7 @@ public:
 
     Matrix(int input_rows, int input_cols);
     Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
-    explicit Matrix(int row_num);  //  identity matrix
+    explicit Matrix(int row_number);  //  identity matrix
     Matrix(int input_rows, int input_cols, double const array[]);  // filling from array
     ~Matrix();
     Matrix(Matrix const &matrix);
@@ -51,36 +50,55 @@ public:
 
 class Matrix_exception: public std::exception {
 private:
-    std::string msg;
+    inline static std::string msg;
+    inline static int ex_number;
 public:
-
+    Matrix_exception() = default;
+    ~Matrix_exception() override = default;
+    static std::string get_msg() { return msg;};
+    static int get_ex_number() {return ex_number;};
+    static void positive_parameters(int input_rows, int input_cols);
+    static void is_values_null(double **values);
 };
 
 
-Matrix::Matrix(int input_rows, int input_cols) {
-    if (input_rows < 0 || input_cols < 0)
-        throw "Matrix parameters are less than zero";
-    rows = input_rows;
-    cols = input_cols;
-    size = rows * cols;
-    values = new double *[rows];
-    if (values == nullptr) {
-        values = new double *[0];
-        start = new double [0];
+void Matrix_exception::positive_parameters(int input_rows, int input_cols) {
+    if (input_rows < 0 || input_cols < 0) {
+        Matrix_exception::ex_number = 1;
+        Matrix_exception::msg = "matrix parameters are less than zero";
+        throw get_ex_number();
     }
-    else {
-        start = new double [size];
-        for (int row = 0; row < rows; row++)
-            values[row] = start + row * cols;
+}
+
+void Matrix_exception::is_values_null(double **values) {
+    if (nullptr == values) {
+        Matrix_exception::ex_number = 2;
+        Matrix_exception::msg = "values: memory is not allocated";
+        throw get_ex_number();
     }
 }
 
 
-Matrix::Matrix(int input_rows, int input_cols, double number) {
-    rows = (input_rows > 0) ? input_rows : 0;
-    cols = (input_cols > 0) ? input_cols : 0;
+Matrix::Matrix(int input_rows, int input_cols) {
+    Matrix_exception::positive_parameters(input_rows, input_cols);
+    rows = input_rows;
+    cols = input_cols;
     size = rows * cols;
     values = new double *[rows];
+    Matrix_exception::is_values_null(values);
+    start = new double [size];
+    for (int row = 0; row < rows; row++)
+        values[row] = start + row * cols;
+}
+
+
+Matrix::Matrix(int input_rows, int input_cols, double number) {
+    Matrix_exception::positive_parameters(input_rows, input_cols);
+    rows = input_rows;
+    cols = input_cols;
+    size = rows * cols;
+    values = new double *[rows];
+    Matrix_exception::is_values_null(values);
     start = new double [size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
@@ -90,10 +108,12 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
 
 
 Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
-    rows = (input_rows > 0) ? input_rows : 0;
-    cols = (input_cols > 0) ? input_cols : 0;
+    Matrix_exception::positive_parameters(input_rows, input_cols);
+    rows = input_rows;
+    cols = input_cols;
     size = rows * cols;
     values = new double *[rows];
+    Matrix_exception::is_values_null(values);
     start = new double [size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
@@ -102,11 +122,13 @@ Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
 }
 
 
-Matrix::Matrix(int row_num) {
-    rows = (row_num > 0) ? row_num : 0;
+Matrix::Matrix(int row_number) {
+    Matrix_exception::positive_parameters(row_number, 1);
+    rows = row_number;
     cols = rows;
     size = rows * cols;
     values = new double *[rows];
+    Matrix_exception::is_values_null(values);
     start = new double [size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
@@ -130,6 +152,7 @@ Matrix::Matrix(Matrix const &matrix) {
     cols = matrix.cols;
     size = rows * cols;
     values = new double *[rows];
+    Matrix_exception::is_values_null(values);
     start = new double[size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
@@ -148,25 +171,22 @@ Matrix::Matrix(Matrix const &matrix) {
 
 
 unsigned int Matrix::get_rows(int print_flag) const {
-    if (print_flag == 1) {
+    if (print_flag == 1)
         std::cout << "rows: " << rows;
-    }
     return rows;
 }
 
 
 unsigned int Matrix::get_cols(int print_flag) const {
-    if (print_flag == 1) {
+    if (print_flag == 1)
         std::cout << "cols: " << cols;
-    }
     return cols;
 }
 
 
 unsigned int Matrix::get_size(int print_flag) const {
-    if (print_flag == 1) {
+    if (print_flag == 1)
         std::cout << "size: " << size;
-    }
     return size;
 }
 
@@ -178,7 +198,8 @@ Matrix Matrix::error() {
 
 
 void Matrix::output() const {
-
+    if (values == nullptr)
+    {}
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
             std::cout << std::scientific << std::setw(13) << values[row][col] << "  ";
@@ -193,6 +214,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
     cols = matrix.cols;
     size = rows * cols;
     values = new double *[rows];
+    Matrix_exception::is_values_null(values);
     start = new double[size];
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
@@ -506,11 +528,12 @@ void test() {
 
 int main() {
     //test();
+    //Matrix A(-1, 2);
     try {
-        Matrix A(-1, 2);
+        Matrix A(1, 2);
     }
-    catch(const char *msg) {
-        std::cout << msg << std::endl;
+    catch(int ex_number) {
+        std::cout << Matrix_exception::get_msg() << std::endl;
     }
     return 0;
 }
