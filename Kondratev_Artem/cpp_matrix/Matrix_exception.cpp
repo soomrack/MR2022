@@ -1,7 +1,4 @@
 #include "Matrix_exception.h"
-#include <cmath>
-
-#define EPSILON 0.000001
 
 void Matrix_exception::positive_parameters(int input_rows, int input_cols) {
     if (input_rows < 0 || input_cols < 0) {

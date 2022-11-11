@@ -1,7 +1,3 @@
-//
-// Created by user on 08.11.22.
-//
-
 #include "Matrix_test.h"
 
 int main() {

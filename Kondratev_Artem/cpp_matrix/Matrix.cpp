@@ -1,7 +1,4 @@
 #include "Matrix.h"
-#include <iostream>
-#include <iomanip>
-#include <exception>
 #include "Matrix_exception.h"
 
 Matrix::Matrix(int input_rows, int input_cols) {

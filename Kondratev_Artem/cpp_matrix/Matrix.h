@@ -5,6 +5,10 @@
 #ifndef HELLO_WORLD_MATRIX_H
 #define HELLO_WORLD_MATRIX_H
 
+#include <iostream>
+#include <iomanip>
+#include <exception>
+
 class Matrix {
 private:
     int rows;

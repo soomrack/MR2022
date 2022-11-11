@@ -2,13 +2,16 @@
 // Created by user on 08.11.22.
 //
 
-#include <iostream>
-
 #ifndef HELLO_WORLD_MATRIX_EXCEPTION_H
 #define HELLO_WORLD_MATRIX_EXCEPTION_H
 
+#include <iostream>
+#include <cmath>
+
 class Matrix_exception: public std::exception {
+    friend class Matrix_test;
 private:
+    inline static const double EPSILON = 0.000001;
     inline static std::string msg;
     inline static int ex_number;
 public:
