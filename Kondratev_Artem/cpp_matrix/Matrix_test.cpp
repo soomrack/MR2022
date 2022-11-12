@@ -1,5 +1,9 @@
 #include "Matrix_test.h"
 
+inline void print_message(std::string text) {
+    std::cout << text << ":" << std::endl << Matrix_exception::get_msg() << std::endl << std::endl;
+}
+
 void Matrix_test::calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
@@ -24,7 +28,7 @@ void Matrix_test::overload_test() {
         calculation_check(eq_true_array, res_matrix, "= overload");
     }
     catch(int ex_number) {
-        std::cout << "overload_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("overload_test");
     }
 }
 
@@ -37,7 +41,7 @@ void Matrix_test::addition_test() {
         calculation_check(sum_true_array, res_matrix, "addition (matrix)");
     }
     catch(int ex_number) {
-        std::cout << "addition_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("addition_test");
     }
 }
 
@@ -49,7 +53,7 @@ void Matrix_test::number_addition_test() {
         calculation_check(snum_true_array, res_matrix, "addition (number)");
     }
     catch(int ex_number) {
-        std::cout << "number_addition_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("number_addition_test");
     }
 }
 
@@ -62,7 +66,7 @@ void Matrix_test::subtraction_test() {
         calculation_check(sub_true_array, res_matrix, "subtraction");
     }
     catch(int ex_number) {
-        std::cout << "subtraction_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("subtraction_test");
     }
 }
 
@@ -75,7 +79,7 @@ void Matrix_test::multiplication_test() {
         calculation_check(multi_true_array, res_matrix, "multiplication (matrix)");
     }
     catch(int ex_number) {
-        std::cout << "multiplication_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("multiplication_test");
     }
 }
 
@@ -87,7 +91,7 @@ void Matrix_test::number_multiplication_test() {
         calculation_check(mnum_true_array, res_matrix, "multiplication (number)");
     }
     catch(int ex_number) {
-        std::cout << "number_multiplication_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("number_multiplication_test");
     }
 }
 
@@ -99,7 +103,7 @@ void Matrix_test::determinant_test() {
         calculation_check(determinant_true_array, det_matrix, "determinant");
     }
     catch(int ex_number) {
-        std::cout << "determinant_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("determinant_test");
     }
 }
 
@@ -111,7 +115,7 @@ void Matrix_test::transposition_test() {
         calculation_check(transp_true_array, res_matrix, "transposition");
     }
     catch(int ex_number) {
-        std::cout << "transposition_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("transposition_test");
     }
 }
 
@@ -123,7 +127,7 @@ void Matrix_test::inversion_test() {
         calculation_check(inv_true_array, res_matrix, "inversion");
     }
     catch(int ex_number) {
-        std::cout << "inversion_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("inversion_test");
     }
 }
 
@@ -136,7 +140,7 @@ void Matrix_test::inverse_multiplication_test() {
         calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
     }
     catch(int ex_number) {
-        std::cout << "inverse_multiplication_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("inverse_multiplication_test");
     }
 }
 
@@ -148,7 +152,7 @@ void Matrix_test::number_division_test() {
         calculation_check(snum_true_array, res_matrix, "division (number)");
     }
     catch(int ex_number) {
-        std::cout << "number_division_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("number_division_test");
     }
 }
 
@@ -159,7 +163,7 @@ void Matrix_test::power_test() {
         calculation_check(power_array, res_matrix, "power");
     }
     catch(int ex_number) {
-        std::cout << "power_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("power_test");
     }
 }
 
@@ -171,7 +175,7 @@ void Matrix_test::exp_test() {
         calculation_check(exp_true_array, res_matrix, "Matrix exp");
     }
     catch(int ex_number) {
-        std::cout << "exp_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("exp_test");
     }
 }
 
