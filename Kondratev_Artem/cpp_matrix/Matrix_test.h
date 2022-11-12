@@ -34,6 +34,8 @@ public:
     static void power_test();
     static void exp_test();
     static void user_test();
+    static void create_big_matrix();
+    static void memory_leak_test();
 };
 
 #endif //HELLO_WORLD_TEST_H

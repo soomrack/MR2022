@@ -185,3 +185,26 @@ void Matrix_test::user_test() {
         std::cout << "user_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
     }
 }
+
+void Matrix_test::create_big_matrix() {
+    int a = 100000;
+    int b = 100000;
+    try {
+        Matrix A(a, b, 2);
+    }
+    catch(int ex_number) {
+        std::cout << "user_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+    }
+    if (a == b) {
+        throw 5;
+    }
+}
+
+void Matrix_test::memory_leak_test() {
+    try {
+        create_big_matrix();
+    }
+    catch(int a) {
+        std::cin >> a;
+    }
+}
