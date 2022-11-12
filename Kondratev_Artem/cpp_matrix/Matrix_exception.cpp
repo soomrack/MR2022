@@ -16,18 +16,12 @@ void Matrix_exception::positive_parameters(int input_rows, int input_cols) {
     }
 }
 
-void Matrix_exception::is_values_null(double **values) {
-    if (nullptr == values) {
+void Matrix_exception::is_memory_null(double **values, double *start) {
+    if (nullptr == values || nullptr == start) {
         Matrix_exception::ex_number = 2;
-        Matrix_exception::msg = "values: memory is not allocated";
-        throw get_ex_number();
-    }
-}
-
-void Matrix_exception::is_start_null(double *start) {
-    if (nullptr == start) {
-        Matrix_exception::ex_number = 3;
-        Matrix_exception::msg = "values: memory is not allocated";
+        Matrix_exception::msg = "memory is not allocated";
+        delete values;
+        delete start;
         throw get_ex_number();
     }
 }

@@ -1,5 +1,3 @@
-//#include "Matrix.h"
-//#include "Matrix_exception.h"
 #include "Matrix_test.h"
 
 int main() {

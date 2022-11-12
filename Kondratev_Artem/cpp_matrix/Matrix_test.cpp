@@ -186,25 +186,20 @@ void Matrix_test::user_test() {
     }
 }
 
-void Matrix_test::create_big_matrix() {
-    int a = 100000;
-    int b = 100000;
+void Matrix_test::memory_leak_test() {
+    int a = 20000;
+    int b = 10000;
     try {
         Matrix A(a, b, 2);
+        A.get_rows(1);
+        A.get_cols(1);
+        if (A.values[0][0] == 2) {
+            throw 5;
+        }
+        A.values[0][0] = 4;
     }
     catch(int ex_number) {
-        std::cout << "user_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
-    }
-    if (a == b) {
-        throw 5;
-    }
-}
-
-void Matrix_test::memory_leak_test() {
-    try {
-        create_big_matrix();
-    }
-    catch(int a) {
+        std::cout << "memory_leak_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
         std::cin >> a;
     }
 }

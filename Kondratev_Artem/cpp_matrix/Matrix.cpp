@@ -13,12 +13,16 @@ Matrix::Matrix(int input_rows, int input_cols) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    values = new double *[rows];
-    Matrix_exception::is_values_null(values);
-    start = new double [size];
-    Matrix_exception::is_start_null(start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+    try {
+        values = new double *[rows];
+        start = new double [size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
+    Matrix_exception::is_memory_null(values, start);
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double number) {
@@ -26,14 +30,18 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    values = new double *[rows];
-    Matrix_exception::is_values_null(values);
-    start = new double [size];
-    Matrix_exception::is_start_null(start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = number;
+    try {
+        values = new double *[rows];
+        start = new double [size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+        for (int cell = 0; cell < size; cell++)
+            start[cell] = number;
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
+    Matrix_exception::is_memory_null(values, start);
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
@@ -42,9 +50,8 @@ Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
     cols = input_cols;
     size = rows * cols;
     values = new double *[rows];
-    Matrix_exception::is_values_null(values);
     start = new double [size];
-    Matrix_exception::is_start_null(start);
+    Matrix_exception::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -57,9 +64,8 @@ Matrix::Matrix(int row_number) {
     cols = rows;
     size = rows * cols;
     values = new double *[rows];
-    Matrix_exception::is_values_null(values);
     start = new double [size];
-    Matrix_exception::is_start_null(start);
+    Matrix_exception::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int row = 0; row < rows; row++)
@@ -80,9 +86,8 @@ Matrix::Matrix(Matrix const &matrix) {
     cols = matrix.cols;
     size = rows * cols;
     values = new double *[rows];
-    Matrix_exception::is_values_null(values);
     start = new double[size];
-    Matrix_exception::is_start_null(start);
+    Matrix_exception::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -94,9 +99,8 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
     cols = matrix.cols;
     size = matrix.size;
     values = new double *[rows];
-    Matrix_exception::is_values_null(values);
     start = new double[size];
-    Matrix_exception::is_start_null(start);
+    Matrix_exception::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -105,19 +109,19 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
 
 [[maybe_unused]] int Matrix::get_rows(int print_flag) const {
     if (print_flag == 1)
-        std::cout << "rows: " << rows;
+        std::cout << "rows: " << rows << std::endl;
     return rows;
 }
 
 [[maybe_unused]] int Matrix::get_cols(int print_flag) const {
     if (print_flag == 1)
-        std::cout << "cols: " << cols;
+        std::cout << "cols: " << cols << std::endl;
     return cols;
 }
 
 int Matrix::get_size(int print_flag) const {
     if (print_flag == 1)
-        std::cout << "size: " << size;
+        std::cout << "size: " << size << std::endl;
     return size;
 }
 
@@ -137,9 +141,8 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
     cols = matrix.cols;
     size = rows * cols;
     values = new double *[rows];
-    Matrix_exception::is_values_null(values);
     start = new double[size];
-    Matrix_exception::is_start_null(start);
+    Matrix_exception::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
