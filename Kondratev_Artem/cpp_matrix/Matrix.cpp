@@ -20,7 +20,7 @@ Matrix::Matrix(int input_rows, int input_cols) {
             values[row] = start + row * cols;
     }
     catch(...) {
-        std::cout << "memory is not allocated" << std::endl;
+        std::cout << "new: memory is not allocated" << std::endl;
     }
     Matrix_exception::is_memory_null(values, start);
 }
@@ -39,7 +39,7 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
             start[cell] = number;
     }
     catch(...) {
-        std::cout << "memory is not allocated" << std::endl;
+        std::cout << "new: memory is not allocated" << std::endl;
     }
     Matrix_exception::is_memory_null(values, start);
 }
@@ -49,13 +49,18 @@ Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double [size];
+    try {
+        values = new double *[rows];
+        start = new double [size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+        for (int cell = 0; cell < size; cell++)
+            start[cell] = array[cell];
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
     Matrix_exception::is_memory_null(values, start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = array[cell];
 }
 
 Matrix::Matrix(int row_number) {
@@ -63,14 +68,19 @@ Matrix::Matrix(int row_number) {
     rows = row_number;
     cols = rows;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double [size];
+    try {
+        values = new double *[rows];
+        start = new double[size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+        for (int row = 0; row < rows; row++)
+            for (int col = 0; col < cols; col++)
+                values[row][col] = (row == col) ? 1 : 0;
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
     Matrix_exception::is_memory_null(values, start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int row = 0; row < rows; row++)
-        for (int col = 0; col < cols; col++)
-            values[row][col] = (row == col) ? 1 : 0;
 }
 
 Matrix::~Matrix() {
@@ -85,26 +95,36 @@ Matrix::Matrix(Matrix const &matrix) {
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double[size];
+    try {
+        values = new double *[rows];
+        start = new double[size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+        for (int cell = 0; cell < size; cell++)
+            start[cell] = matrix.start[cell];
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
     Matrix_exception::is_memory_null(values, start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = matrix.start[cell];
 }
 
 Matrix::Matrix(Matrix const &&matrix) noexcept {
     rows = matrix.rows;
     cols = matrix.cols;
     size = matrix.size;
-    values = new double *[rows];
-    start = new double[size];
+    try {
+        values = new double *[rows];
+        start = new double[size];
+        for (int row = 0; row < rows; row++)
+            values[row] = start + row * cols;
+        for (int cell = 0; cell < size; cell++)
+            start[cell] = matrix.start[cell];
+    }
+    catch(...) {
+        std::cout << "memory is not allocated" << std::endl;
+    }
     Matrix_exception::is_memory_null(values, start);
-    for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = matrix.start[cell];
 }
 
 [[maybe_unused]] int Matrix::get_rows(int print_flag) const {

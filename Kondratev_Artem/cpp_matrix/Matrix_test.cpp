@@ -199,7 +199,7 @@ void Matrix_test::memory_leak_test() {
         A.values[0][0] = 4;
     }
     catch(int ex_number) {
-        std::cout << "memory_leak_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        std::cout << "memory_leak_test:" << Matrix_exception::get_msg() << std::endl;
         std::cin >> a;
     }
 }
