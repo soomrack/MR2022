@@ -1,3 +1,5 @@
+//#include "Matrix.h"
+//#include "Matrix_exception.h"
 #include "Matrix_test.h"
 
 int main() {
@@ -14,5 +16,6 @@ int main() {
     Matrix_test::number_division_test();
     Matrix_test::power_test();
     Matrix_test::exp_test();
+    Matrix_test::user_test();
     return 0;
 }

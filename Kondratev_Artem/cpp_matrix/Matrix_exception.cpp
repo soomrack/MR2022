@@ -1,5 +1,13 @@
 #include "Matrix_exception.h"
 
+std::string Matrix_exception::get_msg() {
+    return msg;
+}
+
+int Matrix_exception::get_ex_number() {
+    return ex_number;
+}
+
 void Matrix_exception::positive_parameters(int input_rows, int input_cols) {
     if (input_rows < 0 || input_cols < 0) {
         Matrix_exception::ex_number = 1;
@@ -20,6 +28,14 @@ void Matrix_exception::addition_check(int rows1, int cols1, int rows2, int cols2
     if (rows1 != rows2 || cols1 != cols2) {
         Matrix_exception::ex_number = 3;
         Matrix_exception::msg = "wrong matrix sizes for addition";
+        throw get_ex_number();
+    }
+}
+
+void Matrix_exception::subtraction_check(int rows1, int cols1, int rows2, int cols2) {
+    if (rows1 != rows2 || cols1 != cols2) {
+        Matrix_exception::ex_number = 3;
+        Matrix_exception::msg = "wrong matrix sizes for subtraction";
         throw get_ex_number();
     }
 }

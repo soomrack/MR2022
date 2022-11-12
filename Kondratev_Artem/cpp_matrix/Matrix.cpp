@@ -1,5 +1,12 @@
 #include "Matrix.h"
-#include "Matrix_exception.h"
+
+Matrix::Matrix() {
+    rows = 0;
+    cols = 0;
+    size = 0;
+    values = nullptr;
+    start = nullptr;
+}
 
 Matrix::Matrix(int input_rows, int input_cols) {
     Matrix_exception::positive_parameters(input_rows, input_cols);
@@ -90,19 +97,19 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
         start[cell] = matrix.start[cell];
 }
 
-unsigned int Matrix::get_rows(int print_flag) const {
+int Matrix::get_rows(int print_flag) const {
     if (print_flag == 1)
         std::cout << "rows: " << rows;
     return rows;
 }
 
-unsigned int Matrix::get_cols(int print_flag) const {
+int Matrix::get_cols(int print_flag) const {
     if (print_flag == 1)
         std::cout << "cols: " << cols;
     return cols;
 }
 
-unsigned int Matrix::get_size(int print_flag) const {
+int Matrix::get_size(int print_flag) const {
     if (print_flag == 1)
         std::cout << "size: " << size;
     return size;
@@ -149,7 +156,7 @@ Matrix Matrix::operator + (double number) const {
 }
 
 Matrix Matrix::operator - (Matrix const matrix) const {
-    Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
+    Matrix_exception::subtraction_check(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];

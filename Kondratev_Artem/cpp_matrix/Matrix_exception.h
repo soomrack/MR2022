@@ -17,11 +17,13 @@ private:
 public:
     Matrix_exception() = default;
     ~Matrix_exception() override = default;
-    static std::string get_msg() { return msg;};
-    static int get_ex_number() {return ex_number;};
+
+    static std::string get_msg();
+    static int get_ex_number();
     static void positive_parameters(int input_rows, int input_cols);
     static void is_values_null(double **values);
     static void addition_check(int rows1, int cols1, int rows2, int cols2);
+    static void subtraction_check(int rows1, int cols1, int rows2, int cols2);
     static void is_number_nan(double number);
     static void multiplication_check(int cols1, int rows2);
     static void division_by_zero(double number);

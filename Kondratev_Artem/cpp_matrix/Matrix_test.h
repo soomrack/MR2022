@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include "Matrix.h"
+#include "Matrix_exception.h"
 
 class Matrix_test {
 private:
@@ -32,6 +33,7 @@ public:
     static void number_division_test();
     static void power_test();
     static void exp_test();
+    static void user_test();
 };
 
 #endif //HELLO_WORLD_TEST_H

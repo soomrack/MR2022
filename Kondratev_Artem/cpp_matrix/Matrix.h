@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <exception>
+#include "Matrix_exception.h"
 
 class Matrix {
 private:
@@ -18,6 +18,7 @@ public:
     double **values;
     double *start;
 
+    Matrix();  //  empty matrix
     Matrix(int input_rows, int input_cols);
     Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
     explicit Matrix(int row_number);  //  identity matrix
@@ -35,9 +36,9 @@ public:
     Matrix operator / (Matrix matrix) const;
     Matrix operator / (double number) const;
 
-    unsigned int get_rows(int print_flag) const;
-    unsigned int get_cols(int print_flag) const;
-    unsigned int get_size(int print_flag) const;
+    int get_rows(int print_flag) const;
+    int get_cols(int print_flag) const;
+    int get_size(int print_flag) const;
     void output() const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
