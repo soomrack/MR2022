@@ -97,13 +97,13 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
         start[cell] = matrix.start[cell];
 }
 
-int Matrix::get_rows(int print_flag) const {
+[[maybe_unused]] int Matrix::get_rows(int print_flag) const {
     if (print_flag == 1)
         std::cout << "rows: " << rows;
     return rows;
 }
 
-int Matrix::get_cols(int print_flag) const {
+[[maybe_unused]] int Matrix::get_cols(int print_flag) const {
     if (print_flag == 1)
         std::cout << "cols: " << cols;
     return cols;
@@ -115,7 +115,7 @@ int Matrix::get_size(int print_flag) const {
     return size;
 }
 
-void Matrix::output() const {
+[[maybe_unused]] void Matrix::output() const {
     if (values == nullptr)
     {}
     for (int row = 0; row < rows; row++) {

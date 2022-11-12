@@ -36,10 +36,10 @@ public:
     Matrix operator / (Matrix matrix) const;
     Matrix operator / (double number) const;
 
-    int get_rows(int print_flag) const;
-    int get_cols(int print_flag) const;
+    [[maybe_unused]] int get_rows(int print_flag) const;
+    [[maybe_unused]] int get_cols(int print_flag) const;
     int get_size(int print_flag) const;
-    void output() const;
+    [[maybe_unused]] void output() const;
     Matrix minor_init(int crossed_row, int crossed_col) const;
     double determinant() const;
     Matrix transposition() const;
