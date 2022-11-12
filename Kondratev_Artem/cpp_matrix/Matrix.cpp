@@ -16,6 +16,7 @@ Matrix::Matrix(int input_rows, int input_cols) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double [size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
 }
@@ -28,6 +29,7 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double [size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -42,6 +44,7 @@ Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double [size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -56,6 +59,7 @@ Matrix::Matrix(int row_number) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double [size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int row = 0; row < rows; row++)
@@ -78,6 +82,7 @@ Matrix::Matrix(Matrix const &matrix) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double[size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -91,6 +96,7 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double[size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -133,6 +139,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
     values = new double *[rows];
     Matrix_exception::is_values_null(values);
     start = new double[size];
+    Matrix_exception::is_start_null(start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)

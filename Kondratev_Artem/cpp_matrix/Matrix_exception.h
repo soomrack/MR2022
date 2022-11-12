@@ -22,6 +22,7 @@ public:
     static int get_ex_number();
     static void positive_parameters(int input_rows, int input_cols);
     static void is_values_null(double **values);
+    static void is_start_null(double *start);
     static void addition_check(int rows1, int cols1, int rows2, int cols2);
     static void subtraction_check(int rows1, int cols1, int rows2, int cols2);
     static void is_number_nan(double number);
