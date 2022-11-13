@@ -3,50 +3,93 @@
 
 
 class Matrix {
-private:
+
+public:
     unsigned long int cols;
     unsigned long int rows;
-public:
-    double *values;
-    Matrix (const unsigned long int colsm, const unsigned long int rowsm);
+    Matrix (unsigned long int, unsigned int, double*);
+    Matrix (unsigned long int, unsigned int);
     Matrix (const Matrix &A);
     ~Matrix();
-    Matrix data_input (Matrix matrix, double arr[]);
+
+    /*void matrix_input;
+    void matrix_output;*/
+
+    Matrix one_matrix();
+    Matrix invert_matrix (const Matrix, unsigned int);
+    Matrix determinant (const Matrix, unsigned int);
+    Matrix transponent ();
+    Matrix matrix_power();
+    Matrix matrix_exponent();
+    Matrix minor_matrix (Matrix, const unsigned int, const unsigned int, const unsigned int);
+
+    Matrix& operator=(Matrix&&);
+    Matrix& operator=(const Matrix);
+    Matrix operator+= (const Matrix);
+    Matrix operator-= (const Matrix);
+    Matrix operator*= (const Matrix);
+    Matrix operator*= (const double);
+    Matrix operator/= (const double);
+
+    friend std::ostream& operator<<(std::ostream& out, Matrix m);
+
+private:
+    double* values;
 };
 
+Matrix empty();
 
-Matrix::Matrix(const unsigned long int colsm, const unsigned long int rowsm) {
-    cols = colsm;
-    rows = rowsm;
+Matrix operator+ (const Matrix&);
+Matrix operator- (const Matrix&, const Matrix&);
+Matrix operator* (const Matrix&,const Matrix&);
+Matrix operator* (const Matrix&,const double);
+Matrix operator/ (const Matrix&,const double);
+Matrix& operator+=(const Matrix&,const Matrix&);
+void output(Matrix&);
+
+Matrix::Matrix(const Matrix& matrix) : rows(matrix.rows), cols(matrix.cols) {
     values = new double [cols * rows];
-    for (unsigned long int number = 0; number < cols * rows; number++) {
-        values[number] = 0.0;
+    memcpy(values, matrix.values, cols * rows * sizeof (double));
+}
+
+Matrix::Matrix(unsigned int number_col, unsigned int number_rows, double* values) {
+    cols = number_col;
+    rows = number_rows;
+    unsigned int index = rows * cols;
+    for (unsigned int number = 0; number < index; number++) {
+        values[index] = values[index];
     }
 }
 
-
-Matrix::Matrix(const Matrix &A) {
-    cols = A.cols;
-    rows = A.rows;
-    values = new double [cols * rows];
-    for (int number = 0; number < cols * rows; number++) {
-        values[number] = A.values[number];
-    }
+Matrix operator+ (const Matrix& mat1, const Matrix& mat2) {
+    Matrix summation (mat1);
+    summation += mat2;
+    return (summation);
 }
 
-
-Matrix::~Matrix() {
-    delete[] values;
+Matrix operator- (const Matrix& mat1, const Matrix& mat2) {
+    Matrix subtruction (mat1);
+    subtruction -= mat2;
+    return (subtruction);
 }
 
-
-Matrix Matrix::data_input(Matrix matrix, double arr[]) {
-    for (unsigned int number = 0; number < cols * rows; number++) {
-        values[number] = arr[number];
-    }
-    return matrix;
+Matrix operator* (const Matrix& matrix, const double n) {
+    Matrix multiply (matrix);
+    multiply *= n;
+    return (multiply);
 }
 
+Matrix operator* (const Matrix& mat1, const Matrix& mat2) {
+    Matrix temp (mat1);
+    temp *= mat2;
+    return (temp);
+}
+
+Matrix operator/ (const Matrix& matrix, const double n) {
+    Matrix division (matrix);
+    division /= n;
+    return (division);
+}
 
 int main() {
     Matrix A(3,3);
