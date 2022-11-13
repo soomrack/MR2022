@@ -1,5 +1,4 @@
 #include <iostream>
-#include <malloc.h>
 
 class Matrix {
 private:
@@ -7,10 +6,11 @@ private:
     unsigned int rows;
 public:
     double *values;
-    Matrix(const unsigned int cols_m, const unsigned int rows_m);
+    Matrix(unsigned int cols_m, unsigned int rows_m);
     Matrix(const Matrix &A);
     ~Matrix();
-    Matrix data_input(Matrix matrix, double arr[]);
+    static Matrix data_input(Matrix matrix, const double arr[]);
+    static void print_matrix(Matrix matrix);
 };
 
 
@@ -37,18 +37,26 @@ Matrix::~Matrix() {
     delete[] values;
 }
 
-
-Matrix Matrix::data_input(Matrix matrix, double arr[]){
-        for (unsigned int idx = 0; idx < cols * rows; idx++){
-            values[idx] = arr[idx];
+Matrix Matrix::data_input(Matrix matrix, const double arr[]){
+        for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++){
+            matrix.values[idx] = arr[idx];
         }
         return matrix;
 }
 
-
+void Matrix::print_matrix(Matrix X) {  // Вывод матрицы на экран
+    std::cout << "Matrix\n";
+    for (unsigned int row = 0; row < X.rows; row++) {
+        for (unsigned int col = 0; col < X.cols; col++) {
+            std::cout << X.values[row * X.cols + col] << "\t";
+        }
+        std::cout << "\n";
+    }
+}
 int main() {
     Matrix A(3,3);
-    Matrix C(3,3);
-    Matrix B(A);
+    double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    Matrix::data_input(A,arr_A);
+    Matrix::print_matrix(A);
     return 0;
 }
