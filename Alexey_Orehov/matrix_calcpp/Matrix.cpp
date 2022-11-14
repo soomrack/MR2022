@@ -26,7 +26,7 @@ Matrix::Matrix(Matrix &&mat) noexcept: values(mat.values), rows(mat.rows), cols(
 }
 
 
-Matrix &Matrix::operator=(const Matrix &mat) {
+Matrix& Matrix::operator=(const Matrix &mat) {
     if (this != &mat) {
         delete[] values;
         rows = mat.rows;
@@ -37,7 +37,7 @@ Matrix &Matrix::operator=(const Matrix &mat) {
 }
 
 
-Matrix &Matrix::operator=(Matrix &&mat) noexcept {  // Оператор перемещающего присваивания
+Matrix& Matrix::operator=(Matrix &&mat) noexcept {  // Оператор перемещающего присваивания
     if (this != &mat) {
         delete[] values;
         rows = mat.rows;
@@ -50,7 +50,7 @@ Matrix &Matrix::operator=(Matrix &&mat) noexcept {  // Оператор пере
 
 
 Matrix Matrix::fill_value(double value) {
-    for (int idx = 0; idx < rows * cols; idx++) values[idx] = value;
+    for (unsigned int idx = 0; idx < rows * cols; idx++) values[idx] = value;
     return *this;
 }
 
@@ -67,7 +67,7 @@ void Matrix::set(unsigned int row, unsigned int col, double value) {
 }
 
 
-double *Matrix::operator[](unsigned int idx) {
+double* Matrix::operator[](unsigned int idx) {
     if (idx > rows) return nullptr;
     return values + idx * cols;
 }
@@ -84,7 +84,7 @@ bool Matrix::operator==(const Matrix &mat) {
 
 
 Matrix Matrix::fill_random(int min_value, int max_value) {
-    for (int idx = 0; idx < rows * cols; idx++) {
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
         values[idx] = min_value + (double) rand() / (double) RAND_MAX * (max_value - min_value);
     }
     return *this;
@@ -122,9 +122,10 @@ bool Matrix::is_identity() {
 
 
 Matrix Matrix::operator+(const Matrix &mat2) const {
+    if (this->rows != mat2.rows || this->cols != mat2.cols) return {};
     const Matrix &mat1 = *this;
     Matrix res = {rows, cols};
-    for (int idx = 0; idx < rows * cols; idx++) {
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = mat1.values[idx] + mat2.values[idx];
     }
     return res;
@@ -132,8 +133,9 @@ Matrix Matrix::operator+(const Matrix &mat2) const {
 
 
 Matrix Matrix::operator-(const Matrix &mat2) const {
+    if (this->rows != mat2.rows || this->cols != mat2.cols) return {};
     Matrix res = {rows, cols};
-    for (int idx = 0; idx < rows * cols; idx++) {
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] - mat2.values[idx];
     }
     return res;
@@ -142,21 +144,20 @@ Matrix Matrix::operator-(const Matrix &mat2) const {
 
 Matrix Matrix::operator*(const double scalar) const {
     Matrix res = *this;
-    for (int idx = 0; idx < rows * cols; idx++) res.values[idx] *= scalar;
+    for (unsigned int idx = 0; idx < rows * cols; idx++) res.values[idx] *= scalar;
     return res;
 }
 
 
 Matrix Matrix::operator/(const double scalar) const {
     Matrix res = *this;
-    for (int idx = 0; idx < rows * cols; idx++) res.values[idx] /= scalar;
+    for (unsigned int idx = 0; idx < rows * cols; idx++) res.values[idx] /= scalar;
     return res;
 }
 
-
 Matrix Matrix::operator*(const Matrix &mat2) const {
+    if (this->cols != mat2.rows) return {};
     Matrix mat1 = *this;
-    if (mat1.cols != mat2.rows) return {};
     Matrix res = {mat1.rows, mat1.cols};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
@@ -171,12 +172,66 @@ Matrix Matrix::operator*(const Matrix &mat2) const {
 }
 
 
-Matrix Matrix::transpose(const Matrix &mat) {
-    Matrix res = {mat.cols, mat.rows};
-    for (unsigned int row = 0; row < mat.rows; row++) {
-        for (unsigned int col = 0; col < mat.cols; col++) {
-            res.values[col * res.rows + row] = mat.values[row * res.cols + col];
+Matrix Matrix::transpose() {
+    Matrix res = {this->cols, this->rows};
+    int counter = 0;
+    for (unsigned int row = 0; row < res.rows; row++) {
+        for (unsigned int col = 0; col < res.cols; col++) {
+            res.values[row * res.cols + col] = this->values[col * res.cols + row];
         }
     }
     return res;
 }
+
+
+void Matrix::swap_rows(unsigned int row1, unsigned int row2){
+    auto temp = new double[cols];
+    memcpy(temp, this->operator[](row1), cols * sizeof(double));
+    memcpy(this->operator[](row1), this->operator[](row2), cols * sizeof(double));
+    memcpy(this->operator[](row2), temp, cols * sizeof(double));
+    this->swap_num++;
+}
+
+
+Matrix Matrix::upper_triangle() {
+    Matrix mat = *this;
+    for (unsigned int step = 0; step < mat.cols; step++) {
+        unsigned int non_zero_row = step;
+        while (mat.values[non_zero_row * mat.cols + step] == 0 && non_zero_row != mat.rows - 1) {
+            non_zero_row++;  // Переход к следующему столбцу, все элементы столбца нулевые
+        }
+        if (non_zero_row != step) mat.swap_rows(non_zero_row, step);
+    }
+    for (int col = 0; col < mat.cols - 1; col++) {
+        if (mat.values[col + mat.cols * col] != 0) {
+            for (int row = col + 1; row < mat.rows; row++) {
+                double factor = mat.values[col + mat.cols * row] / mat.values[col + mat.cols * col];
+                for (int idx = mat.cols - 1; idx >= col; idx--) {
+                    mat.values[idx + mat.cols * row] -= mat.values[idx + mat.cols * col] * factor;
+                }
+            }
+        }
+    }
+    return mat;
+}
+
+
+double Matrix::det() {
+    Matrix temp = this->upper_triangle();
+    double res = 1;
+    for (unsigned int idx = 0; idx < temp.rows * temp.cols; idx += temp.cols + 1) {
+        res *= temp.values[idx];
+    }
+    return res * pow(-1, temp.swap_num);
+}
+
+//    for (unsigned int col = 0; col < mat.cols - 1; col++) {
+//        this->print();
+//        for (unsigned int row = col + 1; row < mat.rows; row++) {
+//            double factor = this->values[row * mat.cols + col] / this->values[col * mat.rows + col];
+//            for (unsigned int step = col; step < mat.cols; step++){
+//                this->values[step + mat.cols * row] -= this->values[step + mat.cols * (row - 1)] * factor;
+//            }
+//        }
+//    }
+//}

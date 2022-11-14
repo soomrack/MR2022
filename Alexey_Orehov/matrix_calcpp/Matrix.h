@@ -8,9 +8,10 @@ const double EPS = 10e-6;  // Точность при сравнении вел�
 
 class Matrix {
 private:
-    double *values;
     unsigned int rows;
     unsigned int cols;
+    double *values;
+    double swap_num = 0;
 
 public:
     Matrix();
@@ -29,32 +30,33 @@ public:
     double get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы
     void set(unsigned int row, unsigned int col, double val);        // Изменение произвольного элемента матрицы
 
-    Matrix &operator=(const Matrix &mat);
+    Matrix& operator=(const Matrix &mat);
 
-    Matrix &operator=(Matrix &&mat) noexcept;
+    Matrix& operator=(Matrix &&mat) noexcept;
 
     bool operator==(const Matrix &mat);
 
     bool operator!=(const Matrix &mat) { return !(*this == mat); }
 
-    double *operator[](unsigned int row);                            // Доступ к заданной строке матрицы
+    double* operator[](unsigned int row);                            // Доступ к заданной строке матрицы
     bool is_identity();
 
     Matrix operator+(const Matrix &mat) const;
-
     Matrix operator-(const Matrix &mat) const;
-
     Matrix operator*(double scalar) const;
-
+    Matrix operator*(const Matrix &mat2) const;
     Matrix operator/(double scalar) const;
 
-    Matrix operator*(const Matrix &mat) const;
+    Matrix& operator+=(const Matrix &mat) { *this = *this + mat; return *this; }
+    Matrix& operator-=(const Matrix &mat) { *this = *this + mat; return *this; }
+    Matrix& operator*=(const Matrix &mat) { *this = *this * mat; return *this; }
 
-    static Matrix transpose(const Matrix &mat);
+    Matrix transpose();
+    void swap_rows(unsigned int row1, unsigned int row2);
+    Matrix upper_triangle();
+    double det();
 
-
-    friend std::ostream &
-    operator<<(std::ostream &os, Matrix &mat) {  // Перегрузка << для вывода матрицы через std::cout
+    friend std::ostream& operator<<(std::ostream &os, Matrix &mat) {
         os << "\n";
         for (unsigned int row = 0; row < mat.rows; row++) {
             for (unsigned int col = 0; col < mat.cols; col++) {
@@ -76,7 +78,7 @@ public:
         return os;
     }
 
-    friend std::istream &operator>>(std::istream &is, Matrix &mat) {  // Перегрузка >> для ввода матрицы через std::cin
+    friend std::istream &operator>>(std::istream &is, Matrix &mat) {
         for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
             is >> mat.values[idx];
         }
@@ -84,7 +86,7 @@ public:
     }
 
     explicit operator bool() {  // Определение преобразования матрицы в логический тип
-        for (int idx = 0; idx < rows * cols; idx++) {
+        for (unsigned int idx = 0; idx < rows * cols; idx++) {
             if (!(bool) values[idx]) return false;
         }
         return true;
