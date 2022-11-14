@@ -30,14 +30,14 @@ void mistake (char* name_of_operation, char* error) {  // Есть ошибка 
 }
 
 
-void matrix_input (Matrix* matrix) {  // Рандомный ввод матриц
+void set (Matrix* matrix) {  // Рандомный ввод матриц
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         matrix->value[number] = rand()%10;  //
     }
 }
 
 
-/*void matrix_input (Matrix* matrix) {
+/*void set (Matrix* matrix) {
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         scanf("%lf", &matrix->value[number]);
     }
@@ -78,7 +78,6 @@ Matrix summation (const Matrix matrix1, const Matrix matrix2) {  // Суммир
     if (col1 != col2 || row1 != row2) {
         mistake("Summation", "Not equal matrix size");
         return ZERO;
-        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -93,7 +92,6 @@ Matrix subtraction (const Matrix matrix1, const Matrix matrix2) {  // Вычит
     if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
         mistake("Subtraction", "Not equal matrix size");
         return ZERO;
-        printf("\n");
     }
     Matrix itog = initialization(matrix1.cols, matrix1.rows);
     unsigned int total_num = itog.cols * itog.rows;
@@ -104,14 +102,15 @@ Matrix subtraction (const Matrix matrix1, const Matrix matrix2) {  // Вычит
 }
 
 
-Matrix one_matrix (const unsigned int cols, const unsigned int rows) {  // Задание единичной матрицы
+Matrix identity_matrix (const unsigned int cols, const unsigned int rows) {  // Задание единичной матрицы (identity_matrix)
     Matrix itog = initialization(cols, rows);
     for (unsigned int number = 0; number < cols * rows; number ++) {
         itog.value [number] = 0.0;
-        for ( unsigned int num = 0; num <= number; num = num + cols + 1) {
-            itog.value[num] = 1.0;
-        }
     }
+    for ( unsigned int num = 0; num <= cols*rows; num += cols + 1) {
+        itog.value[num] = 1.0;
+    }
+    return itog;
 }
 
 
@@ -139,7 +138,6 @@ Matrix multiply_matrix_by_matrix (const Matrix matrix1, const Matrix matrix2) { 
         mistake("Multiply matrix on matrix", "Matrix 1 cols should be equal");
         printf("to matrix 2 rows\n");
         return ZERO;
-        printf("\n");
     }
     unsigned int itog_cols = matrix2.cols;
     unsigned int itog_rows = matrix1.rows;
@@ -240,7 +238,7 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {  // Воз�
         return ZERO;
     }
     if (num == 0) {
-        return one_matrix(matrix.cols, matrix.rows);
+        return identity_matrix(matrix.cols, matrix.rows);
     }
     Matrix itog = copy_matrix(matrix);
     for (unsigned int number = 1; number < num; number ++) {
@@ -301,9 +299,9 @@ Matrix invert_matrix (const struct Matrix matrix) {  // Инвертирован
     unsigned int n = 20;
     Matrix itog;
     Matrix temp;
-    temp = one_matrix(matrix.cols, matrix.rows);
+    temp = identity_matrix(matrix.cols, matrix.rows);
     double r_factorial = 1.0;
-    itog = one_matrix(matrix.cols, matrix.rows);
+    itog = identity_matrix(matrix.cols, matrix.rows);
     for (unsigned int num = 0; num < n; num++) {
         r_factorial /= num;
         temp = multiply_matrix_by_matrix(temp, matrix);
@@ -320,9 +318,9 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
         return ZERO;
     }
     Matrix new_result , new_powered, multiplied;
-    Matrix result = one_matrix(matrix.cols, matrix.rows);
-    Matrix powered = matrix;
-    new_result = one_matrix(matrix.cols, matrix.rows);
+    Matrix exponent = identity_matrix(matrix.cols, matrix.rows);
+    Matrix powered = exponent;
+    new_result = identity_matrix(matrix.cols, matrix.rows);
     int factorial = 1;
     for (int acc = 1; acc <= accuracy; ++acc) {
         factorial *= acc;
@@ -330,16 +328,19 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
         powered = copy_matrix(new_powered);
         clean_memory(new_powered);
         multiplied = multiply_by_num(powered, 1. / factorial);
-        new_result = summation(result, multiplied);
-        result = copy_matrix(new_result);
-        clean_memory(new_result);
+        new_result = summation(exponent, multiplied);
+
         clean_memory(multiplied);
-        clean_memory(powered);
-    }
+
+        exponent = copy_matrix(new_result);
+
+        clean_memory(new_result);
 /*
-    clean_memory(powered);
+        clean_memory(powered);
 */
-    return result;
+    }
+    clean_memory(powered);
+    return exponent;
 }
 
 
@@ -351,12 +352,12 @@ int main() {
 
     printf("\nFirst martix\n");
     mat1 = initialization(2, 2);
-    matrix_input(&mat1);
+    set(&mat1);
     matrix_output(mat1);
 
     printf("Second matrix\n");
     mat2 = initialization(2, 2);
-    matrix_input(&mat2);
+    set(&mat2);
     matrix_output(mat2);
 
     printf("Sum of matrices\n");
@@ -441,6 +442,12 @@ int main() {
     exp = matrix_exponent(mat2, 5);
     matrix_output(exp);
     clean_memory(exp);
+
+    printf("identity\n");
+    Matrix one;
+    one = identity_matrix(3, 3);
+    matrix_output(one);
+    clean_memory(one);
 
    /* printf("Unit matrix\n");
     Matrix ed;
