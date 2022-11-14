@@ -18,10 +18,10 @@ void matrix_memory(Matrix *name)
         name->values[row] = name->data + row * name->cols;
 }
 
-//void freeing_memory(Matrix *name)
-//{
-//
-//}
+void freeing_memory(Matrix *name)
+{
+    free(name->data);
+}
 
 void null_array(Matrix *name)
 {
@@ -89,6 +89,8 @@ void subtraction (Matrix A, Matrix B)
         printf("\n");
     }
     printf("\n");
+
+    freeing_memory(&subtraction_matrix);
 }
 
 void multiplication (Matrix A, Matrix B)
@@ -112,6 +114,7 @@ void multiplication (Matrix A, Matrix B)
     }
     printf("\n");
 
+    freeing_memory(&multiplication_matrix);
 }
 
 void transposition (Matrix A)
@@ -132,6 +135,7 @@ void transposition (Matrix A)
     }
     printf("\n");
 
+    freeing_memory(&copy_matrix);
 }
 
 void exponent (Matrix A)
@@ -144,7 +148,7 @@ void exponent (Matrix A)
         for (int cols = 0; cols < exp_matrix.cols; cols++)
             exp_matrix.values[rows][cols] = 1 + A.values[rows][cols];
 
-    Matrix temporarily_matrix = {2, 2, A.values};
+    Matrix temporarily_matrix = {2, 2, NULL, (double *) A.values};
     matrix_memory(&temporarily_matrix);
 
     long int k = 2;
@@ -166,27 +170,39 @@ void exponent (Matrix A)
             for (int cols = 0; cols < exp_matrix.cols; cols++)
             {
                 exp_matrix.values[rows][cols] += temporarily_matrix.values[rows][cols] / factorial;
-                printf("%lf ", exp_matrix.values[rows][cols]);
             }
-            printf("\n");
         }
         k++;
         factorial *= k;
+    }
+
+    freeing_memory(&temporarily_matrix);
+
+    for (int rows = 0; rows < exp_matrix.rows; rows++)
+    {
+        for (int cols = 0; cols < exp_matrix.cols; cols++)
+        {
+            printf("%lf ", exp_matrix.values[rows][cols]);
+        }
         printf("\n");
     }
+
+    freeing_memory(&exp_matrix);
 }
 
 void total()
 {
-    Matrix A = {2, 2, NULL};
-    Matrix B = {2, 2, NULL};
+    Matrix A = {2, 2, NULL, NULL};
+    Matrix B = {2, 2, NULL, NULL};
     random_array(&A);
     random_array(&B);
     addition(A, B);
     subtraction(A, B);
     multiplication(A, B);
     transposition(A);
-//    exponent(A);
+    exponent(A);
+    freeing_memory(&A);
+    freeing_memory(&B);
 }
 
 int main()
