@@ -127,6 +127,41 @@ Matrix mult_d(const Matrix A, const double k ){
     }
     return rez;
 }
+Matrix copy(const Matrix A) { // копирование матрицы
+    Matrix rez = init(A);
+    for (unsigned int row = 0; row < rez.rows; row++){
+        for (unsigned int col = 0; col < rez.cols; col++){
+            rez.values[row][col] = A.values[row][col];
+        }
+    }
+    return rez;
+}
+
+Matrix Exp(const Matrix A, int accuracy) { // экпонента
+    if (A.cols != A.rows) {
+        return EMPTY;
+    }
+    Matrix new_rez, new_powered, multiplied;
+    Matrix rez = init(A);
+    Matrix powered = A;
+    int factorial = 1;
+    for (int acc = 1.0; acc <= accuracy; ++acc) {
+        factorial *= acc;
+
+        new_powered = multiplication(powered, A);
+        powered = copy(new_powered);
+        free_matrix(&new_powered);
+
+        multiplied = mult_d(powered, 1. / factorial);
+
+        new_rez = addition(rez, multiplied);
+        rez = copy(new_rez);
+        free_matrix(&new_rez);
+        free_matrix(&multiplied);
+    }
+    free_matrix(&powered);
+    return rez;
+}
 
 void print(Matrix A){
 
@@ -203,7 +238,9 @@ int main() {
     printf("This is matrix.c A minor\n");
     print(minor(4,4,A));
     printf("This is matrix.c A det %f\n", determinant(A));
+    printf("This is matrix. A exp\n");
+    print(Exp(A,3));
     return 0;
-
 }
+
 
