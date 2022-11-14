@@ -4,8 +4,8 @@ class Matrix {
 private:
     unsigned int cols;
     unsigned int rows;
-public:
     double *values;
+public:
     Matrix(unsigned int cols_m, unsigned int rows_m);
     Matrix(const Matrix &A);
     explicit Matrix(unsigned int cols_m);
@@ -20,7 +20,7 @@ public:
     Matrix operator=(const Matrix& X) const;
     Matrix operator^(double X) const;
     Matrix operator/ (const Matrix& X) const;
-    Matrix operator/ (const double& X) const;
+    Matrix operator/ (const double X) const;
     static Matrix exp(const Matrix& A);
 };
 
@@ -130,11 +130,12 @@ Matrix Matrix::operator* (const Matrix& X) const {
     return mult;
 }
 
-Matrix Matrix::operator= (const Matrix& X) const {
+Matrix Matrix::operator= (const Matrix& X) const { ////////////////////////////////////////////////////////
     Matrix equal(X.cols, X.rows);
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < X.cols; col++) {
             equal.values = X.values;
+           Matrix equal(X);
         }
     }
     return equal;
@@ -146,7 +147,7 @@ Matrix Matrix::operator^ (double X) const {
         Matrix one(rows);
         return one;
     }
-    else if (X == 1) {
+    if (X == 1) {
         return power;
     }
     else {
@@ -171,7 +172,7 @@ Matrix Matrix::operator/ (const Matrix& X) const {
     return divide;
 }
 
-Matrix Matrix::operator/ (const double& X) const {
+Matrix Matrix::operator/ (const double X) const {
     Matrix divide(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
                 divide.values[idx] = values[idx] / X;
@@ -185,11 +186,10 @@ Matrix Matrix::exp(const Matrix& A){
     int factorial = 1;
     for (int n = 2; n < 11; n++) {
         factorial *= n;
-        exp = (A^n) / factorial;
+        exp = exp + (A^n) / factorial;
     }
     return exp;
 }
-
 
 int main() {
     // Создание матриц
