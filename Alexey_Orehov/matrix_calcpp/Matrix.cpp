@@ -202,11 +202,11 @@ Matrix Matrix::upper_triangle() {
         }
         if (non_zero_row != step) mat.swap_rows(non_zero_row, step);
     }
-    for (int col = 0; col < mat.cols - 1; col++) {
+    for (unsigned int col = 0; col < mat.cols - 1; col++) {
         if (mat.values[col + mat.cols * col] != 0) {
-            for (int row = col + 1; row < mat.rows; row++) {
+            for (unsigned int row = col + 1; row < mat.rows; row++) {
                 double factor = mat.values[col + mat.cols * row] / mat.values[col + mat.cols * col];
-                for (int idx = mat.cols - 1; idx >= col; idx--) {
+                for (unsigned int idx = col; idx < mat.cols; idx++) {
                     mat.values[idx + mat.cols * row] -= mat.values[idx + mat.cols * col] * factor;
                 }
             }
@@ -224,14 +224,3 @@ double Matrix::det() {
     }
     return res * pow(-1, temp.swap_num);
 }
-
-//    for (unsigned int col = 0; col < mat.cols - 1; col++) {
-//        this->print();
-//        for (unsigned int row = col + 1; row < mat.rows; row++) {
-//            double factor = this->values[row * mat.cols + col] / this->values[col * mat.rows + col];
-//            for (unsigned int step = col; step < mat.cols; step++){
-//                this->values[step + mat.cols * row] -= this->values[step + mat.cols * (row - 1)] * factor;
-//            }
-//        }
-//    }
-//}

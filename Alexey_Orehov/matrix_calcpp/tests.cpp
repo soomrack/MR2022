@@ -102,8 +102,8 @@ int main(){
 //    test_sub();
 //    test_mul();
     double data[9] = {0, 0, 3,
-                      0, 0, 6,
-                      0, 8, 1};
+                      4, 0, 6,
+                      7, 8, 9};
     Matrix mat = Matrix(3, 3).fill_from_array(data);
     std::cout << mat << std::endl;
     std::cout << mat.det();
