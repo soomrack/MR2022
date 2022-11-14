@@ -97,12 +97,12 @@ void test_mul(){
 int main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-//    test_equal();
-//    test_add();
-//    test_sub();
-//    test_mul();
-    double data[9] = {0, 2, 3,
-                      1, 15, 6,
+    test_equal();
+    test_add();
+    test_sub();
+    test_mul();
+    double data[9] = {1, 2, 3,
+                      4, 15, 6,
                       7, 8, 9};
     Matrix mat = Matrix(3, 3).fill_from_array(data);
     std::cout << mat << std::endl;
