@@ -9,7 +9,7 @@
 #include <cmath>
 
 class MatrixException: public std::exception {
-    friend class Matrix_test;
+    friend class MatrixTest;
 private:
     inline static const double EPSILON = 0.000001;
     inline static std::string msg;
