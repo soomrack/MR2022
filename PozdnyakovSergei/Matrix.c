@@ -73,7 +73,9 @@ void matrix_output (const Matrix matrix) {  // Вывод матрицы рез�
 
 
 Matrix summation (const Matrix matrix1, const Matrix matrix2) {  // Суммирование матриц
-    if (matrix1.cols != matrix2.cols || matrix1.rows != matrix2.rows) {
+    int col1 = matrix1.cols; int row1 = matrix1.rows;
+    int col2 = matrix2.cols; int row2 = matrix2.rows;
+    if (col1 != col2 || row1 != row2) {
         mistake("Summation", "Not equal matrix size");
         return ZERO;
         printf("\n");
