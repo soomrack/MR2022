@@ -245,7 +245,7 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {
         Matrix new = multiply_matrix_by_matrix(matrix, itog);
         itog = new;
         if (number == num) {
-        clean_memory(new);
+        clean_memory(new); //почистить всегда
       }
     }
     return itog;
@@ -306,9 +306,10 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // экпонент
         mistake("Exp", "Matrix should be square");
         return ZERO;
     }
-    Matrix new_result, new_powered, multiplied;
+    Matrix new_result , new_powered, multiplied;
     Matrix result = one_matrix(matrix.cols, matrix.rows);
     Matrix powered = matrix;
+    new_result = one_matrix(matrix.cols, matrix.rows);
     int factorial = 1;
     for (int acc = 1; acc <= accuracy; ++acc) {
         factorial *= acc;
@@ -320,8 +321,11 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // экпонент
         result = copy_matrix(new_result);
         clean_memory(new_result);
         clean_memory(multiplied);
+        clean_memory(powered);
     }
+/*
     clean_memory(powered);
+*/
     return result;
 }
 
