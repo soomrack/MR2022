@@ -11,7 +11,7 @@ private:
     unsigned int rows;
     unsigned int cols;
     double *values;
-    double swap_num = 0;
+    unsigned int swap_num = 0;
 
 public:
     Matrix();
@@ -55,6 +55,10 @@ public:
     void swap_rows(unsigned int row1, unsigned int row2);
     Matrix upper_triangle();
     double det();
+    double trace();
+
+    Matrix minor(const unsigned int minor_row, const unsigned int minor_col);
+    Matrix inv();
 
     friend std::ostream& operator<<(std::ostream &os, Matrix &mat) {
         os << "\n";

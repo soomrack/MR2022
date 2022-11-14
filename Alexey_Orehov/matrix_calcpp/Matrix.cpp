@@ -13,13 +13,13 @@ Matrix::Matrix(unsigned int r_num, unsigned int c_num) : rows(r_num), cols(c_num
 }
 
 
-Matrix::Matrix(const Matrix &mat) : rows(mat.rows), cols(mat.cols) {
+Matrix::Matrix(const Matrix &mat) : rows(mat.rows), cols(mat.cols), swap_num(mat.swap_num) {
     values = new double[rows * cols];
     memcpy(values, mat.values, sizeof(double) * rows * cols);
 }
 
 
-Matrix::Matrix(Matrix &&mat) noexcept: values(mat.values), rows(mat.rows), cols(mat.cols) {
+Matrix::Matrix(Matrix &&mat) noexcept: values(mat.values), rows(mat.rows), cols(mat.cols), swap_num(mat.swap_num) {
     mat.values = nullptr;
     mat.rows = 0;
     mat.cols = 0;
@@ -56,7 +56,7 @@ Matrix Matrix::fill_value(double value) {
 
 
 double Matrix::get(unsigned int row, unsigned int col) {
-    if (row > rows || col > cols) return NAN;
+    // TODO: Проверка if (row > rows || col > cols) return NAN;
     return values[col + row * cols];
 }
 
@@ -92,9 +92,7 @@ Matrix Matrix::fill_random(int min_value, int max_value) {
 
 
 Matrix Matrix::fill_identity() {
-    if (rows != cols) {
-        return {};
-    }
+    // TODO: Проверка if (rows != cols)
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         this->values[idx] = idx % (rows + 1) == 0 ? 1.0 : 0.0;
     }
@@ -122,7 +120,7 @@ bool Matrix::is_identity() {
 
 
 Matrix Matrix::operator+(const Matrix &mat2) const {
-    if (this->rows != mat2.rows || this->cols != mat2.cols) return {};
+    // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
     const Matrix &mat1 = *this;
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
@@ -133,7 +131,7 @@ Matrix Matrix::operator+(const Matrix &mat2) const {
 
 
 Matrix Matrix::operator-(const Matrix &mat2) const {
-    if (this->rows != mat2.rows || this->cols != mat2.cols) return {};
+    // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] - mat2.values[idx];
@@ -156,7 +154,7 @@ Matrix Matrix::operator/(const double scalar) const {
 }
 
 Matrix Matrix::operator*(const Matrix &mat2) const {
-    if (this->cols != mat2.rows) return {};
+    // TODO: Проверка if (this->cols != mat2.rows) в класс исключений
     Matrix mat1 = *this;
     Matrix res = {mat1.rows, mat1.cols};
     for (unsigned int row = 0; row < res.rows; row++) {
@@ -173,6 +171,7 @@ Matrix Matrix::operator*(const Matrix &mat2) const {
 
 
 Matrix Matrix::transpose() {
+    // TODO: Проверка на квадратную форму в класс исключений
     Matrix res = {this->cols, this->rows};
     int counter = 0;
     for (unsigned int row = 0; row < res.rows; row++) {
@@ -194,12 +193,12 @@ void Matrix::swap_rows(unsigned int row1, unsigned int row2){
 
 
 Matrix Matrix::upper_triangle() {
+    // TODO: Проверка на квадратную форму в класс исключений
     Matrix mat = *this;
     for (unsigned int step = 0; step < mat.cols; step++) {
         unsigned int non_zero_row = step;
-        while (mat.values[non_zero_row * mat.cols + step] == 0 && non_zero_row != mat.rows - 1) {
-            non_zero_row++;  // Переход к следующему столбцу, все элементы столбца нулевые
-        }
+        // Переход к следующему столбцу, все элементы столбца нулевые
+        while (mat.values[non_zero_row * mat.cols + step] == 0 && non_zero_row != mat.rows - 1) non_zero_row++;
         if (non_zero_row != step) mat.swap_rows(non_zero_row, step);
     }
     for (unsigned int col = 0; col < mat.cols - 1; col++) {
@@ -217,10 +216,51 @@ Matrix Matrix::upper_triangle() {
 
 
 double Matrix::det() {
+    // TODO: Проверка на квадратную форму в класс исключений
     Matrix temp = this->upper_triangle();
     double res = 1;
     for (unsigned int idx = 0; idx < temp.rows * temp.cols; idx += temp.cols + 1) {
         res *= temp.values[idx];
     }
     return res * pow(-1, temp.swap_num);
+}
+
+
+double Matrix::trace() {
+    // TODO: Проверка на квадратную форму в класс исключений
+    double res = 0.0;
+    for (unsigned int idx = 0; idx < this->rows * this->cols; idx += this->cols + 1) res += this->values[idx];
+    return res;
+}
+
+
+// Минор матрицы по строке minor_row и столбцу minor_col
+Matrix Matrix::minor(const unsigned int minor_row, const unsigned int minor_col){
+    Matrix mat = *this;
+    Matrix temp = Matrix(mat.rows - 1, mat.cols - 1);
+    int minor_index = 0;
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++) {
+            if (row != minor_row && col != minor_col) {
+                temp.values[minor_index++] = mat.values[row * mat.rows + col];
+            }
+        }
+    }
+    return temp;
+}
+
+
+Matrix Matrix::inv() {
+    // TODO: Проверка if (mat.cols != mat.rows){
+    Matrix mat = *this;
+    Matrix ans = {mat.rows, mat.cols};
+    double determinant = mat.det();
+    for (unsigned int row = 0; row < mat.rows; row++){
+        for (unsigned int col = 0; col < mat.cols; col++){
+            ans.values[col * ans.rows + row] = pow(-1, row + col) *
+                    mat.minor(row, col).det() / determinant;
+            // неправильные знаки в обратной матрице если используется перестановка строк
+        }
+    }
+    return ans;
 }

@@ -101,12 +101,13 @@ int main(){
 //    test_add();
 //    test_sub();
 //    test_mul();
-    double data[9] = {0, 0, 3,
-                      4, 0, 6,
+    double data[9] = {0, 2, 3,
+                      1, 15, 6,
                       7, 8, 9};
     Matrix mat = Matrix(3, 3).fill_from_array(data);
     std::cout << mat << std::endl;
     std::cout << mat.det();
+    std::cout << mat.inv();
 
     return 0;
 }
