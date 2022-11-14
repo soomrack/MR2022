@@ -1,15 +1,15 @@
-#include "Matrix_test.h"
+#include "MatrixTest.h"
 
 inline void print_message(std::string text) {
-    std::cout << text << ":" << std::endl << Matrix_exception::get_msg() << std::endl << std::endl;
+    std::cout << text << ":" << std::endl << MatrixException::get_msg() << std::endl << std::endl;
 }
 
-void Matrix_test::calculation_check(double true_array[], Matrix matrix, std::string text) {
+void MatrixTest::calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
     for (int cell = 0; cell < matrix.get_size(0); cell++) {
         int cell_flag = 0;
-        if (std::abs(true_array[cell] - matrix.start[cell]) > Matrix_exception::EPSILON) {
+        if (std::abs(true_array[cell] - matrix.start[cell]) > MatrixException::EPSILON) {
             cell_flag = 1;
             error_flag += 1;
         }
@@ -20,7 +20,7 @@ void Matrix_test::calculation_check(double true_array[], Matrix matrix, std::str
     std::cout << "\n";
 }
 
-void Matrix_test::overload_test() {
+void MatrixTest::overload_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix res_matrix = matrix1;
@@ -32,7 +32,7 @@ void Matrix_test::overload_test() {
     }
 }
 
-void Matrix_test::addition_test() {
+void MatrixTest::addition_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix matrix2(2, 2, array2);
@@ -45,7 +45,7 @@ void Matrix_test::addition_test() {
     }
 }
 
-void Matrix_test::number_addition_test() {
+void MatrixTest::number_addition_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix res_matrix = matrix1 + 2;
@@ -57,7 +57,7 @@ void Matrix_test::number_addition_test() {
     }
 }
 
-void Matrix_test::subtraction_test() {
+void MatrixTest::subtraction_test() {
     try {
         Matrix matrix1(3, 2, array1);
         Matrix matrix2(2, 2, array2);
@@ -70,7 +70,7 @@ void Matrix_test::subtraction_test() {
     }
 }
 
-void Matrix_test::multiplication_test() {
+void MatrixTest::multiplication_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix matrix2(2, 2, array2);
@@ -83,7 +83,7 @@ void Matrix_test::multiplication_test() {
     }
 }
 
-void Matrix_test::number_multiplication_test() {
+void MatrixTest::number_multiplication_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix res_matrix = matrix1 * 2;
@@ -95,7 +95,7 @@ void Matrix_test::number_multiplication_test() {
     }
 }
 
-void Matrix_test::determinant_test() {
+void MatrixTest::determinant_test() {
     try {
         Matrix matrix1(2, 2, array1);
         double determinant_true_array[] = {-2};
@@ -107,7 +107,7 @@ void Matrix_test::determinant_test() {
     }
 }
 
-void Matrix_test::transposition_test() {
+void MatrixTest::transposition_test() {
     try {
         Matrix matrix1(2, 2, array1);
         double transp_true_array[] = {2, 1, 8, 3};
@@ -119,7 +119,7 @@ void Matrix_test::transposition_test() {
     }
 }
 
-void Matrix_test::inversion_test() {
+void MatrixTest::inversion_test() {
     try {
         Matrix matrix1(2, 2, array1);
         double inv_true_array[] = {-1.5, 4, 0.5, -1};
@@ -131,7 +131,7 @@ void Matrix_test::inversion_test() {
     }
 }
 
-void Matrix_test::inverse_multiplication_test() {
+void MatrixTest::inverse_multiplication_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix matrix2(2, 2, array2);
@@ -144,7 +144,7 @@ void Matrix_test::inverse_multiplication_test() {
     }
 }
 
-void Matrix_test::number_division_test() {
+void MatrixTest::number_division_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix res_matrix = matrix1 / 2;
@@ -156,7 +156,7 @@ void Matrix_test::number_division_test() {
     }
 }
 
-void Matrix_test::power_test() {
+void MatrixTest::power_test() {
     try {
         Matrix matrix1(2, 2, array1);
         Matrix res_matrix = matrix1.power(power);
@@ -167,7 +167,7 @@ void Matrix_test::power_test() {
     }
 }
 
-void Matrix_test::exp_test() {
+void MatrixTest::exp_test() {
     try {
         Matrix matrix3(2, 2, array3);
         double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
@@ -179,18 +179,18 @@ void Matrix_test::exp_test() {
     }
 }
 
-void Matrix_test::user_test() {
+void MatrixTest::user_test() {
     try {
         Matrix A(2,2,2);
         Matrix B(3,3,2);
         Matrix C = A + B;
     }
     catch(int ex_number) {
-        std::cout << "user_test:\n" << Matrix_exception::get_msg() << std::endl << std::endl;
+        print_message("user_test");
     }
 }
 
-void Matrix_test::memory_leak_test() {
+void MatrixTest::memory_leak_test() {
     int a = 20000;
     int b = 10000;
     try {
@@ -203,7 +203,7 @@ void Matrix_test::memory_leak_test() {
         A.values[0][0] = 4;
     }
     catch(int ex_number) {
-        std::cout << "memory_leak_test:" << Matrix_exception::get_msg() << std::endl;
+        std::cout << "memory_leak_test:\n" << MatrixException::get_msg() << std::endl;
         std::cin >> a;
     }
 }

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include "Matrix_exception.h"
+#include "MatrixException.h"
 
 class Matrix {
 private:

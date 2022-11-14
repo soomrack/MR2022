@@ -8,9 +8,9 @@
 #include <iostream>
 #include <iomanip>
 #include "Matrix.h"
-#include "Matrix_exception.h"
+#include "MatrixException.h"
 
-class Matrix_test {
+class MatrixTest {
 private:
     inline static double array1[] = {2, 8, 1, 3};
     inline static double array2[] = {4, 9, 21, 13};

@@ -1,4 +1,4 @@
-#include "Matrix_test.h"
+#include "MatrixTest.h"
 
 int main() {
     /*Matrix_test::overload_test();
@@ -15,6 +15,6 @@ int main() {
     Matrix_test::power_test();
     Matrix_test::exp_test();
     Matrix_test::user_test();*/
-    Matrix_test::memory_leak_test();
+    MatrixTest::memory_leak_test();
     return 0;
 }

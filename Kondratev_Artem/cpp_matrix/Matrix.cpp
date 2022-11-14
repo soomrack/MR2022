@@ -9,7 +9,7 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int input_rows, int input_cols) {
-    Matrix_exception::positive_parameters(input_rows, input_cols);
+    MatrixException::positive_parameters(input_rows, input_cols);
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -22,11 +22,11 @@ Matrix::Matrix(int input_rows, int input_cols) {
     catch(...) {
         std::cout << "new: memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double number) {
-    Matrix_exception::positive_parameters(input_rows, input_cols);
+    MatrixException::positive_parameters(input_rows, input_cols);
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -41,11 +41,11 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     catch(...) {
         std::cout << "new: memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
-    Matrix_exception::positive_parameters(input_rows, input_cols);
+    MatrixException::positive_parameters(input_rows, input_cols);
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -60,11 +60,11 @@ Matrix::Matrix(int input_rows, int input_cols, double const array[]) {
     catch(...) {
         std::cout << "memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 Matrix::Matrix(int row_number) {
-    Matrix_exception::positive_parameters(row_number, 1);
+    MatrixException::positive_parameters(row_number, 1);
     rows = row_number;
     cols = rows;
     size = rows * cols;
@@ -80,7 +80,7 @@ Matrix::Matrix(int row_number) {
     catch(...) {
         std::cout << "memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 Matrix::~Matrix() {
@@ -106,7 +106,7 @@ Matrix::Matrix(Matrix const &matrix) {
     catch(...) {
         std::cout << "memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 Matrix::Matrix(Matrix const &&matrix) noexcept {
@@ -124,7 +124,7 @@ Matrix::Matrix(Matrix const &&matrix) noexcept {
     catch(...) {
         std::cout << "memory is not allocated" << std::endl;
     }
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
 }
 
 [[maybe_unused]] int Matrix::get_rows(int print_flag) const {
@@ -162,7 +162,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
     size = rows * cols;
     values = new double *[rows];
     start = new double[size];
-    Matrix_exception::is_memory_null(values, start);
+    MatrixException::is_memory_null(values, start);
     for (int row = 0; row < rows; row++)
         values[row] = start + row * cols;
     for (int cell = 0; cell < size; cell++)
@@ -170,7 +170,7 @@ Matrix& Matrix::operator = (Matrix const &matrix) {
 }
 
 Matrix Matrix::operator + (Matrix const matrix) const {
-    Matrix_exception::addition_check(rows, cols, matrix.rows, matrix.cols);
+    MatrixException::addition_check(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + matrix.start[cell];
@@ -178,7 +178,7 @@ Matrix Matrix::operator + (Matrix const matrix) const {
 }
 
 Matrix Matrix::operator + (double number) const {
-    Matrix_exception::is_number_nan(number);
+    MatrixException::is_number_nan(number);
     Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] + number;
@@ -186,7 +186,7 @@ Matrix Matrix::operator + (double number) const {
 }
 
 Matrix Matrix::operator - (Matrix const matrix) const {
-    Matrix_exception::subtraction_check(rows, cols, matrix.rows, matrix.cols);
+    MatrixException::subtraction_check(rows, cols, matrix.rows, matrix.cols);
     Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
         sum_matrix.start[cell] = start[cell] - matrix.start[cell];
@@ -194,7 +194,7 @@ Matrix Matrix::operator - (Matrix const matrix) const {
 }
 
 Matrix Matrix::operator * (Matrix const matrix) const {
-    Matrix_exception::multiplication_check(cols, matrix.rows);
+    MatrixException::multiplication_check(cols, matrix.rows);
     Matrix multiplied_matrix(cols, matrix.rows);
     for(int row = 0; row < multiplied_matrix.rows; row++)
         for(int col = 0; col < multiplied_matrix.cols; col++) {
@@ -206,7 +206,7 @@ Matrix Matrix::operator * (Matrix const matrix) const {
 }
 
 Matrix Matrix::operator * (double number) const {
-    Matrix_exception::is_number_nan(number);
+    MatrixException::is_number_nan(number);
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
         operated_matrix.start[cell] = start[cell] * number;
@@ -214,7 +214,7 @@ Matrix Matrix::operator * (double number) const {
 }
 
 Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
-    Matrix_exception::positive_parameters(crossed_row, crossed_col);
+    MatrixException::positive_parameters(crossed_row, crossed_col);
     Matrix minor(rows - 1, cols - 1);
     int row_link = 0;
     for(int i = 0; i < minor.rows; i++) {
@@ -231,7 +231,7 @@ Matrix Matrix::minor_init(int crossed_row, int crossed_col) const {
 }
 
 double Matrix::determinant() const{
-    Matrix_exception::is_matrix_square(rows, cols);
+    MatrixException::is_matrix_square(rows, cols);
     double determinant = 0;
     if(rows == 1) {
         determinant = values[0][0];
@@ -257,7 +257,7 @@ Matrix Matrix::transposition() const {
 }
 
 Matrix Matrix::minor_transformation(Matrix matrix) {
-    Matrix_exception::is_matrix_square(matrix.rows, matrix.cols);
+    MatrixException::is_matrix_square(matrix.rows, matrix.cols);
     Matrix transformed_matrix(matrix.rows, matrix.cols);
     if(matrix.rows == 1) {
         transformed_matrix = matrix;
@@ -274,16 +274,16 @@ Matrix Matrix::minor_transformation(Matrix matrix) {
 }
 
 Matrix Matrix::inversion() const {
-    Matrix_exception::is_matrix_square(rows, cols);
-    Matrix_exception::division_by_zero(this->determinant());
+    MatrixException::is_matrix_square(rows, cols);
+    MatrixException::division_by_zero(this->determinant());
     Matrix transformed_matrix = minor_transformation(this->transposition());
     Matrix inverse_matrix = transformed_matrix * (1 / this->determinant());
     return inverse_matrix;
 }
 
 Matrix Matrix::operator / (Matrix matrix) const {
-    Matrix_exception::is_matrix_square(rows, cols);
-    Matrix_exception::division_by_zero(this->determinant());
+    MatrixException::is_matrix_square(rows, cols);
+    MatrixException::division_by_zero(this->determinant());
     Matrix inverse_matrix = matrix.inversion();
     Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
     for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
@@ -296,8 +296,8 @@ Matrix Matrix::operator / (Matrix matrix) const {
 }
 
 Matrix Matrix::operator / (double number) const {
-    Matrix_exception::is_number_nan(number);
-    Matrix_exception::division_by_zero(number);
+    MatrixException::is_number_nan(number);
+    MatrixException::division_by_zero(number);
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
         operated_matrix.start[cell] = start[cell] / number;

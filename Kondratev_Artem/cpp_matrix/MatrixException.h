@@ -2,21 +2,21 @@
 // Created by user on 08.11.22.
 //
 
-#ifndef HELLO_WORLD_MATRIX_EXCEPTION_H
-#define HELLO_WORLD_MATRIX_EXCEPTION_H
+#ifndef HELLO_WORLD_MATRIXEXCEPTION_H
+#define HELLO_WORLD_MATRIXEXCEPTION_H
 
 #include <iostream>
 #include <cmath>
 
-class Matrix_exception: public std::exception {
+class MatrixException: public std::exception {
     friend class Matrix_test;
 private:
     inline static const double EPSILON = 0.000001;
     inline static std::string msg;
     inline static int ex_number;
 public:
-    Matrix_exception() = default;
-    ~Matrix_exception() override = default;
+    MatrixException() = default;
+    ~MatrixException() override = default;
 
     static std::string get_msg();
     static int get_ex_number();
@@ -30,4 +30,4 @@ public:
     static void is_matrix_square(int rows, int cols);
 };
 
-#endif //HELLO_WORLD_MATRIX_EXCEPTION_H
+#endif //HELLO_WORLD_MATRIXEXCEPTION_H
