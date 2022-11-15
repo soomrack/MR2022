@@ -24,9 +24,8 @@ public:
     inline static const double EPSILON = 0.000001;
     inline static const int EXP_STEP = 177;
     Matrix();  //  empty matrix
-    Matrix(int input_rows, int input_cols);
+    Matrix(int input_rows, int input_cols, int identity_flag);
     Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
-    explicit Matrix(int row_number);  //  identity matrix
     Matrix(int input_rows, int input_cols, std::vector<double> array);  // filling from array
     ~Matrix();
     Matrix(const Matrix &other);
