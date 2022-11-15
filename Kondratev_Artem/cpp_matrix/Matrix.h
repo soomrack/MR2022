@@ -17,8 +17,8 @@ private:
     int rows;
     int cols;
     int size;
-    double **pointers;
-    double *data;
+    double **data;
+    double *values;
 
 public:
     inline static const double EPSILON = 0.000001;
@@ -33,27 +33,28 @@ public:
 
     Matrix &operator= (Matrix const &other);
     Matrix &operator= (Matrix &&other) noexcept;
-    Matrix operator+ (Matrix matrix) const;
+    Matrix operator+ (const Matrix &matrix) const;
     Matrix operator+ (double number) const;
-    Matrix operator- (Matrix matrix) const;
-    Matrix operator* (Matrix matrix) const;
+    Matrix operator- (const Matrix &matrix) const;
+    Matrix operator* (const Matrix &matrix) const;
     Matrix operator* (double number) const;
-    Matrix operator/ (Matrix matrix) const;
+    Matrix operator/ (const Matrix &matrix) const;
     Matrix operator/ (double number) const;
 
     int get_rows() const;
     int get_cols() const;
     int get_size() const;
+    double get_value(int row, int col) const;
     void output() const;
     Matrix minor_init(int excluded_row, int excluded_col) const;
     double determinant() const;
     Matrix transposition() const;
 private:
-    static Matrix minor_transformation(Matrix matrix);
+    static Matrix minor_transformation(const Matrix &matrix);
 public:
     Matrix inversion() const;
     Matrix power(int power) const;
-    static Matrix exp(Matrix matrix);
+    static Matrix exp(const Matrix &matrix);
 };
 
 #endif //MATRIX_H

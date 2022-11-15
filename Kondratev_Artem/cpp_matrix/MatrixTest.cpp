@@ -9,6 +9,7 @@ void MatrixTest::using_unused() {
     matrix.get_rows();
     matrix.get_cols();
     matrix.get_size();
+    matrix.get_value(0, 0);
 }
 
 void MatrixTest::calculation_check(double true_array[], Matrix *matrix, std::string text) {
@@ -16,12 +17,12 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, std::str
     std::cout << text << " test:\n";
     for (int cell = 0; cell < matrix->size; cell++) {
         int cell_flag = 0;
-        if (std::abs(true_array[cell] - matrix->data[cell]) > EPSILON) {
+        if (std::abs(true_array[cell] - matrix->values[cell]) > EPSILON) {
             cell_flag = 1;
             error_flag += 1;
         }
         std::cout << "true: " << std::scientific << std::setw(13) << true_array[cell];
-        std::cout << " res: " << std::scientific << std::setw(13) << matrix->data[cell] << " | " << cell_flag << "\n";
+        std::cout << " res: " << std::scientific << std::setw(13) << matrix->values[cell] << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
