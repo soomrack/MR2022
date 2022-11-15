@@ -191,31 +191,3 @@ void MatrixTest::exp_test() {
         print_message("exp_test", Exception_object);
     }
 }
-
-void MatrixTest::user_test() {
-    try {
-        Matrix A(2,2,2);
-        Matrix B(3,3,2);
-        Matrix C = A + B;
-    }
-    catch(MatrixException Exception_object) {
-        print_message("user_test", Exception_object);
-    }
-}
-
-void MatrixTest::memory_leak_test() {
-    int a = 20000;
-    int b = 10000;
-    try {
-        Matrix A(a, b, 2);
-        if (A.pointers[0][0] == 2) {
-            throw 5;
-        }
-        A.pointers[0][0] = 4;
-    }
-    catch(MatrixException Exception_object) {
-        Exception_object.get_error_code();
-        std::cout << "memory_leak_test:\n" << Exception_object.get_message() << std::endl;
-        std::cin >> a;
-    }
-}
