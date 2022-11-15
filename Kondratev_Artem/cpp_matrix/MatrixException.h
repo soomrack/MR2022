@@ -6,7 +6,6 @@
 #define MATRIXEXCEPTION_H
 
 #include <iostream>
-#include <cmath>
 
 class MatrixException: public std::exception {
 private:

@@ -14,8 +14,8 @@ Matrix::Matrix() {
     rows = 0;
     cols = 0;
     size = 0;
-    values = nullptr;
-    start = nullptr;
+    pointers = nullptr;
+    data = nullptr;
 }
 
 Matrix::Matrix(int input_rows, int input_cols) {
@@ -24,15 +24,15 @@ Matrix::Matrix(int input_rows, int input_cols) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double [size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = new double *[rows];
+    data = new double [size];
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double number) {
@@ -43,17 +43,17 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double [size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = new double *[rows];
+    data = new double [size];
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
     for (int cell = 0; cell < size; cell++)
-        start[cell] = number;
+        data[cell] = number;
 }
 
 Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {
@@ -64,17 +64,17 @@ Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {
     size = rows * cols;
     if (size != vector.size())
         throw wrong_length;
-    values = new double *[rows];
-    start = new double [size];
+    pointers = new double *[rows];
+    data = new double [size];
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+        pointers[row] = data + row * cols;
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int cell = 0; cell < size; cell++)
-        start[cell] = vector[cell];
+        data[cell] = vector[cell];
 }
 
 Matrix::Matrix(int row_number) {
@@ -84,18 +84,18 @@ Matrix::Matrix(int row_number) {
     rows = row_number;
     cols = rows;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double[size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = new double *[rows];
+    data = new double[size];
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
     for (int row = 0; row < rows; row++)
         for (int col = 0; col < cols; col++)
-            values[row][col] = (row == col) ? 1 : 0;
+            pointers[row][col] = (row == col) ? 1 : 0;
 }
 
 Matrix::Matrix(Matrix const &matrix) {
@@ -104,17 +104,17 @@ Matrix::Matrix(Matrix const &matrix) {
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double[size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = new double *[rows];
+    data = new double[size];
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
     for (int cell = 0; cell < size; cell++)
-        start[cell] = matrix.start[cell];
+        data[cell] = matrix.data[cell];
 }
 
 Matrix::Matrix(Matrix &&matrix) noexcept {
@@ -123,25 +123,25 @@ Matrix::Matrix(Matrix &&matrix) noexcept {
     rows = matrix.rows;
     cols = matrix.cols;
     size = matrix.size;
-    values = matrix.values;
-    start = matrix.start;
-    matrix.values = nullptr;
-    matrix.start = nullptr;
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = matrix.pointers;
+    data = matrix.data;
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
+    matrix.pointers = nullptr;
+    matrix.data = nullptr;
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
 }
 
 Matrix::~Matrix() {
-    rows = 0;
-    cols = 0;
-    size = 0;
-    delete[] values;
-    delete[] start;
+    rows = NAN;
+    cols = NAN;
+    size = NAN;
+    delete[] pointers;
+    delete[] data;
 }
 
 int Matrix::get_rows() const {
@@ -157,52 +157,52 @@ int Matrix::get_size() const {
 }
 
 void Matrix::output() const {
-    if (values == nullptr || start == nullptr)
+    if (pointers == nullptr || data == nullptr)
         throw memory_is_null;
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
-            std::cout << std::scientific << std::setw(13) << values[row][col] << "  ";
+            std::cout << std::scientific << std::setw(13) << pointers[row][col] << "  ";
         std::cout << "\n";
     }
     std::cout << "\n";
 }
 
 Matrix& Matrix::operator= (Matrix const &matrix) {
-    delete[] values;
-    delete[] start;
+    delete[] pointers;
+    delete[] data;
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double[size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = new double *[rows];
+    data = new double[size];
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
+        pointers[row] = data + row * cols;
     for (int cell = 0; cell < size; cell++)
-        start[cell] = matrix.start[cell];
+        data[cell] = matrix.data[cell];
 }
 
-Matrix& Matrix::operator= (Matrix const &&matrix) noexcept {
-    delete[] values;
-    delete[] start;
+Matrix& Matrix::operator= (Matrix &&matrix) noexcept {
+    delete[] pointers;
+    delete[] data;
     rows = matrix.rows;
     cols = matrix.cols;
     size = rows * cols;
-    values = new double *[rows];
-    start = new double[size];
-    if (values == nullptr || start == nullptr) {
-        delete[] values;
-        delete[] start;
+    pointers = matrix.pointers;
+    data = matrix.data;
+    if (pointers == nullptr || data == nullptr) {
+        delete[] pointers;
+        delete[] data;
         throw memory_is_null;
     }
+    matrix.pointers = nullptr;
+    matrix.data = nullptr;
     for (int row = 0; row < rows; row++)
-        values[row] = start + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        start[cell] = matrix.start[cell];
+        pointers[row] = data + row * cols;
 }
 
 Matrix Matrix::operator+ (Matrix const matrix) const {
@@ -211,7 +211,7 @@ Matrix Matrix::operator+ (Matrix const matrix) const {
     }
     Matrix sum_matrix(rows, cols);
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.start[cell] = start[cell] + matrix.start[cell];
+        sum_matrix.data[cell] = data[cell] + matrix.data[cell];
     return sum_matrix;
 }
 
@@ -221,7 +221,7 @@ Matrix Matrix::operator+ (double number) const {
     }
     Matrix sum_matrix(2, 2);
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.start[cell] = start[cell] + number;
+        sum_matrix.data[cell] = data[cell] + number;
     return sum_matrix;
 }
 
@@ -231,7 +231,7 @@ Matrix Matrix::operator- (Matrix const matrix) const {
     }
     Matrix sum_matrix(rows, cols);
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.start[cell] = start[cell] - matrix.start[cell];
+        sum_matrix.data[cell] = data[cell] - matrix.data[cell];
     return sum_matrix;
 }
 
@@ -242,9 +242,9 @@ Matrix Matrix::operator* (Matrix const matrix) const {
     Matrix multiplied_matrix(cols, matrix.rows);
     for(int row = 0; row < multiplied_matrix.rows; row++)
         for(int col = 0; col < multiplied_matrix.cols; col++) {
-            multiplied_matrix.values[row][col] = 0;
+            multiplied_matrix.pointers[row][col] = 0;
             for (int k = 0; k < cols; k++)
-                multiplied_matrix.values[row][col] += values[row][k] * matrix.values[k][col];
+                multiplied_matrix.pointers[row][col] += pointers[row][k] * matrix.pointers[k][col];
         }
     return multiplied_matrix;
 }
@@ -255,7 +255,7 @@ Matrix Matrix::operator* (double number) const {
     }
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
-        operated_matrix.start[cell] = start[cell] * number;
+        operated_matrix.data[cell] = data[cell] * number;
     return operated_matrix;
 }
 
@@ -272,7 +272,7 @@ Matrix Matrix::minor_init(int excluded_row, int excluded_col) const {
         for (int j = 0; j < minor.cols; j++) {
             if(j == excluded_col)
                 col_link += 1;
-            minor.values[i][j] = values[i + row_link][j + col_link];
+            minor.pointers[i][j] = pointers[i + row_link][j + col_link];
         }
     }
     return minor;
@@ -284,13 +284,13 @@ double Matrix::determinant() const{
     }
     double determinant = 0;
     if(rows == 1) {
-        determinant = values[0][0];
+        determinant = pointers[0][0];
         return determinant;
     }
     float k = 1.0;
     for(int col = 0; col < cols; col++) {
         Matrix minor = minor_init(0, col);
-        determinant += k * values[0][col] * minor.determinant();
+        determinant += k * pointers[0][col] * minor.determinant();
         k = -k;
     }
     return determinant;
@@ -302,7 +302,7 @@ Matrix Matrix::transposition() const {
     Matrix transposed_matrix(new_rows, new_cols);
     for(int row = 0; row < transposed_matrix.rows; row++)
         for(int col = 0; col < transposed_matrix.cols; col++)
-            transposed_matrix.values[row][col] = values[col][row];
+            transposed_matrix.pointers[row][col] = pointers[col][row];
     return transposed_matrix;
 }
 
@@ -319,7 +319,7 @@ Matrix Matrix::minor_transformation(Matrix matrix) {
         for(int col = 0; col < matrix.cols; col++) {
             Matrix minor = matrix.minor_init(row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
-            transformed_matrix.values[row][col] = k * minor.determinant();
+            transformed_matrix.pointers[row][col] = k * minor.determinant();
         }
     }
     return transformed_matrix;
@@ -348,9 +348,9 @@ Matrix Matrix::operator/ (Matrix matrix) const {
     Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
     for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
         for(int col = 0; col < inverse_multiplied_matrix.cols; col++) {
-            inverse_multiplied_matrix.values[row][col] = 0;
+            inverse_multiplied_matrix.pointers[row][col] = 0;
             for (int k = 0; k < cols; k++)
-                inverse_multiplied_matrix.values[row][col] += values[row][k] * inverse_matrix.values[k][col];
+                inverse_multiplied_matrix.pointers[row][col] += pointers[row][k] * inverse_matrix.pointers[k][col];
         }
     return inverse_multiplied_matrix;
 }
@@ -364,7 +364,7 @@ Matrix Matrix::operator/ (double number) const {
     }
     Matrix operated_matrix(rows, cols);
     for(int cell = 0; cell < size; cell++)
-        operated_matrix.start[cell] = start[cell] / number;
+        operated_matrix.data[cell] = data[cell] / number;
     return operated_matrix;
 }
 
@@ -375,7 +375,7 @@ Matrix Matrix::power(int power) const {
 
     Matrix origin(rows, cols);  // 
     for (int cell = 0; cell < size; cell++)
-        origin.start[cell] = this->start[cell];
+        origin.data[cell] = this->data[cell];
 
     if (power == 0) {
         Matrix identity_matrix(origin.rows);

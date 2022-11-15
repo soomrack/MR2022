@@ -1,7 +1,7 @@
 #include "MatrixTest.h"
 
 int main() {
-    /*MatrixTest::using_unused();
+    MatrixTest::using_unused();
     MatrixTest::output_test();
     MatrixTest::overload_test();
     MatrixTest::addition_test();
@@ -20,7 +20,7 @@ int main() {
     //MatrixTest::memory_leak_test();*/
 
 
-    int a;
+    /*int a;
     Matrix A(100, 100, 0);
     //std::cin >> a;
     Matrix B(100, 100, 2);
@@ -28,7 +28,7 @@ int main() {
     A = B;
     //std::cin >> a;
     //std::cin >> a;
-    std::cin >> a;
+    std::cin >> a;*/
 
     return 0;
 }

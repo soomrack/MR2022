@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cmath>
 #include "MatrixException.h"
 
 class Matrix {
@@ -16,8 +17,8 @@ private:
     int rows;
     int cols;
     int size;
-    double **values;
-    double *start;
+    double **pointers;
+    double *data;
 
 public:
     inline static const double EPSILON = 0.000001;
@@ -32,7 +33,7 @@ public:
     Matrix(Matrix &&matrix) noexcept;
 
     Matrix &operator= (Matrix const &matrix);
-    Matrix &operator= (Matrix const &&matrix) noexcept;
+    Matrix &operator= (Matrix &&matrix) noexcept;
     Matrix operator+ (Matrix matrix) const;
     Matrix operator+ (double number) const;
     Matrix operator- (Matrix matrix) const;

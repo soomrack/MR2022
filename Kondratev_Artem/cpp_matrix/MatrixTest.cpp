@@ -16,12 +16,12 @@ void MatrixTest::calculation_check(double true_array[], Matrix matrix, std::stri
     std::cout << text << " test:\n";
     for (int cell = 0; cell < matrix.size; cell++) {
         int cell_flag = 0;
-        if (std::abs(true_array[cell] - matrix.start[cell]) > Matrix::EPSILON) {
+        if (std::abs(true_array[cell] - matrix.data[cell]) > Matrix::EPSILON) {
             cell_flag = 1;
             error_flag += 1;
         }
         std::cout << "true: " << std::scientific << std::setw(13) << true_array[cell];
-        std::cout << " res: " << std::scientific << std::setw(13) << matrix.start[cell] << " | " << cell_flag << "\n";
+        std::cout << " res: " << std::scientific << std::setw(13) << matrix.data[cell] << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
@@ -208,10 +208,10 @@ void MatrixTest::memory_leak_test() {
     int b = 10000;
     try {
         Matrix A(a, b, 2);
-        if (A.values[0][0] == 2) {
+        if (A.pointers[0][0] == 2) {
             throw 5;
         }
-        A.values[0][0] = 4;
+        A.pointers[0][0] = 4;
     }
     catch(MatrixException Exception_object) {
         Exception_object.get_error_code();
