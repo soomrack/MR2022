@@ -19,8 +19,9 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {
-    if (input_rows < 0 || input_cols < 0)
+    if (input_rows < 0 || input_cols < 0) {
         throw negative_parameters;
+    }
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -44,10 +45,12 @@ Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {
 }
 
 Matrix::Matrix(int input_rows, int input_cols, double number) {
-    if (input_rows < 0 || input_cols < 0)
+    if (input_rows < 0 || input_cols < 0) {
         throw negative_parameters;
-    if (std::isnan(number))
+    }
+    if (std::isnan(number)) {
         throw nan_number;
+    }
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -65,8 +68,9 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
 }
 
 Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {
-    if (input_rows < 0 || input_cols < 0)
+    if (input_rows < 0 || input_cols < 0) {
         throw negative_parameters;
+    }
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
@@ -147,8 +151,9 @@ double Matrix::get_value(int row, int col) const {
 }
 
 void Matrix::output() const {
-    if (data == nullptr || values == nullptr)
+    if (data == nullptr || values == nullptr) {
         throw null_memory;
+    }
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
             std::cout << std::scientific << std::setw(13) << data[row][col] << "  ";
