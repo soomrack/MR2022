@@ -120,9 +120,9 @@ Matrix::Matrix(Matrix &&other) noexcept {
 }
 
 Matrix::~Matrix() {
-    rows = NAN;
-    cols = NAN;
-    size = NAN;
+    rows = 0;
+    cols = 0;
+    size = 0;
     delete[] pointers;
     delete[] data;
 }
