@@ -1,15 +1,22 @@
 #include "MatrixTest.h"
 
-inline void print_message(std::string text) {
-    std::cout << text << ":" << std::endl << MatrixException::get_msg() << std::endl << std::endl;
+inline void print_message(std::string text, MatrixException Exception_object) {
+    std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
+}
+
+void MatrixTest::using_unused() {
+    Matrix matrix(2, 2, array1);
+    matrix.get_rows();
+    matrix.get_cols();
+    matrix.get_size();
 }
 
 void MatrixTest::calculation_check(double true_array[], Matrix matrix, std::string text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
-    for (int cell = 0; cell < matrix.get_size(0); cell++) {
+    for (int cell = 0; cell < matrix.size; cell++) {
         int cell_flag = 0;
-        if (std::abs(true_array[cell] - matrix.start[cell]) > MatrixException::EPSILON) {
+        if (std::abs(true_array[cell] - matrix.start[cell]) > Matrix::EPSILON) {
             cell_flag = 1;
             error_flag += 1;
         }
@@ -20,6 +27,12 @@ void MatrixTest::calculation_check(double true_array[], Matrix matrix, std::stri
     std::cout << "\n";
 }
 
+void MatrixTest::output_test() {
+    std::cout << "output test:" << std::endl;
+    Matrix matrix1(2, 2, array1);
+    matrix1.output();
+}
+
 void MatrixTest::overload_test() {
     try {
         Matrix matrix1(2, 2, array1);
@@ -27,8 +40,8 @@ void MatrixTest::overload_test() {
         double eq_true_array[] = {2, 8, 1, 3};
         calculation_check(eq_true_array, res_matrix, "= overload");
     }
-    catch(int ex_number) {
-        print_message("overload_test");
+    catch(MatrixException Exception_object) {
+        print_message("overload_test", Exception_object);
     }
 }
 
@@ -40,8 +53,8 @@ void MatrixTest::addition_test() {
         double sum_true_array[] = {6, 17, 22, 16};
         calculation_check(sum_true_array, res_matrix, "addition (matrix)");
     }
-    catch(int ex_number) {
-        print_message("addition_test");
+    catch(MatrixException Exception_object) {
+        print_message("addition_test", Exception_object);
     }
 }
 
@@ -52,21 +65,21 @@ void MatrixTest::number_addition_test() {
         double snum_true_array[] = {4, 10, 3, 5};
         calculation_check(snum_true_array, res_matrix, "addition (number)");
     }
-    catch(int ex_number) {
-        print_message("number_addition_test");
+    catch(MatrixException Exception_object) {
+        print_message("number_addition_test", Exception_object);
     }
 }
 
 void MatrixTest::subtraction_test() {
     try {
-        Matrix matrix1(3, 2, array1);
+        Matrix matrix1(2, 2, array1);
         Matrix matrix2(2, 2, array2);
         Matrix res_matrix = matrix1 - matrix2;
         double sub_true_array[] = {-2, -1, -20, -10};
         calculation_check(sub_true_array, res_matrix, "subtraction");
     }
-    catch(int ex_number) {
-        print_message("subtraction_test");
+    catch(MatrixException Exception_object) {
+        print_message("subtraction_test", Exception_object);
     }
 }
 
@@ -78,8 +91,8 @@ void MatrixTest::multiplication_test() {
         double multi_true_array[] = {176, 122, 67, 48};
         calculation_check(multi_true_array, res_matrix, "multiplication (matrix)");
     }
-    catch(int ex_number) {
-        print_message("multiplication_test");
+    catch(MatrixException Exception_object) {
+        print_message("multiplication_test", Exception_object);
     }
 }
 
@@ -90,8 +103,8 @@ void MatrixTest::number_multiplication_test() {
         double mnum_true_array[] = {4, 16, 2, 6};
         calculation_check(mnum_true_array, res_matrix, "multiplication (number)");
     }
-    catch(int ex_number) {
-        print_message("number_multiplication_test");
+    catch(MatrixException Exception_object) {
+        print_message("number_multiplication_test", Exception_object);
     }
 }
 
@@ -102,8 +115,8 @@ void MatrixTest::determinant_test() {
         Matrix det_matrix(1, 1, matrix1.determinant());
         calculation_check(determinant_true_array, det_matrix, "determinant");
     }
-    catch(int ex_number) {
-        print_message("determinant_test");
+    catch(MatrixException Exception_object) {
+        print_message("determinant_test", Exception_object);
     }
 }
 
@@ -114,8 +127,8 @@ void MatrixTest::transposition_test() {
         Matrix res_matrix = matrix1.transposition();
         calculation_check(transp_true_array, res_matrix, "transposition");
     }
-    catch(int ex_number) {
-        print_message("transposition_test");
+    catch(MatrixException Exception_object) {
+        print_message("transposition_test", Exception_object);
     }
 }
 
@@ -126,8 +139,8 @@ void MatrixTest::inversion_test() {
         Matrix res_matrix = matrix1.inversion();
         calculation_check(inv_true_array, res_matrix, "inversion");
     }
-    catch(int ex_number) {
-        print_message("inversion_test");
+    catch(MatrixException Exception_object) {
+        print_message("inversion_test", Exception_object);
     }
 }
 
@@ -139,8 +152,8 @@ void MatrixTest::inverse_multiplication_test() {
         Matrix res_matrix = matrix1 / matrix2;
         calculation_check(inv_multi_true_array, res_matrix, "inverse multiplication");
     }
-    catch(int ex_number) {
-        print_message("inverse_multiplication_test");
+    catch(MatrixException Exception_object) {
+        print_message("inverse_multiplication_test", Exception_object);
     }
 }
 
@@ -151,8 +164,8 @@ void MatrixTest::number_division_test() {
         double snum_true_array[] = {1, 4, 0.5, 1.5};
         calculation_check(snum_true_array, res_matrix, "division (number)");
     }
-    catch(int ex_number) {
-        print_message("number_division_test");
+    catch(MatrixException Exception_object) {
+        print_message("number_division_test", Exception_object);
     }
 }
 
@@ -162,8 +175,8 @@ void MatrixTest::power_test() {
         Matrix res_matrix = matrix1.power(power);
         calculation_check(power_array, res_matrix, "power");
     }
-    catch(int ex_number) {
-        print_message("power_test");
+    catch(MatrixException Exception_object) {
+        print_message("power_test", Exception_object);
     }
 }
 
@@ -174,8 +187,8 @@ void MatrixTest::exp_test() {
         Matrix res_matrix = Matrix::exp(matrix3);
         calculation_check(exp_true_array, res_matrix, "Matrix exp");
     }
-    catch(int ex_number) {
-        print_message("exp_test");
+    catch(MatrixException Exception_object) {
+        print_message("exp_test", Exception_object);
     }
 }
 
@@ -185,8 +198,8 @@ void MatrixTest::user_test() {
         Matrix B(3,3,2);
         Matrix C = A + B;
     }
-    catch(int ex_number) {
-        print_message("user_test");
+    catch(MatrixException Exception_object) {
+        print_message("user_test", Exception_object);
     }
 }
 
@@ -195,15 +208,14 @@ void MatrixTest::memory_leak_test() {
     int b = 10000;
     try {
         Matrix A(a, b, 2);
-        A.get_rows(1);
-        A.get_cols(1);
         if (A.values[0][0] == 2) {
             throw 5;
         }
         A.values[0][0] = 4;
     }
-    catch(int ex_number) {
-        std::cout << "memory_leak_test:\n" << MatrixException::get_msg() << std::endl;
+    catch(MatrixException Exception_object) {
+        Exception_object.get_error_code();
+        std::cout << "memory_leak_test:\n" << Exception_object.get_message() << std::endl;
         std::cin >> a;
     }
 }
