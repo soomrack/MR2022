@@ -29,11 +29,11 @@ public:
     explicit Matrix(int row_number);  //  identity matrix
     Matrix(int input_rows, int input_cols, std::vector<double> array);  // filling from array
     ~Matrix();
-    Matrix(Matrix const &matrix);
-    Matrix(Matrix &&matrix) noexcept;
+    Matrix(const Matrix &other);
+    Matrix(Matrix &&other) noexcept;
 
-    Matrix &operator= (Matrix const &matrix);
-    Matrix &operator= (Matrix &&matrix) noexcept;
+    Matrix &operator= (Matrix const &other);
+    Matrix &operator= (Matrix &&other) noexcept;
     Matrix operator+ (Matrix matrix) const;
     Matrix operator+ (double number) const;
     Matrix operator- (Matrix matrix) const;

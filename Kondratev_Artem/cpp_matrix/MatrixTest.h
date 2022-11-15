@@ -13,6 +13,7 @@
 
 class MatrixTest {
 private:
+    inline static const double EPSILON = 0.000001;
     inline static std::vector<double> array1 = {2, 8, 1, 3};
     inline static std::vector<double> array2 = {4, 9, 21, 13};
     inline static std::vector<double> array3 = {2, 2, 2, 2};
@@ -21,7 +22,7 @@ private:
 
 public:
     static void using_unused();
-    static void calculation_check(double true_array[], Matrix matrix, std::string text);
+    static void calculation_check(double true_array[], Matrix *matrix, std::string text);
     static void output_test();
     static void overload_test();
     static void addition_test();

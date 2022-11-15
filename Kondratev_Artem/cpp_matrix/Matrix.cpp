@@ -98,11 +98,9 @@ Matrix::Matrix(int row_number) {
             pointers[row][col] = (row == col) ? 1 : 0;
 }
 
-Matrix::Matrix(Matrix const &matrix) {
-    //delete[] values;
-    //delete[] start;
-    rows = matrix.rows;
-    cols = matrix.cols;
+Matrix::Matrix(const Matrix &other) {
+    rows = other.rows;
+    cols = other.cols;
     size = rows * cols;
     pointers = new double *[rows];
     data = new double[size];
@@ -114,24 +112,22 @@ Matrix::Matrix(Matrix const &matrix) {
     for (int row = 0; row < rows; row++)
         pointers[row] = data + row * cols;
     for (int cell = 0; cell < size; cell++)
-        data[cell] = matrix.data[cell];
+        data[cell] = other.data[cell];
 }
 
-Matrix::Matrix(Matrix &&matrix) noexcept {
-    //delete[] values;
-    //delete[] start;
-    rows = matrix.rows;
-    cols = matrix.cols;
-    size = matrix.size;
-    pointers = matrix.pointers;
-    data = matrix.data;
+Matrix::Matrix(Matrix &&other) noexcept {
+    rows = other.rows;
+    cols = other.cols;
+    size = other.size;
+    pointers = other.pointers;
+    data = other.data;
     if (pointers == nullptr || data == nullptr) {
         delete[] pointers;
         delete[] data;
         throw memory_is_null;
     }
-    matrix.pointers = nullptr;
-    matrix.data = nullptr;
+    other.pointers = nullptr;
+    other.data = nullptr;
     for (int row = 0; row < rows; row++)
         pointers[row] = data + row * cols;
 }
@@ -167,42 +163,46 @@ void Matrix::output() const {
     std::cout << "\n";
 }
 
-Matrix& Matrix::operator= (Matrix const &matrix) {
-    delete[] pointers;
-    delete[] data;
-    rows = matrix.rows;
-    cols = matrix.cols;
-    size = rows * cols;
-    pointers = new double *[rows];
-    data = new double[size];
-    if (pointers == nullptr || data == nullptr) {
+Matrix& Matrix::operator= (Matrix const &other) {
+    if (this != &other) {
         delete[] pointers;
         delete[] data;
-        throw memory_is_null;
+        rows = other.rows;
+        cols = other.cols;
+        size = rows * cols;
+        pointers = new double *[rows];
+        data = new double[size];
+        if (pointers == nullptr || data == nullptr) {
+            delete[] pointers;
+            delete[] data;
+            throw memory_is_null;
+        }
+        for (int row = 0; row < rows; row++)
+            pointers[row] = data + row * cols;
+        for (int cell = 0; cell < size; cell++)
+            data[cell] = other.data[cell];
     }
-    for (int row = 0; row < rows; row++)
-        pointers[row] = data + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        data[cell] = matrix.data[cell];
 }
 
-Matrix& Matrix::operator= (Matrix &&matrix) noexcept {
-    delete[] pointers;
-    delete[] data;
-    rows = matrix.rows;
-    cols = matrix.cols;
-    size = rows * cols;
-    pointers = matrix.pointers;
-    data = matrix.data;
-    if (pointers == nullptr || data == nullptr) {
+Matrix& Matrix::operator= (Matrix &&other) noexcept {
+    if (this != &other) {
         delete[] pointers;
         delete[] data;
-        throw memory_is_null;
+        rows = other.rows;
+        cols = other.cols;
+        size = rows * cols;
+        pointers = other.pointers;
+        data = other.data;
+        if (pointers == nullptr || data == nullptr) {
+            delete[] pointers;
+            delete[] data;
+            throw memory_is_null;
+        }
+        other.pointers = nullptr;
+        other.data = nullptr;
+        for (int row = 0; row < rows; row++)
+            pointers[row] = data + row * cols;
     }
-    matrix.pointers = nullptr;
-    matrix.data = nullptr;
-    for (int row = 0; row < rows; row++)
-        pointers[row] = data + row * cols;
 }
 
 Matrix Matrix::operator+ (Matrix const matrix) const {
