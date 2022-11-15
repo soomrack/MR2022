@@ -45,11 +45,11 @@ public:
 	int getrow();
 	int getcol();
 
-	Matrix fill();
+	Matrix fill_random();
 	Matrix fill_from_array(double*);
 	Matrix set_identity();		//Преобразование матрицы в единичную
 	Matrix exponent(unsigned int);		//Нахождение экспоненты матрицы
-	Matrix transpose();				// Транспонирование матрицы
+	Matrix set_transpose();				// Транспонирование матрицы
 	Matrix Minor(Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
 	Matrix reverse(const Matrix, unsigned int);		//Обратная матрица
 	double determinant(const Matrix, unsigned int);		//Определитель матрицы 
@@ -99,8 +99,7 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
 {
 	rows = num_row;
 	cols = num_col;
-	unsigned int index = rows * cols;
-	values = new double[index];
+	values = new double[rows * cols];
 }
 
 
@@ -145,7 +144,7 @@ bool Matrix::operator== (const Matrix &A)
 }
 
 
-Matrix Matrix::fill() 
+Matrix Matrix::fill_random() 
 {
 	for (unsigned int index = 0; index < cols * rows; index++)
 	{
@@ -214,12 +213,12 @@ Matrix Matrix::Minor(Matrix matrix,const unsigned int size, const unsigned int r
 }
 
 
-Matrix Matrix::transpose() 
+Matrix Matrix::set_transpose() 
 {
-	Matrix trans(cols,rows);
-	for (unsigned int row = 0; row < rows; row++) {
-		for (unsigned int col = 0; col < cols; col++) {
-			trans.values[col * trans.rows + row] = values[row * trans.cols + col];
+	Matrix trans(this->cols,this->rows);
+	for (unsigned int row = 0; row < trans.rows; row++) {
+		for (unsigned int col = 0; col < trans.cols; col++) { 
+			trans.values[row * trans.cols + col] = this->values[col * trans.rows + row];
 		}
 	}
 	*this = trans;
@@ -388,7 +387,7 @@ Matrix Matrix::reverse(const Matrix rev, const unsigned int size) // Функция нах
 			degree = -degree;
 		}
 	}
-	A.transpose();
+	A.set_transpose();
 	if (d == 0) 
 		throw zerodivision;
 	A /= d;
@@ -428,11 +427,11 @@ void test_add() {
 	Matrix test_add = Matrix(2, 3).fill_from_array(ans_d);
 	if (test_add != matrix1 + matrix2) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Addition test failed\n");
+		std::cout<<"Addition test failed\n";
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-		printf("Addition test passed\n");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "Addition test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -450,11 +449,11 @@ void test_sub() {
 	Matrix test_add = Matrix(2, 3).fill_from_array(ans_d);
 	if (test_add != matrix1 - matrix2) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Substraction test failed\n");
+		std::cout << "Substraction test failed\n";
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-		printf("Substruction test passed\n");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "Substruction test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -475,11 +474,11 @@ void test_mult() {
 	Matrix test_add = Matrix(3, 3).fill_from_array(ans_d);
 	if (test_add != matrix1 * matrix2) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Multiplication test failed\n");
+		std::cout << "Multiplication test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		printf("Multiplication test passed\n");
+		std::cout << "Multiplication test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -492,11 +491,11 @@ void test_mult_k() {
 	Matrix test_add = Matrix(1, 3).fill_from_array(ans_d);
 	if (test_add != matrix1 * 3) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Multiplication test failed\n");
+		std::cout << "Multiplication test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		printf("Multiplication test passed\n");
+		std::cout << "Multiplication test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -509,11 +508,11 @@ void test_div_k() {
 	Matrix test_div = Matrix(1, 3).fill_from_array(ans_d);
 	if (test_div != matrix1 / 3) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Division test failed\n");
+		std::cout << "Division test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		printf("Division test passed\n");
+		std::cout << "Division test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -526,11 +525,11 @@ void test_det() {
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
 	if (matrix1.determinant(matrix1,matrix1.getrow() == -78)) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Multiplication test failed\n");
+		std::cout << "Multiplication test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		printf("Multiplication test passed\n");
+		std::cout << "Multiplication test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -544,22 +543,42 @@ void test_rev() {
 					 -0.410256,	  0.384615, 0.0512821,
 					 0.923077,   -0.615385, -0.115385 };
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
-	if (matrix1.determinant(matrix1, matrix1.getrow() == -78)) {
+	Matrix test_rev = Matrix(3, 3).fill_from_array(ans);
+	if (matrix1.reverse(matrix1,matrix1.getrow()) == test_rev) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		printf("Reverse test failed\n");
+		std::cout << "Reverse test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		printf("Reverse test passed\n");
+		std::cout << "Reverse test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
+
+void test_transpose()
+{
+	double data1[3] = { 1, 7, 4 };
+	double ans[3] = {1,7,4};
+	Matrix matrix1 = Matrix(3,1).fill_from_array(data1);
+	Matrix test_trans = Matrix(3, 1).fill_from_array(ans);
+	if (matrix1.set_transpose() == test_trans) {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "Trasposition test failed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "Transposition test passed\n";
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
 int main()
 { 
 	/*srand(time(NULL));*/
 	setlocale(LC_ALL, "ru");
-	Matrix A = Matrix(5, 5).fill();
-	Matrix B = Matrix(5, 7).fill();	
+	Matrix A = Matrix(3, 1).fill_random();
+	Matrix B = Matrix(5, 7).fill_random();	
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
 	try {
@@ -591,6 +610,8 @@ int main()
 		std::cerr << "Caught: " << e.what() << std::endl;
 		std::cerr << "Type: " << typeid(e).name() << std::endl;
 	}
+	std::cout << A.set_transpose();
+	
 	test_add();
 	test_sub();
 	test_div_k();
@@ -598,5 +619,5 @@ int main()
 	test_mult();
 	test_det();
 	test_rev();
-
+	test_transpose();
 }
