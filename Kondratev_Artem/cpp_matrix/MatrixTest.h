@@ -37,8 +37,6 @@ public:
     static void number_division_test();
     static void power_test();
     static void exp_test();
-    static void user_test();
-    static void memory_leak_test();
 };
 
 #endif //TEST_H
