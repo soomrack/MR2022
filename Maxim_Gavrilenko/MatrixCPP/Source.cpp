@@ -50,7 +50,7 @@ public:
 	Matrix set_identity();		//Преобразование матрицы в единичную
 	Matrix exponent(unsigned int);		//Нахождение экспоненты матрицы
 	Matrix set_transpose();				// Транспонирование матрицы
-	Matrix Minor(Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
+	Matrix Minor(const Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
 	Matrix reverse(const Matrix, unsigned int);		//Обратная матрица
 	double determinant(const Matrix, unsigned int);		//Определитель матрицы 
 
@@ -191,21 +191,17 @@ int Matrix::getcol()
 }
 
 
-Matrix Matrix::Minor(Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col) 
+Matrix Matrix::Minor(const Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col) 
 {
 	Matrix m1(size - 1, size - 1);
 	unsigned int shiftrow = 0; //Смещение индекса строки в матрице
 	unsigned int shiftcol; //Смещение индекса столбца в матрице
 	for (unsigned int rows = 0; rows < size - 1; rows++) {
 		//Пропустить row-ую строку
-		if (rows == row) {
-			shiftrow = 1; //Как только встретили строку, которую надо пропустить, делаем смещение для исходной матрицы
-		}
+		if (rows == row) {shiftrow = 1;} //Как только встретили строку, которую надо пропустить, делаем смещение для исходной матрицы
 		shiftcol = 0; //Обнулить смещение столбца
 		for (unsigned int cols = 0; cols < size - 1; cols++) {
-			if (cols == col) {
-				shiftcol = 1;
-			}
+			if (cols == col) {shiftcol = 1;}
 			m1.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow) * size + (cols + shiftcol)];
 		}
 	}
@@ -267,10 +263,8 @@ Matrix Matrix::operator/(const double k) // Деление матрицы на число
 
 Matrix& Matrix::operator*=(const Matrix& m2) // Умножение матриц
 { 
-	if (cols != m2.rows) {
-		throw (multiplyerror);
-	}
-	Matrix multiplication(rows, m2.cols);
+	if (cols != m2.rows) throw (multiplyerror);
+		Matrix multiplication(rows, m2.cols);
 	for (unsigned int row = 0; row < multiplication.rows; row++) {
 		for (unsigned int col = 0; col < multiplication.cols; col++) {
 			double sum = 0;
@@ -281,15 +275,13 @@ Matrix& Matrix::operator*=(const Matrix& m2) // Умножение матриц
 		}
 	}
 	*this = multiplication;
-		return (*this);
+	return (*this);
 }
 
 
 Matrix& Matrix::operator+=(const Matrix& matrix) 
 {
-	if (rows != matrix.rows || cols != matrix.cols) {
-		throw notequal;
-	}
+	if (rows != matrix.rows || cols != matrix.cols) throw notequal;
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] += matrix.values[index];
 	}
@@ -299,9 +291,7 @@ Matrix& Matrix::operator+=(const Matrix& matrix)
 
 Matrix& Matrix::operator-=(const Matrix& matrix) 
 {
-	if (rows != matrix.rows || cols != matrix.cols) {
-		throw (notequal);
-	}
+	if (rows != matrix.rows || cols != matrix.cols) throw (notequal);
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] -= matrix.values[index];
 	}
@@ -353,11 +343,9 @@ Matrix& Matrix::operator=(Matrix&& A) noexcept
 
 double Matrix::determinant(const Matrix m, unsigned int size) 
 {
-	if (m.rows != m.cols) {
-		throw notsquare;
-	}
+	if (m.rows != m.cols) throw notsquare;
 	double det = 0;
-	int degree = 1;
+	int k = 1;
 	if (size == 0)
 		return 0;
 	if (size == 1)
@@ -366,8 +354,8 @@ double Matrix::determinant(const Matrix m, unsigned int size)
 		return (m.values[0] * m.values[3] - m.values[2] * m.values[1]);
 	}
 	for (unsigned int idx = 0; idx < size; idx++) {
-		det += degree * m.values[idx] * determinant(Minor(m, size, 0, idx), size - 1);
-		degree = -degree;
+		det += k * m.values[idx] * determinant(Minor(m, size, 0, idx), size - 1);
+		k = -k;
 	}
 	return det;
 }
@@ -376,29 +364,25 @@ double Matrix::determinant(const Matrix m, unsigned int size)
 Matrix Matrix::reverse(const Matrix rev, const unsigned int size) // Функция нахождения обратной матрицы
 {
 	double d = determinant(rev, size);
-	if (rev.rows != rev.cols) {
-		throw notsquare;
-	}
+	if (rev.rows != rev.cols) throw notsquare;
 	Matrix A(rev.rows, rev.cols);
-	int degree = 1;
+	int k = 1;
 	for (unsigned int row = 0; row < A.rows; row++) {
 		for (unsigned int col = 0; col < A.cols; col++) {
-			A.values[row * size + col] = degree * determinant(Minor(rev, size, row, col), size - 1);
-			degree = -degree;
+			A.values[row * size + col] = k * determinant(Minor(rev, size, row, col), size - 1);
+			k = -k;
 		}
 	}
 	A.set_transpose();
-	if (d == 0) 
-		throw zerodivision;
+	if (d == 0) throw zerodivision;
 	A /= d;
 	return A;
 }
 
 
-Matrix Matrix::exponent(unsigned int n = 30) {
-	if (rows != cols) {
-			throw notsquare;
-	}
+Matrix Matrix::exponent(unsigned int n = 30) 
+{
+	if (rows != cols) throw notsquare;
 	Matrix ex(rows,cols);
 	Matrix temp(rows,cols);
 	temp.set_identity();
@@ -406,8 +390,7 @@ Matrix Matrix::exponent(unsigned int n = 30) {
 	double fact = 1.0;
 	for (unsigned int i = 1; i < n; i++) {
 		fact *= i;
-		if (fact == 0)
-			throw zerodivision;
+		if (fact == 0) throw zerodivision;
 		temp *= (*this);
 		ex += temp / fact;
 	}
@@ -415,7 +398,8 @@ Matrix Matrix::exponent(unsigned int n = 30) {
 }
 
 
-void test_add() {
+void test_add() 
+{
 	double data1[6] = { 3, 1, 2,
 					   4, 5, 7 };
 	double data2[6] = { 8, 2, 1,
@@ -437,7 +421,8 @@ void test_add() {
 }
 
 
-void test_sub() {
+void test_sub() 
+{
 	double data1[6] = { 3, 1, 2,
 					   4, 5, 7 };
 	double data2[6] = { 8, 2, 1,
@@ -459,7 +444,8 @@ void test_sub() {
 }
 
 
-void test_mult() {
+void test_mult() 
+{
 	double data1[9] = { 1, 7, 4,
 					    0, 9, 4, 
 						8, 8, 2 };
@@ -484,7 +470,8 @@ void test_mult() {
 }
 
 
-void test_mult_k() {
+void test_mult_k() 
+{
 	double data1[3] = { 1, 7, 4};
 	double ans_d[3] = {3, 21, 12};
 	Matrix matrix1 = Matrix(1, 3).fill_from_array(data1);
@@ -518,7 +505,8 @@ void test_div_k() {
 }
 
 
-void test_det() {
+void test_det() 
+{
 	double data1[9] = { 1, 7, 4,
 						0, 9, 4,
 						8, 8, 2 };
@@ -560,16 +548,51 @@ void test_transpose()
 	double data1[3] = { 1, 7, 4 };
 	double ans[3] = {1,7,4};
 	Matrix matrix1 = Matrix(3,1).fill_from_array(data1);
-	Matrix test_trans = Matrix(3, 1).fill_from_array(ans);
+	Matrix test_trans = Matrix(1, 3).fill_from_array(ans);
 	if (matrix1.set_transpose() == test_trans) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		std::cout << "Trasposition test failed\n";
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "Trasposition test passed\n";
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		std::cout << "Transposition test passed\n";
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "Transposition test failed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_set_identity()
+{
+	double data1[9] = { 1, 7, 4,
+						0, 9, 4,
+						8, 8, 2 };
+	double ans[9] = { 1,  0, 0,
+					 0,	  1, 0,
+					 0,   0, 1 };
+	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
+	Matrix test_identity = Matrix(3, 3).fill_from_array(ans);
+	if (matrix1.set_identity() == test_identity) {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "SetIdentity test passed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "SetIdentity test failed\n";
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test() {
+	test_add();
+	test_sub();
+	test_div_k();
+	test_mult_k();
+	test_mult();
+	test_det();
+	test_rev();
+	test_transpose();
+	test_set_identity();
 }
 
 
@@ -577,8 +600,8 @@ int main()
 { 
 	/*srand(time(NULL));*/
 	setlocale(LC_ALL, "ru");
-	Matrix A = Matrix(3, 1).fill_random();
-	Matrix B = Matrix(5, 7).fill_random();	
+	Matrix A = Matrix(3, 3).fill_random();
+	Matrix B = Matrix(3, 3).fill_random();	
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
 	try {
@@ -610,14 +633,5 @@ int main()
 		std::cerr << "Caught: " << e.what() << std::endl;
 		std::cerr << "Type: " << typeid(e).name() << std::endl;
 	}
-	std::cout << A.set_transpose();
-	
-	test_add();
-	test_sub();
-	test_div_k();
-	test_mult_k();
-	test_mult();
-	test_det();
-	test_rev();
-	test_transpose();
+	test();
 }
