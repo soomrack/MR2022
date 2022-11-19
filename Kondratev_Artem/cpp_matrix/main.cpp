@@ -16,8 +16,5 @@ int main() {
     MatrixTest::number_division_test();
     MatrixTest::power_test();
     MatrixTest::exp_test();
-    Matrix A(2,2,2.0);
-    A.output();
-    std::cout << A.get_value(0, 0);
     return 0;
 }
