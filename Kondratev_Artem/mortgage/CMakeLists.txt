@@ -4,4 +4,4 @@ project(hello_world C)
 set(CMAKE_C_STANDARD 17)
 
 
-add_executable(hello_world matrix.c)
+add_executable(hello_world mortgage.c)
