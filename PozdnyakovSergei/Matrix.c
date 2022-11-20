@@ -52,8 +52,11 @@ int is_null (const Matrix matrix) {  // Матрицы нет
 }
 
 
-void clean_memory (Matrix matrix) {  // Очистка памяти после выполнения операции
+Matrix clean_memory (Matrix matrix) {  // Очистка памяти после выполнения операции
+    matrix.cols = 0;
+    matrix.rows = 0;
     free (matrix.value);
+    return matrix;
 }
 
 
