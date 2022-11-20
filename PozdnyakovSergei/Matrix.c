@@ -271,9 +271,9 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {  // Воз�
 }*/
 
 
-Matrix inverse_matrix (const struct Matrix matrix) {  // Инвертирование матрицы
+Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная матрица
     double d = determinant(matrix);
-    if (matrix.cols != matrix.rows) {
+    if (matrix.cols != matrix.rows || d == 0) {
         mistake("Getting the inverse matrix", "Matrix must be square and with not zero determinant\n");
         return ZERO;
     }
@@ -320,17 +320,17 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
         mistake("Exp", "Matrix should be square");
         return ZERO;
     }
-    Matrix new_result , new_powered, multiplied;
+    Matrix new_result , powered_t1, multiplied;
     Matrix exponent = unit_matrix(matrix.cols, matrix.rows);
-    Matrix powered = exponent;
+    Matrix powered_t = exponent;
     new_result = unit_matrix(matrix.cols, matrix.rows);
     int factorial = 1;
     for (int acc = 1; acc <= accuracy; ++acc) {
         factorial *= acc;
-        new_powered = multiply_m_by_m(powered, matrix);
-        powered = copy_matrix(new_powered);
-        clean_memory(new_powered);
-        multiplied = mult_m_by_num(powered, 1. / factorial);
+        powered_t1 = multiply_m_by_m(powered_t, matrix);
+        powered_t = copy_matrix(powered_t1);
+        clean_memory(powered_t1);
+        multiplied = mult_m_by_num(powered_t, 1. / factorial);
         new_result = summation(exponent, multiplied);
 
         clean_memory(multiplied);
@@ -342,7 +342,7 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
         clean_memory(powered);
 */
     }
-    clean_memory(powered);
+    clean_memory(powered_t);
     return exponent;
 }
 
