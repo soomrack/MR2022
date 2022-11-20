@@ -57,7 +57,7 @@ Matrix create_zero(const unsigned int rows, const unsigned int cols){ //Созд
 }
 
 
-Matrix transposition (const Matrix A){ // Транспонирование матрицы
+Matrix transposition(const Matrix A){ // Транспонирование матрицы
     Matrix trans = memory_allocation(A.cols,A.rows);
     for (unsigned int row = 0; row < trans.rows; row++){
         for (unsigned int col = 0; col < trans.cols; col++){
@@ -112,11 +112,11 @@ Matrix subtraction(const Matrix m1, const Matrix m2){ // Вычитание ма
         return EMPTY();
     }
     Matrix sub = memory_allocation(m1.rows,m1.cols);
-        for (unsigned int index = 0; index < sub.rows * sub.cols; index++) {
-                sub.values[index] = m1.values[index] - m2.values[index];
-        }
-        return sub;
+    for (unsigned int index = 0; index < sub.rows * sub.cols; index++) {
+            sub.values[index] = m1.values[index] - m2.values[index];
     }
+    return sub;
+}
 
 
 Matrix multiplication(const Matrix A, const Matrix B) { // Умножение матриц
@@ -190,8 +190,10 @@ Matrix reverse_matrix (const Matrix A,const unsigned int size) { // Функци
     int k = 1;
     for (unsigned int i = 0; i < reverse.rows; i++) {
         for (unsigned int j = 0; j < reverse.cols; j++) {
-            reverse.values[i * size + j] = k * determinant(minor(A,size,i,j),size -1);
+            Matrix temp = minor(A, size,i,j);
+            reverse.values[i * size + j] = k * determinant(temp,size -1);
             k = -k;
+            free_matrix(temp);
         }
     }
     Matrix temp_transpose = transposition(reverse);
