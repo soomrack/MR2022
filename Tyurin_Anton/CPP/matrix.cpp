@@ -131,14 +131,16 @@ Matrix Matrix::operator* (const Matrix& X) const {
 }
 
 Matrix Matrix::operator= (const Matrix& X) const { ////////////////////////////////////////////////////////
-    Matrix equal(X);
+    /*Matrix equal(X);
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
            equal.values[row * equal.rows + col] = X.values[row * X.rows + col];
            //Matrix equal(X);
         }
     }
-    return equal;
+    return equal;*/
+    memcpy(values, X.values, rows * cols * sizeof(double));
+    return *this;
 }
 
 Matrix Matrix::operator^ (double X) const {
@@ -186,20 +188,20 @@ int main() {
     Matrix A(3,3);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     Matrix::data_input(&A,arr_A);
-    Matrix B(3);
+    Matrix B(3,3);
+    double arr_B[] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    Matrix::data_input(&B,arr_B);
     // Блок вычислений
     Matrix Sum = A + B;
     Matrix Sub = A - B;
     Matrix Mult = A * B;
-    Matrix::exp(A);
+    Matrix exp = Matrix::exp(A);
     // Блок вывода
-    Matrix TEST = A * A;
-    TEST = TEST / 3;
-    Matrix::print_matrix(TEST);
-    /*Matrix::print_matrix(B);
+    Matrix::print_matrix(A);
+    Matrix::print_matrix(B);
     Matrix::print_matrix(Sum,'+');
     Matrix::print_matrix(Sub,'-');
     Matrix::print_matrix(Mult,'*');
-    Matrix::print_matrix(Mult,'e');*/
+    Matrix::print_matrix(exp,'e');
     return 0;
 }
