@@ -51,7 +51,7 @@ public:
 	Matrix set_identity();		//Преобразование матрицы в единичную
 	Matrix exponent(unsigned int);		//Нахождение экспоненты матрицы
 	Matrix set_transpose();				// Транспонирование матрицы
-	Matrix Minor(const Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
+	Matrix minor(const Matrix,const unsigned int, const unsigned int,const unsigned int);		//Нахождение минора матрицы
 	Matrix reverse(const Matrix, unsigned int);		//Обратная матрица
 	double determinant(const Matrix, unsigned int);		//Определитель матрицы 
 
@@ -69,7 +69,7 @@ public:
 	Matrix operator* (const double);
 	Matrix operator/ (const double);
 
-	bool operator!=(const Matrix& mat) { return !(*this == mat); }
+	bool operator!=(const Matrix& mat);
 	bool operator==(const Matrix& mat);
 	friend std::ostream& operator<<(std::ostream& out, Matrix m);
 
@@ -118,14 +118,14 @@ Matrix::~Matrix()
 }
 	
 
-std::ostream& operator<<(std::ostream& out, Matrix m) 
+std::ostream& operator<<(std::ostream& out, Matrix matrix) 
 {
 	{
-		for (unsigned int row = 0; row < m.rows; row++)
+		for (unsigned int row = 0; row < matrix.rows; row++)
 		{
-			for (unsigned int col = 0; col < m.cols; col++)
+			for (unsigned int col = 0; col < matrix.cols; col++)
 			{
-				out << m.values[row * m.cols + col] << "\t";
+				out << matrix.values[row * matrix.cols + col] << "\t";
 			}
 			out << std::endl;
 		}
@@ -142,6 +142,12 @@ bool Matrix::operator==(const Matrix &A)
 		if (abs(this->values[idx] - A.values[idx]) > EPS) return false;
 	}
 	return true;
+}
+
+
+bool Matrix::operator!=(const Matrix& mat) 
+{
+	return !(*this == mat);
 }
 
 
@@ -197,21 +203,22 @@ int Matrix::getcol()
 }
 
 
-Matrix Matrix::Minor(const Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col) 
+Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col) 
 {
-	Matrix m1(size - 1, size - 1);
+	Matrix minor(size - 1, size - 1);
 	unsigned int shiftrow = 0; //Смещение индекса строки в матрице
 	unsigned int shiftcol; //Смещение индекса столбца в матрице
 	for (unsigned int rows = 0; rows < size - 1; rows++) {
 		//Пропустить row-ую строку
-		if (rows == row) {shiftrow = 1;} //Как только встретили строку, которую надо пропустить, делаем смещение для исходной матрицы
+		if (rows == row) {shiftrow = 1;} //Как только встретили строку, 
+		//которую надо пропустить, делаем смещение для исходной матрицы
 		shiftcol = 0; //Обнулить смещение столбца
 		for (unsigned int cols = 0; cols < size - 1; cols++) {
 			if (cols == col) {shiftcol = 1;}
-			m1.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow) * size + (cols + shiftcol)];
+			minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow) * size + (cols + shiftcol)];
 		}
 	}
-	return m1;
+	return minor;
 }
 
 
@@ -360,7 +367,7 @@ double Matrix::determinant(const Matrix matrix, unsigned int size)
 		return (matrix.values[0] * matrix.values[3] - matrix.values[2] * matrix.values[1]);
 	}
 	for (unsigned int idx = 0; idx < size; idx++) {
-		det += k * matrix.values[idx] * determinant(Minor(matrix, size, 0, idx), size - 1);
+		det += k * matrix.values[idx] * determinant(minor(matrix, size, 0, idx), size - 1);
 		k = -k;
 	}
 	return det;
@@ -373,9 +380,9 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 	if (matrix.rows != matrix.cols) throw notsquare;
 	Matrix reverse(matrix.rows, matrix.cols);
 	int k = 1;
-	for (unsigned int row = 0; row < A.rows; row++) {
-		for (unsigned int col = 0; col < A.cols; col++) {
-			reverse.values[row * size + col] = k * determinant(Minor(matrix, size, row, col), size - 1);
+	for (unsigned int row = 0; row < reverse.rows; row++) {
+		for (unsigned int col = 0; col < reverse.cols; col++) {
+			reverse.values[row * size + col] = k * determinant(minor(matrix, size, row, col), size - 1);
 			k = -k;
 		}
 	}
