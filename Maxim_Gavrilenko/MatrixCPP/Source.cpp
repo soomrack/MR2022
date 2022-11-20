@@ -45,6 +45,7 @@ public:
 	int getrow();
 	int getcol();
 
+	Matrix set_zero(); // Установить значения матрицы нулями
 	Matrix fill_random();
 	Matrix fill_from_array(double*);
 	Matrix set_identity();		//Преобразование матрицы в единичную
@@ -134,7 +135,7 @@ std::ostream& operator<<(std::ostream& out, Matrix m)
 }
 
 
-bool Matrix::operator== (const Matrix &A)
+bool Matrix::operator==(const Matrix &A)
 {
 	if (this->cols != A.cols || this->rows != A.rows) return false;
 	for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
@@ -146,8 +147,7 @@ bool Matrix::operator== (const Matrix &A)
 
 Matrix Matrix::fill_random() 
 {
-	for (unsigned int index = 0; index < cols * rows; index++)
-	{
+	for (unsigned int index = 0; index < cols * rows; index++) {
 		this->values[index] = double(rand() % 10);
 	}
 	return (*this);
@@ -161,13 +161,19 @@ Matrix Matrix::fill_from_array(double* array)
 }
 
 
+Matrix Matrix::set_zero()
+{
+	for (unsigned int idx = 0; idx < this->rows * this->cols; idx++) {
+		this->values[idx] = 0;
+	}
+	return *this;
+}
+
 Matrix Matrix::set_identity() 
 {
-	for (unsigned int idx = 0; idx < cols * rows; idx++) {
-		values[idx] = 0;
-	}
-	for (unsigned int idx = 0; idx < cols * rows; idx += rows + 1) {
-		values[idx] = 1.0;
+	set_zero();
+	for (unsigned int idx = 0; idx < this->cols * this->rows; idx += rows + 1) {
+		this->values[idx] = 1.0;
 	}
 	return *this;
 }
@@ -263,7 +269,7 @@ Matrix Matrix::operator/(const double k) // Деление матрицы на число
 
 Matrix& Matrix::operator*=(const Matrix& m2) // Умножение матриц
 { 
-	if (cols != m2.rows) throw (multiplyerror);
+	if (cols != m2.rows) throw multiplyerror;
 		Matrix multiplication(rows, m2.cols);
 	for (unsigned int row = 0; row < multiplication.rows; row++) {
 		for (unsigned int col = 0; col < multiplication.cols; col++) {
@@ -291,7 +297,7 @@ Matrix& Matrix::operator+=(const Matrix& matrix)
 
 Matrix& Matrix::operator-=(const Matrix& matrix) 
 {
-	if (rows != matrix.rows || cols != matrix.cols) throw (notequal);
+	if (rows != matrix.rows || cols != matrix.cols) throw notequal;
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] -= matrix.values[index];
 	}
@@ -300,7 +306,7 @@ Matrix& Matrix::operator-=(const Matrix& matrix)
 
 
 Matrix& Matrix::operator*=(const double k) // Умножение матрицы на число
-{ 
+{
 	for (unsigned int idx = 0; idx < rows * cols; idx++) {
 		this->values[idx] *= k;
 	}
