@@ -513,11 +513,11 @@ void test_det()
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
 	if (matrix1.determinant(matrix1,matrix1.getrow() == -78)) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		std::cout << "Multiplication test failed\n";
+		std::cout << "Determinant test failed\n";
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-		std::cout << "Multiplication test passed\n";
+		std::cout << "Determinant test passed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -542,6 +542,7 @@ void test_rev() {
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
+
 
 void test_transpose()
 {
@@ -633,5 +634,6 @@ int main()
 		std::cerr << "Caught: " << e.what() << std::endl;
 		std::cerr << "Type: " << typeid(e).name() << std::endl;
 	}
+
 	test();
 }
