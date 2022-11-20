@@ -267,15 +267,15 @@ Matrix Matrix::operator/(const double k) // Деление матрицы на число
 }
 
 
-Matrix& Matrix::operator*=(const Matrix& m2) // Умножение матриц
+Matrix& Matrix::operator*=(const Matrix& matrix) // Умножение матриц
 { 
-	if (cols != m2.rows) throw multiplyerror;
-		Matrix multiplication(rows, m2.cols);
+	if (cols != matrix.rows) throw multiplyerror;
+	Matrix multiplication(rows, matrix.cols);
 	for (unsigned int row = 0; row < multiplication.rows; row++) {
 		for (unsigned int col = 0; col < multiplication.cols; col++) {
 			double sum = 0;
-			for (unsigned int k = 0; k < m2.rows; k++) {
-				sum += values[row * cols + k] * m2.values[k * m2.cols + col];
+			for (unsigned int k = 0; k < matrix.rows; k++) {
+				sum += values[row * cols + k] * matrix.values[k * matrix.cols + col];
 				}
 			multiplication.values[row * multiplication.cols + col] = sum;
 		}
@@ -347,42 +347,42 @@ Matrix& Matrix::operator=(Matrix&& A) noexcept
 }
 
 
-double Matrix::determinant(const Matrix m, unsigned int size) 
+double Matrix::determinant(const Matrix matrix, unsigned int size) 
 {
-	if (m.rows != m.cols) throw notsquare;
+	if (matrix.rows != matrix.cols) throw notsquare;
 	double det = 0;
 	int k = 1;
 	if (size == 0)
 		return 0;
 	if (size == 1)
-		return m.values[0];
+		return matrix.values[0];
 	if (size == 2) {
-		return (m.values[0] * m.values[3] - m.values[2] * m.values[1]);
+		return (matrix.values[0] * matrix.values[3] - matrix.values[2] * matrix.values[1]);
 	}
 	for (unsigned int idx = 0; idx < size; idx++) {
-		det += k * m.values[idx] * determinant(Minor(m, size, 0, idx), size - 1);
+		det += k * matrix.values[idx] * determinant(Minor(matrix, size, 0, idx), size - 1);
 		k = -k;
 	}
 	return det;
 }
 
 
-Matrix Matrix::reverse(const Matrix rev, const unsigned int size) // Функция нахождения обратной матрицы
+Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция нахождения обратной матрицы
 {
-	double d = determinant(rev, size);
-	if (rev.rows != rev.cols) throw notsquare;
-	Matrix A(rev.rows, rev.cols);
+	double d = determinant(matrix, size);
+	if (matrix.rows != matrix.cols) throw notsquare;
+	Matrix reverse(matrix.rows, matrix.cols);
 	int k = 1;
 	for (unsigned int row = 0; row < A.rows; row++) {
 		for (unsigned int col = 0; col < A.cols; col++) {
-			A.values[row * size + col] = k * determinant(Minor(rev, size, row, col), size - 1);
+			reverse.values[row * size + col] = k * determinant(Minor(matrix, size, row, col), size - 1);
 			k = -k;
 		}
 	}
-	A.set_transpose();
+	reverse.set_transpose();
 	if (d == 0) throw zerodivision;
-	A /= d;
-	return A;
+	reverse /= d;
+	return reverse;
 }
 
 
