@@ -1,75 +1,106 @@
 #include <stdio.h>
-
-int main() {
-    unsigned long long int bank_a = 100000000, bank_b = 100000000, rubles_a, cents_a,
-    rubles_b, cents_b;
-    int first_cont = 70000000; // Первоначальный взнос
-    int a_utilities = 4000000; // Коммунальные услуги Alice
-    int b_utilities = 1000000; // Коммунальные услуги Bob
-    long long int room = 6000000; // Стоимость квартиры в рублях
-    int month_cont = 5000000; // Ежемесячный платеж
-    double rate = 0.07; // Ставка банка первые три года
-    int revenue_a = 15000000, revenue_b = 15000000;
-    double tax = 0.001;
+#include <malloc.h>
+unsigned int years = 20;
+int annual_contrib = 60 * 1000 * 100;
+int first_contrib = 300 * 1000;
 
 
-    bank_b -= first_cont; // Остаток на вкладе Боба
-    for (char year = 1; year <= 20; year++) {
-        if (year % 5 == 0)
-        {
-            room = (long long int)(room * 1.5);
-            if (room < 50000000 & room > 20000000)
-                tax = 0.0015;
+typedef struct person {
+    const char* name;
+    unsigned long long bank;
+    unsigned long long revenue;
+    unsigned long spending;
+    unsigned long long house;
+    double rate;
+    double tax;
+}person;
 
-        }
-        if (year == 10){ // Новая зарплата для Alice
-            printf("\n\nPrint new revenue for Alice");
-            scanf("%d%",&revenue_a);
-            revenue_a = revenue_a * 100;
-        }
-        if (year == 14){ // Новая зарплата для Bob
-            printf("\n\nPrint new revenue for Bob");
-            scanf("%d",&revenue_b);
-            revenue_b = revenue_b * 100;
-        }
-        for (char month = 1; month <=12; month++)
-        {
-            if (year == 4) {
-                rate = 0.1; // Ставка банка через три года
-            }
-            bank_a = (unsigned long long int)((bank_a + revenue_a - a_utilities) * (1.f+ rate/12));
-            bank_b = (unsigned long long int)((bank_b + revenue_b - b_utilities - month_cont - room * tax) * (1.f + rate/ 12));
-        }
-        rubles_a = bank_a / 100;
-        cents_a = bank_a % 100;
-        rubles_b = bank_b / 100;
-        cents_b = bank_b % 100;
 
-        printf("\nroom - %llu rubles\n", room);
-        printf("tax - %.1f%\n",tax*100);
-        printf("current year - %d\n", year);
-        printf("current rate - %.2f\n", rate);
-        printf("Alice actives at the end of year - %llu.%llu%llu rubles\n", rubles_a,cents_a/10,cents_a%10);
-        printf("Bob actives at the end of year - %llu.%llu%llu rubles\n",rubles_b+room,cents_b/10,cents_b%10);
+void init_Alice(person* Alice)
+{
+    Alice->name = "Alice";
+    Alice->bank = 1000 * 1000 * 100;
+    Alice->revenue = 150 * 1000 * 100;
+    Alice->house = 0;
+    Alice->spending = 40 * 1000 * 100;
+    Alice->rate = 0.08;
+}
 
-        if (rubles_b+room>rubles_a)
-        {
-            if (cents_b < cents_a)
-            {
-                rubles_b -= 1;
-                cents_b += 100;
-            }
-            printf("Bob more profitable than Alice on %llu.%llu rubles!\n", ((rubles_b+room)-rubles_a),cents_b-cents_a);
-        }
-        else
-        {
-            if (cents_a < cents_b)
-            {
-                rubles_a -= 1;
-                cents_a += 100;
-            }
-            printf("Alice more profitable than Bob on %llu.%llu rubles!\n", (rubles_a - (rubles_b + room)),cents_a-cents_b);
-        }
+
+void init_Bob(person* Bob)
+{
+    Bob->name = "Bob";
+    Bob->tax = 0.001;
+    Bob->bank = 1000 * 1000 * 100 - first_contrib;
+    Bob->revenue = 150 * 1000 * 100;
+    Bob->house = 7000 * 1000 * 100;
+    Bob->spending = (long long)(10 * 1000 * 100 + annual_contrib + (double)(Bob)->house * Bob->tax/12);
+    Bob->rate = 0.08;
+}
+
+
+void month_pay (person* buyer) {
+    buyer->bank = (unsigned long long)((double)(((buyer->bank) - buyer-> spending + buyer -> revenue))*
+            (1.f+ buyer->rate/12));
+}
+
+
+void live_changes_Alice(person* A, const unsigned int year) { // Через 10 лет упала зарплата
+    if (year == 10) {
+        A->revenue = 130 * 1000 * 100;
     }
-    return 0;
+    if (year == 7) {
+        A->rate = 0.11;
+    }
+}
+
+void live_changes_Bob(person* B, const unsigned int year) {
+    if (year % 5 == 0)
+        B->house = (B->house * 3 / 2);
+    if (B->house / 100 < 50000 * 1000 && B->house / 100 > 20000 * 1000)
+        B->tax = 0.0015;
+    if (year == 12)
+        B->rate = 0.1;
+    B->spending = (long long)((double)(10* 1000 * 100 + annual_contrib +(double)(B)->house * B->tax/12));
+}
+
+
+void output ( person* client, unsigned int year) {
+    printf("%s\n",client ->name);
+    printf("current year - %d\n", year);
+    printf("bank_capital: %llu rubles and %llu cents\n", client->bank/100, client-> bank % 100);
+    printf("house_cost:%llu rubles and %llu cents\n", client->house/100, client-> house % 100);
+    printf("bank_rate:%f\n", client->rate);
+    printf("income: %llu and %llu cents\n", client->revenue/100, client-> revenue % 100);
+}
+
+void print_report ( person* A,  person* B) {
+    if (B->bank + B->house > A->bank)
+        printf("Bob more profitable than Alice on %llu rubles!\n", ((B->bank + B->house) - A->bank) / 100);
+    else
+        printf("Alice more profitable than Bob on %llu rubles!\n", (A->bank - (B->bank + B->house)) / 100);
+}
+
+
+void simulation () {
+    person Alice;
+    person Bob;
+    init_Alice(&Alice);
+    init_Bob(&Bob);
+    for (unsigned int year = 1; year <= years; year++) {
+        live_changes_Alice(&Alice,year);
+        live_changes_Bob(&Bob,year);
+        for (unsigned int month = 1; month <= 12; month++) {
+            month_pay(&Alice);
+            month_pay(&Bob);
+        }
+        output(&Alice,year);
+        output(&Bob,year);
+        print_report(&Alice,&Bob);
+    }
+}
+
+
+void main (){
+    simulation();
 }
