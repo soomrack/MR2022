@@ -187,14 +187,15 @@ Matrix reverse_matrix (const Matrix A,const unsigned int size) { // Функци
         return EMPTY();
     }
     Matrix reverse = memory_allocation(size, size);
+    Matrix temp;
     int k = 1;
     for (unsigned int i = 0; i < reverse.rows; i++) {
         for (unsigned int j = 0; j < reverse.cols; j++) {
-            Matrix temp = minor(A, size,i,j);
+            temp = minor(A, size,i,j);
             reverse.values[i * size + j] = k * determinant(temp,size -1);
             k = -k;
-            free_matrix(temp);
         }
+    free_matrix(temp);
     }
     Matrix temp_transpose = transposition(reverse);
     free_matrix(reverse);
@@ -237,7 +238,7 @@ int main()
                        0,9,4,
                        8,8,2};*/
     Matrix A;
-    A = memory_allocation(2,3);
+    A = memory_allocation(3,3);
     fill_random(A);
     output("First Matrix",A);
     Matrix B;
