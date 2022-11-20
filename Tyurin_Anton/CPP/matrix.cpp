@@ -131,45 +131,35 @@ Matrix Matrix::operator* (const Matrix& X) const {
 }
 
 Matrix Matrix::operator= (const Matrix& X) const { ////////////////////////////////////////////////////////
-    Matrix equal(X.cols, X.rows);
+    Matrix equal(X);
     for (unsigned int row = 0; row < rows; row++) {
-        for (unsigned int col = 0; col < X.cols; col++) {
-            equal.values = X.values;
-           Matrix equal(X);
+        for (unsigned int col = 0; col < cols; col++) {
+           equal.values[row * equal.rows + col] = X.values[row * X.rows + col];
+           //Matrix equal(X);
         }
     }
     return equal;
 }
 
 Matrix Matrix::operator^ (double X) const {
-    Matrix power(rows, cols);
-    if (X == 0) {
+    Matrix power(*this);
+    //Matrix power(rows, cols);
+    if (X == 0.0) {
         Matrix one(rows);
         return one;
     }
-    if (X == 1) {
+    if (X == 1.0) {
         return power;
     }
     else {
-       const Matrix& start(power);
+       const Matrix &start(power);
+       Matrix power1(power.cols);
         for (unsigned int idx = 0; idx < X; idx++) {
-            power = power * start;
+            power1 = power1 * start;
         }
+        power = power1;
         return power;
     }
-}
-
-Matrix Matrix::operator/ (const Matrix& X) const {
-    Matrix divide(X.cols, X.rows);
-    for (unsigned int row = 0; row < rows; row++) {
-        for (unsigned int col = 0; col < X.cols; col++) {
-            divide.values[row * divide.rows + col] = 0;
-            for (unsigned int k = 0; k < cols; k++) {
-                divide.values[row * divide.cols + col] += 1 / (values[row * cols + k] * X.values[k * X.cols + col]);
-            }
-        }
-    }
-    return divide;
 }
 
 Matrix Matrix::operator/ (const double X) const {
@@ -183,10 +173,10 @@ Matrix Matrix::operator/ (const double X) const {
 Matrix Matrix::exp(const Matrix& A){
     Matrix one(A.cols);
     Matrix exp = one + A;
-    int factorial = 1;
+    double factorial = 1;
     for (int n = 2; n < 11; n++) {
         factorial *= n;
-        exp = exp + (A^n) / factorial;
+        exp = exp + (A ^ n) / factorial;
     }
     return exp;
 }
@@ -203,11 +193,13 @@ int main() {
     Matrix Mult = A * B;
     Matrix::exp(A);
     // Блок вывода
-    Matrix::print_matrix(A);
-    Matrix::print_matrix(B);
+    Matrix TEST = A * A;
+    TEST = TEST / 3;
+    Matrix::print_matrix(TEST);
+    /*Matrix::print_matrix(B);
     Matrix::print_matrix(Sum,'+');
     Matrix::print_matrix(Sub,'-');
     Matrix::print_matrix(Mult,'*');
-    Matrix::print_matrix(Mult,'e');
+    Matrix::print_matrix(Mult,'e');*/
     return 0;
 }
