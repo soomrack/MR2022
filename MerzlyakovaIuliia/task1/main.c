@@ -1,40 +1,71 @@
+#include <stdint.h>
 #include <stdio.h>
+
 
 #define DEB_PERCENT 0.08
 #define SAL_ALICE 150000.0
 #define SAL_BOB 150000.0
 #define BOB_FLAT_PAYMENT 100000.0
-#define COMM_ALICE 40000.0
-#define COMM_BOB 10000.0
+#define COMM_ALICE 40000
+#define COMM_BOB 10000
 #define OVERALL_TIME 20
 #define DEPOSIT 300000
-#define FLAT_INCREACE_ONCE_YEAR 1,5
+#define FLAT_INCREACE_ANNYAL 3.2
+
+struct persona {
+    double bank;
+    uint16_t salary;
+    uint16_t monthly_payment;
+    double flat_cost;
+};
+
+uint8_t winner(struct persona, struct persona);
+float year_finals(struct persona);
+void flat_increace();
+
+
+struct persona Alice = {1000000,  SAL_ALICE,  COMM_ALICE, 0};
+struct persona Bob = {1000000 - DEPOSIT,  SAL_BOB,  COMM_BOB, BOB_FLAT_PAYMENT};
+
 
 int main()
 {
-    float bankAlice = 1000000, bankBob = 1000000;
-    bankBob -= DEPOSIT;
+   
+    if (winner(Alice, Bob)) 
+       printf("\nAlice has more money\n");
+    else 
+        printf("\nBob has more money\n\n");
 
-    for(int i = 0; i < (OVERALL_TIME*12); i++)
-    {
-        static int bobPayment = BOB_FLAT_PAYMENT;
-        //bankAlice += SAL_ALICE - COMM_ALICE;
-        bankAlice += bankAlice * (DEB_PERCENT/12);
-        bankBob += SAL_BOB - (COMM_BOB + bobPayment);
-        bankBob += bankBob * (DEB_PERCENT/12);
-        if (i == 48)
-        {
-            bobPayment += bobPayment*(FLAT_INCREACE_ONCE_YEAR/12);
-        }
-    }
+    printf("Alice's money: %f\n", Alice.bank);
+    printf("Bob's money: %f\n", Bob.bank);
 
-    printf("Alice's money: %f\n", bankAlice);
-    printf("Bob's money: %f\n", bankBob);
-
-    if(bankAlice>bankBob)
-        printf("\nAlice has more money\n");
-    else
-        printf("\nBob has more money\n");
-
-    return 0;
 }
+
+uint8_t winner(struct persona p1, struct persona p2)
+{
+    for(int8_t i = 0; i <= OVERALL_TIME; i++)
+    {
+        p1.bank += year_finals(p1);
+        p2.bank += year_finals(p2);
+        p1.bank += p1.bank * DEB_PERCENT;
+        p2.bank += p2.bank * DEB_PERCENT;
+        flat_increace();
+    }
+    if (p1.bank > p2.bank)
+        return 1;
+    else 
+        return 0;
+}
+
+float year_finals(struct persona p)
+{
+    for (int8_t i = 0; i < 12; i++)
+    p.bank += p.salary - p.monthly_payment - p.flat_cost;
+    return p.bank;
+}
+
+void flat_increace()
+{
+    Bob.flat_cost *= FLAT_INCREACE_ANNYAL;
+}
+
