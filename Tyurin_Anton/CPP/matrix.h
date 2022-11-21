@@ -21,7 +21,8 @@ public:
     Matrix operator+(const Matrix& X) const;
     Matrix operator-(const Matrix& X) const;
     Matrix operator*(const Matrix& X) const;
-    Matrix operator=(const Matrix& X) const;
+    Matrix operator=(Matrix& X);
+    Matrix operator=(Matrix&& X);
     Matrix operator^(double X) const;
     Matrix operator/ (const Matrix& X) const;
     Matrix operator/ (const double X) const;
