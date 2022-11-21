@@ -53,6 +53,7 @@ Matrix::Matrix(const Matrix& matrix) {
     }
 }
 
+
 Matrix::Matrix(Matrix&& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
@@ -63,6 +64,7 @@ Matrix::Matrix(Matrix&& matrix) {
     }
     matrix.~Matrix();
 }
+
 
 Matrix::~Matrix() {
     free(values);
@@ -78,6 +80,7 @@ void Matrix::print_matrix() {
     }
     std::cout << "\n";
 }
+
 
 void Matrix::set_values() {
     for (unsigned int index = 0; index < rows * cols; ++index) {
