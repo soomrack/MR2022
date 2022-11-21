@@ -187,7 +187,7 @@ bool Matrix::is_equal(const Matrix& X){
     bool equalness;
     if ((rows == X.rows)&&(cols == X.cols)){
         for (unsigned int idx = 0; idx < cols * rows; idx++){
-            if(values[idx] == X.values[idx]){
+            if(values[idx] * 1000 == X.values[idx] * 1000){
                 equalness = true;
             }
             else {
@@ -224,5 +224,10 @@ int main() {
     Matrix::print_matrix(exp,'e');
     return 0;
     */
-Matrix_test::exp_test();
+int a =Matrix_test::exp_test();
+std::cout << a;
+    Matrix A(3,3);
+    A.fill_with(2);
+    Matrix S = Matrix::exp(A);
+    Matrix::print_matrix(S,'e');
 }
