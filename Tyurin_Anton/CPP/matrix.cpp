@@ -1,7 +1,7 @@
 #include <iostream>
 #include "matrix.h"
 
-Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матриц
+Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;
         rows = rows_m;
         values = new double[cols * rows];
@@ -180,6 +180,24 @@ void Matrix::fill_with(double Number) {
         values[idx] = Number;
     }
 
+}
+
+bool Matrix::is_equal(const Matrix& X){
+    bool equalness;
+    if ((rows == X.rows)&&(cols == X.cols)){
+        for (unsigned int idx = 0; idx < cols * rows; idx++){
+            if(values[idx] == X.values[idx]){
+                equalness = true;
+            }
+            else {
+                equalness = false;
+            }
+        }
+    }
+    else{
+        equalness = false;
+    }
+    return equalness;
 }
 
 int main() {

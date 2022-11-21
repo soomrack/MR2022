@@ -28,4 +28,5 @@ public:
     Matrix operator/ (const double X) const;
     static Matrix exp(const Matrix& A);
     void fill_with(double Number);
+    bool is_equal(const Matrix &X);
 };
