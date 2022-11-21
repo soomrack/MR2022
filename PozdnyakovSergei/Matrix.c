@@ -30,18 +30,18 @@ void mistake (char* name_of_operation, char* error) {  // Есть ошибка 
 }
 
 
-void set (Matrix* matrix) {  // Рандомный ввод матриц
+/*void set (Matrix* matrix) {  // Рандомный ввод матриц
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         matrix->value[number] = rand()%10;  //
     }
-}
+}*/
 
 
-/*void set (Matrix* matrix) {
+void set (Matrix* matrix) {
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         scanf("%lf", &matrix->value[number]);
     }
-}*/
+}
 
 
 int is_null (const Matrix matrix) {  // Матрицы нет
@@ -315,7 +315,7 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
 }*/
 
 
-Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонента матрицы
+/*Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экспонента матрицы, точность задается количеством слагаемых ряда
     if (matrix.cols != matrix.rows) {
         mistake("Exp", "Matrix should be square");
         return ZERO;
@@ -325,7 +325,7 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
     Matrix powered_t = exponent;
     new_result = unit_matrix(matrix.cols, matrix.rows);
     int factorial = 1;
-    for (int acc = 1; acc <= accuracy; ++acc) {
+    for (int acc = 2; acc <= accuracy; ++acc) {
         factorial *= acc;
         powered_t1 = multiply_m_by_m(powered_t, matrix);
         powered_t = copy_matrix(powered_t1);
@@ -338,12 +338,38 @@ Matrix matrix_exponent (const Matrix matrix, int accuracy) { // Экспонен
         exponent = copy_matrix(new_result);
 
         clean_memory(new_result);
-/*
-        clean_memory(powered);
-*/
+
+        clean_memory(powered_t);
+
     }
     clean_memory(powered_t);
     return exponent;
+}*/
+
+
+Matrix matrix_exponent (const Matrix exponent, unsigned int accuracy) { // Функция нахождения экспоненты матрицы
+    if (exponent.cols != exponent.rows) {
+        printf("Matrix should have size nxn");
+        return ZERO;
+    }
+     // Количество членов ряда
+    Matrix ex = unit_matrix(exponent.cols, exponent.rows);
+    Matrix temp = unit_matrix(exponent.cols, exponent.rows);
+    Matrix temp_multiply;
+    Matrix temp_add;
+    double factorial = 1.0;
+    for (unsigned int acc = 1; acc < accuracy; acc++) {
+        factorial *= acc;
+        if (factorial == 0) return ZERO;
+        temp_multiply = multiply_m_by_m(temp, exponent);
+        clean_memory(temp);
+        temp = temp_multiply;
+        temp_add = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
+        clean_memory(ex);
+        ex = temp_add;
+    }
+    clean_memory(temp_multiply);
+    return ex;
 }
 
 
@@ -446,9 +472,9 @@ int main() {
     matrix_output(exp);
     clean_memory(exp);
 
-    printf("identity\n");
+    printf("unit\n");
     Matrix one;
-    one = unit_matrix(3, 3);
+    one = unit_matrix(mat1.cols, mat1.rows);
     matrix_output(one);
     clean_memory(one);
 
