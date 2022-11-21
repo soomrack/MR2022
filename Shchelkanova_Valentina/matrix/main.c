@@ -137,7 +137,7 @@ Matrix copy(const Matrix A) { // копирование матрицы
     return rez;
 }
 
-Matrix Exp(const Matrix A, int accuracy) { // экпонента
+Matrix expm(const Matrix A, int accuracy) { // экпонента
     if (A.cols != A.rows) {
         return EMPTY;
     }
@@ -145,7 +145,7 @@ Matrix Exp(const Matrix A, int accuracy) { // экпонента
     Matrix rez = init(A);
     Matrix powered = A;
     int factorial = 1;
-    for (int acc = 1.0; acc <= accuracy; ++acc) {
+    for (unsigned int acc = 1; acc <= accuracy; ++acc) {
         factorial *= acc;
 
         new_powered = multiplication(powered, A);
@@ -239,7 +239,7 @@ int main() {
     print(minor(4,4,A));
     printf("This is matrix.c A det %f\n", determinant(A));
     printf("This is matrix. A exp\n");
-    print(Exp(A,3));
+    print(expm(A,3));
     return 0;
 }
 

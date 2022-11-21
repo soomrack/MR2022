@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <malloc.h>
-//#include <time.h>
-//#include <math.h>
 
 typedef struct Matrix{
     unsigned int rows;
@@ -35,16 +33,9 @@ void matrix_copy (Matrix matrix1, Matrix *matrix3){
 
 void matrix_fill_0123(Matrix *matrix){
     for(int rows = 0; rows < matrix->rows; rows++)
-        for(int columns = 0; columns < matrix->columns; columns++){
+        for(int columns = 0; columns < matrix->columns; columns++)
             matrix->cells[rows][columns] = rows * matrix->columns + columns;
-        }
 }
-
-/*void matrix_fill_rnd(Matrix *matrix){
-    for (int rows = 0; rows < matrix->rows; ++rows)
-        for (int columns = 0; columns < matrix->columns; ++columns)
-            matrix->cells[rows][columns] = (double)(rand() - 32767 / 2);
-}*/
 
 void matrix_print(Matrix matrix) {
     for (int rows = 0; rows < matrix.rows; ++rows) {
@@ -56,9 +47,9 @@ void matrix_print(Matrix matrix) {
 }
 
 void matrix_multiply_matrix(Matrix matrix1, Matrix matrix2, Matrix *matrix3){
-        for(int rows1 = 0;  rows1 < matrix1.rows; rows1++)
-         for(int columns1 = 0; columns1 < matrix2.columns; columns1++)
-             for(int columns2 = 0; columns2 < matrix1.columns; columns2++)
+    for(int rows1 = 0;  rows1 < matrix1.rows; rows1++)
+        for(int columns1 = 0; columns1 < matrix2.columns; columns1++)
+            for(int columns2 = 0; columns2 < matrix1.columns; columns2++)
                 matrix3->cells[rows1][columns1] += matrix1.cells[rows1][columns2] * matrix2.cells[columns2][rows1];
 }
 
@@ -92,8 +83,6 @@ void matrix_addition(Matrix matrix1, Matrix matrix2, Matrix *matrix3){
 }
 
 void matrix_subtraction(Matrix matrix1, Matrix matrix2, Matrix *matrix3){
-    /*Matrix matrix3;
-    matrix_make(matrix1.rows,matrix1.columns,&matrix3); */
     for(int rows = 0; rows < matrix1.rows; rows++)
         for (int columns = 0; columns < matrix1.columns; columns++)
             matrix3->cells[rows][columns] = matrix1.cells[rows][columns] - matrix2.cells[rows][columns];
@@ -153,18 +142,6 @@ double matrix_determinant(Matrix matrix){
         for(int columns = 0; columns < matrix.columns; columns++){
            Matrix matrix3;
            matrix3 = matrix_minor(matrix, 0,columns); // создаём матрицу размера (n-1)*(n-1) для нохождения минора
-            /* unsigned int i = 0; // индексы элементов новой матрицы размера (n-1)*(n-1)
-            unsigned int j = 0;
-            for(int rows1 = 1; rows1 < matrix.rows; rows1++){
-                for(int columns1 = 0; columns1 < matrix.columns; columns1++){
-                    if(columns1 == columns) continue;
-                    else {
-                        matrix3.cells[i][j] = matrix.cells[rows1][columns1];
-                        j++;
-                    }
-                }
-                i++;
-             }*/
             determinant = matrix.cells[0][columns] * k * matrix_determinant(matrix3);
             k = -k;
             free(matrix3.cells);
@@ -180,19 +157,20 @@ double matrix_determinant(Matrix matrix){
 }
 
 void matrix_determinant_test(Matrix matrix){
-    if(matrix.rows == matrix.columns) printf("Matrix determinant = %lf\n", matrix_determinant(matrix));
+    if(matrix.rows == matrix.columns) printf("Matrix determinant = %lf\n\n", matrix_determinant(matrix));
     else printf("The matrix isn't square\n");
 }
 
 void invert_matrix(Matrix matrix, Matrix *matrix3){
     int k = 1;
     double det = matrix_determinant(matrix);
-    for (int rows = 0; rows < matrix.rows; ++rows){
-        for (int columns = 0; columns < matrix.columns; ++columns){
-        matrix3->cells[rows][columns] = matrix_determinant(matrix_minor(matrix, rows,columns)) * k / det;
-        k = -k;
-        }
-    }
+    if (det < 0.0001 && det > -0.0001) printf("Determinant of the matrix equals zero\n");
+    else
+        for (int rows = 0; rows < matrix.rows; ++rows)
+            for (int columns = 0; columns < matrix.columns; ++columns) {
+                matrix3->cells[rows][columns] = matrix_determinant(matrix_minor(matrix, rows, columns)) * k / det;
+                k = -k;
+            }
 }
 
 void invert_test(Matrix matrix){
@@ -234,8 +212,6 @@ void matrix_power(Matrix matrix, int power, Matrix *matrix3){
 }
 
 void matrix_exp(Matrix matrix, Matrix *exp_matrix) {
-    /* Matrix exp_matrix;
-     matrix_make(matrix.rows, matrix.columns, &exp_matrix); */
     Matrix matrix1;
     matrix_make(matrix.rows, matrix.columns, &matrix1);
     matrix_copy(matrix, &matrix1);
@@ -247,7 +223,6 @@ void matrix_exp(Matrix matrix, Matrix *exp_matrix) {
         matrix_power( matrix1, count, &matrix1);
         matrix_multiply_number( matrix1, k, &matrix1);
         matrix_addition(*exp_matrix, matrix, exp_matrix);
-        //  exp_matrix = matrix_addition(exp_matrix,matrix_multiply_number( matrix_power(matrix, count, &matrix), k));
     }
 }
 
@@ -284,10 +259,6 @@ void test(){
 }
 
 int main(){
-  //  srand (time(NULL));
-    for (int i = 0; i < 10000; ++i) {
-        test();
-    }
-    int a;
-  scanf("%d",&a);
+   // for (int i = 0; i < 10000; ++i)
+   test();
 }
