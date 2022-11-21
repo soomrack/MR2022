@@ -5,7 +5,6 @@ Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Ини
         cols = cols_m;
         rows = rows_m;
         values = new double[cols * rows];
-        // delete[] matrix.values;
         for (unsigned int idx = 0; idx < cols * rows; idx++){
             values[idx] = 0.0;
         }
@@ -18,6 +17,13 @@ Matrix::Matrix(const Matrix &A) {  // Конструктор копирован�
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         values[idx] = A.values[idx];
     }
+}
+
+Matrix::Matrix(Matrix&& A) {
+    rows = A.rows;
+    cols = A.cols;
+    values = A.values;
+    A.values = nullptr;
 }
 
 Matrix::~Matrix() {  // Деструктор
@@ -106,7 +112,18 @@ Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оп�
     return mult;
 }
 
-Matrix Matrix::operator= (const Matrix& X) const { // Перегрузка оператора присваивания
+Matrix Matrix::operator= (Matrix&& X)  { // Перегрузка оператора присваивания
+
+}
+
+Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
+    if (this == &X) {
+    return *this;
+    }
+    rows = X.rows;
+    cols = X.cols;
+    delete[]values;
+    new double [cols * rows];
     memcpy(values, X.values, rows * cols * sizeof(double));
     return *this;
 }
@@ -150,7 +167,15 @@ Matrix Matrix::exp(const Matrix& A){ // Матричная экспонента
     return exp;
 }
 
+void Matrix::fill_with(double Number) {
+    for(unsigned int idx = 0; idx < cols * rows; idx++){
+        values[idx] = Number;
+    }
+
+}
+
 int main() {
+
     // Создание матриц
     Matrix A(3,3);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
