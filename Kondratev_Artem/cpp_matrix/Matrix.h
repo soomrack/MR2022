@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
+#include <cstring>
 #include "MatrixException.h"
 
 class Matrix {
@@ -22,7 +23,7 @@ private:
 
 public:
     inline static const double EPSILON = 0.000001;
-    inline static const int EXP_STEP = 177;
+    inline static const int DEFAULT_EXP_STEPS = 177;
     Matrix();  //  empty matrix
     Matrix(int input_rows, int input_cols, int identity_flag);
     Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
@@ -54,7 +55,7 @@ private:
 public:
     Matrix inversion() const;
     Matrix power(int power) const;
-    static Matrix exp(const Matrix &matrix);
+    static Matrix exp(const Matrix &matrix, int STEPS);
 };
 
 #endif //MATRIX_H

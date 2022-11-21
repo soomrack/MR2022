@@ -1,14 +1,17 @@
 #include "Matrix.h"
 
-MatrixException negative_parameters(1, "matrix parameters are less than zero");
-MatrixException null_memory(2, "memory is not allocated");
-MatrixException addition_error(3, "wrong matrix sizes for addition");
-MatrixException subtraction_error(4, "wrong matrix sizes for subtraction");
-MatrixException nan_number(5, "number is NAN");
-MatrixException multiplication_error(6, "wrong matrix sizes for multiplication");
-MatrixException division_by_zero(7, "division_by_zero");
-MatrixException not_square(8, "matrix is not square");
-MatrixException wrong_length(9, "length of vector is wrong");
+MatrixException WRONG_PARAMETERS(1, "matrix parameters are less than zero");
+MatrixException NULL_MEMORY(2, "memory is not allocated");
+MatrixException ADDITION_ERROR(3, "wrong matrix sizes for addition");
+MatrixException SUBTRACTION_ERROR(4, "wrong matrix sizes for subtraction");
+MatrixException NAN_NUMBER(5, "number is NAN");
+MatrixException MULTIPLICATION_ERROR(6, "wrong matrix sizes for multiplication");
+MatrixException DIVISION_BY_ZERO(7, "division_by_zero");
+MatrixException NOT_SQUARE(8, "matrix is not square");
+MatrixException WRONG_LENGTH(9, "length of vector is wrong");
+MatrixException ZERO_LENGTH(10, "rows / cols is zero");
+
+// заполнение через функцию
 
 Matrix::Matrix() {
     rows = 0;
@@ -18,9 +21,9 @@ Matrix::Matrix() {
     values = nullptr;
 }
 
-Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {
-    if (input_rows < 0 || input_cols < 0) {
-        throw negative_parameters;
+Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {  //  const input
+    if (input_rows <= 0 || input_cols <= 0) {
+        throw WRONG_PARAMETERS;
     }
     rows = input_rows;
     cols = input_cols;
@@ -30,13 +33,13 @@ Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
     if (identity_flag == 1) {
         if (rows != cols) {
-            throw not_square;
+            throw NOT_SQUARE;
         }
         for (int row = 0; row < rows; row++)
             for (int col = 0; col < cols; col++)
@@ -46,10 +49,10 @@ Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {
 
 Matrix::Matrix(int input_rows, int input_cols, double number) {
     if (input_rows < 0 || input_cols < 0) {
-        throw negative_parameters;
+        throw WRONG_PARAMETERS;
     }
     if (std::isnan(number)) {
-        throw nan_number;
+        throw NAN_NUMBER;
     }
     rows = input_rows;
     cols = input_cols;
@@ -59,7 +62,7 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
@@ -67,15 +70,15 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
         values[cell] = number;
 }
 
-Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {
+Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {  //  через параметр в первом конструкторе
     if (input_rows < 0 || input_cols < 0) {
-        throw negative_parameters;
+        throw WRONG_PARAMETERS;
     }
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
     if (size != vector.size())
-        throw wrong_length;
+        throw WRONG_LENGTH;
     data = new double *[rows];
     values = new double [size];
     for (int row = 0; row < rows; row++)
@@ -83,7 +86,7 @@ Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     for (int cell = 0; cell < size; cell++)
         values[cell] = vector[cell];
@@ -98,7 +101,7 @@ Matrix::Matrix(const Matrix &other) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
@@ -115,7 +118,7 @@ Matrix::Matrix(Matrix &&other) noexcept {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     other.data = nullptr;
     other.values = nullptr;
@@ -145,14 +148,14 @@ int Matrix::get_size() const {
 
 double Matrix::get_value(int row, int col) const {
     if (row < 0 || col < 0) {
-        throw negative_parameters;
+        throw WRONG_PARAMETERS;
     }
     return data[row][col];
 }
 
 void Matrix::output() const {
     if (data == nullptr || values == nullptr) {
-        throw null_memory;
+        throw NULL_MEMORY;
     }
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
@@ -174,12 +177,12 @@ Matrix& Matrix::operator= (Matrix const &other) {
         if (data == nullptr || values == nullptr) {
             delete[] data;
             delete[] values;
-            throw null_memory;
+            throw NULL_MEMORY;
         }
         for (int row = 0; row < rows; row++)
             data[row] = values + row * cols;
-        for (int cell = 0; cell < size; cell++)
-            values[cell] = other.values[cell];
+
+        std::memcpy(values, other.values, sizeof(double) * other.size);
     }
 }
 
@@ -192,11 +195,6 @@ Matrix& Matrix::operator= (Matrix &&other) noexcept {
         size = rows * cols;
         data = other.data;
         values = other.values;
-        if (data == nullptr || values == nullptr) {
-            delete[] data;
-            delete[] values;
-            throw null_memory;
-        }
         other.data = nullptr;
         other.values = nullptr;
         for (int row = 0; row < rows; row++)
@@ -206,37 +204,37 @@ Matrix& Matrix::operator= (Matrix &&other) noexcept {
 
 Matrix Matrix::operator+ (Matrix const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
-        throw addition_error;
+        throw ADDITION_ERROR;
     }
-    Matrix sum_matrix(rows, cols);
+    Matrix sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.values[cell] = values[cell] + matrix.values[cell];
+        sum_matrix.values[cell] += matrix.values[cell];
     return sum_matrix;
 }
 
 Matrix Matrix::operator+ (double number) const {
     if (std::isnan(number)) {
-        throw nan_number;
+        throw NAN_NUMBER;
     }
-    Matrix sum_matrix(2, 2);
+    Matrix sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.values[cell] = values[cell] + number;
+        sum_matrix.values[cell] += number;
     return sum_matrix;
 }
 
 Matrix Matrix::operator- (Matrix const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
-        throw subtraction_error;
+        throw SUBTRACTION_ERROR;
     }
-    Matrix sum_matrix(rows, cols);
+    Matrix sub_matrix = *this;
     for (int cell = 0; cell < size; cell++)
-        sum_matrix.values[cell] = values[cell] - matrix.values[cell];
-    return sum_matrix;
+        sub_matrix.values[cell] -= matrix.values[cell];
+    return sub_matrix;
 }
 
 Matrix Matrix::operator* (Matrix const &matrix) const {
     if (cols != matrix.rows) {
-        throw multiplication_error;
+        throw MULTIPLICATION_ERROR;
     }
     Matrix multiplied_matrix(cols, matrix.rows);
     for(int row = 0; row < multiplied_matrix.rows; row++)
@@ -250,28 +248,29 @@ Matrix Matrix::operator* (Matrix const &matrix) const {
 
 Matrix Matrix::operator* (double number) const {
     if (std::isnan(number)) {
-        throw nan_number;
+        throw NAN_NUMBER;
     }
-    Matrix operated_matrix(rows, cols);
+    Matrix multiplied_matrix = *this;
     for(int cell = 0; cell < size; cell++)
-        operated_matrix.values[cell] = values[cell] * number;
-    return operated_matrix;
+        multiplied_matrix.values[cell] *= number;
+    return multiplied_matrix;
 }
 
 Matrix Matrix::minor_init(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
-        throw negative_parameters;
+        throw WRONG_PARAMETERS;
     }
     Matrix minor(rows - 1, cols - 1);
-    int row_link = 0;  //shift
+    int row_shift = 0;
     for(int i = 0; i < minor.rows; i++) {
         if(excluded_row == i)
-            row_link += 1;
-        int col_link = 0;
+            row_shift += 1;
+        int col_shift = 0;
         for (int j = 0; j < minor.cols; j++) {
-            if(j == excluded_col)
-                col_link += 1;
-            minor.data[i][j] = data[i + row_link][j + col_link];
+            if(j == excluded_col) {
+                col_shift += 1;
+            }
+            minor.data[i][j] = data[i + row_shift][j + col_shift];
         }
     }
     return minor;
@@ -279,15 +278,18 @@ Matrix Matrix::minor_init(int excluded_row, int excluded_col) const {
 
 double Matrix::determinant() const{
     if (rows != cols) {
-        throw not_square;
+        throw NOT_SQUARE;
+    }
+    if (rows == 0 || cols == 0) {
+        throw ZERO_LENGTH;
     }
     double determinant = 0;
-    if(rows == 1) {
+    if (rows == 1) {
         determinant = data[0][0];
         return determinant;
     }
     float k = 1.0;
-    for(int col = 0; col < cols; col++) {
+    for (int col = 0; col < cols; col++) {
         Matrix minor = minor_init(0, col);
         determinant += k * data[0][col] * minor.determinant();
         k = -k;
@@ -307,7 +309,7 @@ Matrix Matrix::transposition() const {
 
 Matrix Matrix::minor_transformation(const Matrix &matrix) {
     if (matrix.rows != matrix.cols) {
-        throw not_square;
+        throw NOT_SQUARE;
     }
     Matrix transformed_matrix(matrix.rows, matrix.cols);
     if(matrix.rows == 1) {
@@ -326,10 +328,10 @@ Matrix Matrix::minor_transformation(const Matrix &matrix) {
 
 Matrix Matrix::inversion() const {
     if (rows != cols) {
-        throw not_square;
+        throw NOT_SQUARE;
     }
     if (std::abs(this->determinant()) < EPSILON) {
-        throw division_by_zero;
+        throw DIVISION_BY_ZERO;
     }
     Matrix transformed_matrix = minor_transformation(this->transposition());
     Matrix inverse_matrix = transformed_matrix * (1 / this->determinant());
@@ -338,10 +340,10 @@ Matrix Matrix::inversion() const {
 
 Matrix Matrix::operator/ (const Matrix &matrix) const {
     if (rows != cols) {
-        throw not_square;
+        throw NOT_SQUARE;
     }
     if (std::abs(this->determinant()) < EPSILON) {
-        throw division_by_zero;
+        throw DIVISION_BY_ZERO;
     }
     Matrix inverse_matrix = matrix.inversion();
     Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
@@ -356,23 +358,23 @@ Matrix Matrix::operator/ (const Matrix &matrix) const {
 
 Matrix Matrix::operator/ (double number) const {
     if (std::isnan(number)) {
-        throw nan_number;
+        throw NAN_NUMBER;
     }
     if (std::abs(number) < EPSILON) {
-        throw division_by_zero;
+        throw DIVISION_BY_ZERO;
     }
-    Matrix operated_matrix(rows, cols);
+    Matrix divided_matrix = *this;
     for(int cell = 0; cell < size; cell++)
-        operated_matrix.values[cell] = values[cell] / number;
-    return operated_matrix;
+        divided_matrix.values[cell] /= number;
+    return divided_matrix;
 }
 
 Matrix Matrix::power(int power) const {
     if (rows != cols) {
-        throw not_square;
+        throw NOT_SQUARE;
     }
 
-    Matrix origin(rows, cols);  // 
+    Matrix origin(rows, cols);
     for (int cell = 0; cell < size; cell++)
         origin.values[cell] = this->values[cell];
 
@@ -398,13 +400,13 @@ Matrix Matrix::power(int power) const {
     return powered_matrix;
 }
 
-Matrix Matrix::exp(const Matrix &matrix) {  //steps
+Matrix Matrix::exp(const Matrix &matrix, int STEPS) {
     if (matrix.rows != matrix.cols) {
-        throw not_square;
+        throw NOT_SQUARE;
     }
     Matrix exp_matrix(matrix.rows, matrix.cols, 1);
     double k = 1.0;
-    for(int s = 1; s < EXP_STEP; s++) {
+    for(int s = 1; s < STEPS; s++) {
         k /= s;
         exp_matrix = exp_matrix + matrix.power(s) * k;
     }

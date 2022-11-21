@@ -1,6 +1,6 @@
 #include "MatrixTest.h"
 
-inline void print_message(std::string text, MatrixException Exception_object) {
+inline void print_message(const std::string& text, const MatrixException& Exception_object) {
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
 
@@ -12,7 +12,7 @@ void MatrixTest::using_unused() {
     matrix.get_value(0, 0);
 }
 
-void MatrixTest::calculation_check(double true_array[], Matrix *matrix, std::string text) {
+void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const std::string& text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
     for (int cell = 0; cell < matrix->size; cell++) {
@@ -185,7 +185,7 @@ void MatrixTest::exp_test() {
     try {
         Matrix matrix3(2, 2, array3);
         double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
-        Matrix res_matrix = Matrix::exp(matrix3);
+        Matrix res_matrix = Matrix::exp(matrix3, Matrix::DEFAULT_EXP_STEPS);
         calculation_check(exp_true_array, &res_matrix, "Matrix exp");
     }
     catch(MatrixException Exception_object) {
