@@ -226,8 +226,7 @@ Matrix matrix_inverse_multiplication(Matrix matrix1, Matrix matrix2) {
 
 
 Matrix matrix_power(Matrix matrix, int power) {
-    Matrix powered_matrix = matrix_init(matrix.rows, matrix.cols);
-    powered_matrix = matrix_copy(matrix);
+    Matrix powered_matrix = matrix_copy(matrix);
     Matrix buffer;
     if(power == 1)
         return powered_matrix;
