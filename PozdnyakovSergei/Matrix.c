@@ -347,21 +347,20 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
 }*/
 
 
-Matrix matrix_exponent (const Matrix exponent, unsigned int accuracy) { // Функция нахождения экспоненты матрицы
-    if (exponent.cols != exponent.rows) {
-        printf("Matrix should have size nxn");
+Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экспонента матрицы, точность задается количеством слагаемых ряда
+    if (matrix.cols != matrix.rows) {
+        mistake("Exp", "Matrix should be square");
         return ZERO;
     }
-     // Количество членов ряда
-    Matrix ex = unit_matrix(exponent.cols, exponent.rows);
-    Matrix temp = unit_matrix(exponent.cols, exponent.rows);
+    Matrix ex = unit_matrix(matrix.cols, matrix.rows);
+    Matrix temp = unit_matrix(matrix.cols, matrix.rows);
     Matrix temp_multiply;
     Matrix temp_add;
     double factorial = 1.0;
     for (unsigned int acc = 1; acc < accuracy; acc++) {
         factorial *= acc;
         if (factorial == 0) return ZERO;
-        temp_multiply = multiply_m_by_m(temp, exponent);
+        temp_multiply = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
         temp = temp_multiply;
         temp_add = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
