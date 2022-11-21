@@ -113,7 +113,15 @@ Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оп�
 }
 
 Matrix Matrix::operator= (Matrix&& X)  { // Перегрузка оператора присваивания
-
+    if (this == &X) {
+        return *this;
+    }
+    rows = X.rows;
+    cols = X.cols;
+    delete[]values;
+    values = X.values;
+    X.values = nullptr;
+    return *this;
 }
 
 Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
