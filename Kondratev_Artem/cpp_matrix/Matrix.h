@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
+#include <cstring>
 #include "MatrixException.h"
 
 class Matrix {
@@ -19,12 +20,18 @@ private:
     int size;
     double **data;
     double *values;
+    enum FillType {
+        DEFAULT,
+        NUMBER,
+        VECTOR,
+        IDENTITY,
+    };
 
 public:
     inline static const double EPSILON = 0.000001;
-    inline static const int EXP_STEP = 177;
+    inline static const int DEFAULT_EXP_STEPS = 177;
     Matrix();  //  empty matrix
-    Matrix(int input_rows, int input_cols, int identity_flag);
+    Matrix(int input_rows, int input_cols, FillType fill_type, double number, const std::vector<double>& vector);
     Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
     Matrix(int input_rows, int input_cols, std::vector<double> array);  // filling from array
     ~Matrix();
@@ -54,7 +61,7 @@ private:
 public:
     Matrix inversion() const;
     Matrix power(int power) const;
-    static Matrix exp(const Matrix &matrix);
+    static Matrix exp(const Matrix &matrix, int STEPS);
 };
 
 #endif //MATRIX_H

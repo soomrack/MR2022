@@ -12,7 +12,7 @@ typedef struct Matrix {
 } Matrix;
 
 
-const Matrix ZERO = {0, 0, NULL};
+const Matrix ZERO = {0, 0, 0};
 
 
 Matrix initialization (const unsigned int cols, const unsigned int rows) {  // Инициализация матриц
@@ -30,18 +30,18 @@ void mistake (char* name_of_operation, char* error) {  // Есть ошибка 
 }
 
 
-/*void set (Matrix* matrix) {  // Рандомный ввод матриц
+void set (Matrix* matrix) {  // Рандомный ввод матриц
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         matrix->value[number] = rand()%10;  //
     }
-}*/
+}
 
 
-void set (Matrix* matrix) {
+/*void set (Matrix* matrix) {
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         scanf("%lf", &matrix->value[number]);
     }
-}
+}*/
 
 
 int is_null (const Matrix matrix) {  // Матрицы нет
@@ -281,7 +281,7 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     struct Matrix itog = initialization(matrix.cols, matrix.rows);
     for (unsigned int row = 0; row < matrix.rows; row++) {
         for (unsigned int col = 0; col < matrix.cols; col++) {
-            itog.value [row*matrix.cols + col] = (pow(-1, col + row) * determinant(minor(col, row, matrix)));
+            itog.value [row*matrix.cols + col] = pow(-1, row + col)*(determinant(minor(col, row, matrix)));
         }
     }
     itog = mult_m_by_num(transposition(itog), (1/ d));
@@ -347,28 +347,30 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
 }*/
 
 
-Matrix matrix_exponent (const Matrix exponent, unsigned int accuracy) { // Функция нахождения экспоненты матрицы
-    if (exponent.cols != exponent.rows) {
-        printf("Matrix should have size nxn");
+Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экспонента матрицы, точность задается количеством слагаемых ряда
+    if (matrix.rows != matrix.cols) {
+        mistake("Exp", "Matrix should be square");
         return ZERO;
     }
-     // Количество членов ряда
-    Matrix ex = unit_matrix(exponent.cols, exponent.rows);
-    Matrix temp = unit_matrix(exponent.cols, exponent.rows);
-    Matrix temp_multiply;
-    Matrix temp_add;
+    Matrix ex = unit_matrix(matrix.rows, matrix.cols);
+    Matrix temp = unit_matrix(matrix.rows, matrix.cols);
+    Matrix temp_mult;
+    Matrix temp_sum;
     double factorial = 1.0;
     for (unsigned int acc = 1; acc < accuracy; acc++) {
         factorial *= acc;
         if (factorial == 0) return ZERO;
-        temp_multiply = multiply_m_by_m(temp, exponent);
+        temp_mult = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
-        temp = temp_multiply;
-        temp_add = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
+        temp = temp_mult;
+        temp_sum = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
         clean_memory(ex);
-        ex = temp_add;
+        ex = temp_sum;
+/*
+        clean_memory(temp_sum);
+*/
     }
-    clean_memory(temp_multiply);
+    clean_memory(temp_mult);
     return ex;
 }
 
@@ -473,14 +475,9 @@ int main() {
     clean_memory(exp);
 
     printf("unit\n");
-    Matrix one;
-    one = unit_matrix(mat1.cols, mat1.rows);
-    matrix_output(one);
-    clean_memory(one);
+    Matrix unit;
+    unit = unit_matrix(mat1.rows, mat1.cols);
+    matrix_output(unit);
+    clean_memory(unit);
 
-   /* printf("Unit matrix\n");
-    Matrix ed;
-    ed = one_matrix(3, 3);
-    matrix_output(ed);
-    clean_memory(ed);*/
 }

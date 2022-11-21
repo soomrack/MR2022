@@ -13,6 +13,7 @@ typedef struct Matrix {
 Matrix memory_allocation (const unsigned int rows, const unsigned int cols){ // Выделение памяти
     Matrix mem = {rows,cols,NULL};
     mem.values = (double*)malloc(rows * cols * sizeof(double));
+    if (mem.values == NULL) printf("Memory are not allocated");
     return  mem;
 }
 
@@ -219,7 +220,6 @@ Matrix exponent_matrix (const Matrix exponent) { // Функция нахожд�
     double fact = 1.0;
     for (unsigned int i = 1; i < n; i++) {
         fact *= i;
-        if (fact == 0) return EMPTY();
         temp_multiply = multiplication(temp, exponent);
         free_matrix(temp);
         temp = temp_multiply;
