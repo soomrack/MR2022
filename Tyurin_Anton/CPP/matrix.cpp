@@ -1,5 +1,6 @@
 #include <iostream>
-#include "matrix.h"
+#include "Matrix.h"
+#include "Matrix_test.h"
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;
@@ -201,7 +202,7 @@ bool Matrix::is_equal(const Matrix& X){
 }
 
 int main() {
-
+/*
     // Создание матриц
     Matrix A(3,3);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
@@ -222,4 +223,6 @@ int main() {
     Matrix::print_matrix(Mult,'*');
     Matrix::print_matrix(exp,'e');
     return 0;
+    */
+Matrix_test::exp_test();
 }

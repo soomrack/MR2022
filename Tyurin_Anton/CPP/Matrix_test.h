@@ -10,6 +10,8 @@ class Matrix_test {
     static int summ_test();
     static int sub_test();
     static int mult_test();
+
+public:
     static int exp_test();
 };
 

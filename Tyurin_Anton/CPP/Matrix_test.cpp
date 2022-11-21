@@ -1,7 +1,7 @@
 #include "Matrix_test.h"
 #include "Matrix.h"
 
-Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
+/*Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
     if (!((A.rows == B.rows) && (A.cols == B.cols))) {
         Matrix::error();
     }
@@ -11,7 +11,7 @@ Matrix Matrix_test::multiply_size_comparation(const Matrix& A, const Matrix& B) 
     if (A.cols != B.rows) {
         Matrix::error();
     }
-}
+}*/
 
 int Matrix_test::summ_test() {
     Matrix A(3,3);
@@ -60,6 +60,7 @@ int Matrix_test::exp_test() {
     A.fill_with(2);
     Matrix real_exp(3,3);
     double arr_real_exp[] = {129.411, 128.411, 128.411, 128.411, 129.411, 128.411, 128.411, 128.411, 129.411};
+    Matrix::data_input(&real_exp,arr_real_exp);
     Matrix exponent = Matrix::exp(A);
     if (exponent.is_equal(real_exp)){
         return 1;
