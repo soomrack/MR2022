@@ -10,7 +10,7 @@ typedef struct {
     double *data;
 } Matrix;
 
-void matrix_memory(Matrix *name)
+void matrix_memory(Matrix *name) //вход - строки;
 {
     name->data = (double*)malloc(name->rows * name->cols * sizeof(double) + name->rows * sizeof(double*));
     name->values = name->data + name->rows * name->cols;
@@ -23,7 +23,7 @@ void freeing_memory(Matrix *name)
     free(name->data);
 }
 
-void null_array(Matrix *name)
+void null_array(Matrix *name)  // создание матрицы // работа с текущей - название Set
 {
     matrix_memory(name);
 
@@ -36,7 +36,7 @@ void null_array(Matrix *name)
     }
 }
 
-void random_array(Matrix *name)
+void random_array(Matrix *name) // не смешивать вывод и создание везде
 {
     matrix_memory(name);
 
@@ -52,7 +52,7 @@ void random_array(Matrix *name)
     printf("\n");
 }
 
-void addition (Matrix A, Matrix B)
+void addition (Matrix A, Matrix B)  // утечка памяти везде
 {
     printf("SUM:\n");
 
@@ -138,7 +138,7 @@ void transposition (Matrix A)
     freeing_memory(&copy_matrix);
 }
 
-void exponent (Matrix A)
+void exponent (Matrix A)  //отдельно умножение матрицы на себя
 {
     printf("EXPONENTIAL MATRIX:\n");
 
