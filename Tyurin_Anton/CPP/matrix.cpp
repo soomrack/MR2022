@@ -19,7 +19,7 @@ Matrix::Matrix(const Matrix &A) {  // Конструктор копирован�
     }
 }
 
-Matrix::Matrix(Matrix&& A) {
+Matrix::Matrix(Matrix&& A) {  // Конструктор переноса
     rows = A.rows;
     cols = A.cols;
     values = A.values;

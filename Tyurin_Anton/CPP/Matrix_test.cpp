@@ -15,8 +15,12 @@ Matrix Matrix_test::multiply_size_comparation(const Matrix& A, const Matrix& B) 
 
 int Matrix_test::summ_test() {
     Matrix A(3,3);
-    A.fill_with(2.);
+    A.fill_with(2);
     Matrix B(3);
+    Matrix Sum = A + B;
+    if (Sum.is_equal(C)){
+
+    }
     return 0;
 }
 
