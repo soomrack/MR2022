@@ -147,19 +147,19 @@ Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col) {
 }
 
 
-Matrix recursive_determinant(Matrix matrix) {
+double recursive_determinant(Matrix matrix) {
     if(matrix.rows != matrix.cols) {
-        return error();
+        return NAN;
     }
-    Matrix determinant = matrix_init(1, 1);
+    double determinant = 0;
     if(matrix.rows == 1) {
-        determinant.values[0][0] = matrix.values[0][0];
+        determinant = matrix.values[0][0];
         return determinant;
     }
     int k = 1;
     for(int col = 0; col < matrix.cols; col++) {
         Matrix minor = minor_init(matrix, 0, col);
-        determinant.values[0][0] += k * matrix.values[0][col] * recursive_determinant(minor).values[0][0];
+        determinant += k * matrix.values[0][col] * recursive_determinant(minor);
         k = -k;
         free_memory(&minor);
     }
@@ -191,7 +191,7 @@ Matrix minor_transformation(Matrix matrix) {
         for(int col = 0; col < matrix.cols; col++) {
             Matrix minor = minor_init(matrix,row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
-            inverse_added_matrix.values[row][col] = k * recursive_determinant(minor).values[0][0];
+            inverse_added_matrix.values[row][col] = k * recursive_determinant(minor);
             free_memory(&minor);
         }
     }
@@ -203,8 +203,8 @@ Matrix matrix_inversion(Matrix matrix) {
     if(matrix.rows != matrix.cols) {
         return error();
     }
-    double determinant = recursive_determinant(matrix).values[0][0];
-    if(fabs(determinant) < 0.0001) {
+    double determinant = recursive_determinant(matrix);
+    if(fabs(determinant) < 0.0001 || determinant == NAN) {
         return error();
     }
     double inv_det = 1 / determinant;
@@ -262,7 +262,7 @@ Matrix matrix_exp(Matrix matrix) {
 }
 
 
-int test_matrix_filling(Matrix *matrix, const double array[]) {
+void test_matrix_filling(Matrix *matrix, const double array[]) {
     // получает на вход матрицу и массив, заполняет матрицу элементами массива
     int array_index = 0;
     for(int row = 0; row < matrix->rows; row++)
@@ -345,7 +345,7 @@ void test() {
 
     //  determinant test
     double determinant_true_array[] = {-2};
-    double determinant = recursive_determinant(matrix1).values[0][0];
+    double determinant = recursive_determinant(matrix1);
     Matrix det_matrix = matrix_init(1, 1);
     det_matrix.values[0][0] = determinant;
     test_matrix_operation(determinant_true_array, det_matrix, "Matrix determinant");
