@@ -44,10 +44,10 @@ int Matrix_test::sub_test() {
 int Matrix_test::mult_test() {
     Matrix A(3,3);
     A.fill_with(2);
-    Matrix B(3);
+    Matrix B(3,3);
+    B.fill_with(3);
     Matrix C(3,3);
-    double arr_C[] = {3.0, 2.0, 2.0, 2.0, 3.0, 2.0, 2.0, 2.0, 3.0};
-    Matrix::data_input(&C,arr_C);
+    C.fill_with(18);
     Matrix Mult = A * B;
     if (Mult.is_equal(C)){
         return 1;
@@ -56,6 +56,14 @@ int Matrix_test::mult_test() {
 }
 
 int Matrix_test::exp_test() {
+    Matrix A(3,3);
+    A.fill_with(2);
+    Matrix real_exp(3,3);
+    double arr_real_exp[] = {129.411, 128.411, 128.411, 128.411, 129.411, 128.411, 128.411, 128.411, 129.411};
+    Matrix exponent = Matrix::exp(A);
+    if (exponent.is_equal(real_exp)){
+        return 1;
+    }
     return 0;
 }
 

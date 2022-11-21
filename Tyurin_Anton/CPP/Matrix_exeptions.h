@@ -3,8 +3,6 @@
 
 #endif //UNTITLED_MATRIX_EXEPTIONS_H
 
-class Exeption{
-private:
-    Exeption Memory_didnt_allocate;
-
+class Exception{
+    Exception Memory_didnt_allocate;
 };
