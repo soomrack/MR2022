@@ -354,20 +354,23 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
     }
     Matrix ex = unit_matrix(matrix.cols, matrix.rows);
     Matrix temp = unit_matrix(matrix.cols, matrix.rows);
-    Matrix temp_multiply;
-    Matrix temp_add;
+    Matrix temp_mult;
+    Matrix temp_sum;
     double factorial = 1.0;
     for (unsigned int acc = 1; acc < accuracy; acc++) {
         factorial *= acc;
         if (factorial == 0) return ZERO;
-        temp_multiply = multiply_m_by_m(temp, matrix);
+        temp_mult = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
-        temp = temp_multiply;
-        temp_add = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
+        temp = temp_mult;
+        temp_sum = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
         clean_memory(ex);
-        ex = temp_add;
+        ex = temp_sum;
+/*
+        clean_memory(temp_sum);
+*/
     }
-    clean_memory(temp_multiply);
+    clean_memory(temp_mult);
     return ex;
 }
 
