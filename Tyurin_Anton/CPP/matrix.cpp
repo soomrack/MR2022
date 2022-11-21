@@ -131,7 +131,7 @@ Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператор
     rows = X.rows;
     cols = X.cols;
     delete[]values;
-    new double [cols * rows];
+    values = new double [cols * rows];
     memcpy(values, X.values, rows * cols * sizeof(double));
     return *this;
 }
