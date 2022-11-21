@@ -12,7 +12,7 @@ typedef struct Matrix {
 } Matrix;
 
 
-const Matrix ZERO = {0, 0, NULL};
+const Matrix ZERO = {0, 0, 0};
 
 
 Matrix initialization (const unsigned int cols, const unsigned int rows) {  // Инициализация матриц
@@ -30,18 +30,18 @@ void mistake (char* name_of_operation, char* error) {  // Есть ошибка 
 }
 
 
-/*void set (Matrix* matrix) {  // Рандомный ввод матриц
+void set (Matrix* matrix) {  // Рандомный ввод матриц
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         matrix->value[number] = rand()%10;  //
     }
-}*/
+}
 
 
-void set (Matrix* matrix) {
+/*void set (Matrix* matrix) {
     for (int number = 0; number < (matrix->cols * matrix->rows); number++) {
         scanf("%lf", &matrix->value[number]);
     }
-}
+}*/
 
 
 int is_null (const Matrix matrix) {  // Матрицы нет
@@ -281,7 +281,7 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     struct Matrix itog = initialization(matrix.cols, matrix.rows);
     for (unsigned int row = 0; row < matrix.rows; row++) {
         for (unsigned int col = 0; col < matrix.cols; col++) {
-            itog.value [row*matrix.cols + col] = (pow(-1, col + row) * determinant(minor(col, row, matrix)));
+            itog.value [row*matrix.cols + col] = pow(-1, row + col)*(determinant(minor(col, row, matrix)));
         }
     }
     itog = mult_m_by_num(transposition(itog), (1/ d));
