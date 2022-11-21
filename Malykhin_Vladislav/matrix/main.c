@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <malloc.h>
-//#include <math.h>
 
 typedef struct Matrix{
     unsigned int rows;
