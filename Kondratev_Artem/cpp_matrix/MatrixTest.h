@@ -14,9 +14,9 @@
 class MatrixTest {
 private:
     inline static const double EPSILON = 0.000001;
-    inline static std::vector<double> array1 = {2, 8, 1, 3};
-    inline static std::vector<double> array2 = {4, 9, 21, 13};
-    inline static std::vector<double> array3 = {2, 2, 2, 2};
+    inline static std::vector<double> vector1 = {2, 8, 1, 3};
+    inline static std::vector<double> vector2 = {4, 9, 21, 13};
+    inline static std::vector<double> vector3 = {2, 2, 2, 2};
     inline static double power_array[] = {64, 216, 27, 91};
     inline static int power = 3;
 

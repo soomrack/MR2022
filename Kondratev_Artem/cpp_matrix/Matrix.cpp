@@ -11,7 +11,30 @@ MatrixException NOT_SQUARE(8, "matrix is not square");
 MatrixException WRONG_LENGTH(9, "length of vector is wrong");
 MatrixException ZERO_LENGTH(10, "rows / cols is zero");
 
-// заполнение через функцию
+void number_filling(int size, double *values, double number) {
+    if (std::isnan(number)) {
+        throw NAN_NUMBER;
+    }
+    for (int cell = 0; cell < size; cell++)
+        values[cell] = number;
+}
+
+void vector_filling(int size, double *values, std::vector<double> vector) {
+    if (size != vector.size()) {
+        throw WRONG_LENGTH;
+    }
+    for (int cell = 0; cell < size; cell++)
+        values[cell] = vector[cell];
+}
+
+void set_identity(double **data, int rows, int cols) {
+    if (rows != cols) {
+        throw NOT_SQUARE;
+    }
+    for (int row = 0; row < rows; row++)
+        for (int col = 0; col < cols; col++)
+            data[row][col] = (row == col) ? 1 : 0;
+}
 
 Matrix::Matrix() {
     rows = 0;
@@ -21,7 +44,7 @@ Matrix::Matrix() {
     values = nullptr;
 }
 
-Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {  //  const input
+Matrix::Matrix(int input_rows, int input_cols, FillType fill_type=DEFAULT, double number=0.0, const std::vector<double>& vector={}) {
     if (input_rows <= 0 || input_cols <= 0) {
         throw WRONG_PARAMETERS;
     }
@@ -37,17 +60,18 @@ Matrix::Matrix(int input_rows, int input_cols, int identity_flag=0) {  //  const
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
-    if (identity_flag == 1) {
-        if (rows != cols) {
-            throw NOT_SQUARE;
-        }
-        for (int row = 0; row < rows; row++)
-            for (int col = 0; col < cols; col++)
-                data[row][col] = (row == col) ? 1 : 0;
+    if (fill_type == NUMBER) {
+        number_filling(size, values, number);
+    }
+    if (fill_type == VECTOR) {
+        vector_filling(size, values, vector);
+    }
+    if (fill_type == IDENTITY) {
+        set_identity(data, rows, cols);
     }
 }
 
-Matrix::Matrix(int input_rows, int input_cols, double number) {
+/*Matrix::Matrix(int input_rows, int input_cols, double number) {
     if (input_rows < 0 || input_cols < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -66,11 +90,10 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
-    for (int cell = 0; cell < size; cell++)
-        values[cell] = number;
-}
 
-Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {  //  через параметр в первом конструкторе
+}*/
+
+/*Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {  //  через параметр в первом конструкторе
     if (input_rows < 0 || input_cols < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -90,7 +113,7 @@ Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {  //
     }
     for (int cell = 0; cell < size; cell++)
         values[cell] = vector[cell];
-}
+}*/
 
 Matrix::Matrix(const Matrix &other) {
     rows = other.rows;
@@ -379,7 +402,7 @@ Matrix Matrix::power(int power) const {
         origin.values[cell] = this->values[cell];
 
     if (power == 0) {
-        Matrix identity_matrix(origin.rows, origin.cols, 1);
+        Matrix identity_matrix(origin.rows, origin.cols, NUMBER, 1);
         return identity_matrix;
     }
     if (power == 1) {
@@ -404,7 +427,7 @@ Matrix Matrix::exp(const Matrix &matrix, int STEPS) {
     if (matrix.rows != matrix.cols) {
         throw NOT_SQUARE;
     }
-    Matrix exp_matrix(matrix.rows, matrix.cols, 1);
+    Matrix exp_matrix(matrix.rows, matrix.cols, IDENTITY, 0.0);
     double k = 1.0;
     for(int s = 1; s < STEPS; s++) {
         k /= s;
