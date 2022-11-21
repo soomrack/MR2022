@@ -348,12 +348,12 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
 
 
 Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экспонента матрицы, точность задается количеством слагаемых ряда
-    if (matrix.cols != matrix.rows) {
+    if (matrix.rows != matrix.cols) {
         mistake("Exp", "Matrix should be square");
         return ZERO;
     }
-    Matrix ex = unit_matrix(matrix.cols, matrix.rows);
-    Matrix temp = unit_matrix(matrix.cols, matrix.rows);
+    Matrix ex = unit_matrix(matrix.rows, matrix.cols);
+    Matrix temp = unit_matrix(matrix.rows, matrix.cols);
     Matrix temp_mult;
     Matrix temp_sum;
     double factorial = 1.0;
@@ -475,14 +475,9 @@ int main() {
     clean_memory(exp);
 
     printf("unit\n");
-    Matrix one;
-    one = unit_matrix(mat1.cols, mat1.rows);
-    matrix_output(one);
-    clean_memory(one);
+    Matrix unit;
+    unit = unit_matrix(mat1.rows, mat1.cols);
+    matrix_output(unit);
+    clean_memory(unit);
 
-   /* printf("Unit matrix\n");
-    Matrix ed;
-    ed = one_matrix(3, 3);
-    matrix_output(ed);
-    clean_memory(ed);*/
 }
