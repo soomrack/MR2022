@@ -30,10 +30,13 @@ private:
 public:
     inline static const double EPSILON = 0.000001;
     inline static const int DEFAULT_EXP_STEPS = 177;
+
+    static void number_filling(int size, double *values, double number);
+    static void vector_filling(int size, double *values, std::vector<double> vector);
+    static void set_identity(double **data, int rows, int cols);
+
     Matrix();  //  empty matrix
     Matrix(int input_rows, int input_cols, FillType fill_type, double number, const std::vector<double>& vector);
-    Matrix(int input_rows, int input_cols, double number);  //  number filled matrix
-    Matrix(int input_rows, int input_cols, std::vector<double> array);  // filling from array
     ~Matrix();
     Matrix(const Matrix &other);
     Matrix(Matrix &&other) noexcept;

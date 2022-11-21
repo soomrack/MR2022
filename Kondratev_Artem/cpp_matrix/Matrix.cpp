@@ -11,7 +11,7 @@ MatrixException NOT_SQUARE(8, "matrix is not square");
 MatrixException WRONG_LENGTH(9, "length of vector is wrong");
 MatrixException ZERO_LENGTH(10, "rows / cols is zero");
 
-void number_filling(int size, double *values, double number) {
+void Matrix::number_filling(int size, double *values, double number) {
     if (std::isnan(number)) {
         throw NAN_NUMBER;
     }
@@ -19,7 +19,7 @@ void number_filling(int size, double *values, double number) {
         values[cell] = number;
 }
 
-void vector_filling(int size, double *values, std::vector<double> vector) {
+void Matrix::vector_filling(int size, double *values, std::vector<double> vector) {
     if (size != vector.size()) {
         throw WRONG_LENGTH;
     }
@@ -27,7 +27,7 @@ void vector_filling(int size, double *values, std::vector<double> vector) {
         values[cell] = vector[cell];
 }
 
-void set_identity(double **data, int rows, int cols) {
+void Matrix::set_identity(double **data, int rows, int cols) {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
@@ -44,7 +44,9 @@ Matrix::Matrix() {
     values = nullptr;
 }
 
-Matrix::Matrix(int input_rows, int input_cols, FillType fill_type=DEFAULT, double number=0.0, const std::vector<double>& vector={}) {
+Matrix::Matrix(int input_rows, int input_cols, FillType fill_type=DEFAULT, double number=0.0,
+               const std::vector<double>& vector={}) {
+
     if (input_rows <= 0 || input_cols <= 0) {
         throw WRONG_PARAMETERS;
     }
@@ -70,50 +72,6 @@ Matrix::Matrix(int input_rows, int input_cols, FillType fill_type=DEFAULT, doubl
         set_identity(data, rows, cols);
     }
 }
-
-/*Matrix::Matrix(int input_rows, int input_cols, double number) {
-    if (input_rows < 0 || input_cols < 0) {
-        throw WRONG_PARAMETERS;
-    }
-    if (std::isnan(number)) {
-        throw NAN_NUMBER;
-    }
-    rows = input_rows;
-    cols = input_cols;
-    size = rows * cols;
-    data = new double *[rows];
-    values = new double [size];
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw NULL_MEMORY;
-    }
-    for (int row = 0; row < rows; row++)
-        data[row] = values + row * cols;
-
-}*/
-
-/*Matrix::Matrix(int input_rows, int input_cols, std::vector<double> vector) {  //  через параметр в первом конструкторе
-    if (input_rows < 0 || input_cols < 0) {
-        throw WRONG_PARAMETERS;
-    }
-    rows = input_rows;
-    cols = input_cols;
-    size = rows * cols;
-    if (size != vector.size())
-        throw WRONG_LENGTH;
-    data = new double *[rows];
-    values = new double [size];
-    for (int row = 0; row < rows; row++)
-        data[row] = values + row * cols;
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw NULL_MEMORY;
-    }
-    for (int cell = 0; cell < size; cell++)
-        values[cell] = vector[cell];
-}*/
 
 Matrix::Matrix(const Matrix &other) {
     rows = other.rows;
@@ -396,29 +354,23 @@ Matrix Matrix::power(int power) const {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
-
-    Matrix origin(rows, cols);
-    for (int cell = 0; cell < size; cell++)
-        origin.values[cell] = this->values[cell];
-
     if (power == 0) {
-        Matrix identity_matrix(origin.rows, origin.cols, NUMBER, 1);
+        Matrix identity_matrix(this->rows, this->cols, NUMBER, 1);
         return identity_matrix;
     }
     if (power == 1) {
-        return origin;
+        return *this;
     }
+    Matrix powered_matrix;
     if (power > 1) {
-        Matrix powered_matrix = origin;
-        for (int k = 1; k < power; k++) {
-            powered_matrix = powered_matrix * origin;
-        }
-        return powered_matrix;
+        powered_matrix = *this;
     }
-    Matrix powered_matrix = origin.inversion();  // power < 0
-    origin = origin.inversion();
-    for (int k = 1; k < -power; k++) {
-        powered_matrix = powered_matrix * origin;
+    if (power < 0) {
+        powered_matrix = this->inversion();
+        power = -power;
+    }
+    for (int k = 1; k < power; k++) {
+        powered_matrix = powered_matrix * *this;
     }
     return powered_matrix;
 }
