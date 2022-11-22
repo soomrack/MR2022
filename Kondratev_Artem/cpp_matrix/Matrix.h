@@ -32,7 +32,7 @@ public:
     inline static const int DEFAULT_EXP_STEPS = 177;
 
     static void number_filling(int size, double *values, double number);
-    static void vector_filling(int size, double *values, std::vector<double> vector);
+    static void filling_from_vector(int size, double *values, std::vector<double> vector);
     static void set_identity(double **data, int rows, int cols);
 
     Matrix();  //  empty matrix

@@ -10,6 +10,8 @@ void MatrixTest::using_unused() {
     matrix.get_cols();
     matrix.get_size();
     matrix.get_value(0, 0);
+    MatrixException TEST(-15, "TEST");
+    TEST.get_error_code();
 }
 
 void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const std::string& text) {
@@ -113,7 +115,7 @@ void MatrixTest::determinant_test() {
     try {
         Matrix matrix1(2, 2, Matrix::VECTOR, 0.0, vector1);
         double determinant_true_array[] = {-2};
-        Matrix det_matrix(1, 1, Matrix::NUMBER, matrix1.determinant(), {}); // TODO
+        Matrix det_matrix(1, 1, Matrix::NUMBER, matrix1.determinant(), {});
         calculation_check(determinant_true_array, &det_matrix, "determinant");
     }
     catch(MatrixException Exception_object) {

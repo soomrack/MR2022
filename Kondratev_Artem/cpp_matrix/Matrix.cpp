@@ -19,7 +19,7 @@ void Matrix::number_filling(int size, double *values, double number) {
         values[cell] = number;
 }
 
-void Matrix::vector_filling(int size, double *values, std::vector<double> vector) {
+void Matrix::filling_from_vector(int size, double *values, std::vector<double> vector) {
     if (size != vector.size()) {
         throw WRONG_LENGTH;
     }
@@ -66,7 +66,7 @@ Matrix::Matrix(int input_rows, int input_cols, FillType fill_type=DEFAULT, doubl
         number_filling(size, values, number);
     }
     if (fill_type == VECTOR) {
-        vector_filling(size, values, vector);
+        filling_from_vector(size, values, vector);
     }
     if (fill_type == IDENTITY) {
         set_identity(data, rows, cols);

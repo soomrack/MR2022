@@ -9,6 +9,7 @@ MatrixException::MatrixException(int input_code, std::string input_message) {
 std::string MatrixException::get_message() const {
     return message;
 }
+
 int MatrixException::get_error_code() const {
     return error_code;
 }
