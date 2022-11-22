@@ -77,11 +77,7 @@ Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 Matrix::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols) 
 {
 	values = new double[rows * cols];
-	if (values == nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 	memcpy(values, mat.values, rows * cols * sizeof(double));
 }
 
@@ -101,11 +97,7 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
 	rows = num_row;
 	cols = num_col;
 	values = new double[rows * cols];
-	if (this->values = nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 }
 
 
@@ -343,11 +335,7 @@ Matrix& Matrix::operator=(const Matrix& A)
 	rows = A.rows;
 	cols = A.cols;
 	this->values = new double[rows * cols];
-	if (this->values = nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 	memcpy(this->values, A.values, rows * cols * sizeof(double));
 	return *this;
 }
@@ -398,7 +386,7 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 		}
 	}
 	reverse.set_transpose();
-	if (d < EPS) throw ZERODIVISION;
+	if (abs(d) < EPS) throw ZERODIVISION;
 	reverse /= d;
 	return reverse;
 }
@@ -622,12 +610,24 @@ void test() {
 
 int main()
 { 
-	/*srand(time(NULL));*/
+	srand(time(NULL));
 	setlocale(LC_ALL, "ru");
+
+	try { // Проверка выделения памяти
+		Matrix A = Matrix(0, 0).fill_random();
+	}
+	catch (const Matrix_Exception& e)
+	{
+		std::cerr << "Caught: " << e.what() << std::endl;
+		std::cerr << "Type: " << typeid(e).name() << std::endl;
+		exit(404);
+	}
+
 	Matrix A = Matrix(3, 3).fill_random();
-	Matrix B = Matrix(3, 3).fill_random();	
+	Matrix B = Matrix(3, 3).fill_random();
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
+	
 	try {
 		std::cout << "Addiction of two matrix\n" << A + B;
 		std::cout << "Subtraction of two matrix\n" << A - B;
