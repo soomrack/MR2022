@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+const double EPS = 0.00000001;
 
 typedef struct Matrix {
     unsigned int rows;
@@ -13,6 +14,11 @@ typedef struct Matrix {
 Matrix memory_allocation (const unsigned int rows, const unsigned int cols){ // Выделение памяти
     Matrix mem = {rows,cols,NULL};
     mem.values = (double*)malloc(rows * cols * sizeof(double));
+    if (mem.values == NULL){
+        mem.rows = 0;
+        mem.cols = 0;
+        printf("Error:memory are not allocated");
+    }
     return  mem;
 }
 
@@ -182,7 +188,7 @@ Matrix reverse_matrix (const Matrix A,const unsigned int size) { // Функци
         printf("Matrix should have size nxn");
         return EMPTY();
     }
-    if (det == 0){
+    if (det < EPS){
         printf("Matrix is degenerative, determinate is not determined");
         return EMPTY();
     }
@@ -219,7 +225,6 @@ Matrix exponent_matrix (const Matrix exponent) { // Функция нахожд�
     double fact = 1.0;
     for (unsigned int i = 1; i < n; i++) {
         fact *= i;
-        if (fact == 0) return EMPTY();
         temp_multiply = multiplication(temp, exponent);
         free_matrix(temp);
         temp = temp_multiply;

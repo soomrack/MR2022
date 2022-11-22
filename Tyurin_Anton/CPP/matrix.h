@@ -1,7 +1,6 @@
 #ifndef UNTITLED_MATRIX_H
 #define UNTITLED_MATRIX_H
 
-#endif //UNTITLED_MATRIX_H
 class Matrix {
     friend class Matrix_test;
 private:
@@ -30,3 +29,4 @@ public:
     void fill_with(double Number);
     bool is_equal(const Matrix &X);
 };
+#endif //UNTITLED_MATRIX_H
