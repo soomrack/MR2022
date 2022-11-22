@@ -13,11 +13,11 @@ public:
 };
 
 
-Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)");
-Matrix_Exception NOTEQUAL("Error: the matrix should have a same size");
-Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.");
-Matrix_Exception ZERODIVISION("Error: divide by zero");
-Matrix_Exception MEM_ERROR("Error: memory are not allocated");
+Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)\n");
+Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
+Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.\n");
+Matrix_Exception ZERODIVISION("Error: divide by zero\n");
+Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 
 
 class Matrix
@@ -386,7 +386,7 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 		}
 	}
 	reverse.set_transpose();
-	if (abs(d) < EPS) throw ZERODIVISION;
+	if (fabs(d) < EPS) throw ZERODIVISION;
 	reverse /= d;
 	return reverse;
 }
