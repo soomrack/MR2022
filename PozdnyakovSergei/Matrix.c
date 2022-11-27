@@ -278,11 +278,17 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     struct Matrix itog = initialization(matrix.cols, matrix.rows);
     for (unsigned int row = 0; row < matrix.rows; row++) {
         for (unsigned int col = 0; col < matrix.cols; col++) {
-            itog.value [row*matrix.cols + col] = pow(-1, row + col)*(determinant(minor(col, row, matrix)));
+            Matrix min = minor(col, row, matrix);
+            itog.value [row*matrix.cols + col] = pow(-1, row + col)*(determinant(min));
+            clean_memory(min);
         }
     }
-    itog = mult_m_by_num(transposition(itog), (1/ d));
-    return itog;  // ОЧИЩАТЬ МИНОР И ТРАНСПОНИРОВАНИЕ, ОТДЕЛЬНОЙ СТРОКОЙ ПРОПИСАТЬ ЭТИ ОПЕРАЦИИ
+    Matrix trans = transposition(itog);
+    itog = mult_m_by_num(trans, (1/ d));
+    return itog;
+    /*вычисление минорма матрицы и операция транспонирования
+     * прописаны отдельной строко с дальнейшей очиской
+     * памяти, выделенной под эти матрицы*/
 
    /* Matrix transponent = transponation(matrix);
     Matrix itog = multiply_by_num(transponent, 1. / determinant(matrix));
