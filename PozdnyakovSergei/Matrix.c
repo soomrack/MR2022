@@ -12,7 +12,7 @@ typedef struct Matrix {
 } Matrix;
 
 
-const Matrix ZERO = {0, 0, 0};
+const Matrix ZERO = {0, 0, NULL};
 
 
 Matrix initialization (const unsigned int cols, const unsigned int rows) {  // Инициализация матриц
@@ -45,10 +45,7 @@ void set (Matrix* matrix) {  // Рандомный ввод матриц
 
 
 int is_null (const Matrix matrix) {  // Матрицы нет
-    if (matrix.cols == 0 && matrix.rows == 0) {
-        return 1;
-    }
-    return 0;
+    return (matrix.cols == 0 && matrix.rows == 0);
 }
 
 
@@ -248,7 +245,7 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {  // Воз�
         Matrix new = multiply_m_by_m(matrix, itog);
         itog = new;
         if (number == num) {
-        clean_memory(new); //почистить всегда
+        clean_memory(new); //почистить всегда ИСПРАВИТЬ
       }
     }
     return itog;
@@ -285,7 +282,7 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
         }
     }
     itog = mult_m_by_num(transposition(itog), (1/ d));
-    return itog;
+    return itog;  // ОЧИЩАТЬ МИНОР И ТРАНСПОНИРОВАНИЕ, ОТДЕЛЬНОЙ СТРОКОЙ ПРОПИСАТЬ ЭТИ ОПЕРАЦИИ
 
    /* Matrix transponent = transponation(matrix);
     Matrix itog = multiply_by_num(transponent, 1. / determinant(matrix));
@@ -356,15 +353,20 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
     Matrix temp = unit_matrix(matrix.rows, matrix.cols);
     Matrix temp_mult;
     Matrix temp_sum;
+    Matrix temp_mult_bn;
     double factorial = 1.0;
     for (unsigned int acc = 1; acc < accuracy; acc++) {
         factorial *= acc;
+/*
         if (factorial == 0) return ZERO;
+*/
         temp_mult = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
         temp = temp_mult;
-        temp_sum = summation(ex, mult_m_by_num(temp, 1.0 / factorial));
-        clean_memory(ex);
+        temp_mult_bn = mult_m_by_num(temp, 1.0 / factorial);
+        temp_sum = summation(ex, temp_mult_bn);  //Поскольку появилась нлвая матрица после
+        clean_memory(temp_mult_bn);  //                    умножения матрицы на число, то ее нужно
+        clean_memory(ex);  //                              почистить
         ex = temp_sum;
 /*
         clean_memory(temp_sum);
