@@ -1,8 +1,9 @@
 #include "MatrixTest.h"
+#include "EMatrix.h"
 
 
 int main() {
-    MatrixTest::using_unused();
+    /*MatrixTest::using_unused();
     MatrixTest::output_test();
     MatrixTest::overload_test();
     MatrixTest::addition_test();
@@ -16,6 +17,9 @@ int main() {
     MatrixTest::inverse_multiplication_test();
     MatrixTest::number_division_test();
     MatrixTest::power_test();
-    MatrixTest::exp_test();
+    MatrixTest::exp_test();*/
+    EMatrix a(2,4, 5);
+    a.output();
+    EMatrix::get_counter();
     return 0;
 }
