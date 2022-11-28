@@ -13,10 +13,11 @@ class EMatrix: public Matrix {
 private:
     inline static unsigned int counter = 0;
 public:
+    EMatrix();
     EMatrix(int input_rows, int input_cols, double number=0);
     ~EMatrix();
 
-    static void get_counter();
+    static unsigned int get_counter();
 };
 
 

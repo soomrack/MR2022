@@ -1,5 +1,4 @@
 #include "MatrixTest.h"
-#include "EMatrix.h"
 
 
 int main() {
@@ -18,8 +17,6 @@ int main() {
     MatrixTest::number_division_test();
     MatrixTest::power_test();
     MatrixTest::exp_test();*/
-    EMatrix a(2,4, 5);
-    a.output();
-    EMatrix::get_counter();
+    MatrixTest::counter_test();
     return 0;
 }

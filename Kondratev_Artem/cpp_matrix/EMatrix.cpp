@@ -5,6 +5,11 @@
 #include "EMatrix.h"
 
 
+EMatrix::EMatrix(): Matrix() {
+    counter++;
+}
+
+
 EMatrix::EMatrix(int input_rows, int input_cols, double number): Matrix(input_rows, input_cols, number) {
     counter++;
 }
@@ -15,6 +20,6 @@ EMatrix::~EMatrix() {
 }
 
 
-void EMatrix::get_counter() {
-    std::cout << EMatrix::counter << std::endl;
+unsigned int EMatrix::get_counter() {
+    return counter;
 }

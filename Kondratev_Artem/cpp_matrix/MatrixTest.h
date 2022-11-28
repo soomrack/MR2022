@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <vector>
 #include "Matrix.h"
+#include "EMatrix.h"
 #include "MatrixException.h"
 
 
@@ -39,6 +40,7 @@ public:
     static void number_division_test();
     static void power_test();
     static void exp_test();
+    static void counter_test();
 };
 
 

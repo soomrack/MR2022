@@ -230,3 +230,21 @@ void MatrixTest::exp_test() {
         print_message("exp_test", Exception_object);
     }
 }
+
+
+void MatrixTest::counter_test() {
+    std::cout << "EMatrix counter" << std::endl << "Errors: ";
+    short flag = 0;
+    if (EMatrix::get_counter() != 0) {
+        flag = 1;
+    }
+    EMatrix matrix1;
+    if (EMatrix::get_counter() != 1) {
+        flag = 1;
+    }
+    EMatrix matrix2;
+    if (EMatrix::get_counter() != 2) {
+        flag = 1;
+    }
+    std::cout << flag << std::endl;
+}
