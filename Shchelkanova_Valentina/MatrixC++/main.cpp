@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-int MAX_VALUE = 5;
+
 
 
 class Matrix {
+private:
     unsigned int cols;
     unsigned int rows;
     double* values;
@@ -20,7 +21,7 @@ public:
 
 
     void print_matrix();
-    void set_values();
+    void set_values(int max_value);
 
     Matrix operator+(const Matrix& one) const;
     Matrix operator-(const Matrix& one) const;
@@ -28,7 +29,7 @@ public:
     Matrix operator*(double coefficient) const;
     Matrix operator=(Matrix& one);
     Matrix operator=(Matrix&& one);
-    Matrix operator^(const double coefficient) const;
+    Matrix operator^(const int coefficient) const;
     Matrix operator/(const double coefficient) const;
     static Matrix  exp(const Matrix& one, const unsigned int n);
     Matrix Minor(Matrix& A, unsigned int row, unsigned int col);
@@ -57,7 +58,7 @@ Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
     values = new double[rows*cols];
-    for (unsigned int idx = 0; idx < rows * cols; ++idx) {
+    for (unsigned int idx = 0; idx < rows * cols; ++idx) { //сделать копирование память с помощью memcpy
         values[idx] = matrix.values[idx];
     }
 }
@@ -82,9 +83,9 @@ void Matrix::print_matrix() {
 }
 
 
-void Matrix::set_values() {
+void Matrix::set_values(int max_value = 10) {
     for (unsigned int index = 0; index < rows * cols; ++index) {
-        values[index] = rand() % MAX_VALUE;
+        values[index] = rand() % max_value;
     }
 }
 
@@ -103,25 +104,25 @@ Matrix::Matrix(unsigned int col) {
 
 
 Matrix Matrix::operator+ (const Matrix& One) const {
-    Matrix Res(One.cols, One.rows);
+    Matrix res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
-        Res.values[idx] = values[idx] + One.values[idx];
+        res.values[idx] += values[idx];
     }
-    return Res;
+    return res;
 }
 
 
-Matrix Matrix::operator- (const Matrix& One) const {
-    Matrix Res(One.cols, One.rows);
+Matrix Matrix::operator- (const Matrix& One) const { //Вычитание исправить так же как и сложение
+    Matrix Res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
-        Res.values[idx] = values[idx] - One.values[idx];
+        Res.values[idx] -= values[idx];
     }
     return Res;
 }
 
 
 Matrix Matrix::operator* (const Matrix& One) const {
-    Matrix Res(One.cols, One.rows);
+    Matrix Res(One);
     for (unsigned int row = 0; row < Res.rows; row++) {
         for (unsigned int col = 0; col < Res.cols; col++) {
             Res.values[row* Res.rows + col] = 0.00;
@@ -170,13 +171,13 @@ Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка операт�
 }
 
 
-Matrix Matrix::operator^(double coefficient) const { // Возведение матрицы в степень
+Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень Избавиться от лишних переменных
     Matrix Res(*this);
-    if (coefficient == 0.0) {
+    if (coefficient == 0) {
         Matrix one(cols);
         return one;
     }
-    if (coefficient == 1.0) {
+    if (coefficient == 1) {
         return Res;
     }
     else {
@@ -200,11 +201,11 @@ Matrix Matrix::operator/(const double coefficient) const {
 }
 
 
-Matrix Matrix::exp(const Matrix& A, const unsigned int n){ // Матричная экспонента
+Matrix Matrix::exp(const Matrix& A, const unsigned int n = 10){ // Матричная экспонента  Подумать над эффективностью кода
     Matrix one(A.cols);
     Matrix Res = one + A;
     double factorial = 1;
-    for (int i = 2; i < n; i++) {
+    for (int step = 2; step < n; step++) {
         factorial *= n;
         Res = Res + (A ^ n) / factorial;
     }
@@ -212,7 +213,7 @@ Matrix Matrix::exp(const Matrix& A, const unsigned int n){ // Матричная
 }
 
 
-Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) {
+Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) { //лучше через двойной цикл
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
@@ -247,6 +248,6 @@ int main() {
     Mult_double.print_matrix();
     Matrix Power = A^2;
     Power.print_matrix();
-    Matrix Exponent = Matrix::exp(A,3);
+    Matrix Exponent = Matrix::exp(A);
     return 0;
 }
