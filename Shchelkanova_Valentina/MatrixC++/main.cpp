@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stdlib.h>
-#include <malloc.h>
+#include <math.h>
+
+int MAX_VALUE = 5;
+
 
 class Matrix {
     unsigned int cols;
@@ -10,6 +13,7 @@ class Matrix {
 public:
     Matrix();  // Конструктор пустой матрицы
     Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
+    Matrix(unsigned int col);  // Конструктор единичной матрицы
     Matrix(const Matrix& matrix);  // Конструктор копирования матрицы
     Matrix(Matrix&& matrix);  // Конструктор переноса матрицы
     ~Matrix();  // Деструктор
@@ -18,10 +22,16 @@ public:
     void print_matrix();
     void set_values();
 
-    Matrix operator+(const Matrix& One) const;
-    Matrix operator-(const Matrix& One) const;
-    Matrix operator*(const Matrix& One) const;
-    Matrix operator*(const double COEFFICIENT) const;
+    Matrix operator+(const Matrix& one) const;
+    Matrix operator-(const Matrix& one) const;
+    Matrix operator*(const Matrix& one) const;
+    Matrix operator*(double coefficient) const;
+    Matrix operator=(Matrix& one);
+    Matrix operator=(Matrix&& one);
+    Matrix operator^(const double coefficient) const;
+    Matrix operator/(const double coefficient) const;
+    static Matrix  exp(const Matrix& one, const unsigned int n);
+    Matrix Minor(Matrix& A, unsigned int row, unsigned int col);
 
 
 };
@@ -36,7 +46,7 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
     cols = col;
     rows = row;
     unsigned int n_values = cols * rows;
-    values = (double*)malloc(n_values * sizeof(double));
+    values = new double[cols*rows]; // (new double[cols*rows] delete[])заменить везде маллок (memcpy(копирование памяти))
     for (unsigned int idx = 0; idx < n_values; ++idx) {
         values[idx] = 0.0;
     }
@@ -46,9 +56,8 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
 Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    unsigned int n_values = cols * rows;
-    values = (double*)malloc(n_values * sizeof(double));
-    for (unsigned int idx = 0; idx < n_values; ++idx) {
+    values = new double[rows*cols];
+    for (unsigned int idx = 0; idx < rows * cols; ++idx) {
         values[idx] = matrix.values[idx];
     }
 }
@@ -57,17 +66,8 @@ Matrix::Matrix(const Matrix& matrix) {
 Matrix::Matrix(Matrix&& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    unsigned int n_values = cols * rows;
-    values = (double*)malloc(n_values * sizeof(double));
-    for (unsigned int idx = 0; idx < n_values; ++idx) {
-        values[idx] = matrix.values[idx];
-    }
-    matrix.~Matrix();
-}
-
-
-Matrix::~Matrix() {
-    free(values);
+    values = matrix.values;
+    matrix.values = nullptr;
 }
 
 
@@ -84,7 +84,20 @@ void Matrix::print_matrix() {
 
 void Matrix::set_values() {
     for (unsigned int index = 0; index < rows * cols; ++index) {
-        values[index] = (double)rand();
+        values[index] = rand() % MAX_VALUE;
+    }
+}
+
+
+Matrix::Matrix(unsigned int col) {
+    cols = col;
+    rows = col;
+    values = new double[cols * rows];
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int col = 0; col < cols; col++) {
+            values[row * cols + col] = (row == col) ? 1 : 0;
+
+        }
     }
 }
 
@@ -121,11 +134,98 @@ Matrix Matrix::operator* (const Matrix& One) const {
 }
 
 
-Matrix Matrix::operator* (const double COEFFICIENT) const {
+Matrix Matrix::operator* (const double coefficient) const {
     Matrix Res(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
-        Res.values[idx] = values[idx] * COEFFICIENT;
+        Res.values[idx] = values[idx] * coefficient;
     }
+    return Res;
+}
+
+
+
+Matrix Matrix::operator= (Matrix& one)  { // Перегрузка оператора присваивания
+    if (this == &one) {
+        return *this;
+    }
+    rows = one.rows;
+    cols = one.cols;
+    delete[]values;
+    values = new double [cols * rows];
+    memcpy(values, one.values, rows * cols * sizeof(double));
+    return *this;
+}
+
+
+Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка оператора присваивания
+    if (this == &one) {
+        return *this;
+    }
+    rows = one.rows;
+    cols = one.cols;
+    delete[]values;
+    values = one.values;
+    one.values = nullptr;
+    return *this;
+}
+
+
+Matrix Matrix::operator^(double coefficient) const { // Возведение матрицы в степень
+    Matrix Res(*this);
+    if (coefficient == 0.0) {
+        Matrix one(cols);
+        return one;
+    }
+    if (coefficient == 1.0) {
+        return Res;
+    }
+    else {
+        const Matrix &start(Res);
+        Matrix Res1(Res.cols, Res.rows);
+        for (unsigned int idx = 0; idx < coefficient; idx++){
+            Res1 = Res1 * start;
+        }
+        Res = Res1;
+        return Res;
+    }
+}
+
+
+Matrix Matrix::operator/(const double coefficient) const {
+    Matrix Res(cols, rows);
+    for(unsigned int idx = 0; idx < rows * cols; ++idx) {
+        Res.values[idx] = values[idx]/coefficient;
+    }
+    return Res;
+}
+
+
+Matrix Matrix::exp(const Matrix& A, const unsigned int n){ // Матричная экспонента
+    Matrix one(A.cols);
+    Matrix Res = one + A;
+    double factorial = 1;
+    for (int i = 2; i < n; i++) {
+        factorial *= n;
+        Res = Res + (A ^ n) / factorial;
+    }
+    return Res;
+}
+
+
+Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) {
+    int new_row = A.rows -1;
+    int new_col = A.cols - 1;
+    if (row >= A.rows) new_row++;
+    if (col >= A.cols) new_col++;
+
+    Matrix Res = Matrix(new_row, new_col);
+    unsigned int k = 0;
+
+    for (unsigned int idx = 0; idx < rows * cols; idx++){
+        if ((idx % cols == col) or (idx / cols == row)) continue;
+        Res.values[k++] = A.values[idx];
+    }
+
     return Res;
 }
 
@@ -145,5 +245,8 @@ int main() {
     Mult.print_matrix();
     Matrix Mult_double = A * 4;
     Mult_double.print_matrix();
+    Matrix Power = A^2;
+    Power.print_matrix();
+    Matrix Exponent = Matrix::exp(A,3);
     return 0;
 }
