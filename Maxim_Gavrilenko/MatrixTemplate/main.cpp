@@ -421,7 +421,7 @@ public:
             std::cerr << "Type: " << typeid(e).name() << std::endl;
             exit(404);
         }
-        Matrix<double> A(20,19);
+        Matrix<double> A(3,3);
         A.fill_random(10);
         Matrix<double> B(3,3);
         B.fill_random(10);
@@ -435,14 +435,12 @@ public:
         }
         catch (const Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
-            std::cerr << "Type: " << typeid(e).name() << std::endl;
         }
         try {
             std::cout << "Multiplication of two matrix\n" << A * B;
         }
         catch (const Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
-            std::cerr << "Type: " << typeid(e).name() << std::endl;
         }
 
         try {
@@ -452,6 +450,5 @@ public:
         }
         catch (Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
-            std::cerr << "Type: " << typeid(e).name() << std::endl;
         }
     }
