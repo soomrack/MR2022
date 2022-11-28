@@ -285,6 +285,7 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     }
     Matrix trans = transposition(itog);
     itog = mult_m_by_num(trans, (1/ d));
+    clean_memory(trans);
     return itog;
     /*вычисление минора матрицы и операция транспонирования
      * прописаны отдельной строкой с дальнейшей очиской
@@ -374,9 +375,7 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
         clean_memory(temp_mult_bn);  //                    умножения матрицы на число, то ее нужно
         clean_memory(ex);  //                              почистить
         ex = temp_sum;
-/*
         clean_memory(temp_sum);
-*/
     }
     clean_memory(temp_mult);
     return ex;
