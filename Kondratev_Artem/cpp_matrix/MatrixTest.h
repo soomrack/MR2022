@@ -5,11 +5,13 @@
 #ifndef TEST_H
 #define TEST_H
 
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include "Matrix.h"
 #include "MatrixException.h"
+
 
 class MatrixTest {
 private:
@@ -38,5 +40,6 @@ public:
     static void power_test();
     static void exp_test();
 };
+
 
 #endif //TEST_H

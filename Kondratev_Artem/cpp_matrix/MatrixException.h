@@ -5,7 +5,9 @@
 #ifndef MATRIXEXCEPTION_H
 #define MATRIXEXCEPTION_H
 
+
 #include <iostream>
+
 
 class MatrixException: public std::exception {
 private:
@@ -18,5 +20,6 @@ public:
     std::string get_message() const;
     int get_error_code() const;
 };
+
 
 #endif //MATRIXEXCEPTION_H
