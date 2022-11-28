@@ -8,7 +8,7 @@ const double EPS = 0.0000001;
 class Matrix_Exception : public std::exception
 {
 public:
-	Matrix_Exception(const char* const msg) : exception(msg)
+	Matrix_Exception(const char* const &msg) : exception(msg)
 	{}
 };
 
@@ -37,8 +37,8 @@ public:
 	
 	
 	void output();
-	int getrow();
-	int getcol();
+	unsigned int getrow();
+	unsigned int getcol();
 
 	Matrix set_zero(); // Установить значения матрицы нулями
 	Matrix fill_random(unsigned int);
@@ -188,13 +188,13 @@ void Matrix::output()
 }
 
 
-int Matrix::getrow()
+unsigned int Matrix::getrow()
 {
 	return (rows);
 }
 
 
-int Matrix::getcol()
+unsigned int Matrix::getcol()
 {
 	return (cols);
 }
@@ -620,7 +620,6 @@ int main()
 	{
 		std::cerr << "Caught: " << e.what() << std::endl;
 		std::cerr << "Type: " << typeid(e).name() << std::endl;
-		exit(404);
 	}
 
 	Matrix A = Matrix(3, 3).fill_random();

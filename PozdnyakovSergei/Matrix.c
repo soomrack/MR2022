@@ -285,9 +285,10 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     }
     Matrix trans = transposition(itog);
     itog = mult_m_by_num(trans, (1/ d));
+    clean_memory(trans);
     return itog;
-    /*вычисление минорма матрицы и операция транспонирования
-     * прописаны отдельной строко с дальнейшей очиской
+    /*вычисление минора матрицы и операция транспонирования
+     * прописаны отдельной строкой с дальнейшей очиской
      * памяти, выделенной под эти матрицы*/
 
    /* Matrix transponent = transponation(matrix);
@@ -361,24 +362,23 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
     Matrix temp_sum;
     Matrix temp_mult_bn;
     double factorial = 1.0;
-    for (unsigned int acc = 1; acc < accuracy; acc++) {
+    for (unsigned int acc = 0; acc < accuracy; acc++) {
         factorial *= acc;
-/*
-        if (factorial == 0) return ZERO;
-*/
+
         temp_mult = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
         temp = temp_mult;
         temp_mult_bn = mult_m_by_num(temp, 1.0 / factorial);
-        temp_sum = summation(ex, temp_mult_bn);  //Поскольку появилась нлвая матрица после
+        temp_sum = summation(ex, temp_mult_bn);  //Поскольку появилась новая матрица после
         clean_memory(temp_mult_bn);  //                    умножения матрицы на число, то ее нужно
         clean_memory(ex);  //                              почистить
         ex = temp_sum;
-/*
         clean_memory(temp_sum);
-*/
     }
     clean_memory(temp_mult);
+    Matrix sum_last = summation(ex, matrix);
+    ex = sum_last;
+    clean_memory(sum_last);
     return ex;
 }
 
