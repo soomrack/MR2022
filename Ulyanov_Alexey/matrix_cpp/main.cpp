@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+
 #include <iomanip>
 
 
@@ -47,6 +48,20 @@ public:
 };
 
 
+class Matrix_Exception : public std::domain_error
+{
+public:
+    Matrix_Exception(const char* const msg) : std::domain_error(msg)
+    {}
+};
+
+
+Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
+Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
+Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
+
+
+
 Matrix undefinded();
 Matrix zero(const unsigned int row, const unsigned int col);
 Matrix one(const unsigned int row, const unsigned int col);
@@ -70,7 +85,6 @@ Matrix::Matrix() {
     cols = 0;
 }
 
-
 Matrix::Matrix(const unsigned int n) {
     rows = n;
     cols = n;
@@ -78,14 +92,12 @@ Matrix::Matrix(const unsigned int n) {
     data = new double[n * n];
 }
 
-
 Matrix::Matrix(const unsigned int row, const unsigned int col) {
     rows = row;
     cols = col;
 
     data = new double[row * col];
 }
-
 
 Matrix::Matrix(const Matrix &x) {
     rows = x.rows;
@@ -99,7 +111,6 @@ Matrix::Matrix(const Matrix &x) {
     }
 }
 
-
 Matrix::Matrix(Matrix&& x){
     rows = x.rows;
     cols = x.cols;
@@ -109,7 +120,6 @@ Matrix::Matrix(Matrix&& x){
     x.cols = 0;
     x.data = nullptr;
 }
-
 
 Matrix::~Matrix() {
     delete[] data;
@@ -133,9 +143,8 @@ Matrix& Matrix::operator=(const Matrix &x) {
     return *this;
 }
 
-
 Matrix& Matrix::operator+=(const Matrix &x) {
-    if ((rows != x.rows) or (cols != x.cols)) return *this;
+    if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] += x.data[idx];
@@ -144,9 +153,8 @@ Matrix& Matrix::operator+=(const Matrix &x) {
     return *this;
 }
 
-
 Matrix& Matrix::operator-=(const Matrix &x) {
-    if ((rows != x.rows) or (cols != x.cols)) return *this;
+    if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] -= x.data[idx];
@@ -155,16 +163,14 @@ Matrix& Matrix::operator-=(const Matrix &x) {
     return *this;
 }
 
-
 Matrix& Matrix::operator*=(const double k) {
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
 
-
 Matrix& Matrix::operator*=(const Matrix &x) {
-    if (cols != x.rows) return *this;
+    if (cols != x.rows) throw SIZE_UNMATCH;
 
     Matrix rez = Matrix(rows, x.cols);
     rez.zero();
@@ -188,7 +194,6 @@ void Matrix::zero(){
     }
 }
 
-
 void Matrix::one(){
     this->zero();
     for (unsigned int idx = 0; idx < rows; idx++){
@@ -196,13 +201,11 @@ void Matrix::one(){
     }
 }
 
-
 void Matrix::multy_k(const double k){
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
-
 
 void Matrix::tran(){
     unsigned int row = cols;
@@ -222,7 +225,6 @@ void Matrix::tran(){
     cols = col;
 }
 
-
 Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
     int new_row = rows - 1, new_col = cols - 1;
     if (cur_row >= rows) new_row++;
@@ -239,7 +241,6 @@ Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
     return rez;
 }
 
-
 void Matrix::triangle() {
     if (rows == 1) return;
 
@@ -251,6 +252,9 @@ void Matrix::triangle() {
 
     for (unsigned int step = 1; step < rows; step++) {
         for (unsigned int cur_row = step; cur_row < rows; cur_row++) {
+            if (data[(step - 1) * (cols + 1)] < COMPARATION_CONST){
+                throw DIV_BY_ZERO;
+            }
             double ratio = data[cur_row * cols + step - 1] / data[(step - 1) * cols + step - 1];
             for (unsigned int col = step - 1; col < cols; col++) {
                 data[cur_row * cols + col] -= ratio * data[(step - 1) * cols + col];
@@ -263,14 +267,19 @@ void Matrix::triangle() {
     }
 }
 
-
 double Matrix::det(){
-    if (rows != cols) return 0.0;
+    if (rows != cols){
+        throw NOT_SQUARE;
+        return 0.0;
+    }
 
     Matrix temp = Matrix(rows, cols);
     temp.fill_certain(rows * cols, data);
-
-    temp.triangle();
+    try {
+        temp.triangle();
+    } catch (std::runtime_error &rte){
+        std::cout << "Ops, division by zero\n" << rte.what() << "\n";
+    }
     double rez = 1.0;
     for (unsigned int idx = 0; idx < temp.rows; idx++){
         rez *= temp.data[idx * cols + idx];
@@ -279,10 +288,10 @@ double Matrix::det(){
     return rez;
 }
 
-
 void Matrix::reverse() {
     double deter = this->det();
-    if ((rows != cols) or (deter == 0)) return;
+    if (rows != cols) throw NOT_SQUARE;
+    //if (deter == 0) return;
 
     Matrix temp = Matrix(rows, cols);
     int ratio = 1;
@@ -294,14 +303,14 @@ void Matrix::reverse() {
     }
 
     temp.tran();
+    if (abs(deter - 0.0) < COMPARATION_CONST)  throw DIV_BY_ZERO;
     temp.multy_k(1/deter);
 
     this->fill_certain(temp.rows * temp.cols, temp.data);
 }
 
-
 void Matrix::pow(const unsigned int n){
-    if (rows != cols) return;
+    if (rows != cols) throw NOT_SQUARE;
 
     Matrix rez = Matrix(rows, cols);
     rez.one();
@@ -313,9 +322,8 @@ void Matrix::pow(const unsigned int n){
     this->fill_certain(rows * cols, rez.data);
 }
 
-
 void Matrix::exponent(const unsigned int p_degree) {
-    if (rows != cols) return;
+    if (rows != cols) throw NOT_SQUARE;
 
     Matrix rez = Matrix(rows, cols);
     rez.one();
@@ -338,15 +346,13 @@ void Matrix::fill_random() {
     }
 }
 
-
 void Matrix::fill_certain(const unsigned int len, const double* arrey) {
-    if (len != rows * cols) return;
+    if (len != rows * cols) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] = arrey[idx];
     }
 }
-
 
 void Matrix::output(bool f){
     if (f) std::cout << rows << " " << cols << "\n";
@@ -366,13 +372,11 @@ Matrix undefinded(){
     return rez;
 }
 
-
 Matrix zero(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
     rez.zero();
     return rez;
 }
-
 
 Matrix one(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
@@ -382,7 +386,7 @@ Matrix one(const unsigned int row, const unsigned int col){
 
 
 Matrix sum(const Matrix x, const Matrix y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
+    if ((x.rows != y.rows) or (x.cols != y.cols)) throw SIZE_UNMATCH;
 
     Matrix rez = Matrix();
     rez = Matrix(x.rows, x.cols);
@@ -393,9 +397,8 @@ Matrix sum(const Matrix x, const Matrix y){
     return rez;
 }
 
-
 Matrix sub(const Matrix x, const Matrix y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
+    if ((x.rows != y.rows) or (x.cols != y.cols)) throw SIZE_UNMATCH;
 
     Matrix rez = Matrix();
     rez = Matrix(x.rows, x.cols);
@@ -406,9 +409,8 @@ Matrix sub(const Matrix x, const Matrix y){
     return rez;
 }
 
-
 Matrix multiplication(const Matrix x, const Matrix y){
-    if (x.cols != y.rows) return undefinded();
+    if (x.cols != y.rows) throw SIZE_UNMATCH;
 
     Matrix rez = Matrix();
     rez = Matrix(x.rows, y.cols);
@@ -423,24 +425,24 @@ Matrix multiplication(const Matrix x, const Matrix y){
     return rez;
 }
 
-
 Matrix multy_k(const Matrix x, const double k){
     Matrix rez = x;
     rez.multy_k(k);
     return rez;
 }
 
-
 Matrix pow(const Matrix x, const unsigned int n){
     Matrix rez = Matrix(x.rows, x.cols);
-    if (x.rows != x.cols) return rez;
+    if (x.rows != x.cols) {
+        throw NOT_SQUARE;
+        return rez;
+    }
 
     rez.fill_certain(x.rows * x.cols, x.data);
     rez.pow(n);
 
     return rez;
 }
-
 
 Matrix exponent(const Matrix x, const unsigned int p_degree){
     Matrix rez = Matrix(x.rows, x.cols);
@@ -455,21 +457,17 @@ Matrix operator+(const Matrix &x, const Matrix &y){
     return sum(x, y);
 }
 
-
 Matrix operator-(const Matrix &x, const Matrix &y){
     return sub(x, y);
 }
-
 
 Matrix operator*(const Matrix &x, const Matrix &y){
     return multiplication(x, y);
 }
 
-
 Matrix operator*(const double k, const Matrix &x){
     return multy_k(x, k);
 }
-
 
 bool operator==(const Matrix &x, const Matrix &y){
     bool flag = ((x.rows == y.rows) and (x.cols == y.cols));
@@ -507,7 +505,6 @@ void test_sum(){
     }
 }
 
-
 void test_sub(){
     Matrix A = Matrix(3, 3);
     Matrix B = Matrix(3, 3);
@@ -532,7 +529,6 @@ void test_sub(){
         std::cout << "Test of subtraction was failed\n";
     }
 }
-
 
 void test_mul(){
     Matrix A = Matrix(3, 3);
@@ -559,7 +555,6 @@ void test_mul(){
     }
 }
 
-
 void test_reverse(){
     const unsigned int n = 3;
     Matrix A = Matrix(n, n);
@@ -577,7 +572,6 @@ void test_reverse(){
         std::cout << "Test of reverse was failed\n";
     }
 }
-
 
 void test_exp(){
     Matrix A = Matrix(3, 3);
@@ -602,23 +596,16 @@ void test_exp(){
 void block_output(){
     std::cout << std::fixed << std::setprecision(2);
 
-    Matrix B = Matrix(3);
-    Matrix F = B;
-    F.fill_random();
-    Matrix G = Matrix(3);
-    G.fill_random();
-    Matrix rez = F + G - 2 * one(3, 3);
-    rez.output();
-    rez = one(2, 2);
-    rez = sum(F, G);
-    Matrix A = Matrix(100, 100);
-    A.fill_random();
-    Matrix C = A;
-    A.zero();
-    //C.output();
+    Matrix A = Matrix(3, 5);
+    double arrey_a[15] = {5, 4, 3, 2, 1,
+                          5, 4, 8, 4, 10,
+                          11, 43, 29, 16, 9};
+    A.fill_certain(15, arrey_a);
+    A.output();
+    A.triangle();
+    A.output();
 
 }
-
 
 void block_tests(){
     test_sum();
