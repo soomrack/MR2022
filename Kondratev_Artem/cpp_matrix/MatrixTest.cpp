@@ -1,8 +1,10 @@
 #include "MatrixTest.h"
 
+
 inline void print_message(const std::string& text, const MatrixException& Exception_object) {
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
+
 
 void MatrixTest::using_unused() {
     Matrix matrix(2, 2);
@@ -14,6 +16,7 @@ void MatrixTest::using_unused() {
     MatrixException TEST(-15, "TEST");
     TEST.get_error_code();
 }
+
 
 void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const std::string& text) {
     int error_flag = 0;
@@ -31,12 +34,14 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const st
     std::cout << "\n";
 }
 
+
 void MatrixTest::output_test() {
     std::cout << "output test:" << std::endl;
     Matrix matrix1(2, 2);
     matrix1.fillFromVector(vector1);
     matrix1.output();
 }
+
 
 void MatrixTest::overload_test() {
     try {
@@ -50,6 +55,7 @@ void MatrixTest::overload_test() {
         print_message("overload_test", Exception_object);
     }
 }
+
 
 void MatrixTest::addition_test() {
     try {
@@ -66,6 +72,7 @@ void MatrixTest::addition_test() {
     }
 }
 
+
 void MatrixTest::number_addition_test() {
     try {
         Matrix matrix1(2, 2);
@@ -78,6 +85,7 @@ void MatrixTest::number_addition_test() {
         print_message("number_addition_test", Exception_object);
     }
 }
+
 
 void MatrixTest::subtraction_test() {
     try {
@@ -94,6 +102,7 @@ void MatrixTest::subtraction_test() {
     }
 }
 
+
 void MatrixTest::multiplication_test() {
     try {
         Matrix matrix1(2, 2);
@@ -109,6 +118,7 @@ void MatrixTest::multiplication_test() {
     }
 }
 
+
 void MatrixTest::number_multiplication_test() {
     try {
         Matrix matrix1(2, 2);
@@ -121,6 +131,7 @@ void MatrixTest::number_multiplication_test() {
         print_message("number_multiplication_test", Exception_object);
     }
 }
+
 
 void MatrixTest::determinant_test() {
     try {
@@ -135,6 +146,7 @@ void MatrixTest::determinant_test() {
     }
 }
 
+
 void MatrixTest::transposition_test() {
     try {
         Matrix matrix1(2, 2);
@@ -148,6 +160,7 @@ void MatrixTest::transposition_test() {
     }
 }
 
+
 void MatrixTest::inversion_test() {
     try {
         Matrix matrix1(2, 2);
@@ -160,6 +173,7 @@ void MatrixTest::inversion_test() {
         print_message("inversion_test", Exception_object);
     }
 }
+
 
 void MatrixTest::inverse_multiplication_test() {
     try {
@@ -176,6 +190,7 @@ void MatrixTest::inverse_multiplication_test() {
     }
 }
 
+
 void MatrixTest::number_division_test() {
     try {
         Matrix matrix1(2, 2);
@@ -189,6 +204,7 @@ void MatrixTest::number_division_test() {
     }
 }
 
+
 void MatrixTest::power_test() {
     try {
         Matrix matrix1(2, 2);
@@ -200,6 +216,7 @@ void MatrixTest::power_test() {
         print_message("power_test", Exception_object);
     }
 }
+
 
 void MatrixTest::exp_test() {
     try {
