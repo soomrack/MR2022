@@ -362,11 +362,9 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
     Matrix temp_sum;
     Matrix temp_mult_bn;
     double factorial = 1.0;
-    for (unsigned int acc = 1; acc < accuracy; acc++) {
+    for (unsigned int acc = 0; acc < accuracy; acc++) {
         factorial *= acc;
-/*
-        if (factorial == 0) return ZERO;
-*/
+
         temp_mult = multiply_m_by_m(temp, matrix);
         clean_memory(temp);
         temp = temp_mult;
@@ -378,6 +376,9 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
         clean_memory(temp_sum);
     }
     clean_memory(temp_mult);
+    Matrix sum_last = summation(ex, matrix);
+    ex = sum_last;
+    clean_memory(sum_last);
     return ex;
 }
 
