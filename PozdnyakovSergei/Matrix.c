@@ -286,8 +286,8 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
     Matrix trans = transposition(itog);
     itog = mult_m_by_num(trans, (1/ d));
     return itog;
-    /*вычисление минорма матрицы и операция транспонирования
-     * прописаны отдельной строко с дальнейшей очиской
+    /*вычисление минора матрицы и операция транспонирования
+     * прописаны отдельной строкой с дальнейшей очиской
      * памяти, выделенной под эти матрицы*/
 
    /* Matrix transponent = transponation(matrix);
