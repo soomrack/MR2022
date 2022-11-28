@@ -134,9 +134,11 @@ Matrix Matrix::set_zero() {  //Задание нулевой матрицы
 Matrix Matrix::set_unit() {  //Задание единичной матрицы
     set_zero();  //Сначала вводится нулевая матрица, а потом диагональ заполняется единицами
     for (unsigned int number = 0; number < this->rows * this->cols; number += rows + 1) {
-        this -> values[number] = 1.0
+        this -> values[number] = 1.0;
     }
 }
+
+Matrix Matrix::
 
 int main() {
     return 0;
