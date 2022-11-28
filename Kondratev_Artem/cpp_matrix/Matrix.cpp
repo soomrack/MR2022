@@ -9,7 +9,7 @@ MatrixException MULTIPLICATION_ERROR(6, "wrong matrix sizes for multiplication")
 MatrixException DIVISION_BY_ZERO(7, "division_by_zero");
 MatrixException NOT_SQUARE(8, "matrix is not square");
 MatrixException WRONG_LENGTH(9, "length of vector is wrong");
-MatrixException ZERO_LENGTH(10, "rows / cols is zero");
+MatrixException ZERO_LENGTH(10, "rows || cols is/are zero");
 
 void Matrix::number_filling(int size, double *values, double number) {
     if (std::isnan(number)) {
