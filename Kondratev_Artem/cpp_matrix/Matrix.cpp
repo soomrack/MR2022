@@ -42,10 +42,8 @@ Matrix::Matrix(int input_rows, int input_cols) {
 
 
 Matrix::Matrix(int input_rows, int input_cols, double number): Matrix(input_rows, input_cols) {
-    if (not std::isnan(number)) {
         for (int cell = 0; cell < size; cell++)
             values[cell] = number;
-    }
 }
 
 
