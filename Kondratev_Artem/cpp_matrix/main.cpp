@@ -1,20 +1,22 @@
 #include "MatrixTest.h"
 
 int main() {
-    /*Matrix_test::overload_test();
-    Matrix_test::addition_test();
-    Matrix_test::number_addition_test();
-    Matrix_test::subtraction_test();
-    Matrix_test::multiplication_test();
-    Matrix_test::number_multiplication_test();
-    Matrix_test::determinant_test();
-    Matrix_test::transposition_test();
-    Matrix_test::inversion_test();
-    Matrix_test::inverse_multiplication_test();
-    Matrix_test::number_division_test();
-    Matrix_test::power_test();
-    Matrix_test::exp_test();
-    Matrix_test::user_test();*/
-    MatrixTest::memory_leak_test();
+    MatrixTest::using_unused();
+    MatrixTest::output_test();
+    MatrixTest::overload_test();
+    MatrixTest::addition_test();
+    MatrixTest::number_addition_test();
+    MatrixTest::subtraction_test();
+    MatrixTest::multiplication_test();
+    MatrixTest::number_multiplication_test();
+    MatrixTest::determinant_test();
+    MatrixTest::transposition_test();
+    MatrixTest::inversion_test();
+    MatrixTest::inverse_multiplication_test();
+    MatrixTest::number_division_test();
+    MatrixTest::power_test();
+    MatrixTest::exp_test();
+    Matrix A(2,2,2);
+    std::cout << A.data[0][0];
     return 0;
 }
