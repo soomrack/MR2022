@@ -1,41 +1,17 @@
 #include <iostream>
+#include "Matrix.h"
+#include "Matrix_test.h"
 
-class Matrix {
-private:
-    unsigned int cols;
-    unsigned int rows;
-    double *values;
-public:
-    Matrix(unsigned int cols_m, unsigned int rows_m);
-    Matrix(const Matrix &A);
-    explicit Matrix(unsigned int cols_m);
-    ~Matrix();
-    static Matrix data_input(Matrix *matrix, const double arr[]);
-    static void print_matrix(const Matrix& matrix);
-    static void print_matrix(const Matrix& matrix, char symbol);
-    static Matrix error();
-    Matrix operator+(const Matrix& X) const;
-    Matrix operator-(const Matrix& X) const;
-    Matrix operator*(const Matrix& X) const;
-    Matrix operator=(const Matrix& X) const;
-    Matrix operator^(double X) const;
-    Matrix operator/ (const Matrix& X) const;
-    Matrix operator/ (const double X) const;
-    static Matrix exp(const Matrix& A);
-};
-
-
-Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матриц
+Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;
         rows = rows_m;
         values = new double[cols * rows];
-        // delete[] matrix.values;
         for (unsigned int idx = 0; idx < cols * rows; idx++){
             values[idx] = 0.0;
         }
 }
 
-Matrix::Matrix(const Matrix &A) {
+Matrix::Matrix(const Matrix &A) {  // Конструктор копирования
     rows = A.rows;
     cols = A.cols;
     values = new double[rows * cols];
@@ -44,11 +20,18 @@ Matrix::Matrix(const Matrix &A) {
     }
 }
 
-Matrix::~Matrix() {
+Matrix::Matrix(Matrix&& A) {  // Конструктор переноса
+    rows = A.rows;
+    cols = A.cols;
+    values = A.values;
+    A.values = nullptr;
+}
+
+Matrix::~Matrix() {  // Деструктор
     delete[] values;
 }
 
-Matrix Matrix::data_input(Matrix *matrix, const double arr[]){
+Matrix Matrix::data_input(Matrix *matrix, const double arr[]){  // Заполнение матрицы данными массива
         for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++){
             matrix->values[idx] = arr[idx];
         }
@@ -65,7 +48,7 @@ void Matrix::print_matrix(const Matrix& X) {  // Вывод матрицы на 
     }
 }
 
-void Matrix::print_matrix(const Matrix& matrix, char symbol){
+void Matrix::print_matrix(const Matrix& matrix, char symbol){  // Вывод матрицы на экран
     std::cout << "Matrix";
     switch(symbol){
         case '+': std::cout << "\tsumm\n"; break;
@@ -101,7 +84,7 @@ Matrix Matrix::error(){
     return error;
 }
 
-Matrix Matrix::operator+ (const Matrix& X) const {
+Matrix Matrix::operator+ (const Matrix& X) const { // Перегрузка оператора сложения
     Matrix sum(X.cols, X.rows);
     for (unsigned int idx = 0; idx < X.cols * X.rows; idx++) {
       sum.values[idx] = values[idx] + X.values[idx];
@@ -109,7 +92,7 @@ Matrix Matrix::operator+ (const Matrix& X) const {
     return sum;
 }
 
-Matrix Matrix::operator- (const Matrix& X) const {
+Matrix Matrix::operator- (const Matrix& X) const { // Перегрузка оператора вычитания
     Matrix sub(X.cols, X.rows);
     for (unsigned int idx = 0; idx < X.cols * X.rows; idx++) {
         sub.values[idx] = values[idx] - X.values[idx];
@@ -117,7 +100,7 @@ Matrix Matrix::operator- (const Matrix& X) const {
     return sub;
 }
 
-Matrix Matrix::operator* (const Matrix& X) const {
+Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оператора умножения
     Matrix mult(X.cols, X.rows);
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < X.cols; col++) {
@@ -130,22 +113,32 @@ Matrix Matrix::operator* (const Matrix& X) const {
     return mult;
 }
 
-Matrix Matrix::operator= (const Matrix& X) const { ////////////////////////////////////////////////////////
-    /*Matrix equal(X);
-    for (unsigned int row = 0; row < rows; row++) {
-        for (unsigned int col = 0; col < cols; col++) {
-           equal.values[row * equal.rows + col] = X.values[row * X.rows + col];
-           //Matrix equal(X);
-        }
+Matrix Matrix::operator= (Matrix&& X)  { // Перегрузка оператора присваивания
+    if (this == &X) {
+        return *this;
     }
-    return equal;*/
+    rows = X.rows;
+    cols = X.cols;
+    delete[]values;
+    values = X.values;
+    X.values = nullptr;
+    return *this;
+}
+
+Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
+    if (this == &X) {
+    return *this;
+    }
+    rows = X.rows;
+    cols = X.cols;
+    delete[]values;
+    values = new double [cols * rows];
     memcpy(values, X.values, rows * cols * sizeof(double));
     return *this;
 }
 
-Matrix Matrix::operator^ (double X) const {
+Matrix Matrix::operator^ (double X) const { // Перегрузка оператора ^(возведение матрицы в степень)
     Matrix power(*this);
-    //Matrix power(rows, cols);
     if (X == 0.0) {
         Matrix one(rows);
         return one;
@@ -164,7 +157,7 @@ Matrix Matrix::operator^ (double X) const {
     }
 }
 
-Matrix Matrix::operator/ (const double X) const {
+Matrix Matrix::operator/ (const double X) const { // Перегрузка оператора деления(на числа)
     Matrix divide(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
                 divide.values[idx] = values[idx] / X;
@@ -172,7 +165,7 @@ Matrix Matrix::operator/ (const double X) const {
     return divide;
 }
 
-Matrix Matrix::exp(const Matrix& A){
+Matrix Matrix::exp(const Matrix& A){ // Матричная экспонента
     Matrix one(A.cols);
     Matrix exp = one + A;
     double factorial = 1;
@@ -183,7 +176,33 @@ Matrix Matrix::exp(const Matrix& A){
     return exp;
 }
 
+void Matrix::fill_with(double Number) {
+    for(unsigned int idx = 0; idx < cols * rows; idx++){
+        values[idx] = Number;
+    }
+
+}
+
+bool Matrix::is_equal(const Matrix& X){
+    bool equalness;
+    if ((rows == X.rows)&&(cols == X.cols)){
+        for (unsigned int idx = 0; idx < cols * rows; idx++){
+            if(values[idx] * 1000 == X.values[idx] * 1000){
+                equalness = true;
+            }
+            else {
+                equalness = false;
+            }
+        }
+    }
+    else{
+        equalness = false;
+    }
+    return equalness;
+}
+
 int main() {
+/*
     // Создание матриц
     Matrix A(3,3);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
@@ -204,4 +223,11 @@ int main() {
     Matrix::print_matrix(Mult,'*');
     Matrix::print_matrix(exp,'e');
     return 0;
+    */
+int a =Matrix_test::exp_test();
+std::cout << a;
+    Matrix A(3,3);
+    A.fill_with(2);
+    Matrix S = Matrix::exp(A);
+    Matrix::print_matrix(S,'e');
 }

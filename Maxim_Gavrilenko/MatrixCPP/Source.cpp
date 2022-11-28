@@ -7,32 +7,27 @@ const double EPS = 0.0000001;
 
 class Matrix_Exception : public std::exception
 {
-private:
 public:
-	Matrix_Exception(const char* const msg) : exception(msg)
+	Matrix_Exception(const char* const &msg) : exception(msg)
 	{}
 };
 
 
-Matrix_Exception notsquare("Error:the matrix must be square(should have nxn size)");
-Matrix_Exception notequal("Error: the matrix should have a same size");
-Matrix_Exception multiplyerror("Error: first matrix cols not equal to second matrix row.");
-Matrix_Exception zerodivision("Error: divide by zero");
+Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)\n");
+Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
+Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.\n");
+Matrix_Exception ZERODIVISION("Error: divide by zero\n");
+Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 
 
 class Matrix
 {
-
 private:
-
-
 	unsigned int rows;
 	unsigned int cols;
 	double* values;
 
 public:
-
-
 	Matrix(unsigned int, unsigned int, double*);
 	Matrix(unsigned int, unsigned int);
 	Matrix();
@@ -42,11 +37,11 @@ public:
 	
 	
 	void output();
-	int getrow();
-	int getcol();
+	unsigned int getrow();
+	unsigned int getcol();
 
 	Matrix set_zero(); // Установить значения матрицы нулями
-	Matrix fill_random();
+	Matrix fill_random(unsigned int);
 	Matrix fill_from_array(double*);
 	Matrix set_identity();		//Преобразование матрицы в единичную
 	Matrix exponent(unsigned int);		//Нахождение экспоненты матрицы
@@ -82,6 +77,7 @@ Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 Matrix::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols) 
 {
 	values = new double[rows * cols];
+	if (!values) throw MEM_ERROR;
 	memcpy(values, mat.values, rows * cols * sizeof(double));
 }
 
@@ -101,6 +97,7 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
 	rows = num_row;
 	cols = num_col;
 	values = new double[rows * cols];
+	if (!values) throw MEM_ERROR;
 }
 
 
@@ -151,10 +148,10 @@ bool Matrix::operator!=(const Matrix& mat)
 }
 
 
-Matrix Matrix::fill_random() 
+Matrix Matrix::fill_random(unsigned int n = 10) 
 {
 	for (unsigned int index = 0; index < cols * rows; index++) {
-		this->values[index] = double(rand() % 10);
+		this->values[index] = double(rand() % n);
 	}
 	return (*this);
 }
@@ -191,13 +188,13 @@ void Matrix::output()
 }
 
 
-int Matrix::getrow()
+unsigned int Matrix::getrow()
 {
 	return (rows);
 }
 
 
-int Matrix::getcol()
+unsigned int Matrix::getcol()
 {
 	return (cols);
 }
@@ -215,7 +212,8 @@ Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned
 		shiftcol = 0; //Обнулить смещение столбца
 		for (unsigned int cols = 0; cols < size - 1; cols++) {
 			if (cols == col) {shiftcol = 1;}
-			minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow) * size + (cols + shiftcol)];
+			minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow) 
+				* size + (cols + shiftcol)];
 		}
 	}
 	return minor;
@@ -276,7 +274,7 @@ Matrix Matrix::operator/(const double k) // Деление матрицы на число
 
 Matrix& Matrix::operator*=(const Matrix& matrix) // Умножение матриц
 { 
-	if (cols != matrix.rows) throw multiplyerror;
+	if (cols != matrix.rows) throw MULTIPLYERROR;
 	Matrix multiplication(rows, matrix.cols);
 	for (unsigned int row = 0; row < multiplication.rows; row++) {
 		for (unsigned int col = 0; col < multiplication.cols; col++) {
@@ -294,7 +292,7 @@ Matrix& Matrix::operator*=(const Matrix& matrix) // Умножение матриц
 
 Matrix& Matrix::operator+=(const Matrix& matrix) 
 {
-	if (rows != matrix.rows || cols != matrix.cols) throw notequal;
+	if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] += matrix.values[index];
 	}
@@ -304,7 +302,7 @@ Matrix& Matrix::operator+=(const Matrix& matrix)
 
 Matrix& Matrix::operator-=(const Matrix& matrix) 
 {
-	if (rows != matrix.rows || cols != matrix.cols) throw notequal;
+	if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
 	for (unsigned int index = 0; index < rows * cols; ++index) {
 		this->values[index] -= matrix.values[index];
 	}
@@ -337,6 +335,7 @@ Matrix& Matrix::operator=(const Matrix& A)
 	rows = A.rows;
 	cols = A.cols;
 	this->values = new double[rows * cols];
+	if (!values) throw MEM_ERROR;
 	memcpy(this->values, A.values, rows * cols * sizeof(double));
 	return *this;
 }
@@ -356,7 +355,7 @@ Matrix& Matrix::operator=(Matrix&& A) noexcept
 
 double Matrix::determinant(const Matrix matrix, unsigned int size) 
 {
-	if (matrix.rows != matrix.cols) throw notsquare;
+	if (matrix.rows != matrix.cols) throw NOTSQUARE;
 	double det = 0;
 	int k = 1;
 	if (size == 0)
@@ -377,7 +376,7 @@ double Matrix::determinant(const Matrix matrix, unsigned int size)
 Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция нахождения обратной матрицы
 {
 	double d = determinant(matrix, size);
-	if (matrix.rows != matrix.cols) throw notsquare;
+	if (matrix.rows != matrix.cols) throw NOTSQUARE;
 	Matrix reverse(matrix.rows, matrix.cols);
 	int k = 1;
 	for (unsigned int row = 0; row < reverse.rows; row++) {
@@ -387,7 +386,7 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 		}
 	}
 	reverse.set_transpose();
-	if (d == 0) throw zerodivision;
+	if (fabs(d) < EPS) throw ZERODIVISION;
 	reverse /= d;
 	return reverse;
 }
@@ -395,7 +394,7 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 
 Matrix Matrix::exponent(unsigned int n = 30) 
 {
-	if (rows != cols) throw notsquare;
+	if (rows != cols) throw NOTSQUARE;
 	Matrix ex(rows,cols);
 	Matrix temp(rows,cols);
 	temp.set_identity();
@@ -403,7 +402,6 @@ Matrix Matrix::exponent(unsigned int n = 30)
 	double fact = 1.0;
 	for (unsigned int i = 1; i < n; i++) {
 		fact *= i;
-		if (fact == 0) throw zerodivision;
 		temp *= (*this);
 		ex += temp / fact;
 	}
@@ -612,12 +610,23 @@ void test() {
 
 int main()
 { 
-	/*srand(time(NULL));*/
+	srand(time(NULL));
 	setlocale(LC_ALL, "ru");
+
+	try { // Проверка выделения памяти
+		Matrix A = Matrix(0, 0).fill_random();
+	}
+	catch (const Matrix_Exception& e)
+	{
+		std::cerr << "Caught: " << e.what() << std::endl;
+		std::cerr << "Type: " << typeid(e).name() << std::endl;
+	}
+
 	Matrix A = Matrix(3, 3).fill_random();
-	Matrix B = Matrix(3, 3).fill_random();	
+	Matrix B = Matrix(3, 3).fill_random();
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
+	
 	try {
 		std::cout << "Addiction of two matrix\n" << A + B;
 		std::cout << "Subtraction of two matrix\n" << A - B;

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
+const double EPS = 0.00000001;
 
 typedef struct Matrix {
     unsigned int rows;
@@ -13,6 +15,12 @@ typedef struct Matrix {
 Matrix memory_allocation (const unsigned int rows, const unsigned int cols){ // Выделение памяти
     Matrix mem = {rows,cols,NULL};
     mem.values = (double*)malloc(rows * cols * sizeof(double));
+    if (mem.values == NULL){
+        mem.rows = 0;
+        mem.cols = 0;
+        printf("Error:memory are not allocated\n");
+        exit(404);
+    }
     return  mem;
 }
 
@@ -95,7 +103,7 @@ Matrix create_one_matrix(const unsigned int size){ // Создание един�
 
 Matrix addition(const Matrix A, const Matrix B) { // Сложение матриц
     if (A.rows != B.rows || A.cols != B.cols) {
-        printf("For Addition Matrix should have same size");
+        printf("For Addition Matrix should have same size\n");
         return EMPTY();
     }
         Matrix sum = memory_allocation(A.rows, B.cols);
@@ -108,7 +116,7 @@ Matrix addition(const Matrix A, const Matrix B) { // Сложение матри
 
 Matrix subtraction(const Matrix m1, const Matrix m2){ // Вычитание матриц
     if (m1.rows != m2.rows || m1.cols != m2.cols) {
-        printf("For Subtraction Matrix should have same size");
+        printf("For Subtraction Matrix should have same size\n");
         return EMPTY();
     }
     Matrix sub = memory_allocation(m1.rows,m1.cols);
@@ -121,7 +129,7 @@ Matrix subtraction(const Matrix m1, const Matrix m2){ // Вычитание ма
 
 Matrix multiplication(const Matrix A, const Matrix B) { // Умножение матриц
     if (A.cols != B.rows) {
-        printf("For Multiplication First Matrix cols should equal to Second Matrix rows");
+        printf("For Multiplication First Matrix cols should equal to Second Matrix rows\n");
         return EMPTY() ;
     }
         Matrix multiplication = memory_allocation(A.rows,B.cols);
@@ -158,7 +166,7 @@ Matrix division_k(const Matrix matrix, const double k){ // Деление мат
 
 double determinant(const Matrix matrix, const unsigned int size) { // Определитель с рекурсивным вызовом
     if (matrix.rows != matrix.cols) {
-        printf("Matrix should be nxn");
+        printf("Matrix should be nxn\n");
         return 0;
     }
     double det = 0;
@@ -179,11 +187,11 @@ double determinant(const Matrix matrix, const unsigned int size) { // Опред
 Matrix reverse_matrix (const Matrix A,const unsigned int size) { // Функция нахождения обратной матрицы
     double det = determinant(A,size);
     if (A.rows != A.cols) {
-        printf("Matrix should have size nxn");
+        printf("Matrix should have size nxn\n");
         return EMPTY();
     }
-    if (det == 0){
-        printf("Matrix is degenerative, determinate is not determined");
+    if (fabs(det) < EPS){
+        printf("Matrix is degenerative, determinate is not determined\n");
         return EMPTY();
     }
     Matrix reverse = memory_allocation(size, size);
@@ -208,7 +216,7 @@ Matrix reverse_matrix (const Matrix A,const unsigned int size) { // Функци
 
 Matrix exponent_matrix (const Matrix exponent) { // Функция нахождения экспоненты матрицы
     if (exponent.rows != exponent.cols) {
-        printf("Matrix should have size nxn");
+        printf("Matrix should have size nxn\n");
         return EMPTY();
     }
     unsigned int n = 30; // Количество членов ряда
@@ -219,7 +227,6 @@ Matrix exponent_matrix (const Matrix exponent) { // Функция нахожд�
     double fact = 1.0;
     for (unsigned int i = 1; i < n; i++) {
         fact *= i;
-        if (fact == 0) return EMPTY();
         temp_multiply = multiplication(temp, exponent);
         free_matrix(temp);
         temp = temp_multiply;
