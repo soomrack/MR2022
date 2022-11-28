@@ -12,6 +12,7 @@ unsigned int EMatrix::calc_memory(int rows, int cols) {
 
 EMatrix::EMatrix(): Matrix() {
     counter++;
+    memory_size = 0;
 }
 
 
