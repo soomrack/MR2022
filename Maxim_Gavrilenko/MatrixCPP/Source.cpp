@@ -10,10 +10,6 @@ class Matrix_Exception : public std::exception
 public:
 	Matrix_Exception(const char* const &msg) : exception(msg)
 	{}
-	Matrix_Exception(const char* const& msg, const int code) : exception(msg)
-	{
-		exit(code);
-	}
 };
 
 
@@ -21,7 +17,7 @@ Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size
 Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
 Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.\n");
 Matrix_Exception ZERODIVISION("Error: divide by zero\n");
-Matrix_Exception MEM_ERROR("Error: memory are not allocated\n",404);
+Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 
 
 class Matrix
@@ -41,8 +37,8 @@ public:
 	
 	
 	void output();
-	int getrow();
-	int getcol();
+	unsigned int getrow();
+	unsigned int getcol();
 
 	Matrix set_zero(); // Установить значения матрицы нулями
 	Matrix fill_random(unsigned int);
@@ -192,13 +188,13 @@ void Matrix::output()
 }
 
 
-int Matrix::getrow()
+unsigned int Matrix::getrow()
 {
 	return (rows);
 }
 
 
-int Matrix::getcol()
+unsigned int Matrix::getcol()
 {
 	return (cols);
 }
