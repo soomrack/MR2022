@@ -2,7 +2,7 @@
 #include <ctime>
 #include <windows.h>
 #include <cmath>
-#include <typeinfo>
+#include <type_traits>
 
 const double EPS = 0.0000001;
 
@@ -27,7 +27,13 @@ protected:
     unsigned int cols;
     T *values;
 public:
-
+    //Restrictions
+    static_assert(
+            std::is_same<double, T>::value ||
+            std::is_same<float_t, T>::value ||
+            std::is_same<long double, T>::value,
+            "T must be int, double or float"
+    );
     //Constructors
     Matrix(unsigned int, unsigned int, T *);
     Matrix(unsigned int, unsigned int);
@@ -39,6 +45,7 @@ public:
     //Methods
     unsigned int getrow();
     unsigned int getcol();
+    T* getvalues();
     void output();
     void fill_random(unsigned int n);
     void set_zero();
@@ -80,6 +87,7 @@ public:
         }
     }
 };
+
     template <typename T>
     Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col, T* value)
     {
@@ -90,6 +98,7 @@ public:
             values[idx] = value[idx];
         }
     }
+
     template <typename T>
     Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col)
     {
@@ -113,9 +122,9 @@ public:
     template <class T>
     Matrix<T>::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
     {
-    values = new double[rows * cols];
+    values = new T[rows * cols];
     /*if (!values) throw MEM_ERROR;*/
-    memcpy(values, mat.values, rows * cols * sizeof(double));
+    memcpy(values, mat.values, rows * cols * sizeof(T));
     }
 
     template <typename T>
@@ -136,6 +145,13 @@ public:
     unsigned int Matrix<T>::getcol()
     {
         return (cols);
+    }
+
+    template <typename T>
+    T* Matrix<T>::getvalues()
+    {
+        T* data = new T [rows * cols];
+        memcpy(data,values,sizeof(T) * rows * cols);
     }
 
     template <typename T>
@@ -189,9 +205,9 @@ public:
         delete[] values;
         rows = A.rows;
         cols = A.cols;
-        this->values = new double[rows * cols];
+        this->values = new T[rows * cols];
         if (!values) throw MEM_ERROR;
-        memcpy(this->values, A.values, rows * cols * sizeof(double));
+        memcpy(this->values, A.values, rows * cols * sizeof(T));
         return *this;
     }
 
@@ -390,35 +406,48 @@ Matrix<T> Matrix<T>::exponent(unsigned int n /*Количество членов
 template <typename T>
 Matrix<T> Matrix<T>::fill_from_array(T* array)
 {
-    memcpy(values, array, rows * cols * sizeof(double));
+    memcpy(values, array, rows * cols * sizeof(T));
 }
 
 template <typename T1>
 class Matrix_Memory: public Matrix<T1>
 {
 private:
-        T1 memory;
+    T1* memory;
+    unsigned int rows;
+    unsigned int cols;
 public:
-    Matrix_Memory(T1* A): Matrix<T1>()
+    Matrix_Memory(Matrix<T1>& A): Matrix<T1>()
     {
-    this->memory = A;
+        rows = A.getrow();
+        cols = A.getcol();
+        memory = new T1 [rows * cols];
+        memcpy(memory, A.getvalues(), sizeof(T1) * rows * cols);
     };
+
     void memory_size()
     {
-        std::cout << "Memory for object class - " << sizeof(memory) * this->rows * this -> cols << std:: endl;
+        std::cout << "Memory for object class - " << sizeof(T1) * rows * cols + sizeof(unsigned int) + sizeof(unsigned int) << " byte" << std:: endl;
     }
-    void type_name()
+
+    ~Matrix_Memory()
     {
-        std::cout <<"Type name: - " << typeid(memory).name() << std::endl;
+       if (memory != nullptr) {delete[] memory;};
     }
 };
+    template <typename T>
+    void memory_report(Matrix<T> A)
+    {
+        Matrix_Memory<T>mem(A);
+        mem.memory_size();
+    }
     int main() {
-        try { // Проверка выделения памяти
-            Matrix<double> A = Matrix<double>(0, 0);
+        try
+        { // Проверка выделения памяти
+            Matrix<double> A(0,0);
         }
         catch (const Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
-            std::cerr << "Type: " << typeid(e).name() << std::endl;
             exit(404);
         }
         Matrix<double> A(3,3);
@@ -451,4 +480,6 @@ public:
         catch (Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
         }
+        memory_report(A);
+        memory_report(B);
     }
