@@ -203,15 +203,17 @@ Matrix matrix_exp(const Matrix matrix){
     Matrix n_member = create_one_matrix(matrix.rows,matrix.cols);
     Matrix n1_member = create_zero_matrix(0,0);
     Matrix prev_mat;
+    Matrix mem_mat;
     for(int k = 1; k <= EXPONENT_STEPS; k++){
         prev_mat = copy_mat(res_mat);
-        Matrix mem_mat = res_mat;
         free_mat(&n1_member);
         n1_member = matrix_mult(n_member,matrix_mult_by_num(1.0 / k, matrix));
-        res_mat = matrix_add(res_mat,n1_member);
+        mem_mat = copy_mat(res_mat);
+        free_mat(&res_mat);
+        res_mat = matrix_add(mem_mat,n1_member);
+        free_mat(&mem_mat);
         free_mat(&n_member);
         n_member = n1_member;
-        free_mat(&mem_mat);
         if(fabs(check_max_dif(res_mat,prev_mat)) < EXPONENT_ACCURACY){
             free_mat(&prev_mat);
             //printf("%d",k);
