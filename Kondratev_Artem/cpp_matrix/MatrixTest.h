@@ -26,6 +26,7 @@ private:
 public:
     static void using_unused();
     static void calculation_check(double true_array[], Matrix *matrix, const std::string& text);
+    static Matrix create_matrix(const std::vector<double>& vector);
     static void output_test();
     static void overload_test();
     static void addition_test();

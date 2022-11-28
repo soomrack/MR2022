@@ -22,7 +22,7 @@ Matrix::Matrix() {
 }
 
 
-Matrix::Matrix(int input_rows, int input_cols, double number) {
+Matrix::Matrix(int input_rows, int input_cols) {
     if (input_rows <= 0 || input_cols <= 0) {
         throw WRONG_PARAMETERS;
     }
@@ -38,10 +38,30 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
+}
+
+
+Matrix::Matrix(int input_rows, int input_cols, double number): Matrix(input_rows, input_cols) {
     if (not std::isnan(number)) {
         for (int cell = 0; cell < size; cell++)
             values[cell] = number;
     }
+}
+
+
+Matrix::Matrix(int input_rows, int input_cols, const std::vector<double>& vector): Matrix(input_rows, input_cols) {
+    if (size != vector.size()) {
+        throw WRONG_LENGTH;
+    }
+    for (int cell = 0; cell < size; cell++)
+        values[cell] = vector[cell];
+}
+
+
+Matrix::Matrix(int identity_size): Matrix(identity_size, identity_size) {
+    for (int row = 0; row < rows; row++)
+        for (int col = 0; col < cols; col++)
+            data[row][col] = (row == col) ? 1 : 0;
 }
 
 
@@ -86,25 +106,6 @@ Matrix::~Matrix() {
     size = 0;
     delete[] data;
     delete[] values;
-}
-
-
-void Matrix::fillFromVector(std::vector<double> vector) {
-    if (size != vector.size()) {
-        throw WRONG_LENGTH;
-    }
-    for (int cell = 0; cell < size; cell++)
-        values[cell] = vector[cell];
-}
-
-
-void Matrix::set_identity() {
-    if (rows != cols) {
-        throw NOT_SQUARE;
-    }
-    for (int row = 0; row < rows; row++)
-        for (int col = 0; col < cols; col++)
-            data[row][col] = (row == col) ? 1 : 0;
 }
 
 
@@ -367,9 +368,7 @@ Matrix Matrix::power(int power) const {
         throw NOT_SQUARE;
     }
     if (power == 0) {
-        Matrix powered_matrix(this->rows, this->cols);
-        powered_matrix.set_identity();
-        return powered_matrix;
+        return Matrix (this->rows);
     }
     if (power == 1) {
         return *this;
@@ -393,12 +392,11 @@ Matrix Matrix::exp(const Matrix& matrix, int STEPS) {
     if (matrix.rows != matrix.cols) {
         throw NOT_SQUARE;
     }
-    Matrix exp_matrix(matrix.rows, matrix.cols);
-    exp_matrix.set_identity();
+    Matrix exp_matrix(matrix.rows);
     double k = 1.0;
     for(int s = 1; s < STEPS; s++) {
-        k /= s;
-        exp_matrix = exp_matrix + matrix.power(s) * k;
+        k *= s;
+        exp_matrix = exp_matrix + matrix.power(s) / k;
     }
     return exp_matrix;
 }
