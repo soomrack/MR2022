@@ -1,5 +1,6 @@
 #include "Matrix_test.h"
 #include "Matrix.h"
+#include <iostream>
 
 /*Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
     if (!((A.rows == B.rows) && (A.cols == B.cols))) {
@@ -68,4 +69,34 @@ int Matrix_test::exp_test() {
     return 0;
 }
 
+void Matrix_test::expertise(int sum,int sub,int mult,int exp){
+    if (sum == 0) {
+        std::cout << "Summ is incorrect" << std::endl;
+    }
+    if (sub == 0) {
+        std::cout << "Substruction is incorrect" << std::endl;
+    }
+    if (mult == 0) {
+        std::cout << "Multiplication is incorrect" << std::endl;
+    }
+    if (exp == 0) {
+        std::cout << "Exponent is incorrect" << std::endl;
+    }
+}
 
+void Matrix_test::test(){
+    int sum = summ_test();
+    int sub = sub_test();
+    int mult = mult_test();
+    int exp = exp_test();
+    switch (sum + sub + mult + exp) {
+        case 3:
+            expertise(sum,sub,mult,exp);
+        case 2:
+            expertise(sum,sub,mult,exp);
+        case 1:
+            expertise(sum,sub,mult,exp);
+        default:
+            std::cout << "Functions work correctly" << std::endl;
+    }
+}

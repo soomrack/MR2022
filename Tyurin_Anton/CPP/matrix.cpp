@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Matrix.h"
 #include "Matrix_test.h"
+#include <math.h>
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;
@@ -59,7 +60,7 @@ void Matrix::print_matrix(const Matrix& matrix, char symbol){  // Вывод м�
     }
     for (unsigned int row = 0; row < matrix.rows; row++) {
         for (unsigned int col = 0; col < matrix.cols; col++) {
-            std::cout << matrix.values[row * matrix.cols + col] << "\t";
+            std::cout << round(matrix.values[row * matrix.cols + col] * 1000) / 1000 << "\t";
         }
         std::cout << "\n";
     }
@@ -187,7 +188,7 @@ bool Matrix::is_equal(const Matrix& X){
     bool equalness;
     if ((rows == X.rows)&&(cols == X.cols)){
         for (unsigned int idx = 0; idx < cols * rows; idx++){
-            if(values[idx] * 1000 == X.values[idx] * 1000){
+            if(round(values[idx] * 1000) / 1000 == X.values[idx]){
                 equalness = true;
             }
             else {
@@ -202,14 +203,15 @@ bool Matrix::is_equal(const Matrix& X){
 }
 
 int main() {
-/*
     // Создание матриц
-    Matrix A(3,3);
+    Matrix A(3, 3);
     double arr_A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    Matrix::data_input(&A,arr_A);
-    Matrix B(3,3);
+    Matrix::data_input(&A, arr_A);
+    Matrix B(3, 3);
     double arr_B[] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
-    Matrix::data_input(&B,arr_B);
+    Matrix::data_input(&B, arr_B);
+    // Тест вычислений
+    Matrix_test::test();
     // Блок вычислений
     Matrix Sum = A + B;
     Matrix Sub = A - B;
@@ -218,16 +220,9 @@ int main() {
     // Блок вывода
     Matrix::print_matrix(A);
     Matrix::print_matrix(B);
-    Matrix::print_matrix(Sum,'+');
-    Matrix::print_matrix(Sub,'-');
-    Matrix::print_matrix(Mult,'*');
-    Matrix::print_matrix(exp,'e');
+    Matrix::print_matrix(Sum, '+');
+    Matrix::print_matrix(Sub, '-');
+    Matrix::print_matrix(Mult, '*');
+    Matrix::print_matrix(exp, 'e');
     return 0;
-    */
-int a =Matrix_test::exp_test();
-std::cout << a;
-    Matrix A(3,3);
-    A.fill_with(2);
-    Matrix S = Matrix::exp(A);
-    Matrix::print_matrix(S,'e');
 }
