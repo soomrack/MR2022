@@ -370,7 +370,7 @@ Matrix matrix_exponent (const Matrix matrix, unsigned int accuracy) { // Экс�
         clean_memory(temp);
         temp = temp_mult;
         temp_mult_bn = mult_m_by_num(temp, 1.0 / factorial);
-        temp_sum = summation(ex, temp_mult_bn);  //Поскольку появилась нлвая матрица после
+        temp_sum = summation(ex, temp_mult_bn);  //Поскольку появилась новая матрица после
         clean_memory(temp_mult_bn);  //                    умножения матрицы на число, то ее нужно
         clean_memory(ex);  //                              почистить
         ex = temp_sum;
