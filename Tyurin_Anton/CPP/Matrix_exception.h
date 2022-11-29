@@ -1,9 +1,8 @@
 #include <exception>
 #include <string>
 
-#ifndef MATRIX_EXСEPTIONS_H
-
-#define MATRIX_EXСEPTIONS_H
+#ifndef MATRIX_EXCEPTION_H
+#define MATRIX_EXCEPTION_H
 
 class MatrixException: public std::exception {
 private:

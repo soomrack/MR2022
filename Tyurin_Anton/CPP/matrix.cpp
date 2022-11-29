@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include "Matrix_test.h"
 #include <math.h>
+#include "Matrix_exception.h"
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;

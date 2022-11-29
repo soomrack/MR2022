@@ -2,9 +2,9 @@
 #include "Matrix.h"
 #include <iostream>
 
-/*Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
+Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
     if (!((A.rows == B.rows) && (A.cols == B.cols))) {
-        Matrix::error();
+        throw SIZES_NOT_EQUAL;
     }
 }
 
@@ -12,7 +12,7 @@ Matrix Matrix_test::multiply_size_comparation(const Matrix& A, const Matrix& B) 
     if (A.cols != B.rows) {
         Matrix::error();
     }
-}*/
+}
 
 int Matrix_test::summ_test() {
     Matrix A(3,3);
