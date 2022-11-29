@@ -5,8 +5,10 @@
 #include "Matrix.h"
 #include "Matrix_exception.h"
 
-MatrixException SIZES_NOT_EQUAL(1,"Размеры некорректны для вычисления");
-MatrixException MEMORY_DIDNOT_ALLOCATED(1,"Размеры некорректны для вычисления");
+MatrixException SIZE_ERROR(1,"Размеры матрицы некорректны");
+MatrixException WRONG_SIZES(2,"Размеры некорректны для вычисления");
+MatrixException MEMORY_DIDNOT_ALLOCATED(3,"Память не выделилась");
+
 
 class Matrix_test {
 public:

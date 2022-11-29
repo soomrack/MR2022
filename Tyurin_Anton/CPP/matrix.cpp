@@ -4,7 +4,12 @@
 #include <math.h>
 #include "Matrix_exception.h"
 
+
+
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
+    if ((cols_m < 0) && (rows_m < 0)){
+        throw WRONG_SIZES;
+    }
         cols = cols_m;
         rows = rows_m;
         values = new double[cols * rows];
@@ -14,6 +19,9 @@ Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Ини
 }
 
 Matrix::Matrix(const Matrix &A) {  // Конструктор копирования
+    if((A.values == nullptr)){
+        throw MEMORY_DIDNOT_ALLOCATED;
+    }
     rows = A.rows;
     cols = A.cols;
     values = new double[rows * cols];
@@ -34,7 +42,7 @@ Matrix::~Matrix() {  // Деструктор
 }
 
 Matrix Matrix::data_input(Matrix *matrix, const double arr[]){  // Заполнение матрицы данными массива
-        for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++){
+        for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++) {
             matrix->values[idx] = arr[idx];
         }
         return *matrix;
