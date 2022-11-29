@@ -141,7 +141,6 @@ public:
     {
         if (values != nullptr) {
             delete[] values;
-            values = nullptr;
         }
     }
 
@@ -475,7 +474,6 @@ public:
     {
        if (memory != nullptr){
            delete[] memory;
-           memory = nullptr;
        }
     }
 };
