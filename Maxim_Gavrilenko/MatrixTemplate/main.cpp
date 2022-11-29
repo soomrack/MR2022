@@ -4,7 +4,8 @@
 #include <cmath>
 #include <type_traits>
 
-const double EPS = 0.0000001;
+const double EPS = 0.000001;
+
 
 class Matrix_Exception : public std::domain_error
 {
@@ -20,6 +21,7 @@ Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second mat
 Matrix_Exception ZERODIVISION("Error: divide by zero\n");
 Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 
+
 template<typename T>
 class Matrix {
 protected:
@@ -30,7 +32,7 @@ public:
     //Restrictions
     static_assert(
             std::is_same<double, T>::value ||
-            std::is_same<float_t, T>::value ||
+            std::is_same<float, T>::value ||
             std::is_same<long double, T>::value,
             "T must be int, double or float"
     );
@@ -43,13 +45,13 @@ public:
     //Destructor
     ~Matrix();
     //Methods
+    T* getvalues();
     unsigned int getrow();
     unsigned int getcol();
-    T* getvalues();
     void output();
-    void fill_random(unsigned int n);
-    void set_zero();
-    void set_identity();
+    Matrix<T> fill_random(unsigned int n);
+    Matrix<T> set_zero();
+    Matrix<T> set_identity();
     Matrix set_transpose();
     Matrix fill_from_array(T*);
     double determinant(const Matrix<T>, unsigned int);
@@ -88,16 +90,19 @@ public:
     }
 };
 
+
     template <typename T>
     Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col, T* value)
     {
         rows = num_row;
         cols = num_col;
         values = new T[rows * cols];
+        if (!values) throw MEM_ERROR;
         for (unsigned int idx = 0; idx < rows * cols; idx++) {
             values[idx] = value[idx];
         }
     }
+
 
     template <typename T>
     Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col)
@@ -108,6 +113,7 @@ public:
         if (!values) throw MEM_ERROR;
     }
 
+
     template <class T>
     Matrix<T>::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols(mat.cols)
     {
@@ -116,24 +122,29 @@ public:
         mat.cols = 0;
     }
 
+
     template <class T>
     Matrix<T>::Matrix() : rows(0), cols(0), values(nullptr) {}
+
 
     template <class T>
     Matrix<T>::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
     {
     values = new T[rows * cols];
-    /*if (!values) throw MEM_ERROR;*/
+    if (!values) throw MEM_ERROR;
     memcpy(values, mat.values, rows * cols * sizeof(T));
     }
+
 
     template <typename T>
     Matrix<T>::~Matrix()
     {
         if (values != nullptr) {
             delete[] values;
+            values = nullptr;
         }
     }
+
 
     template <typename T>
     unsigned int Matrix<T>::getrow()
@@ -141,11 +152,13 @@ public:
         return (rows);
     }
 
+
     template <typename T>
     unsigned int Matrix<T>::getcol()
     {
         return (cols);
     }
+
 
     template <typename T>
     T* Matrix<T>::getvalues()
@@ -154,20 +167,25 @@ public:
         memcpy(data,values,sizeof(T) * rows * cols);
     }
 
+
     template <typename T>
-    void Matrix<T>::set_zero() {
+    Matrix<T> Matrix<T>::set_zero() {
         for (unsigned int idx = 0; idx < this->rows * this->cols; idx++) {
             this->values[idx] = 0;
         }
+        return (*this);
     }
 
+
     template <typename T>
-    void Matrix<T>::set_identity() {
+    Matrix<T> Matrix<T>::set_identity() {
         set_zero();
         for (unsigned int idx = 0; idx < this->cols * this->rows; idx += rows + 1) {
             this->values[idx] = 1.0;
         }
+        return (*this);
     }
+
 
     template <typename T>
     Matrix<T> Matrix<T>::set_transpose()
@@ -179,8 +197,9 @@ public:
             }
         }
         *this = trans;
-        return *this;
+        return (*this);
     }
+
 
     template <typename T>
     bool Matrix<T>::operator==(const Matrix<T> &A)
@@ -191,6 +210,7 @@ public:
         }
         return true;
     }
+
 
     template <typename T>
     bool Matrix<T>::operator!=(const Matrix<T>& mat)
@@ -211,6 +231,7 @@ public:
         return *this;
     }
 
+
     template <typename T>
     Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& matrix)
     {
@@ -221,6 +242,7 @@ public:
         return *this;
     }
 
+
     template <typename T>
     Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& matrix)
     {
@@ -230,6 +252,7 @@ public:
         }
         return *this;
     }
+
 
     template <typename T>
     Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& matrix)
@@ -249,6 +272,7 @@ public:
     return (*this);
     }
 
+
     template <typename T>
     Matrix<T>& Matrix<T>::operator*=(const T k) // Умножение матрицы на число
     {
@@ -257,6 +281,7 @@ public:
         }
         return *this;
     }
+
 
     template <typename T>
     Matrix<T>& Matrix<T>::operator/=(const T k) // Деление матрицы на число
@@ -267,6 +292,7 @@ public:
         return *this;
     }
 
+
     template <typename T>
         Matrix<T> Matrix<T>::operator+(const Matrix<T>& matrix)
         {
@@ -274,6 +300,7 @@ public:
             add += matrix;
             return (add);
     }
+
 
     template <typename T>
     Matrix<T> Matrix<T>::operator-(const Matrix<T>& matrix)
@@ -283,6 +310,7 @@ public:
         return (sub);
     }
 
+
     template <typename T>
     Matrix<T> Matrix<T>::operator*(const Matrix<T>& matrix)
     {
@@ -290,6 +318,7 @@ public:
         multiply *= matrix;
         return (multiply);
     }
+
 
     template <typename T>
     Matrix<T> Matrix<T>::operator*(const T value)
@@ -299,6 +328,7 @@ public:
         return (multiply);
     }
 
+
     template <typename T>
     Matrix<T> Matrix<T>::operator/(const T value)
     {
@@ -306,46 +336,60 @@ public:
         multiply /= value;
         return (multiply);
     }
+
+
     template<typename T>
     void Matrix<T>::output()
     {
-            for (unsigned int row = 0; row < rows; row++)
+        for (unsigned int row = 0; row < rows; row++)
+        {
+            for (unsigned int col = 0; col < cols; col++)
             {
-                for (unsigned int col = 0; col < cols; col++)
-                {
-                    std::cout << values[row * cols + col] << "\t";
-                }
-                std::cout << std::endl;
+                std::cout << values[row * cols + col] << "\t";
             }
+            std::cout << std::endl;
+        }
     }
+
+
+    template <typename T>
+    Matrix<T> Matrix<T>::fill_from_array(T* array)
+    {
+        memcpy(values, array, rows * cols * sizeof(T));
+        return (*this);
+    }
+
 
     template<typename T>
-    void Matrix<T>::fill_random(unsigned int n /*Максимальное значение*/)
+    Matrix<T> Matrix<T>::fill_random(unsigned int n /*Максимальное значение*/)
     {
         for (unsigned int index = 0; index < cols * rows; index++) {
-            values[index] = T(rand() % n);
+            this->values[index] = T(rand() % n);
         }
+        return (*this);
     }
 
-template <typename T>
-Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col)
-{
-    Matrix minor(size - 1, size - 1);
-    unsigned int shiftrow = 0; //Смещение индекса строки в матрице
-    unsigned int shiftcol; //Смещение индекса столбца в матрице
-    for (unsigned int rows = 0; rows < size - 1; rows++) {
-        //Пропустить row-ую строку
-        if (rows == row) { shiftrow = 1; } //Как только встретили строку,
-        //которую надо пропустить, делаем смещение для исходной матрицы
-        shiftcol = 0; //Обнулить смещение столбца
-        for (unsigned int cols = 0; cols < size - 1; cols++) {
-            if (cols == col) { shiftcol = 1; }
-            minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow)
-                                                                   * size + (cols + shiftcol)];
+
+    template <typename T>
+    Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col)
+    {
+        Matrix minor(size - 1, size - 1);
+        unsigned int shiftrow = 0; //Смещение индекса строки в матрице
+        unsigned int shiftcol; //Смещение индекса столбца в матрице
+        for (unsigned int rows = 0; rows < size - 1; rows++) {
+            //Пропустить row-ую строку
+            if (rows == row) { shiftrow = 1; } //Как только встретили строку,
+            //которую надо пропустить, делаем смещение для исходной матрицы
+            shiftcol = 0; //Обнулить смещение столбца
+            for (unsigned int cols = 0; cols < size - 1; cols++) {
+                if (cols == col) { shiftcol = 1; }
+                minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow)
+                                                                       * size + (cols + shiftcol)];
+            }
         }
+        return minor;
     }
-    return minor;
-}
+
 
 template <typename T>
 double Matrix<T>::determinant(const Matrix matrix, unsigned int size)
@@ -367,6 +411,7 @@ double Matrix<T>::determinant(const Matrix matrix, unsigned int size)
     return det;
 }
 
+
 template <typename T>
 Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size) // Функция нахождения обратной матрицы
 {
@@ -386,6 +431,7 @@ Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size) // Ф
     return reverse;
 }
 
+
 template <typename T>
 Matrix<T> Matrix<T>::exponent(unsigned int n /*Количество членов разложения*/)
 {
@@ -403,11 +449,6 @@ Matrix<T> Matrix<T>::exponent(unsigned int n /*Количество членов
     return ex;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::fill_from_array(T* array)
-{
-    memcpy(values, array, rows * cols * sizeof(T));
-}
 
 template <typename T1>
 class Matrix_Memory: public Matrix<T1>
@@ -423,7 +464,7 @@ public:
         cols = A.getcol();
         memory = new T1 [rows * cols];
         memcpy(memory, A.getvalues(), sizeof(T1) * rows * cols);
-    };
+    }
 
     void memory_size()
     {
@@ -432,15 +473,238 @@ public:
 
     ~Matrix_Memory()
     {
-       if (memory != nullptr) {delete[] memory;};
+       if (memory != nullptr){
+           delete[] memory;
+           memory = nullptr;
+       }
     }
 };
+
     template <typename T>
     void memory_report(Matrix<T> A)
     {
         Matrix_Memory<T>mem(A);
         mem.memory_size();
     }
+
+void test_add()
+{
+    double data1[6] = { 3, 1, 2,
+                        4, 5, 7 };
+    double data2[6] = { 8, 2, 1,
+                        -2, 2, 4 };
+    double ans_d[6] = { 11, 3, 3,
+                        2, 7, 11 };
+    Matrix<double> matrix1 = Matrix<double>(2, 3).fill_from_array(data1);
+    Matrix<double> matrix2 = Matrix<double>(2, 3).fill_from_array(data2);
+    Matrix<double> test_add = Matrix<double>(2, 3).fill_from_array(ans_d);
+    if (test_add != matrix1 + matrix2) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout<<"Addition test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Addition test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_sub()
+{
+    double data1[6] = { 3, 1, 2,
+                        4, 5, 7 };
+    double data2[6] = { 8, 2, 1,
+                        -2, 2, 4 };
+    double ans_d[6] = { -5, -1, 1,
+                        6, 3, 3 };
+    Matrix<double> matrix1 = Matrix<double>(2, 3).fill_from_array(data1);
+    Matrix<double> matrix2 = Matrix<double>(2, 3).fill_from_array(data2);
+    Matrix<double> test_add = Matrix<double>(2, 3).fill_from_array(ans_d);
+    if (test_add != matrix1 - matrix2) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Substraction test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Substruction test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_mult()
+{
+    double data1[9] = { 1, 7, 4,
+                        0, 9, 4,
+                        8, 8, 2 };
+    double data2[9] = { 4, 5, 5,
+                        1, 7, 1,
+                        1, 5, 2};
+    double ans_d[9] = { 15, 74, 20,
+                        13, 83, 17,
+                        42, 106, 52};
+    Matrix<double> matrix1 = Matrix<double>(3, 3).fill_from_array(data1);
+    Matrix<double> matrix2 = Matrix<double>(3, 3).fill_from_array(data2);
+    Matrix<double> test_add = Matrix<double>(3, 3).fill_from_array(ans_d);
+    if (test_add != matrix1 * matrix2) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Multiplication test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Multiplication test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_mult_k()
+{
+    double data1[3] = { 1, 7, 4};
+    double ans_d[3] = {3, 21, 12};
+    Matrix<double> matrix1 = Matrix<double>(1, 3).fill_from_array(data1);
+    Matrix<double> test_add = Matrix<double>(1, 3).fill_from_array(ans_d);
+    if (test_add != matrix1 * 3) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Multiplication test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Multiplication test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_div_k() {
+    double data1[3] = { 6, 21, 18 };
+    double ans_d[3] = { 2, 7, 6 };
+    Matrix<double> matrix1 = Matrix<double>(1,3).fill_from_array(data1);
+    Matrix<double> test_div = Matrix<double>(1, 3).fill_from_array(ans_d);
+    if (test_div != matrix1 / 3) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Division test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Division test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_det()
+{
+    double data1[9] = { 1, 7, 4,
+                        0, 9, 4,
+                        8, 8, 2 };
+    Matrix<double> matrix1 = Matrix<double>(3, 3).fill_from_array(data1);
+    double determinant = matrix1.determinant(matrix1,matrix1.getrow());
+    if (determinant != -78.0) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Determinant test failed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Determinant test passed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_rev() {
+    double data1[9] = { 1, 7, 4,
+                        0, 9, 4,
+                        8, 8, 2 };
+    double ans[9] = { 0.179487,  -0.230769, 0.102564,
+                      -0.410256,	  0.384615, 0.0512821,
+                      0.923077,   -0.615385, -0.115385 };
+    Matrix<double> matrix1 = Matrix<double>(3, 3).fill_from_array(data1);
+    Matrix<double> test_rev = Matrix<double>(3, 3).fill_from_array(ans);
+    Matrix<double> reverse = matrix1.reverse(matrix1,matrix1.getrow());
+    if (reverse == test_rev) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Reverse test passed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Reverse test failed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_transpose()
+{
+    double data1[3] = { 1, 7, 4 };
+    double ans[3] = {1,7,4};
+    Matrix<double> matrix1 = Matrix<double>(3,1).fill_from_array(data1);
+    Matrix<double> test_trans = Matrix<double>(1, 3).fill_from_array(ans);
+    if (matrix1.set_transpose() == test_trans) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Trasposition test passed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Transposition test failed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+void test_set_identity()
+{
+    double data1[9] = { 1, 7, 4,
+                        0, 9, 4,
+                        8, 8, 2 };
+    double ans[9] = { 1,  0, 0,
+                      0,	  1, 0,
+                      0,   0, 1 };
+    Matrix<double> matrix1 = Matrix<double>(3, 3).fill_from_array(data1);
+    Matrix<double> test_identity = Matrix<double>(3, 3).fill_from_array(ans);
+    if (matrix1.set_identity() == test_identity) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "SetIdentity test passed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "SetIdentity test failed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+void test_set_zero()
+{
+    double data1[3] = { 1, 7, 4 };
+    double ans[3] = {0,0,0};
+    Matrix<double> matrix1 = Matrix<double>(3,1).fill_from_array(data1);
+    Matrix<double> test_zero = Matrix<double>(3, 1).fill_from_array(ans);
+    if (matrix1.set_zero() == test_zero) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+        std::cout << "Trasposition test passed\n";
+    }
+    else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+        std::cout << "Transposition test failed\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+void test() {
+    test_add();
+    test_sub();
+    test_div_k();
+    test_mult_k();
+    test_mult();
+    test_det();
+    test_rev();
+    test_transpose();
+    test_set_identity();
+    test_set_zero();
+}
+
+
     int main() {
         try
         { // Проверка выделения памяти
@@ -482,4 +746,5 @@ public:
         }
         memory_report(A);
         memory_report(B);
+        test();
     }
