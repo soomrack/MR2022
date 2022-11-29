@@ -682,11 +682,11 @@ void test_set_zero()
     Matrix<double> test_zero = Matrix<double>(3, 1).fill_from_array(ans);
     if (matrix1.set_zero() == test_zero) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-        std::cout << "Trasposition test passed\n";
+        std::cout << "SetZero test passed\n";
     }
     else {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-        std::cout << "Transposition test failed\n";
+        std::cout << "SetZero test failed\n";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
