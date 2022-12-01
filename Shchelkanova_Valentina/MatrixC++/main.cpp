@@ -39,6 +39,16 @@ public:
 
 };
 
+
+class Matrix_Exception : public std::exception
+{
+public:
+    Matrix_Exception(const char* const &message):exeption(message);
+    {}
+};
+Matrix_Exception NotSquare("The matrix should be square\n");
+Matrix_Exception WrongSize("The matrix should have another size\n");
+
 Matrix::Matrix() {
     cols = 0;
     rows = 0;
@@ -104,6 +114,7 @@ Matrix::Matrix(unsigned int col) {
 
 
 Matrix Matrix::operator+ (const Matrix& One) const {
+    if (rows != One.rows) throw WrongSize;
     Matrix res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
         res.values[idx] += values[idx];
@@ -112,7 +123,8 @@ Matrix Matrix::operator+ (const Matrix& One) const {
 }
 
 
-Matrix Matrix::operator- (const Matrix& One) const { //Вычитание исправить так же как и сложение
+Matrix Matrix::operator- (const Matrix& One) const {
+    if (rows != One.rows) throw WrongSize;
     Matrix Res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
         Res.values[idx] -= values[idx];
@@ -122,6 +134,7 @@ Matrix Matrix::operator- (const Matrix& One) const { //Вычитание исп
 
 
 Matrix Matrix::operator* (const Matrix& One) const {
+    if (rows != One.rows) throw WrongSize;
     Matrix Res(One);
     for (unsigned int row = 0; row < Res.rows; row++) {
         for (unsigned int col = 0; col < Res.cols; col++) {
@@ -171,7 +184,8 @@ Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка операт�
 }
 
 
-Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень Избавиться от лишних переменных
+Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень
+    if(cols != rows) throw NotSquare;
     Matrix Res(*this);
     if (coefficient == 0) {
         Matrix one(cols);
@@ -182,11 +196,9 @@ Matrix Matrix::operator^(int coefficient) const { // Возведение мат
     }
     else {
         const Matrix &start(Res);
-        Matrix Res1(Res.cols, Res.rows);
         for (unsigned int idx = 0; idx < coefficient; idx++){
-            Res1 = Res1 * start;
+            Res = Res * start;
         }
-        Res = Res1;
         return Res;
     }
 }
@@ -202,6 +214,7 @@ Matrix Matrix::operator/(const double coefficient) const {
 
 
 Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
+    if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
     Matrix Res = one + A;
     double factorial = 1;
