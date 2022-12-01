@@ -40,12 +40,14 @@ public:
 };
 
 
-class Matrix_Exception : public std::exception
+class Matrix_Exception : public std::domain_error
 {
 public:
-    Matrix_Exception(const char* const &message):exception(message)
+    Matrix_Exception(const char* const message) : std::domain_error(message)
     {}
 };
+
+
 Matrix_Exception NotSquare("The matrix should be square\n");
 Matrix_Exception WrongSize("The matrix should have another size\n");
 
