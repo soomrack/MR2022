@@ -145,13 +145,13 @@ Matrix matrix_of_minor(Matrix matrix_in, unsigned int row, unsigned int column){
 }
 
 double matrix_determinant(Matrix matrix_in){
-    if(matrix_in.rows > 2){ // если матрица о размеру больше, чем > 2*2, то находим миноры и алгебраические дополения
+    if(matrix_in.rows > 2){ // если матрица по размеру больше, чем > 2*2, то находим миноры и алгебраические дополнения
         double determinant = 0;
         int k = 1;
         for(int columns = 0; columns < matrix_in.columns; columns++){
-           Matrix matrix3;
-           matrix3 = matrix_of_minor(matrix_in, 0, columns); // создаём матрицу размера (n-1)*(n-1) для нохождения минора
-            determinant = matrix_in.cells[0][columns] * k * matrix_determinant(matrix3);
+            Matrix matrix3;
+            matrix3 = matrix_of_minor(matrix_in, 0, columns); // создаём матрицу размера (n-1)*(n-1) для нахождения минора
+            determinant += matrix_in.cells[0][columns] * k * matrix_determinant(matrix3);
             k = -k;
             free(matrix3.cells);
         }
@@ -170,7 +170,7 @@ void matrix_determinant_test(Matrix matrix_in){
     else printf("The matrix isn't square\n");
 }
 
-void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
+void invert_matrix(Matrix matrix_in, Matrix *matrix_out){ //получается транспонированный результат, пофиксить
     int k = 1;
     double det = matrix_determinant(matrix_in);
     if (det < 0.0001 && det > -0.0001)
@@ -181,8 +181,6 @@ void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
         for (int rows = 0; rows < matrix_in.rows; ++rows)
             for (int columns = 0; columns < matrix_in.columns; ++columns) {
                 matrix_out->cells[rows][columns] = matrix_determinant(matrix_of_minor(matrix_in, rows, columns)) * k / det;
-                printf("Minor of %d, %d\n", rows, columns);//убрать
-                matrix_print(matrix_of_minor(matrix_in, rows, columns));
                 k = -k;
             }
 }
