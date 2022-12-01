@@ -43,7 +43,7 @@ public:
 class Matrix_Exception : public std::exception
 {
 public:
-    Matrix_Exception(const char* const &message):exeption(message);
+    Matrix_Exception(const char* const &message):exception(message)
     {}
 };
 Matrix_Exception NotSquare("The matrix should be square\n");
