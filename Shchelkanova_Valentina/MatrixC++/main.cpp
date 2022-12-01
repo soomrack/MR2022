@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
+#include <cstring>
 
 
 
@@ -31,8 +32,9 @@ public:
     Matrix operator=(Matrix&& one);
     Matrix operator^(const int coefficient) const;
     Matrix operator/(const double coefficient) const;
-    static Matrix  exp(const Matrix& one, const unsigned int n);
+    static Matrix  Exp(const Matrix& one, const unsigned int accuracy);
     Matrix Minor(Matrix& A, unsigned int row, unsigned int col);
+    Matrix transpose();
 
 
 };
@@ -47,7 +49,7 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
     cols = col;
     rows = row;
     unsigned int n_values = cols * rows;
-    values = new double[cols*rows]; // (new double[cols*rows] delete[])заменить везде маллок (memcpy(копирование памяти))
+    values = new double[cols*rows];
     for (unsigned int idx = 0; idx < n_values; ++idx) {
         values[idx] = 0.0;
     }
@@ -57,10 +59,8 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
 Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new double[rows*cols];
-    for (unsigned int idx = 0; idx < rows * cols; ++idx) { //сделать копирование память с помощью memcpy
-        values[idx] = matrix.values[idx];
-    }
+    values = new double[rows * cols];
+    memcpy(values,matrix.values,rows * cols * sizeof(double));
 }
 
 
@@ -201,19 +201,19 @@ Matrix Matrix::operator/(const double coefficient) const {
 }
 
 
-Matrix Matrix::exp(const Matrix& A, const unsigned int n = 10){ // Матричная экспонента  Подумать над эффективностью кода
+Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     Matrix one(A.cols);
     Matrix Res = one + A;
     double factorial = 1;
-    for (int step = 2; step < n; step++) {
-        factorial *= n;
-        Res = Res + (A ^ n) / factorial;
+    for (int step = 1; step < accuracy; step++) {
+        factorial *= step;
+        Res = Res + (A ^ step) / factorial;
     }
     return Res;
 }
 
 
-Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) { //лучше через двойной цикл
+Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) {
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
@@ -228,6 +228,34 @@ Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) { //лучш
     }
 
     return Res;
+}
+
+Matrix Matrix::transpose() {
+    Matrix res = {cols, rows};
+    for (unsigned int row = 0; row < res.rows; row++) {
+        for (unsigned int col = 0; col < res.cols; col++) {
+            res.values[row * res.cols + col] = values[col * res.cols + row];
+        }
+    }
+    return res;
+}
+
+double Matrix::determinant(const Matrix matrix)
+{
+    double det = 0;
+    int sign = 1;
+    if (rows == 0)
+        return 0;
+    if (rows == 1)
+        return matrix.values[0];
+    if (rows == 2) {
+        return (matrix.values[0] * matrix.values[3] - matrix.values[2] * matrix.values[1]);
+    }
+    for (unsigned int idx = 0; idx < rows; idx++) {
+        det += sign * matrix.values[idx] * determinant(Minor(matrix, 0, idx), rows - 1);
+        sign = -sign;
+    }
+    return det;
 }
 
 
@@ -248,6 +276,6 @@ int main() {
     Mult_double.print_matrix();
     Matrix Power = A^2;
     Power.print_matrix();
-    Matrix Exponent = Matrix::exp(A);
+    Matrix Exponent = Matrix::Exp(A);
     return 0;
 }
