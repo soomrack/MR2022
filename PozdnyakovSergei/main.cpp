@@ -5,7 +5,7 @@
 
 const double eps = pow(10, -5);
 
-class Matrix_error : public std::exception {
+class Matrix_error : public std::exception {  // Класс ошибок при вычислениях
 public:
     Matrix_error(const char* const &msg) : exception(msg) {}
 };
@@ -62,7 +62,7 @@ public:
 
 };
 
-Matrix::Matrix() : rows(0), cols(0), values(NULL){
+Matrix::Matrix() : rows(0), cols(0), values(nullptr){
 }
 
 Matrix::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
@@ -90,9 +90,8 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
     if (!values) throw MEMORYERROR;
 }
 
-Matrix::Matrix(Matrix&& matrix) noexcept : values(matrix.values), rows(matrix.rows), cols(matrix.cols)
-{
-    matrix.values = NULL;
+Matrix :: Matrix(Matrix&& matrix) noexcept : values(matrix.values), rows(matrix.rows), cols(matrix.cols) {
+    matrix.values = nullptr;
     matrix.rows = 0;
     matrix.cols = 0;
 }
@@ -134,9 +133,11 @@ Matrix Matrix::set_zero() {  //Задание нулевой матрицы
 Matrix Matrix::set_unit() {  //Задание единичной матрицы
     set_zero();  //Сначала вводится нулевая матрица, а потом диагональ заполняется единицами
     for (unsigned int number = 0; number < this->rows * this->cols; number += rows + 1) {
-        this -> values[number] = 1.0
+        this -> values[number] = 1.0;
     }
 }
+
+Matrix Matrix::
 
 int main() {
     return 0;

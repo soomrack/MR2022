@@ -10,7 +10,7 @@ typedef struct {
     double *data;
 } Matrix;
 
-void matrix_memory(Matrix *name) //вход - строки;
+void matrix_memory(Matrix *name)
 {
     name->data = (double*)malloc(name->rows * name->cols * sizeof(double) + name->rows * sizeof(double*));
     name->values = name->data + name->rows * name->cols;
@@ -23,7 +23,20 @@ void freeing_memory(Matrix *name)
     free(name->data);
 }
 
-void null_array(Matrix *name)  // создание матрицы // работа с текущей - название Set
+void output(Matrix *name)
+{
+    for (int rows = 0; rows < name->rows; rows++)
+    {
+        for(int cols = 0; cols < name->cols; cols++)
+        {
+            printf("%lf ", name->values[rows][cols]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void null_array(Matrix *name)
 {
     matrix_memory(name);
 
@@ -36,7 +49,7 @@ void null_array(Matrix *name)  // создание матрицы // работ�
     }
 }
 
-void random_array(Matrix *name) // не смешивать вывод и создание везде
+void random_array(Matrix *name)
 {
     matrix_memory(name);
 
@@ -45,14 +58,11 @@ void random_array(Matrix *name) // не смешивать вывод и соз�
         for(int cols = 0; cols < name->cols; cols++)
         {
             name->values[rows][cols] = rand() % 9;
-            printf("%lf ", name -> values[rows][cols]);
         }
-        printf("\n");
     }
-    printf("\n");
 }
 
-void addition (Matrix A, Matrix B)  // утечка памяти везде
+void addition (Matrix A, Matrix B)
 {
     printf("SUM:\n");
 
@@ -64,12 +74,10 @@ void addition (Matrix A, Matrix B)  // утечка памяти везде
         for (int cols = 0; cols < addition_matrix.cols; cols++)
         {
             addition_matrix.values[rows][cols] = A.values[rows][cols] + B.values[rows][cols];
-            printf("%lf ", addition_matrix.values[rows][cols]);
         }
-        printf("\n");
     }
-    printf("\n");
-
+    output(&addition_matrix);
+    freeing_memory(&addition_matrix);
 }
 
 void subtraction (Matrix A, Matrix B)
@@ -84,12 +92,9 @@ void subtraction (Matrix A, Matrix B)
         for (int cols = 0; cols < subtraction_matrix.cols; cols++)
         {
             subtraction_matrix.values[rows][cols] = A.values[rows][cols] - B.values[rows][cols];
-            printf("%lf ", subtraction_matrix.values[rows][cols]);
         }
-        printf("\n");
     }
-    printf("\n");
-
+    output(&subtraction_matrix);
     freeing_memory(&subtraction_matrix);
 }
 
@@ -108,12 +113,9 @@ void multiplication (Matrix A, Matrix B)
             {
                 multiplication_matrix.values[rows][cols] += A.values[rows][k] * B.values[k][cols];
             }
-            printf("%lf ", multiplication_matrix.values[rows][cols]);
         }
-        printf("\n");
     }
-    printf("\n");
-
+    output(&multiplication_matrix);
     freeing_memory(&multiplication_matrix);
 }
 
@@ -129,16 +131,13 @@ void transposition (Matrix A)
         for (int cols = 0; cols < copy_matrix.cols; cols++)
         {
             copy_matrix.values[rows][cols] = A.values[cols][rows];
-            printf("%lf ", copy_matrix.values[rows][cols]);
         }
-        printf("\n");
     }
-    printf("\n");
-
+    output(&copy_matrix);
     freeing_memory(&copy_matrix);
 }
 
-void exponent (Matrix A)  //отдельно умножение матрицы на себя
+void exponent (Matrix A)
 {
     printf("EXPONENTIAL MATRIX:\n");
 
@@ -177,16 +176,7 @@ void exponent (Matrix A)  //отдельно умножение матрицы �
     }
 
     freeing_memory(&temporarily_matrix);
-
-    for (int rows = 0; rows < exp_matrix.rows; rows++)
-    {
-        for (int cols = 0; cols < exp_matrix.cols; cols++)
-        {
-            printf("%lf ", exp_matrix.values[rows][cols]);
-        }
-        printf("\n");
-    }
-
+    output(&exp_matrix);
     freeing_memory(&exp_matrix);
 }
 
