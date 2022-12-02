@@ -1,42 +1,40 @@
 #include <stdio.h>
 #include <math.h>  // Подключаем библиотеку для математических операций
 
-
 struct Person {
     int capital;
     int expenses;
     int income;
     double payment;
     double deposit;
-    double sum;
-} Alice, Bob;
+};
 
-
-int first_payment = 100 * 300 * 1000;  // Объявляем переменные * 100 - так как копейки
-int time=20;
+int first_payment = 300 * 1000 * 100;  // Объявляем переменные * 100 - так как копейки
+int timeline = 20;
 int change_time = 3;
-
 
 double credit_rate = 0.12;
 double deposit_rate = 0.06;
-double new_credit_rate = 0.18;
+double new_deposit_rate = 0.4;
 
-void person_alice_and_bob(){
-    Alice.capital = 100 * 1000 * 1000;
-    Alice.expenses = 100 * 40 * 1000;
-    Alice.income = 100 * 150 * 1000;
-    Alice.deposit = Alice.capital;
-
-    Bob.capital = 100 * 1000 * 1000;
-    Bob.expenses = 100 * 10 * 1000;
-    Bob.income = 100 * 150 * 1000;
-    Bob.deposit = Bob.capital - first_payment;
-    printf("Alice's start deposit: %lf\n", Alice.deposit);  // DEBUG
-    printf("Bob's start deposit: %lf\n", Bob.deposit);  // DEBUG
+void init_Alice(struct Person *person) {
+    person->capital = 100 * 1000 * 1000;
+    person->expenses = 100 * 40 * 1000;
+    person->income = 100 * 150 * 1000;
+    person->deposit = person->capital;
 }
 
-void start_info(){
-        printf( "\n"  // Выводим начальную информацию
+void init_Bob(struct Person *person) {
+    person->capital = 100 * 1000 * 1000;
+    person->expenses = 100 * 10 * 1000;
+    person->income = 100 * 150 * 1000;
+    person->deposit = person->capital - first_payment;
+    printf("Alice's start deposit: %lf\n", person->deposit);  // DEBUG
+    printf("Bob's start deposit: %lf\n", person->deposit);  // DEBUG
+}
+
+void start_info(struct Person *alice, struct Person *bob){  // Выводим начальную информацию
+        printf( "\n"
                 "Bob\n"
                 "\n"
                 "Capital: %d\n"
@@ -51,71 +49,96 @@ void start_info(){
                 "Expenses: %d\n"
                 "Income: %d\n"
                 "\n"
-                "Period: %d\n"
+                "Period: %d\n",
 
-                ,Bob.capital,
+                bob->capital,
                 first_payment,
-                Bob.expenses,
-                Bob.income,
-                Alice.capital,
-                Alice.expenses,
-                Alice.income,
-                time );
+                bob->expenses,
+                bob->income,
+                alice->capital,
+                alice->expenses,
+                alice->income,
+                timeline);
 }
 
-void monthly_rate(){
-    credit_rate = pow(credit_rate + 1, 1.0 / 12.0) - 1;
-    printf("Monthly credit rate: %lf\n", credit_rate);  // DEBUG
-    deposit_rate = pow(deposit_rate + 1, 1.0 / 12.0) - 1;
-    printf("Monthly deposit rate: %lf\n", deposit_rate);  // DEBUG
-    new_credit_rate = pow(new_credit_rate + 1, 1.0 / 12.0) - 1;
-    printf("New Monthly credit rate: %lf\n", new_credit_rate);  // DEBUG
+void monthly_rate(double *rate_old){  // Функция преобразования годового процента в месячный
+    *rate_old = pow(*rate_old + 1, 1.0 / 12.0) - 1;
+    printf("Monthly credit rate: %lf\n", *rate_old);  // DEBUG
 }
 
-int flat_price(){  // Название отражает функцию, не смешивать функции
+int flat_price(){  // Вычисляем стоимость квартиры
     int flat_price = first_payment * 10;
     return flat_price;
 }
 
-void flat_payment (int price){  // Слишком размытое название, одна перменная - не оч, пробелы вокруг знаков, Высчитываем аннуитентный ежемесячный платеж по формуле
-    Alice.payment = 0;
-    Bob.payment = (price * credit_rate) / (1.0 - pow((1.0 + credit_rate), (-time * 12.0)));
-    printf("Monthly payment: %lf\n", Bob.payment);  // DEBUG
+void flat_payment (struct Person *alice, struct Person *bob, int price){  // Высчитываем аннуитентный ежемесячный платеж по формуле
+    alice->payment = 0;
+    bob->payment = (price * credit_rate) / (1.0 - pow((1.0 + credit_rate), (-timeline * 12.0)));
+    printf("Monthly payment: %lf\n", bob->payment);  // DEBUG
 }
 
-double deposit_calculation(char* namee, double depositt, double paymentt, double ratee, int incomee, int expensess, int ii){
-    depositt += depositt * ratee;  // Разбить на функции, убрать вариативность
-    depositt += incomee - paymentt - expensess;
-    printf("%s's Deposit: %lf After %d Month\n",namee, depositt, ii);  // DEBUG
-    return depositt;
+void output(struct Person *alice, struct Person *bob){  // Вывод информации
+    printf ("\n\nAlice's final deposit sum: %lf ", alice->deposit);
+    printf("\nBob's final deposit sum: %lf", bob->deposit + flat_price());
+    printf("\nDifference is (Alice - Bob): %lf Rubles\n", (alice->deposit - bob->deposit + flat_price()) * 100);
 }
 
-void output(){
-    printf ("\n\nAlice's final deposit sum: %lf ", Alice.sum);
-    printf("\nBob's final deposit sum: %lf", Bob.sum + flat_price());
-    printf("\nDifference is (Alice - Bob): %lf Rubles\n", (Alice.sum - Bob.sum + flat_price()) * 100);
+void bank_account_income_pp(struct Person *person) {  // Начисления по проценту
+     person->deposit += person->deposit * deposit_rate;
 }
 
-double deposit_sum(char* name, double deposit, int income, int expenses, double payment){
-    for (int i = 1; i <= time * 12; i++){
-        deposit = deposit_calculation(name, deposit, payment, credit_rate, income, expenses, i);
+void salary(struct Person *person) {  // Зачисление зп
+    person->deposit += person->income;
+}
+
+void home_bills(struct Person *person) {  // Оплата ЖКХ
+    person->deposit -= person->expenses;
+}
+
+void mortgage_payment(struct Person *person) {  // Плата по ипотеке
+    person->deposit -= person->payment;
+}
+
+void simulation() {  // Функция симуляции
+    struct Person Alice;
+    struct Person Bob;
+
+    struct Person *A = &Alice;
+    struct Person *B = &Bob;
+
+    init_Alice(&Alice);
+    init_Bob(&Bob);
+
+    start_info(&Alice, &Bob);
+
+    monthly_rate(&credit_rate);
+    monthly_rate(&deposit_rate);
+    monthly_rate(&new_deposit_rate);
+
+    flat_payment(&Alice, &Bob, flat_price());
+
+    for(int year = 1; year < timeline; year++) {
+        for(int month = 1; month <= 12; month++) {
+            bank_account_income_pp(&Alice);
+            bank_account_income_pp(&Bob);
+
+            salary(A);
+            salary(&Bob);
+
+            home_bills(&Alice);
+            home_bills(&Bob);
+
+            mortgage_payment(&Alice);
+            mortgage_payment(&Bob);
+
+            if(year == change_time && month == 1) {
+                deposit_rate = new_deposit_rate;
+            }
+        }
     }
-    printf("Rate was raised': %lf\n", new_credit_rate);  // DEBUG
-    for (int a = 1; a <= time - change_time * 12; a++){
-        deposit = deposit_calculation(name, deposit, payment, new_credit_rate, income, expenses, a);
-    }
-    return deposit;
+    output(&Alice, &Bob);
 }
 
 int main() {
-    person_alice_and_bob();
-    start_info();
-
-    monthly_rate();
-    flat_payment(flat_price());
-
-    Bob.sum = deposit_sum("Bob", Bob.deposit, Bob.income, Bob.expenses, Bob.payment);
-    Alice.sum = deposit_sum("Alice", Alice.deposit, Alice.income, Alice.expenses, Alice.payment);
-
-    output();
+    simulation();
 }

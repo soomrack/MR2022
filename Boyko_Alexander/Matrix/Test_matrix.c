@@ -18,6 +18,7 @@ Matrix MAT_MUL = {3, 3, MUL_VAL};
 double MAT_VAL[9] = {0.0,2.0, 2.0,
                      1.0,5.0,3.0,
                      2.0,3.0,4.0};
+Matrix MAT_DET = {3, 3, MAT_VAL};
 
 double DET_VAL = -10;
 
@@ -36,7 +37,7 @@ int is_mat_equal(const Matrix A, const Matrix B){
         return 0;
     }
     for(int k = 0; k < A.cols * A.rows; k++){
-        if ((A.values[k] - B.values[k]) > EQUAL_ACCURACY) {
+        if (fabs(A.values[k] - B.values[k]) > EQUAL_ACCURACY) {
             return 0;
         }
     }
@@ -107,13 +108,14 @@ void check_mult(){
 }
 
 void check_det(){
-    Matrix A = create_zero_matrix(3,3);
-    A.values = MAT_VAL;
+    Matrix A = copy_mat(MAT_DET);
     double det_a = matrix_det(A);
     if (det_a != DET_VAL){
         printf("ERROR: DETERMINANT INCORRECT\n");
+        free_mat(&A);
         return;
     }
+    free_mat(&A);
     printf("DETERMINANT CORRECT\n");
 }
 
@@ -133,15 +135,18 @@ void check_exp(){
 }
 
 int main() {
-    check_add();
+    for(int k = 0; k < 100; k++){
+        check_add();
 
-    check_sub();
+        check_sub();
 
-    check_mult();
+        check_mult();
 
-    check_det();
+        check_det();
 
-    check_exp();
+        check_exp();
+
+    }
 
     return 0;
 }
