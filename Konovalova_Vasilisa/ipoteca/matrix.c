@@ -153,7 +153,7 @@ Matrix copy(const Matrix matrix) {
     return result;
 }
 
-Matrix expo(const Matrix matrix, int accuracy) { // экпонента
+Matrix expo(const Matrix matrix, int accuracy) { 
     if (matrix.cols != matrix.rows) {
         errorofsize("Exp", "Matrix should be square");
         return ZERO;
