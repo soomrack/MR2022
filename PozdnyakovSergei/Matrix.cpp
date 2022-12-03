@@ -1,99 +1,90 @@
-#include <iostream>
-#include <malloc.h>
+include <iostream>
+#include <cmath>
+#include <ctime>
+#include <windows.h>
 
+const double tochn = pow(10, -5);
 
 class Matrix {
+private:
+    unsigned int cols;
+    unsigned int rows;
+    double* values;
 
 public:
-    unsigned long int cols;
-    unsigned long int rows;
-    Matrix (unsigned long int, unsigned int, double*);
-    Matrix (unsigned long int, unsigned int);
-    Matrix (const Matrix &A);
+    Matrix(unsigned int cols, unsigned int rows, double*);
+    Matrix(unsigned int cols, unsigned int rows);
+    Matrix();
+    Matrix(const Matrix&);
     ~Matrix();
+    Matrix(Matrix&&) noexcept;
 
-    /*void matrix_input;
-    void matrix_output;*/
+    Matrix fill();
+    Matrix ZERO();
+    Matrix minor();
+    Matrix exponent();
+    Matrix determinant();
+    Matrix transpose();
+    Matrix unit_matrix();
 
-    Matrix one_matrix();
-    Matrix invert_matrix (const Matrix, unsigned int);
-    Matrix determinant (const Matrix, unsigned int);
-    Matrix transponent ();
-    Matrix matrix_power();
-    Matrix matrix_exponent();
-    Matrix minor_matrix (Matrix, const unsigned int, const unsigned int, const unsigned int);
+    void output();
 
-    Matrix& operator=(Matrix&&);
-    Matrix& operator=(const Matrix);
-    Matrix operator+= (const Matrix);
-    Matrix operator-= (const Matrix);
-    Matrix operator*= (const Matrix);
-    Matrix operator*= (const double);
-    Matrix operator/= (const double);
+    Matrix operator+ (const Matrix&);
+    Matrix operator- (const Matrix&);
+    Matrix operator* (const Matrix&);
+    Matrix operator* (const double);
+    Matrix operator/ (const double);
 
+    Matrix& operator=(Matrix&&) noexcept;
+    Matrix& operator=(const Matrix&);
+    Matrix& operator+=(const Matrix&);
+    Matrix& operator-=(const Matrix&);
+    Matrix& operator*=(const Matrix&);
+    Matrix& operator*=(const double);
+    Matrix& operator/=(double);
+
+    bool operator!=(const Matrix& mat);
+    bool operator==(const Matrix& mat);
     friend std::ostream& operator<<(std::ostream& out, Matrix m);
 
-private:
-    double* values;
 };
 
-Matrix empty();
-
-Matrix operator+ (const Matrix&);
-Matrix operator- (const Matrix&, const Matrix&);
-Matrix operator* (const Matrix&,const Matrix&);
-Matrix operator* (const Matrix&,const double);
-Matrix operator/ (const Matrix&,const double);
-Matrix& operator+=(const Matrix&,const Matrix&);
-void output(Matrix&);
-
-Matrix::Matrix(const Matrix& matrix) : rows(matrix.rows), cols(matrix.cols) {
-    values = new double [cols * rows];
-    memcpy(values, matrix.values, cols * rows * sizeof (double));
-}
-
-Matrix::Matrix(unsigned int number_col, unsigned int number_rows, double* values) {
-    cols = number_col;
-    rows = number_rows;
-    unsigned int index = rows * cols;
-    for (unsigned int number = 0; number < index; number++) {
-        values[index] = values[index];
+Matrix Matrix::fill() {
+    for (unsigned int number = 0; number < cols * rows; number++) {
+        this->values[number] = double(rand()%10);
     }
+    return (*this);
 }
 
-Matrix operator+ (const Matrix& mat1, const Matrix& mat2) {
-    Matrix summation (mat1);
-    summation += mat2;
-    return (summation);
+Matrix Matrix::ZERO() {
+    for (unsigned int number = 0; number < this->cols * this->rows; number++) {
+        this->values[number] = 0;
+    }
+    return *this;
 }
 
-Matrix operator- (const Matrix& mat1, const Matrix& mat2) {
-    Matrix subtruction (mat1);
-    subtruction -= mat2;
-    return (subtruction);
+Matrix Matrix::unit_matrix() {
+    ZERO();
+    for (unsigned int number = 0; number < this->cols * this->rows; number += this->rows + 1) {
+        this->values[number] = 1.0;
+    }
+    return *this;
 }
 
-Matrix operator* (const Matrix& matrix, const double n) {
-    Matrix multiply (matrix);
-    multiply *= n;
-    return (multiply);
+void Matrix::output() {
+    std::cout << *this << std::endl;
 }
 
-Matrix operator* (const Matrix& mat1, const Matrix& mat2) {
-    Matrix temp (mat1);
-    temp *= mat2;
-    return (temp);
+Matrix Matrix::operator+ (const Matrix& matrix) const {
+    Matrix sum(matrix.cols, matrix.rows);
+    for (unsigned int number = 0; number < matrix.cols * matrix.rows; number++) {
+        sum.values[number] = values[number] + matrix.values[number];
+    }
+    return sum;
 }
 
-Matrix operator/ (const Matrix& matrix, const double n) {
-    Matrix division (matrix);
-    division /= n;
-    return (division);
-}
+
 
 int main() {
-    Matrix A(3,3);
-    Matrix B(3, 3);
 
-    return 0;
 }

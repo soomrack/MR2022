@@ -244,6 +244,6 @@ int main() {
     m_output(matrix_1);
 
 
-    powe = power(matrix_1, 4);
+    powe = power(matrix_1, 5);
     m_output(powe);
 }
