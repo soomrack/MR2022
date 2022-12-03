@@ -10,10 +10,10 @@ class Matrix_T
 
     static_assert(
             std::is_same<float, T>::value ||
-            std::is_same<double, T>::value ||
-            std::is_same<long double, T>::value,
-            "type of matrix must be floating point"
-            );
+    std::is_same<double, T>::value ||
+    std::is_same<long double, T>::value,
+    "type of matrix must be floating point"
+    );
 
 public:
 
@@ -483,6 +483,18 @@ Matrix_T<T> exponent(const Matrix_T<T> x, const unsigned int p_degree = 3){
 
 
 template <typename T>
+bool operator==(const Matrix_T<T> &x, const Matrix_T<T> &y) {
+    bool flag = ((x.rows == y.rows) and (x.cols == y.cols));
+    if (!flag) return flag;
+
+    for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
+        flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
+    }
+    return flag;
+}
+
+
+template <typename T>
 Matrix_T<T> operator+(const Matrix_T<T> &x, const Matrix_T<T> &y){
     Matrix_T<T> rez = x;
     rez += y;
@@ -525,20 +537,6 @@ Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y){
     Matrix_T<T> rez = x;
     rez /= y;
     return rez;
-}
-
-
-template <typename T>
-bool operator==(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    bool flag = true; //((x.rows == y.rows) and (x.cols == y.cols));
-    //if (!flag) return flag;
-
-    /*
-    for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
-        flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
-    }
-     */
-    return flag;
 }
 
 
@@ -670,11 +668,12 @@ void block_output(){
     std::cout << std::fixed << std::setprecision(2);
 
     Matrix_T<double> A = Matrix_T<double>(3, 5);
+    Matrix_T<float> B = Matrix_T<float> (6);
 }
 
 
 int main() {
-    block_tests();
+    //block_tests();
     block_output();
     return 0;
 }
