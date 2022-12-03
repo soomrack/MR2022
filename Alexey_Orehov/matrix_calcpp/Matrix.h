@@ -39,9 +39,9 @@ public:
     Matrix operator*(const Matrix &mat2) const;
     Matrix operator/(double scalar) const;
 
-    Matrix& operator+=(const Matrix &mat) { *this = *this + mat; return *this; }
-    Matrix& operator-=(const Matrix &mat) { *this = *this - mat; return *this; }
-    Matrix& operator*=(const Matrix &mat) { *this = *this * mat; return *this; }
+    Matrix& operator+=(const Matrix &mat) { *this = *this + mat; }
+    Matrix& operator-=(const Matrix &mat) { *this = *this - mat; }
+    Matrix& operator*=(const Matrix &mat) { *this = *this * mat; }
 
     Matrix transpose();
     void swap_rows(unsigned int row1, unsigned int row2);

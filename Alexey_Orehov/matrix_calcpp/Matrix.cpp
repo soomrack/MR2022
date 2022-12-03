@@ -179,7 +179,7 @@ Matrix Matrix::transpose() {
     Matrix res = {this->cols, this->rows};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
-            res.values[row * res.cols + col] = this->values[col * res.cols + row];
+            res.values[row * res.cols + col] = this->values[col * res.rows + row];
         }
     }
     return res;
@@ -262,7 +262,6 @@ Matrix Matrix::inv() {
         for (unsigned int col = 0; col < mat.cols; col++){
             ans.values[col * ans.rows + row] = pow(-1, row + col) *
                     mat.minor(row, col).det() / determinant;
-            // неправильные знаки в обратной матрице если используется перестановка строк
         }
     }
     return ans;

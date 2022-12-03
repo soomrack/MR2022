@@ -93,6 +93,26 @@ void test_mul(){
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
 
+void test_inv(){
+    double data[9] = {1, -2, 1,
+                      2, 1, -1,
+                      3, 2, -2};
+    double ans_data[9] = {0, 2, -1,
+                          -1, 5, -3,
+                          -1, 8, -5};
+    Matrix matrix = Matrix(3, 3).fill_from_array(data);
+    Matrix ans = Matrix(3, 3).fill_from_array(ans_data);
+    if (matrix.inv() == ans){
+        SetConsoleTextAttribute(hConsole, TEST_PASSED);
+        printf("Inverse matrix test passed\n");
+    }
+    else{
+        SetConsoleTextAttribute(hConsole, TEST_FAILED);
+        printf("Inverse matrix test hasn't been passed\n");
+    }
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
 
 int main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -101,13 +121,12 @@ int main(){
     test_add();
     test_sub();
     test_mul();
-    double data[9] = {1, 2, 3,
-                      4, 15, 6,
-                      7, 8, 9};
-    Matrix mat = Matrix(3, 3).fill_from_array(data);
-    std::cout << mat << std::endl;
-    std::cout << mat.det();
-    std::cout << mat.inv();
+    test_inv();
+    double data[6] = {1, 2, 3,
+                      4, 15, 6};
+    Matrix mat = Matrix(2, 3).fill_from_array(data);
+    std::cout << mat.transpose() << std::endl;
+
 
     return 0;
 }
