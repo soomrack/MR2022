@@ -10,7 +10,7 @@ class Matrix {
 private:
     unsigned int rows;
     unsigned int cols;
-    double *values;
+    double* values;
 
 public:
     Matrix();
@@ -21,27 +21,28 @@ public:
     Matrix set_value(double value);                                 // Заполнение созданной матрицы одним числом
     Matrix set_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
     Matrix set_identity();                                          // Преобразование матрицы в единичную
-    Matrix fill_from_array(double *array);                           // Заполнение матрицы значениями из массива
+    Matrix fill_from_array(double* array);                           // Заполнение матрицы значениями из массива
 
     double get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы
     void set(unsigned int row, unsigned int col, double val);        // Изменение произвольного элемента матрицы
 
-    Matrix& operator=(const Matrix &mat);
-    Matrix& operator=(Matrix &&mat) noexcept;
-    bool operator==(const Matrix &mat);
-    bool operator!=(const Matrix &mat) { return !(*this == mat); }
+    Matrix& operator=(const Matrix& mat);
+    Matrix& operator=(Matrix&& mat) noexcept;
+    bool operator==(const Matrix& mat);
+    bool operator!=(const Matrix& mat) { return !(*this == mat); }
     double* operator[](unsigned int row);                            // Доступ к заданной строке матрицы
     bool is_identity();
+    bool is_diagonal();
 
-    Matrix operator+(const Matrix &mat) const;
-    Matrix operator-(const Matrix &mat) const;
+    Matrix operator+(const Matrix& mat) const;
+    Matrix operator-(const Matrix& mat) const;
     Matrix operator*(double scalar) const;
-    Matrix operator*(const Matrix &mat2) const;
+    Matrix operator*(const Matrix& mat2) const;
     Matrix operator/(double scalar) const;
 
-    Matrix& operator+=(const Matrix &mat) { *this = *this + mat; }
-    Matrix& operator-=(const Matrix &mat) { *this = *this - mat; }
-    Matrix& operator*=(const Matrix &mat) { *this = *this * mat; }
+    void operator+=(const Matrix& mat) { *this = *this + mat; }
+    void operator-=(const Matrix& mat) { *this = *this - mat; }
+    void operator*=(const Matrix& mat) { *this = *this * mat; }
 
     Matrix transpose();
     void swap_rows(unsigned int row1, unsigned int row2);
@@ -51,37 +52,13 @@ public:
 
     Matrix minor(unsigned int minor_row, unsigned int minor_col);
     Matrix inv();
+    Matrix exponent();
 
-    friend std::ostream& operator<<(std::ostream &os, Matrix &mat) {
-        os << "\n";
-        for (unsigned int row = 0; row < mat.rows; row++) {
-            for (unsigned int col = 0; col < mat.cols; col++) {
-                os << mat.values[col + row * mat.cols] << " ";
-            }
-            if (row != mat.rows - 1) os << "\n";
-        }
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream &os, Matrix &mat);
+    friend std::ostream& operator<<(std::ostream &os, Matrix &&mat);
+    friend std::istream& operator>>(std::istream &is, Matrix &mat);
 
-    friend std::ostream &operator<<(std::ostream &os, Matrix &&mat) {
-        os << "\n";
-        for (unsigned int row = 0; row < mat.rows; row++) {
-            for (unsigned int col = 0; col < mat.cols; col++) {
-                os << mat.values[col + row * mat.cols] << " ";
-            }
-            if (row != mat.rows - 1) os << "\n";
-        }
-        return os;
-    }
-
-    friend std::istream &operator>>(std::istream &is, Matrix &mat) {
-        for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
-            is >> mat.values[idx];
-        }
-        return is;
-    }
-
-    explicit operator bool() {  // Определение преобразования матрицы в логический тип
+    explicit operator bool() {
         for (unsigned int idx = 0; idx < rows * cols; idx++) {
             if (!(bool) values[idx]) return false;
         }

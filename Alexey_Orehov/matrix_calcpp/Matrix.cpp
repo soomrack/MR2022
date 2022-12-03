@@ -3,7 +3,7 @@
 //
 
 #include "Matrix.h"
-
+#include <cmath>
 
 Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 
@@ -16,7 +16,7 @@ Matrix::Matrix(unsigned int r_num, unsigned int c_num) {
 }
 
 
-Matrix::Matrix(const Matrix &mat) {
+Matrix::Matrix(const Matrix& mat) {
     rows = mat.rows;
     cols = mat.cols;
     values = new double[rows * cols];
@@ -24,7 +24,7 @@ Matrix::Matrix(const Matrix &mat) {
 }
 
 
-Matrix::Matrix(Matrix &&mat) noexcept {
+Matrix::Matrix(Matrix&& mat) noexcept {
     values = mat.values;
     rows = mat.rows;
     cols = mat.cols;
@@ -34,7 +34,7 @@ Matrix::Matrix(Matrix &&mat) noexcept {
 }
 
 
-Matrix& Matrix::operator=(const Matrix &mat) {
+Matrix& Matrix::operator=(const Matrix& mat) {
     if (this == &mat) return *this;
     delete[] values;
     rows = mat.rows;
@@ -44,7 +44,7 @@ Matrix& Matrix::operator=(const Matrix &mat) {
 }
 
 
-Matrix& Matrix::operator=(Matrix &&mat) noexcept {  // Оператор перемещающего присваивания
+Matrix& Matrix::operator=(Matrix&& mat) noexcept {  // Оператор перемещающего присваивания
     if (this == &mat) return *this;
     delete[] values;
     rows = mat.rows;
@@ -79,10 +79,10 @@ double* Matrix::operator[](unsigned int idx) {
 }
 
 
-bool Matrix::operator==(const Matrix &mat) {
+bool Matrix::operator==(const Matrix& mat) {
     if (this->cols != mat.cols || this->rows != mat.rows) return false;
     for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
-        if (abs(this->values[idx] - mat.values[idx]) > EPS) return false;
+        if (fabs(this->values[idx] - mat.values[idx]) > EPS) return false;
     }
     return true;
 }
@@ -106,7 +106,7 @@ Matrix Matrix::set_identity() {
 }
 
 
-Matrix Matrix::fill_from_array(double *array) {
+Matrix Matrix::fill_from_array(double* array) {
     memcpy(values, array, rows * cols * sizeof(double));
     return *this;
 }
@@ -116,16 +116,25 @@ bool Matrix::is_identity() {
     if (cols != rows) return false;
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         if (idx % (rows + 1) == 0) {
-            if (abs(values[idx] - 1) > EPS) return false;
+            if (fabs(values[idx] - 1) > EPS) return false;
         } else {
-            if (abs(values[idx]) > EPS) return false;
+            if (fabs(values[idx]) > EPS) return false;
         }
     }
     return true;
 }
 
 
-Matrix Matrix::operator+(const Matrix &mat) const {
+bool Matrix::is_diagonal() {
+    if (cols != rows) return false;
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
+        if (idx % (rows + 1) != 0 && fabs(values[idx]) > EPS) return false;
+    }
+    return true;
+}
+
+
+Matrix Matrix::operator+(const Matrix& mat) const {
     // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
@@ -135,7 +144,7 @@ Matrix Matrix::operator+(const Matrix &mat) const {
 }
 
 
-Matrix Matrix::operator-(const Matrix &mat2) const {
+Matrix Matrix::operator-(const Matrix& mat2) const {
     // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
@@ -158,7 +167,7 @@ Matrix Matrix::operator/(const double scalar) const {
     return res;
 }
 
-Matrix Matrix::operator*(const Matrix &mat2) const {
+Matrix Matrix::operator*(const Matrix& mat2) const {
     // TODO: Проверка if (this->cols != mat2.rows) в класс исключений
     Matrix res = {this->rows, this->cols};
     for (unsigned int row = 0; row < res.rows; row++) {
@@ -265,4 +274,59 @@ Matrix Matrix::inv() {
         }
     }
     return ans;
+}
+
+
+Matrix Matrix::exponent() {
+    Matrix ans = *this;
+    if (this->is_diagonal()) {
+        for (unsigned int idx = 0; idx < rows * cols; idx++) {
+            if (idx % (rows + 1) == 0 ) ans.values[idx] = exp(ans.values[idx]);
+            else ans.values[idx] = 0;
+        }
+        return ans;
+    }
+    // Если матрица не диагональная, то вычисляем через степенной ряд
+    int max_iter = 20;
+    Matrix pow = Matrix(this->rows, this->cols).set_identity();
+    ans.set_identity();
+    unsigned long long int factorial = 1;
+    for(int iter = 1; iter < max_iter; iter++) {
+        pow *= *this;
+        factorial *= iter;
+        ans += pow / factorial;
+    }
+    return ans;
+}
+
+
+std::ostream& operator<<(std::ostream& os, Matrix& mat) {
+    os << "\n";
+    for (unsigned int row = 0; row < mat.rows; row++) {
+        for (unsigned int col = 0; col < mat.cols; col++) {
+            os << mat.values[col + row * mat.cols] << " ";
+        }
+        if (row != mat.rows - 1) os << "\n";
+    }
+    return os;
+}
+
+
+std::ostream& operator<<(std::ostream& os, Matrix&& mat) {
+    os << "\n";
+    for (unsigned int row = 0; row < mat.rows; row++) {
+        for (unsigned int col = 0; col < mat.cols; col++) {
+            os << mat.values[col + row * mat.cols] << " ";
+        }
+        if (row != mat.rows - 1) os << "\n";
+    }
+    return os;
+}
+
+
+std::istream &operator>>(std::istream &is, Matrix &mat) {
+    for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
+        is >> mat.values[idx];
+    }
+    return is;
 }
