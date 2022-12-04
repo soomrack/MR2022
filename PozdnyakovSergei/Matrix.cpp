@@ -3,7 +3,9 @@
 #include <iomanip>
 #include <math.h>
 
+
 const double EPS_CONST = pow(10, -5);
+
 
 class Matrix {
 private:
@@ -14,7 +16,7 @@ private:
 public:
     Matrix();  //
     Matrix(const Matrix& m);  // copy
-    Matrix(const unsigned int r);  // square matrix
+    Matrix(const unsigned int n);  // square matrix
     Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
     ~Matrix();  // destructor
 
@@ -32,7 +34,7 @@ public:
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
     void exponent(const unsigned int e = 5);  // матричная экспонента
-    Matrix minor(const unsigned int row, const unsigned int col);
+    Matrix minor(const unsigned int r, const unsigned int c);
 
     void set_values(const unsigned int l, const double* array);
     void set_random(const unsigned int range = 21);
@@ -42,6 +44,40 @@ public:
     friend Matrix power(const Matrix m, const unsigned int n);
     friend bool operator==(const Matrix &m1, const Matrix &m2);
 };
+
+
+/*
+добавить exceptions
+*/
+
+
+Matrix operator+ (const Matrix &m1, const Matrix &m2);
+Matrix operator- (const Matrix &m1, const Matrix &m2);
+Matrix operator* (const double num, const Matrix &m);
+Matrix operator* (const Matrix &m1, const Matrix &m2);
+Matrix operator* (const Matrix &m, const double num);
+
+
+Matrix::Matrix() {
+    rows = 0;
+    cols = 0;
+}
+
+
+Matrix::Matrix(const unsigned int r, const unsigned int c) {
+    rows = r;
+    cols = c;
+    value = new double [rows * cols];
+}
+
+
+
+Matrix::Matrix(const unsigned int n) {
+    rows = n;
+    cols = n;
+    value = new double [pow(n, 2)];
+}
+
 
 int main() {
     return 0;
