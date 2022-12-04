@@ -29,7 +29,7 @@ public:
 
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
-    void mult_bu_num(const double num);  // умножение на число
+    void mult_by_num(const double num);  // умножение на число
     void transponation();  // траспонирование
     void determinant();  // определитель
     void invert();  // обратная матрица
@@ -156,7 +156,7 @@ Matrix& Matrix::operator*=(const Matrix &m) {
 }
 
 
-void Matrix::mult_bu_num(const double num) {
+void Matrix::mult_by_num(const double num) {
     for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] *= num;
     }
@@ -173,6 +173,30 @@ void Matrix::unit_matrix() {
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
+}
+
+
+void Matrix::power(const unsigned int n) {
+    Matrix itog = Matrix (rows, cols);
+    itog.unit_matrix();
+    for (unsigned int number = 0; number < n; number++) {
+        itog *= *this;
+    }
+    this->set_values(rows * cols, itog.value);
+}
+
+
+void Matrix::exponent(const unsigned int e) {
+    Matrix itog = Matrix (rows, cols);
+    itog.unit_matrix();
+    double fact = 1.0;
+    Matrix temp = itog;
+    for (unsigned int number = 1; number < e; number++) {
+        temp *= *this;
+        fact /= number;
+        itog += (fact * temp);
+    }
+    *this = itog;
 }
 
 
@@ -211,6 +235,49 @@ Matrix operator* (const Matrix &m1, const Matrix &m2) {
     return itog;
 }
 
+
+Matrix operator* (const Matrix &m, const double num) {
+    Matrix itog = m;
+    itog *= num;
+    return itog;
+}
+
+
+Matrix zero_matrix (const unsigned int rows, const unsigned int cols) {
+    Matrix itog = Matrix (rows, cols);
+    itog.zero_matrix();
+    return itog;
+}
+
+
+Matrix unit_matrix (const unsigned int rows, const unsigned int cols) {
+    Matrix itog = Matrix (rows, cols);
+    itog.unit_matrix();
+    return itog;
+}
+
+
+Matrix mult_by_num (const Matrix m, const double num) {
+    Matrix itog = m;
+    itog.mult_by_num(num);
+    return itog;
+}
+
+
+Matrix power (const Matrix m, const unsigned int n) {
+    Matrix itog = Matrix (m.rows, m.cols);
+    itog.set_values(m.rows * m.cols, m.value);
+    itog.power(n);
+    return itog;
+}
+
+
+Matrix exponent (const Matrix m, const unsigned int e = 5) {
+    Matrix itog = Matrix (m.rows, m.cols);
+    itog.set_values(m.rows * m.cols, m.value);
+    itog.exponent(e);
+    return itog;
+}
 
 
 int main() {
