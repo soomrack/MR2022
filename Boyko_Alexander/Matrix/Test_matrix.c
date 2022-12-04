@@ -1,8 +1,4 @@
 #include "matrix.c"
-#define __CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
 
 double ADD_VAL[9] = {0.0,1.0, 2.0,
                      1.0,3.0,5.0,
@@ -136,19 +132,19 @@ void check_exp(){
     free_mat(&A);
     free_mat(&res);
     printf("EXPONENT CORRECT\n");
+    return;
 }
 
 int main() {
-    //check_add();
+    check_add();
 
-    //check_sub();
+    check_sub();
 
-    //check_mult();
+    check_mult();
 
-    //check_det();
+    check_det();
 
     check_exp();
 
-    _CrtDumpMemoryLeaks();
     return 0;
 }
