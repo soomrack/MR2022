@@ -181,6 +181,38 @@ Matrix::~Matrix() {
 }
 
 
+
+
+
+Matrix operator+ (const Matrix &m1, const Matrix &m2) {
+    Matrix itog = m1;
+    itog += m2;
+    return itog;
+}
+
+
+Matrix operator- (const Matrix &m1, const Matrix &m2) {
+    Matrix itog = m1;
+    itog -= m2;
+    return itog;
+}
+
+
+Matrix operator* (const double num, const Matrix &m) {
+    Matrix itog = m;
+    itog *= num;
+    return itog;
+}
+
+
+Matrix operator* (const Matrix &m1, const Matrix &m2) {
+    Matrix itog = m1;
+    itog *= m2;
+    return itog;
+}
+
+
+
 int main() {
     return 0;
 }
