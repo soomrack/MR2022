@@ -3,29 +3,31 @@
 #include <iomanip>
 
 
-const unsigned int Max_range = 51;
-const double Comparation_const = 0.0001;
+const double COMPARATION_CONST = 0.0001;
 
 
 class Matrix {
-public:
+private:
 
     unsigned int rows;
     unsigned int cols;
 
     double *data;
 
+public:
 
-    Matrix();
-    Matrix(const unsigned int row, const unsigned int col);
-    Matrix(const Matrix &x);
-    ~Matrix();
+    Matrix();  // конструктор создания пустых матриц
+    Matrix(const unsigned int n);  // конструктор создания квадратных матриц
+    Matrix(const unsigned int row, const unsigned int col);  //конструктор создания прямоугольных матриц
+    Matrix(const Matrix& x);  // оператор копирования
+    Matrix(Matrix&& x);  // оператор переноса
+    ~Matrix();  // деструктор
+
     Matrix& operator=(const Matrix &x);
     Matrix& operator+=(const Matrix &x);
     Matrix& operator-=(const Matrix &x);
     Matrix& operator*=(const double k);
     Matrix& operator*=(const Matrix &x);
-
 
     void zero();
     void one();
@@ -38,29 +40,41 @@ public:
     void pow(const unsigned int n);
     void exponent(const unsigned int p_degree = 3);
 
-    void fill_random();
+    void fill_random(const unsigned int max_range = 51);
     void fill_certain(const unsigned int len, const double* arrey);
     void output(bool f = false);
 
+    friend Matrix pow(const Matrix x, const unsigned int n);
+    friend Matrix exponent(const Matrix x, const unsigned int p_degree);
+
+    friend bool operator==(const Matrix &x, const Matrix &y);
+
 };
+
+
+class Matrix_Exception : public std::domain_error
+{
+public:
+    Matrix_Exception(const char* const msg) : std::domain_error(msg)
+    {}
+};
+
+
+Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
+Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
+Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
 
 
 Matrix undefinded();
 Matrix zero(const unsigned int row, const unsigned int col);
 Matrix one(const unsigned int row, const unsigned int col);
-Matrix sum(const Matrix x, const Matrix y);
-Matrix sub(const Matrix x, const Matrix y);
-Matrix multiplication(const Matrix x, const Matrix y);
-Matrix multy_k(const Matrix x, const double k);
-Matrix pow(const Matrix x, const unsigned int n);
-Matrix exponent(const Matrix x, const unsigned int p_degree = 3);
 
 
 Matrix operator+(const Matrix &x, const Matrix &y);
 Matrix operator-(const Matrix &x, const Matrix &y);
 Matrix operator*(const Matrix &x, const Matrix &y);
 Matrix operator*(const double k, const Matrix &x);
-bool operator==(const Matrix &x, const Matrix &y);
+Matrix operator*(const Matrix &x, const double k);
 
 
 Matrix::Matrix() {
@@ -68,6 +82,12 @@ Matrix::Matrix() {
     cols = 0;
 }
 
+Matrix::Matrix(const unsigned int n) {
+    rows = n;
+    cols = n;
+
+    data = new double[n * n];
+}
 
 Matrix::Matrix(const unsigned int row, const unsigned int col) {
     rows = row;
@@ -75,12 +95,6 @@ Matrix::Matrix(const unsigned int row, const unsigned int col) {
 
     data = new double[row * col];
 }
-
-
-Matrix::~Matrix() {
-    delete[] data;
-}
-
 
 Matrix::Matrix(const Matrix &x) {
     rows = x.rows;
@@ -94,23 +108,40 @@ Matrix::Matrix(const Matrix &x) {
     }
 }
 
-
-Matrix& Matrix::operator=(const Matrix &x) {
+Matrix::Matrix(Matrix&& x){
     rows = x.rows;
     cols = x.cols;
+    data = x.data;
 
-    if (!data)
-        delete[] data;
-    data = new double[rows * cols];
+    x.rows = 0;
+    x.cols = 0;
+    x.data = nullptr;
+}
 
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        data[idx] = x.data[idx];
-    }
+Matrix::~Matrix() {
+    delete[] data;
 }
 
 
+Matrix& Matrix::operator=(const Matrix &x) {
+    if (this != &x){
+        if (!data)
+            delete[] data;
+
+        rows = x.rows;
+        cols = x.cols;
+
+        this->data = new double[rows * cols];
+        for (unsigned int idx = 0; idx < rows * cols; idx++){
+            data[idx] = x.data[idx];
+        }
+    }
+
+    return *this;
+}
+
 Matrix& Matrix::operator+=(const Matrix &x) {
-    if ((rows != x.rows) or (cols != x.cols)) return *this;
+    if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] += x.data[idx];
@@ -119,9 +150,8 @@ Matrix& Matrix::operator+=(const Matrix &x) {
     return *this;
 }
 
-
 Matrix& Matrix::operator-=(const Matrix &x) {
-    if ((rows != x.rows) or (cols != x.cols)) return *this;
+    if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] -= x.data[idx];
@@ -130,22 +160,20 @@ Matrix& Matrix::operator-=(const Matrix &x) {
     return *this;
 }
 
-
 Matrix& Matrix::operator*=(const double k) {
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
 
-
 Matrix& Matrix::operator*=(const Matrix &x) {
-    if (cols != x.rows) return *this;
+    if (cols != x.rows) throw SIZE_UNMATCH;
 
     Matrix rez = Matrix(rows, x.cols);
     rez.zero();
     for (unsigned int row = 0; row < rez.rows; row++){
         for (unsigned int col = 0; col < rez.cols; col++){
-            //double sum = 0;
+
             for (unsigned int idx = 0; idx < x.rows; idx++){
                 rez.data[row * rez.cols + col] += data[row * cols + idx] * x.data[idx * x.cols + col];
             }
@@ -163,7 +191,6 @@ void Matrix::zero(){
     }
 }
 
-
 void Matrix::one(){
     this->zero();
     for (unsigned int idx = 0; idx < rows; idx++){
@@ -171,34 +198,29 @@ void Matrix::one(){
     }
 }
 
-
 void Matrix::multy_k(const double k){
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
 
-
 void Matrix::tran(){
     unsigned int row = cols;
     unsigned int col = rows;
 
     double* temp_arrey = new double [rows * cols];
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        temp_arrey[idx] = data[idx];
-    }
 
     for (unsigned int row_idx = 0; row_idx < rows; row_idx++){
         for (unsigned int col_idx = 0; col_idx < cols; col_idx++){
-            data[col_idx * rows + row_idx] = temp_arrey[row_idx * cols + col_idx];
+            temp_arrey[col_idx * rows + row_idx] = data[row_idx * cols + col_idx];
         }
     }
 
+    delete[] data;
+    data = temp_arrey;
     rows = row;
     cols = col;
-    delete[] temp_arrey;
 }
-
 
 Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
     int new_row = rows - 1, new_col = cols - 1;
@@ -216,18 +238,20 @@ Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
     return rez;
 }
 
-
 void Matrix::triangle() {
     if (rows == 1) return;
 
-    bool f = false;
+    bool need_to_trans = false;
     if (rows > cols){
-        f = true;
+        need_to_trans = true;
         this->tran();
     }
 
     for (unsigned int step = 1; step < rows; step++) {
         for (unsigned int cur_row = step; cur_row < rows; cur_row++) {
+            if (data[(step - 1) * (cols + 1)] < COMPARATION_CONST){
+                throw DIV_BY_ZERO;
+            }
             double ratio = data[cur_row * cols + step - 1] / data[(step - 1) * cols + step - 1];
             for (unsigned int col = step - 1; col < cols; col++) {
                 data[cur_row * cols + col] -= ratio * data[(step - 1) * cols + col];
@@ -235,19 +259,24 @@ void Matrix::triangle() {
         }
     }
 
-    if (f){
+    if (need_to_trans){
         this->tran();
     }
 }
 
-
 double Matrix::det(){
-    if (rows != cols) return 0.0;
+    if (rows != cols){
+        throw NOT_SQUARE;
+        return 0.0;
+    }
 
     Matrix temp = Matrix(rows, cols);
     temp.fill_certain(rows * cols, data);
-
-    temp.triangle();
+    try {
+        temp.triangle();
+    } catch (std::runtime_error &rte){
+        std::cout << "Ops, division by zero\n" << rte.what() << "\n";
+    }
     double rez = 1.0;
     for (unsigned int idx = 0; idx < temp.rows; idx++){
         rez *= temp.data[idx * cols + idx];
@@ -256,10 +285,10 @@ double Matrix::det(){
     return rez;
 }
 
-
 void Matrix::reverse() {
     double deter = this->det();
-    if ((rows != cols) or (deter == 0)) return;
+    if (rows != cols) throw NOT_SQUARE;
+    //if (deter == 0) return;
 
     Matrix temp = Matrix(rows, cols);
     int ratio = 1;
@@ -271,19 +300,19 @@ void Matrix::reverse() {
     }
 
     temp.tran();
+    if (abs(deter - 0.0) < COMPARATION_CONST)  throw DIV_BY_ZERO;
     temp.multy_k(1/deter);
 
     this->fill_certain(temp.rows * temp.cols, temp.data);
 }
 
-
-void Matrix::pow(const unsigned int n){
-    if (rows != cols) return;
+void Matrix::pow(const unsigned int n) {
+    if (rows != cols) throw NOT_SQUARE;
 
     Matrix rez = Matrix(rows, cols);
     rez.one();
 
-    for (unsigned int idx = 0; idx < n; idx++){
+    for (unsigned int idx = 0; idx < n; idx++) {
         rez *= *this;
     }
 
@@ -291,39 +320,19 @@ void Matrix::pow(const unsigned int n){
 }
 
 
-void Matrix::exponent(const unsigned int p_degree) {
-    if (rows != cols) return;
-
-    Matrix rez = Matrix(rows, cols);
-    rez.one();
-
-    double ratio = 1;
-    Matrix temp = rez;
-    for (unsigned int idx = 1; idx < p_degree; idx++){
-        temp *= *this;
-        ratio /= (idx);
-        rez += ::multy_k(temp, ratio);
-    }
-
-    this->fill_certain(rez.rows * rez.cols, rez.data);
-}
-
-
-void Matrix::fill_random() {
+void Matrix::fill_random(const unsigned int max_range) {
     for (unsigned int idx = 0; idx < rows * cols; idx++){
-        data[idx] = rand() % Max_range;
+        data[idx] = rand() % max_range;
     }
 }
-
 
 void Matrix::fill_certain(const unsigned int len, const double* arrey) {
-    if (len != rows * cols) return;
+    if (len != rows * cols) throw SIZE_UNMATCH;
 
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] = arrey[idx];
     }
 }
-
 
 void Matrix::output(bool f){
     if (f) std::cout << rows << " " << cols << "\n";
@@ -343,60 +352,15 @@ Matrix undefinded(){
     return rez;
 }
 
-
 Matrix zero(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
     rez.zero();
     return rez;
 }
 
-
 Matrix one(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
     rez.one();
-    return rez;
-}
-
-
-Matrix sum(const Matrix x, const Matrix y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix();
-    rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] + y.data[idx];
-    }
-
-    return rez;
-}
-
-
-Matrix sub(const Matrix x, const Matrix y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix();
-    rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] - y.data[idx];
-    }
-
-    return rez;
-}
-
-
-Matrix multiplication(const Matrix x, const Matrix y){
-    if (x.cols != y.rows) return undefinded();
-
-    Matrix rez = Matrix();
-    rez = Matrix(x.rows, y.cols);
-    for (unsigned int row = 0; row < rez.rows; row++){
-        for (unsigned int col = 0; col < rez.cols; col++){
-            rez.data[row * rez.cols + col] = 0.0;
-            for (unsigned int idx = 0; idx < x.cols; idx++){
-                rez.data[row * rez.cols + col] += x.data[row * x.cols + idx] * y.data[idx * y.cols + col];
-            }
-        }
-    }
     return rez;
 }
 
@@ -410,7 +374,10 @@ Matrix multy_k(const Matrix x, const double k){
 
 Matrix pow(const Matrix x, const unsigned int n){
     Matrix rez = Matrix(x.rows, x.cols);
-    if (x.rows != x.cols) return rez;
+    if (x.rows != x.cols) {
+        throw NOT_SQUARE;
+        return rez;
+    }
 
     rez.fill_certain(x.rows * x.cols, x.data);
     rez.pow(n);
@@ -419,7 +386,25 @@ Matrix pow(const Matrix x, const unsigned int n){
 }
 
 
-Matrix exponent(const Matrix x, const unsigned int p_degree){
+void Matrix::exponent(const unsigned int p_degree) {
+    if (rows != cols) throw NOT_SQUARE;
+
+    Matrix rez = Matrix(rows, cols);
+    rez.one();
+
+    double ratio = 1;
+    Matrix temp = rez;
+    for (unsigned int idx = 1; idx < p_degree; idx++){
+        temp *= *this;
+        ratio /= (idx);
+        rez += (temp * ratio);
+    }
+
+    *this = rez;
+}
+
+
+Matrix exponent(const Matrix x, const unsigned int p_degree = 3){
     Matrix rez = Matrix(x.rows, x.cols);
     rez.fill_certain(x.rows * x.cols, x.data);
 
@@ -429,34 +414,35 @@ Matrix exponent(const Matrix x, const unsigned int p_degree){
 
 
 Matrix operator+(const Matrix &x, const Matrix &y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] + y.data[idx];
-    }
+    Matrix rez = x;
+    rez += y;
     return rez;
 }
 
 
 Matrix operator-(const Matrix &x, const Matrix &y){
-    if ((x.rows != y.rows) or (x.cols != y.cols)) return undefinded();
-
-    Matrix rez = Matrix(x.rows, x.cols);
-    for (unsigned int idx = 0; idx < rez.rows * rez.cols; idx++){
-        rez.data[idx] = x.data[idx] - y.data[idx];
-    }
+    Matrix rez = x;
+    rez -= y;
     return rez;
 }
 
 
 Matrix operator*(const Matrix &x, const Matrix &y){
-    return multiplication(x, y);
+    Matrix rez = x;
+    rez *= y;
+    return rez;
 }
 
 
 Matrix operator*(const double k, const Matrix &x){
-    return multy_k(x, k);
+    Matrix rez = x;
+    rez *= k;
+    return rez;
+}
+
+
+Matrix operator*(const Matrix &x, const double k){
+    return k * x;
 }
 
 
@@ -465,7 +451,7 @@ bool operator==(const Matrix &x, const Matrix &y){
     if (!flag) return flag;
 
     for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
-        flag *= (abs(x.data[idx] - y.data[idx]) < Comparation_const);
+        flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
     }
     return flag;
 }
@@ -481,14 +467,13 @@ void test_sum(){
     A.fill_certain(9, arrey_a);
     B.fill_certain(9, arrey_b);
 
-    Matrix rez1 = sum(A, B);
-    Matrix rez2 = A + B;
+    Matrix rez = A + B;
 
     Matrix standard = Matrix(3, 3);
     double arrey_s[9] = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0};
     standard.fill_certain(9, arrey_s);
 
-    bool final = ((rez1 == standard) and (rez2 == standard));
+    bool final = (rez == standard);
     if (final){
         std::cout << "Test of summation was successful\n";
     } else {
@@ -507,14 +492,13 @@ void test_sub(){
     A.fill_certain(9, arrey_a);
     B.fill_certain(9, arrey_b);
 
-    Matrix rez1 = sub(A, B);
-    Matrix rez2 = A - B;
+    Matrix rez = A - B;
 
     Matrix standard = Matrix(3, 3);
     double arrey_s[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     standard.fill_certain(9, arrey_s);
 
-    bool final = ((rez1 == standard) and (rez2 == standard));
+    bool final = (rez == standard);
     if (final){
         std::cout << "Test of subtraction was successful\n";
     } else {
@@ -533,18 +517,17 @@ void test_mul(){
     A.fill_certain(9, arrey_a);
     B.fill_certain(9, arrey_b);
 
-    Matrix rez1 = multiplication(A, B);
-    Matrix rez2 = A * B;
+    Matrix rez = A * B;
 
     Matrix standard = Matrix(3, 3);
     double arrey_s[9] = {30.0, 24.0, 18.0, 84.0, 69.0, 54.0, 138.0, 114.0, 90.0};
     standard.fill_certain(9, arrey_s);
 
-    bool final = ((rez1 == standard) and (rez2 == standard));
+    bool final = (rez == standard);
     if (final){
-        std::cout << "Test of summation was successful\n";
+        std::cout << "Test of multiplication was successful\n";
     } else {
-        std::cout << "Test of summation was failed\n";
+        std::cout << "Test of multiplication was failed\n";
     }
 }
 
@@ -559,7 +542,7 @@ void test_reverse(){
 
     Matrix standard = one(n, n);
 
-    bool final = (standard == multiplication(A, B));
+    bool final = (standard == A * B);
     if (final){
         std::cout << "Test of reverse was successful\n";
     } else {
@@ -588,6 +571,22 @@ void test_exp(){
 }
 
 
+void block_output(){
+    std::cout << std::fixed << std::setprecision(2);
+
+    Matrix A = Matrix(3, 5);
+
+    double arrey_a[15] = {5, 4, 3, 2, 1,
+                          5, 4, 8, 4, 10,
+                          11, 43, 29, 16, 9};
+    A.fill_certain(15, arrey_a);
+    A.output();
+    A.triangle();
+    A.output();
+
+}
+
+
 void block_tests(){
     test_sum();
     test_sub();
@@ -599,25 +598,11 @@ void block_tests(){
 }
 
 
-void block_output(){
-    std::cout << std::fixed << std::setprecision(2);
-
-    Matrix F = Matrix(3, 3);
-    F.fill_random();
-
-    Matrix G = Matrix(3, 3);
-    G.fill_random();
-
-    Matrix rez = F + G;
-    rez = sum(F, G);
-    rez.output(true);
-}
-
-
-
 int main() {
+
     block_tests();
-    block_output();
+    for (unsigned int idx = 0; idx < 100; idx++)
+        block_output();
 
     return 0;
 }
