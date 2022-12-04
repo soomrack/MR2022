@@ -12,7 +12,7 @@ Matrix::Matrix(unsigned int r_num, unsigned int c_num) {
     rows = r_num;
     cols = c_num;
     values = new double[rows * cols];
-
+    if (!values) throw MatrixException("Error: unable to allocate memory");
 }
 
 
@@ -20,6 +20,7 @@ Matrix::Matrix(const Matrix& mat) {
     rows = mat.rows;
     cols = mat.cols;
     values = new double[rows * cols];
+    if (!values) throw MatrixException("Error: unable to allocate memory");
     memcpy(values, mat.values, sizeof(double) * rows * cols);
 }
 
@@ -55,14 +56,10 @@ Matrix& Matrix::operator=(Matrix&& mat) noexcept {  // Оператор пере
 }
 
 
-Matrix Matrix::set_value(double value) {
-    for (unsigned int idx = 0; idx < rows * cols; idx++) values[idx] = value;
-    return *this;
-}
-
-
 double Matrix::get(unsigned int row, unsigned int col) {
-    // TODO: Проверка if (row > rows || col > cols) return NAN;
+
+    if (row > rows || col > cols) throw
+    MatrixException("Index error: one of the indexes is bigger than matrix size");
     return values[col + row * cols];
 }
 
@@ -88,6 +85,12 @@ bool Matrix::operator==(const Matrix& mat) {
 }
 
 
+Matrix Matrix::set_value(double value) {
+    for (unsigned int idx = 0; idx < rows * cols; idx++) values[idx] = value;
+    return *this;
+}
+
+
 Matrix Matrix::set_random(int min_value, int max_value) {
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         values[idx] = min_value + (double) rand() / (double) RAND_MAX * (max_value - min_value);
@@ -97,7 +100,7 @@ Matrix Matrix::set_random(int min_value, int max_value) {
 
 
 Matrix Matrix::set_identity() {
-    // TODO: Проверка if (rows != cols)
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     this->set_value(0.0);
     for (unsigned int idx = 0; idx < rows * cols; idx += cols + 1) {
         this->values[idx] = 1.0;
@@ -135,7 +138,8 @@ bool Matrix::is_diagonal() {
 
 
 Matrix Matrix::operator+(const Matrix& mat) const {
-    // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
+    if (this->rows != mat.rows || this->cols != mat.cols) throw
+    MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] + mat.values[idx];
@@ -145,7 +149,8 @@ Matrix Matrix::operator+(const Matrix& mat) const {
 
 
 Matrix Matrix::operator-(const Matrix& mat2) const {
-    // TODO: Проверка if (this->rows != mat2.rows || this->cols != mat2.cols)
+    if (this->rows != mat2.rows || this->cols != mat2.cols) throw
+    MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] - mat2.values[idx];
@@ -168,7 +173,8 @@ Matrix Matrix::operator/(const double scalar) const {
 }
 
 Matrix Matrix::operator*(const Matrix& mat2) const {
-    // TODO: Проверка if (this->cols != mat2.rows) в класс исключений
+    if (this->cols != mat2.rows) throw
+    MatrixException("Error: First matrix cals must be equal to second matrix rows");
     Matrix res = {this->rows, this->cols};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
@@ -204,7 +210,7 @@ void Matrix::swap_rows(unsigned int row1, unsigned int row2){
 
 
 unsigned int Matrix::upper_triangle() {
-    // TODO: Проверка на квадратную форму в класс исключений
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     unsigned int swap_num = 0;
     for (unsigned int step = 0; step < this->cols; step++) {
         unsigned int non_zero_row = step;
@@ -228,7 +234,7 @@ unsigned int Matrix::upper_triangle() {
 
 
 double Matrix::det() {
-    // TODO: Проверка на квадратную форму в класс исключений
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix temp = *this;
     unsigned int swap_num = temp.upper_triangle();
     double res = 1;
@@ -240,7 +246,7 @@ double Matrix::det() {
 
 
 double Matrix::trace() {
-    // TODO: Проверка на квадратную форму в класс исключений
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     double res = 0.0;
     for (unsigned int idx = 0; idx < this->rows * this->cols; idx += this->cols + 1) res += this->values[idx];
     return res;
@@ -263,7 +269,7 @@ Matrix Matrix::minor(const unsigned int minor_row, const unsigned int minor_col)
 
 
 Matrix Matrix::inv() {
-    // TODO: Проверка if (mat.cols != mat.rows){
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix mat = *this;
     Matrix ans = {mat.rows, mat.cols};
     double determinant = mat.det();
@@ -277,11 +283,12 @@ Matrix Matrix::inv() {
 }
 
 
-Matrix Matrix::exponent() {
+Matrix Matrix::exp() {
+    if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix ans = *this;
     if (this->is_diagonal()) {
         for (unsigned int idx = 0; idx < rows * cols; idx++) {
-            if (idx % (rows + 1) == 0 ) ans.values[idx] = exp(ans.values[idx]);
+            if (idx % (rows + 1) == 0 ) ans.values[idx] = ::exp(ans.values[idx]);
             else ans.values[idx] = 0;
         }
         return ans;

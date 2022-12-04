@@ -142,6 +142,6 @@ int main(){
                         0, 2, 0,
                         0 ,0, 3};
     Matrix A = Matrix(3, 3).fill_from_array(values);
-    std::cout << A.exponent();
+    std::cout << A.exp();
     return 0;
 }

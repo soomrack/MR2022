@@ -6,6 +6,13 @@
 const double EPS = 10e-6;  // Точность при сравнении величин с плавающей точкой
 
 
+class MatrixException: public std::exception {
+public:
+    MatrixException(const char* msg): std::exception() {}
+};
+
+
+
 class Matrix {
 private:
     unsigned int rows;
@@ -52,7 +59,7 @@ public:
 
     Matrix minor(unsigned int minor_row, unsigned int minor_col);
     Matrix inv();
-    Matrix exponent();
+    Matrix exp();
 
     friend std::ostream& operator<<(std::ostream &os, Matrix &mat);
     friend std::ostream& operator<<(std::ostream &os, Matrix &&mat);
