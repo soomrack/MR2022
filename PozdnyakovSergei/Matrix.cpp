@@ -156,7 +156,7 @@ Matrix& Matrix::operator*=(const Matrix &m) {
 }
 
 
-void Matrix::mult_bu_num(const double num) {
+void Matrix::mult_by_num(const double num) {
     for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] *= num;
     }
@@ -266,8 +266,9 @@ Matrix mult_by_num (const Matrix m, const double num) {
 
 Matrix power (const Matrix m, const unsigned int n) {
     Matrix itog = Matrix (m.rows, m.cols);
-    itog.set_values();
+    itog.set_values(m.rows * m.cols, m.value);
     itog.power(n);
+    return itog;
 }
 
 
