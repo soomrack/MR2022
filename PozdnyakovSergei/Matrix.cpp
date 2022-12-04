@@ -19,6 +19,7 @@ public:
     Matrix(const unsigned int n);  // square matrix
     Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
     ~Matrix();  // destructor
+    Matrix(Matrix&& m);
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -71,11 +72,95 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 }
 
 
-
 Matrix::Matrix(const unsigned int n) {
     rows = n;
     cols = n;
     value = new double [pow(n, 2)];
+}
+
+
+Matrix::Matrix(const Matrix &m) {
+    rows = m.rows;
+    cols = m.cols;
+    int total_num = rows * cols;
+    value = new double [total_num];
+    for (unsigned int number = 0; number < total_num; number++) {
+        value[number] = m.value[number];
+    }
+}
+
+
+Matrix::Matrix(Matrix&& m) {
+    rows = m.rows;
+    cols = m.cols;
+    value = m.value;
+    m.rows = 0;
+    m.cols = 0;
+    m.value = nullptr;
+}
+
+
+Matrix& Matrix::operator=(const Matrix &m) {
+    rows = m.rows;
+    cols = m.cols;
+    int total_num = rows * cols;
+    this->value = new double [total_num];
+    for (unsigned int number = 0; number < total_num; number++) {
+        value[number] = m.value[number];
+    }
+    return *this;
+}
+
+
+Matrix& Matrix::operator+=(const Matrix &m) {
+    rows = m.rows;
+    cols = m.cols;
+    int total_num = rows * cols;
+    for (unsigned int number = 0; number < total_num; number++) {
+        value[number] = +m.value[number];
+    }
+    return *this;
+}
+
+
+Matrix& Matrix::operator-=(const Matrix &m) {
+    rows = m.rows;
+    cols = m.cols;
+    int total_num = rows * cols;
+    for (unsigned int number = 0; number < total_num; number++) {
+        value[number] -= m.value[number];
+    }
+    return *this;
+}
+
+
+Matrix& Matrix::operator*=(const double num) {
+    for (unsigned int number = 0; number < rows * cols; number++){
+        value[number] *= num;
+    }
+}
+
+
+Matrix& Matrix::operator*=(const Matrix &m) {
+    Matrix itog = Matrix(rows, cols);
+    itog.zero_matrix();
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            for (unsigned int number = 0; number < m.rows; number++) {
+                itog.value[row * itog.cols + col] += value[row * col + number] * m.value[number * m.cols + col];
+            }
+        }
+    }
+    *this = itog;
+    return *this;
+}
+
+
+
+
+
+Matrix::~Matrix() {
+    delete[] value;
 }
 
 
