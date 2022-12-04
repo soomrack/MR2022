@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "malloc.h"
 
 // CONSTS
 const int START_CASH = 1000000 * 100; // FIRST INPUT IN BANK (KOP)
@@ -9,7 +8,6 @@ const int MONTH_PAY = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
 const int PERIOD = 20; // YEARS
 
 struct Client {
-    char *name;
     unsigned int month_increase; // KOP
     unsigned long long int bank_account; // KOP
     unsigned int month_cash; // CASH THAT IS AVAILABLE UNTIL END OF THE MONTH (KOP)
@@ -41,12 +39,12 @@ void print_client_line(unsigned long long int client_year_cash);
 
 void print_out(unsigned long long int bob_year_cash, unsigned long long int alice_year_cash, int year);
 
+void free_struct(struct Client* client);
+
 void simulation();
 
 void init_bob(struct Client *init_Bob) {
     // BOB IPOTEKA
-    init_Bob->name = malloc(6);
-    init_Bob->name = "Bob";
     init_Bob->bank_account = START_CASH - FIRST_INPUT;
     init_Bob->month_cash = 0;
     init_Bob->salary = 150000 * 100;
@@ -57,8 +55,6 @@ void init_bob(struct Client *init_Bob) {
 
 void init_alice(struct Client *init_Alice) {
     // ALICE SAVINGS
-    init_Alice->name = malloc(6);
-    init_Alice->name = "Alice";
     init_Alice->bank_account = START_CASH;
     init_Alice->month_cash = 0;
     init_Alice->salary = 150000 * 100;
@@ -106,7 +102,7 @@ void print_client_line(unsigned long long int client_year_cash) {
 void print_out(unsigned long long int bob_year_cash, unsigned long long int alice_year_cash, int year) {
     // TABLE HEAD
     if(year == 0){
-        printf("%s                     %s                     Year \n",Bob.name,Alice.name);
+        printf("%s                     %s                     Year \n", "Bob", "Alice");
     }
 
     print_client_line(bob_year_cash);
@@ -115,6 +111,7 @@ void print_out(unsigned long long int bob_year_cash, unsigned long long int alic
 
     printf("%0.2d \n", year + 1);
 }
+
 
 void simulation() {
     // YEAR CYCLE STARTS
@@ -145,6 +142,5 @@ int main() {
     init_alice(&Alice);
 
     simulation();
-
     return 0;
 }
