@@ -156,7 +156,24 @@ Matrix& Matrix::operator*=(const Matrix &m) {
 }
 
 
+void Matrix::mult_bu_num(const double num) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] *= num;
+    }
+}
 
+
+void Matrix::zero_matrix() {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = 0;
+    }
+}
+
+void Matrix::unit_matrix() {
+    for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
+        value[number] = 1.0;
+    }
+}
 
 
 Matrix::~Matrix() {
@@ -167,3 +184,5 @@ Matrix::~Matrix() {
 int main() {
     return 0;
 }
+
+  // Спросить как кидать проверки
