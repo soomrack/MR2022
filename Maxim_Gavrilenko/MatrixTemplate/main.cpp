@@ -48,13 +48,13 @@ public:
     T* getvalues();
     unsigned int getrow();
     unsigned int getcol();
-    void output();
+    virtual void output();
     Matrix<T> fill_random(unsigned int n);
     Matrix<T> set_zero();
     Matrix<T> set_identity();
     Matrix set_transpose();
     Matrix fill_from_array(T*);
-    double determinant(const Matrix<T>, unsigned int);
+    double determinant(const Matrix<T>, const unsigned int);
     Matrix reverse(const Matrix<T>, const unsigned int);
     Matrix minor(const Matrix<T>, const unsigned, const unsigned, const unsigned);
     Matrix exponent(unsigned int);
@@ -391,7 +391,7 @@ public:
 
 
 template <typename T>
-double Matrix<T>::determinant(const Matrix matrix, unsigned int size)
+double Matrix<T>::determinant(const Matrix matrix, const unsigned int size)
 {
     if (matrix.rows != matrix.cols) throw NOTSQUARE;
     double det = 0;
@@ -465,7 +465,7 @@ public:
         memcpy(memory, A.getvalues(), sizeof(T1) * rows * cols);
     }
 
-    void memory_size()
+    void output() override
     {
         std::cout << "Memory for object class - " << sizeof(T1) * rows * cols + sizeof(unsigned int) + sizeof(unsigned int) << " byte" << std:: endl;
     }
@@ -482,7 +482,7 @@ public:
     void memory_report(Matrix<T> A)
     {
         Matrix_Memory<T>mem(A);
-        mem.memory_size();
+        mem.output();
     }
 
 void test_add()
@@ -706,9 +706,9 @@ void test() {
     int main() {
         try
         { // Проверка выделения памяти
-            Matrix<double> A(0,0);
+            Matrix<double> A(3,3);
         }
-        catch (const Matrix_Exception &e) {
+        catch (Matrix_Exception& e) {
             std::cerr << "Caught: " << e.what() << std::endl;
             exit(404);
         }
