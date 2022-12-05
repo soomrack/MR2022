@@ -4,9 +4,10 @@
 
 inline void print_message(const std::string& text, const MatrixException& Exception_object) {
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
+    std::cout << text << ":" << std::endl << Exception_object.get_error_code() << std::endl << std::endl;
 }
 
-Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
+/*Matrix Matrix_test::size_comparation(const Matrix& A, const Matrix& B) {
     if (!((A.rows == B.rows) && (A.cols == B.cols))) {
         throw SIZES_NOT_EQUAL;
     }
@@ -17,7 +18,7 @@ Matrix Matrix_test::multiply_size_comparation(const Matrix& A, const Matrix& B) 
         Matrix::error();
     }
 }
-
+*/
 int Matrix_test::summ_test() {
     try {
         Matrix A(3, 3);
