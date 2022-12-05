@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <iomanip>
 #include <math.h>
 
 
@@ -16,7 +15,6 @@ private:
 public:
     Matrix();  //
     Matrix(const Matrix& m);  // copy
-    Matrix(const unsigned int n);  // square matrix
     Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
     ~Matrix();  // destructor
     Matrix(Matrix&& m);
@@ -31,15 +29,15 @@ public:
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
     void transposition();  // траспонирование
-    void determinant();  // определитель
+    double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
-    void exponent(const unsigned int e = 5);  // матричная экспонента
-    Matrix minor(const unsigned int r, const unsigned int c);
+    void exponent(const unsigned int e = 3);  // матричная экспонента
+    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);
 
     void set_values(const unsigned int l, const double* array);
     void set_random(const unsigned int range = 21);
-    void output(bool f = false);
+    /*void output(bool f = false);*/
 
     friend Matrix exponent(const Matrix m, const unsigned int e);
     friend Matrix power(const Matrix m, const unsigned int n);
@@ -59,23 +57,13 @@ Matrix operator* (const Matrix &m1, const Matrix &m2);
 Matrix operator* (const Matrix &m, const double num);
 
 
-Matrix::Matrix() {
-    rows = 0;
-    cols = 0;
-}
+Matrix::Matrix() : rows(0), cols(0), value(nullptr) {}
 
 
 Matrix::Matrix(const unsigned int r, const unsigned int c) {
     rows = r;
     cols = c;
     value = new double [rows * cols];
-}
-
-
-Matrix::Matrix(const unsigned int n) {
-    rows = n;
-    cols = n;
-    value = new double [pow(n, 2)];
 }
 
 
@@ -192,6 +180,38 @@ void Matrix::transposition() {
 }
 
 
+/*Matrix Matrix::minor(const Matrix m, const unsigned int size, const unsigned int r, const unsigned int c) {
+    int n_row = rows - 1;
+    int n_col = cols - 1;
+
+    Matrix itog = Matrix (n_row, n_col);
+    unsigned int k = 0;
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        if ((number % cols == c) or (number / cols == r)) {
+            itog.value[k++] = value[number];
+        }
+    }
+    return itog;
+}*/
+
+
+Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col)
+{
+    Matrix minor(size - 1, size - 1);
+    unsigned int shiftrow = 0;
+    unsigned int shiftcol;
+    for (unsigned int rows = 0; rows < size - 1; rows++) {
+        if (rows == row) {shiftrow = 1;}
+        shiftcol = 0;
+        for (unsigned int cols = 0; cols < size - 1; cols++) {
+            if (cols == col) {shiftcol = 1;}
+            minor.value[rows * (size - 1) + cols] = matrix.value[(rows + shiftrow) * size + (cols + shiftcol)];
+        }
+    }
+    return minor;
+}
+
+
 void Matrix::power(const unsigned int n) {
     Matrix itog = Matrix (rows, cols);
     itog.unit_matrix();
@@ -213,6 +233,28 @@ void Matrix::exponent(const unsigned int e) {
         itog += (fact * temp);
     }
     *this = itog;
+}
+
+
+void Matrix::set_random(const unsigned int range) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = rand() % range;
+    }
+}
+
+
+double Matrix::determinant(const Matrix m, unsigned int size) {
+    Matrix temp = Matrix(rows, cols);
+    temp.set_values(rows * cols, value);
+    if (cols == 1) {
+        return value[0];
+    }
+    double itog = 1.0;
+    for (unsigned int number = 0; number < temp.rows; number++) {
+        Matrix min = minor(m, size, 0, number);
+        itog += pow(-1, number) * value[number] * determinant(min, size - 1);
+    }
+    return itog;
 }
 
 
@@ -273,6 +315,7 @@ Matrix unit_matrix (const unsigned int rows, const unsigned int cols) {
 }
 
 
+
 Matrix mult_by_num (const Matrix m, const double num) {
     Matrix itog = m;
     itog.mult_by_num(num);
@@ -296,8 +339,168 @@ Matrix exponent (const Matrix m, const unsigned int e = 5) {
 }
 
 
+/*Тесты для проверки работоспособности программы*/
+
+// Тест для суммирование
+
+void summation_test() {
+    Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Задание исходных данных
+    double array_2[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 + m2;  // Итог вычисления программой.
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};  // Результирующие данные для сравнения
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {  // Если результаты совпали
+        std::cout << "Summation is correct\n";  // Суммирование верно
+    }
+    else {
+        std::cout << "Summation is incorrect\n";
+    }
+}
+
+
+void subtraction_test() {
+    Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};  // Задание исходных данных
+    double array_2[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 - m2;  // Итог вычисления программой.
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Результирующие данные для сравнения
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {  // Если результаты совпали
+        std::cout << "Subtraction is correct\n";  // Вычитание верно
+    }
+    else {
+        std::cout << "Subtraction is incorrect\n";
+    }
+}
+
+
+void multiplication_test () {
+    Matrix m1 = Matrix(3, 3);
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Задание исходных данных
+    double array_2[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 * m2;
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {30.0, 36.0, 42.0, 66.0, 81.0, 96.0, 102.0, 126.0, 150.0};
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Multiplication is correct\n");
+    }
+    else {
+        std::cout << ("Multiplication is incorrect\n");
+    }
+}
+
+
+void mult_by_num_test() {
+    Matrix m1 = Matrix(3, 3);
+    double num = 5;
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    Matrix itog = m1 * num;
+    Matrix result = Matrix(3, 3);
+    double array_result[9] = {5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0};
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Multiplication matrix by number is correct\n");
+    }
+    else {
+        std::cout << ("Multiplication matrix by number is incorrect\n");
+    }
+}
+
+
+void determinant_test() {
+    Matrix m1 = Matrix(3, 3);
+    double array_1[9] = {2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    double itog = m1.determinant(m1, 3);
+    double result = -3;
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Determinant was ound correctly\n");
+    }
+    else {
+        std::cout << ("Determinant was found incorrectly\n");
+    }
+}
+
+
+void exponent_test() {
+    Matrix m1 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    Matrix m2 = exponent(m1, 3);
+    Matrix result = Matrix(3, 3);
+    result = unit_matrix(3, 3) + m1 + 0.5 * power(m1, 2);
+    m1.exponent();
+    bool res = (m1 == result);
+    if (res) {
+        std::cout << ("Exponent is calculated correctly");
+    }
+    else {
+        std::cout << ("Exponent is calculated incorrectly");
+    }
+}
+
+
+void power_test() {
+    Matrix m1 = Matrix(3, 3);
+    double num = 5;
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    Matrix itog = power(m1, num);
+    Matrix result = Matrix(3, 3);
+    double array_result[9] = {468.0, 576.0, 684.0, 1062.0, 1305.0, 1548.0, 1656.0, 2034.0, 2412.0};
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Matrix power is calculated correctly");
+    }
+    else {
+        std::cout << ("Matrix power is calculates incorrectly");
+    }
+}
+
+
+void all_tests() {  // Блок для вызова тестов, потом его в main прописать
+    summation_test();
+    subtraction_test();
+    mult_by_num_test();
+    multiplication_test();
+    determinant_test();
+    power_test();
+    exponent_test();
+}
+
+
+void output() {
+
+}
+
+
 int main() {
+
+    all_tests();  // Вызов блока тестов для прогона
+
+    output();
+
     return 0;
 }
 
-  // Спросить как кидать проверки
+// Спросить как кидать проверки

@@ -18,8 +18,7 @@ public:
             std::is_same<double, T>::value ||
             std::is_same<float,T>::value ||
             std::is_same<long double,T>::value ||
-            std::is_same<int, T>::value,
-            "T could be double, float, long double or int"
+            "T could be double, float or long double"
             );
     Matrix();  // Конструктор пустой матрицы
     Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
