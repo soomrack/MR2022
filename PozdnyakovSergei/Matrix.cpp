@@ -33,7 +33,7 @@ public:
     double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
-    void exponent(const unsigned int e = 5);  // матричная экспонента
+    void exponent(const unsigned int e = 3);  // матричная экспонента
     Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);
 
     void set_values(const unsigned int l, const double* array);
@@ -444,12 +444,31 @@ void determinant_test() {
 }
 
 
+void exponent_test() {
+    Matrix m1 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    Matrix m2 = exponent(m1, 3);
+    Matrix result = Matrix(3, 3);
+    result = unit_matrix(3, 3) + m1 + 0.5 * power(m1, 2);
+    m1.exponent();
+    bool res = (m1 == result);
+    if (res) {
+        std::cout << ("Exponent is calculated correctly");
+    }
+    else {
+        std::cout << ("Exponent is calculated incorrectly");
+    }
+}
+
+
 void all_tests() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
     mult_by_num_test();
     multiplication_test();
     determinant_test();
+    exponent_test();
 }
 
 
