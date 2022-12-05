@@ -5,11 +5,9 @@
 #include "Matrix.h"
 #include "Matrix_exception.h"
 
-MatrixException SIZE_ERROR(1,"Размеры матрицы некорректны");
-MatrixException WRONG_SIZES(2,"Размеры некорректны для вычисления");
-MatrixException MEMORY_DIDNOT_ALLOCATED(3,"Память не выделилась");
-MatrixException DELETING_NULL_MEMORY(4,"Удвление невыделенной памяти");
-MatrixException DIVIDE_BY_ZERO(5,"Деление на ноль");
+MatrixException WRONG_SIZES(1,"Размеры некорректны для вычисления");
+MatrixException MEMORY_DIDNOT_ALLOCATED(2,"Память не выделилась");
+MatrixException DIVIDE_BY_ZERO(3,"Деление на ноль");
 
 class Matrix_test {
 public:

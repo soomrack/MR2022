@@ -7,9 +7,6 @@
 
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
-    if ((cols_m < 0) && (rows_m < 0)){
-        throw WRONG_SIZES;
-    }
         cols = cols_m;
         rows = rows_m;
         values = new double[cols * rows];
@@ -19,21 +16,20 @@ Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Ини
 }
 
 Matrix::Matrix(const Matrix &A) {  // Конструктор копирования
-    if((A.values == nullptr)){
-        throw MEMORY_DIDNOT_ALLOCATED;
-    }
     rows = A.rows;
     cols = A.cols;
     values = new double[rows * cols];
+    if (A.values != nullptr) {
+        if (values == nullptr) {
+            throw MEMORY_DIDNOT_ALLOCATED;
+        }
+    }
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         values[idx] = A.values[idx];
     }
 }
 
 Matrix::Matrix(Matrix&& A) {  // Конструктор переноса
-    if(A.values == nullptr){
-        throw MEMORY_DIDNOT_ALLOCATED;
-    }
     rows = A.rows;
     cols = A.cols;
     values = A.values;
@@ -41,9 +37,6 @@ Matrix::Matrix(Matrix&& A) {  // Конструктор переноса
 }
 
 Matrix::~Matrix() {  // Деструктор
-    if(values == nullptr){
-        throw DELETING_NULL_MEMORY;
-    }
     delete[] values;
 }
 
