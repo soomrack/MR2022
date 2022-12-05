@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <cmath>
 
-const double EPS = 0.0000001;
+const double EPS = 0.000001;
 
 class Matrix_Exception : public std::exception
 {
@@ -56,7 +56,7 @@ public:
 	Matrix& operator-=(const Matrix&);
 	Matrix& operator*=(const Matrix&);
 	Matrix& operator*=(const double);
-	Matrix& operator/=(double);
+	Matrix& operator/=(const double);
 
 	Matrix operator+ (const Matrix&);
 	Matrix operator- (const Matrix&);
@@ -66,7 +66,7 @@ public:
 
 	bool operator!=(const Matrix& mat);
 	bool operator==(const Matrix& mat);
-	friend std::ostream& operator<<(std::ostream& out, Matrix m);
+	friend std::ostream& operator<<(std::ostream& out, const Matrix m);
 
 };
 
@@ -111,11 +111,13 @@ Matrix::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols
 
 Matrix::~Matrix() 
 {
-	delete[] this->values;
+	if (this->values != nullptr) {
+		delete[] this->values;
+	}
 }
 	
 
-std::ostream& operator<<(std::ostream& out, Matrix matrix) 
+std::ostream& operator<<(std::ostream& out, const Matrix matrix) 
 {
 	{
 		for (unsigned int row = 0; row < matrix.rows; row++)
@@ -522,7 +524,8 @@ void test_det()
 						0, 9, 4,
 						8, 8, 2 };
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
-	if (matrix1.determinant(matrix1,matrix1.getrow() == -78)) {
+	double determinant = matrix1.determinant(matrix1, matrix1.getrow());
+	if (determinant != -78) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
 		std::cout << "Determinant test failed\n";
 	}
@@ -543,13 +546,14 @@ void test_rev() {
 					 0.923077,   -0.615385, -0.115385 };
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
 	Matrix test_rev = Matrix(3, 3).fill_from_array(ans);
-	if (matrix1.reverse(matrix1,matrix1.getrow()) == test_rev) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		std::cout << "Reverse test failed\n";
-	}
-	else {
+	Matrix rev = matrix1.reverse(matrix1, matrix1.getrow());
+	if (rev == test_rev) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
 		std::cout << "Reverse test passed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "Reverse test failed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -595,6 +599,24 @@ void test_set_identity()
 }
 
 
+void test_set_zero()
+{
+	double data1[3] = { 1, 7, 4 };
+	double ans[3] = { 0,0,0 };
+	Matrix matrix1 = Matrix(3, 1).fill_from_array(data1);
+	Matrix test_zero = Matrix(3, 1).fill_from_array(ans);
+	if (matrix1.set_zero() == test_zero) {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "SetZero test passed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "SetZero test failed\n";
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
 void test() {
 	test_add();
 	test_sub();
@@ -605,6 +627,7 @@ void test() {
 	test_rev();
 	test_transpose();
 	test_set_identity();
+	test_set_zero();
 }
 
 
@@ -613,16 +636,8 @@ int main()
 	srand(time(NULL));
 	setlocale(LC_ALL, "ru");
 
-	try { // Проверка выделения памяти
-		Matrix A = Matrix(0, 0).fill_random();
-	}
-	catch (const Matrix_Exception& e)
-	{
-		std::cerr << "Caught: " << e.what() << std::endl;
-		std::cerr << "Type: " << typeid(e).name() << std::endl;
-	}
-
-	Matrix A = Matrix(3, 3).fill_random();
+	double data[9] = { 1,7,4,0,9,4,8,8,2 };
+	Matrix A = Matrix(3, 3).fill_from_array(data);
 	Matrix B = Matrix(3, 3).fill_random();
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
