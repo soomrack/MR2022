@@ -247,6 +247,13 @@ void Matrix::exponent(const unsigned int e) {
 }
 
 
+void Matrix::set_random(const unsigned int range) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = rand() % range;
+    }
+}
+
+
 double Matrix::determinant(const Matrix m, unsigned int size) {
     Matrix temp = Matrix(rows, cols);
     temp.set_values(rows * cols, value);
@@ -317,6 +324,7 @@ Matrix unit_matrix (const unsigned int rows, const unsigned int cols) {
     itog.unit_matrix();
     return itog;
 }
+
 
 
 Matrix mult_by_num (const Matrix m, const double num) {
@@ -462,12 +470,35 @@ void exponent_test() {
 }
 
 
+void power_test() {
+    Matrix m1 = Matrix(3, 3);
+    double num = 5;
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    Matrix itog = power(m1, num);
+    Matrix result = Matrix(3, 3);
+    double array_result[9] = {468.0, 576.0, 684.0, 1062.0, 1305.0, 1548.0, 1656.0, 2034.0, 2412.0};
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Matrix power is calculated correctly");
+    }
+    else {
+        std::cout << ("Matrix power is calculates incorrectly");
+    }
+}
+
+
+
+
+
 void all_tests() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
     mult_by_num_test();
     multiplication_test();
     determinant_test();
+    power_test();
     exponent_test();
 }
 
