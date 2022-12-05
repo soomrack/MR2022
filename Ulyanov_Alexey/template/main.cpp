@@ -3,7 +3,8 @@
 
 
 const double COMPARATION_CONST = 0.00001;
-unsigned int MATRIX_MEMORY_QUANTITY = 0;
+static unsigned int MATRIX_MEMORY_QUANTITY = 0;
+static unsigned int memory = 0;
 
 
 class Matrix_Exception : public std::domain_error
@@ -538,9 +539,11 @@ template <typename T>
 class Matrix_memory : public Matrix_T<T>
 {
 
+
 protected:
     unsigned int mem_size;
     unsigned int quantity;
+
 
 public:
     Matrix_memory(){
@@ -549,6 +552,8 @@ public:
         this->data = nullptr;
         this->mem_size = 0;
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
+
+        memory += mem_size;
     }
     Matrix_memory(const unsigned int n){
         this->rows = n;
@@ -556,6 +561,8 @@ public:
         this->data = new T [n * n];
         this->mem_size = n * n * sizeof (T);
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
+
+        memory += mem_size;
     }
     Matrix_memory(const unsigned int row, unsigned int col){
         this->rows = row;
@@ -563,6 +570,8 @@ public:
         this->data = new T [row * col];
         this->mem_size = row * col * sizeof (T);
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
+
+        memory += mem_size;
     }
     Matrix_memory(const Matrix_memory<T> &x){
         this->rows = x.rows;
@@ -575,13 +584,19 @@ public:
 
         this->mem_size = x.mem_size;
         this->quantity = x.quantity;
+
+        memory = memory;
     }
     Matrix_memory(Matrix_memory<T> &&x){
+        memory -= mem_size;
+
         this->rows = x.rows;
         this->cols = x.cols;
         this->data = x.data;
         this->mem_size = x.mem_size;
         this->quantity = x.quantity;
+
+        memory += mem_size;
 
         x.rows = 0;
         x.cols = 0;
@@ -591,6 +606,7 @@ public:
     }
     ~Matrix_memory() {
         MATRIX_MEMORY_QUANTITY--;
+        memory -= mem_size;
     };
 
     void output(bool f = false);
@@ -601,7 +617,8 @@ template <typename T>
 void Matrix_memory<T>::output(bool f){
     Matrix_T<T>::output(f);
     std::cout << "This variable hold " << mem_size << " bytes in memory\n";
-    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n\n";
+    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n";
+    std::cout << "Total memory handed in all Matrix_memory are " << memory << " bytes\n";
 }
 
 
@@ -735,7 +752,7 @@ void block_output(){
     Matrix_T<double> A = Matrix_T<double>(3, 5);
     Matrix_T<float> B = Matrix_T<float> (6);
 
-    Matrix_memory<double> X = Matrix_memory<double>();
+    Matrix_memory<double> X = Matrix_memory<double>(3, 5);
     Matrix_memory<float> Y = Matrix_memory<float>(5);
     Y.fill_random(101);
     Y.output();
