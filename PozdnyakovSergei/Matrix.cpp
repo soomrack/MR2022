@@ -192,6 +192,21 @@ void Matrix::transposition() {
 }
 
 
+Matrix Matrix::minor(const unsigned int r, const unsigned int c) {
+    int n_row = rows - 1;
+    int n_col = cols - 1;
+
+    Matrix itog = Matrix (n_row, n_col);
+    unsigned int k = 0;
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        if ((number % cols == c) or (number / cols == r)) {
+            itog.value[k++] = value[number];
+        }
+    }
+    return itog;
+}
+
+
 void Matrix::power(const unsigned int n) {
     Matrix itog = Matrix (rows, cols);
     itog.unit_matrix();
@@ -296,8 +311,75 @@ Matrix exponent (const Matrix m, const unsigned int e = 5) {
 }
 
 
+/*Тесты для проверки работоспособности программы*/
+
+// Тест для суммирование
+
+void summation_test() {
+    Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Задание исходных данных
+    double array_2[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 + m2;  // Итог вычисления программой.
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};  // Результирующие данные для сравнения
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {  // Если результаты совпали
+        std::cout << "Summation is correct\n";  // Суммирование верно
+    }
+    else {
+        std::cout << "Summation is incorrect";
+    }
+}
+
+
+void subtraction_test() {
+    Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};  // Задание исходных данных
+    double array_2[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 - m2;  // Итог вычисления программой.
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Результирующие данные для сравнения
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {  // Если результаты совпали
+        std::cout << "Subtraction is correct\n";  // Вычитание верно
+    }
+    else {
+        std::cout << "Subtraction is incorrect\n";
+    }
+}
+
+
+void multiplication_test () {
+    Matrix m1 = Matrix(3, 3);
+    Matrix m2 = Matrix(3, 3);
+    double array_1[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};  // Задание исходных данных
+    double array_2[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    m2.set_values(9, array_2);
+    Matrix itog = m1 * m2;
+    Matrix result = Matrix (3, 3);
+    double array_result[9] = {30.0, 36.0, 42.0, 66.0, 81.0, 96.0, 102.0, 126.0, 150.0};
+    result.set_values(9, array_result);
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Multiplication is correct\n");
+    }
+    else {
+        std::cout << ("Multiplication is incorrect");
+    }
+}
+
+
 int main() {
     return 0;
 }
 
-  // Спросить как кидать проверки
+// Спросить как кидать проверки
