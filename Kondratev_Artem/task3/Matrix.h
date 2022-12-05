@@ -30,7 +30,7 @@ public:
     Matrix(int input_rows, int input_cols);
     Matrix(int input_rows, int input_cols, double number);
     Matrix(int input_rows, int input_cols, const std::vector<double> &vector);
-    Matrix(int identity_size);
+    explicit Matrix(int identity_size);
     ~Matrix();
     Matrix(const Matrix &other);
     Matrix(Matrix &&other) noexcept;
