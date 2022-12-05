@@ -6,6 +6,19 @@ const double COMPARATION_CONST = 0.00001;
 unsigned int MATRIX_MEMORY_QUANTITY = 0;
 
 
+class Matrix_Exception : public std::domain_error
+{
+public:
+    Matrix_Exception(const char* const msg) : std::domain_error(msg)
+    {}
+};
+
+
+Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
+Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
+Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
+
+
 template <typename T>
 class Matrix_T
 {
@@ -17,15 +30,16 @@ class Matrix_T
     "type of matrix must be floating point"
     );
 
+
 protected:
 
     const T CMP_CONST = 0.0001;
 
+    unsigned int rows;
     unsigned int cols;
     T* data;
 
 
-    unsigned int rows;
 public:
 
     Matrix_T();
@@ -58,9 +72,21 @@ public:
     void fill_certain(const unsigned int len, const T* array);
     void output(bool f = false);
 
-    friend Matrix_T<T> pow(const Matrix_T<T> x, const unsigned int n);
-    friend Matrix_T<T> exponent(const Matrix_T<T> x, const unsigned int p_degree);
+    Matrix_T<T> pow_mat(const unsigned int n = 2){
+        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
+        if (rows != cols) throw NOT_SQUARE;
 
+        rez.fill_certain(rows * cols, data);
+        rez.pow(n);
+        return rez;
+    };
+    Matrix_T<T> expo_mat(const unsigned int p_degree = 3){
+        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
+        rez.fill_certain(rows * cols, data);
+
+        rez.exponent(p_degree);
+        return rez;
+    };
 
 };
 
@@ -83,22 +109,6 @@ template <typename T>
 Matrix_T<T> operator*(const Matrix_T<T> &x, const T k);
 template <typename T>
 Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y);
-
-
-template<typename T>
-Matrix_T<T> one(const unsigned int i0, const unsigned int i1);
-
-class Matrix_Exception : public std::domain_error
-{
-public:
-    Matrix_Exception(const char* const msg) : std::domain_error(msg)
-    {}
-};
-
-
-Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
-Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
-Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
 
 
 template <typename T>
@@ -448,15 +458,6 @@ Matrix_T<T> multy_k(const Matrix_T<T> x, const double k){
 }
 
 
-template <typename T>
-Matrix_T<T> pow(const Matrix_T<T> x, const unsigned int n){
-    Matrix_T<T> rez = Matrix_T<T>(x.rows, x.cols);
-    if (x.rows != x.cols) throw NOT_SQUARE;
-
-    rez.fill_certain(x.rows * x.cols, x.data);
-    rez.pow(n);
-    return rez;
-}
 
 
 template <typename T>
@@ -474,16 +475,6 @@ void Matrix_T<T>::exponent(const unsigned int p_degree) {
     }
 
     *this = rez;
-}
-
-
-template <typename T>
-Matrix_T<T> exponent(const Matrix_T<T> x, const unsigned int p_degree = 3){
-    Matrix_T<T> rez = Matrix_T<T>(x.rows, x.cols);
-    rez.fill_certain(x.rows * x.cols, x.data);
-
-    rez.exponent(p_degree);
-    return rez;
 }
 
 
@@ -583,7 +574,7 @@ public:
         }
 
         this->mem_size = x.mem_size;
-        this->quantity = x.quantity + 1;
+        this->quantity = x.quantity;
     }
     Matrix_memory(Matrix_memory<T> &&x){
         this->rows = x.rows;
@@ -713,10 +704,10 @@ void test_exp(){
     Matrix_T<double> A = Matrix_T<double>(3, 3);
     A.fill_random();
 
-    Matrix_T<double> B = exponent(A);
+    Matrix_T<double> B = A.expo_mat();
 
     Matrix_T<double> standard = Matrix_T<double>(3, 3);
-    standard = one<double>(3,3) + 1.0 * A + 0.5 * pow<double>(A, 2);
+    standard = one<double>(3,3) + 1.0 * A + A.pow_mat(2) * 0.5;
 
     A.exponent();
 
