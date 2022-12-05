@@ -24,7 +24,7 @@ public:
     void print_matrix();
     void set_values(int max_value);
 
-    Matrix operator+(const Matrix& one) const;
+    Matrix operator+(const Matrix& one) const; //все функции с маленькой буквы
     Matrix operator-(const Matrix& one) const;
     Matrix operator*(const Matrix& one) const;
     Matrix operator*(double coefficient) const;
@@ -32,8 +32,8 @@ public:
     Matrix operator=(Matrix&& one);
     Matrix operator^(const int coefficient) const;
     Matrix operator/(const double coefficient) const;
-    static Matrix  Exp(const Matrix& one, const unsigned int accuracy);
-    Matrix Minor(Matrix& A, unsigned int row, unsigned int col);
+    static Matrix  exp_m(const Matrix& one, const unsigned int accuracy);
+    Matrix minor(Matrix& A, unsigned int row, unsigned int col);
     Matrix transpose();
 
 
@@ -51,7 +51,7 @@ public:
 Matrix_Exception NotSquare("The matrix should be square\n");
 Matrix_Exception WrongSize("The matrix should have another size\n");
 
-Matrix::Matrix() {
+Matrix::Matrix() { // посмореть функцию которая как мемкопи
     cols = 0;
     rows = 0;
 }
@@ -71,7 +71,7 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
 Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new double[rows * cols];
+    values = new double[rows * cols]; // добавить исключение про невыделение памяти
     memcpy(values,matrix.values,rows * cols * sizeof(double));
 }
 
@@ -108,7 +108,7 @@ Matrix::Matrix(unsigned int col) {
     values = new double[cols * rows];
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1 : 0;
+            values[row * cols + col] = (row == col) ? 1.0 : 0.0;
 
         }
     }
@@ -186,7 +186,7 @@ Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка операт�
 }
 
 
-Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень
+Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень убрать елсе
     if(cols != rows) throw NotSquare;
     Matrix Res(*this);
     if (coefficient == 0) {
@@ -206,7 +206,7 @@ Matrix Matrix::operator^(int coefficient) const { // Возведение мат
 }
 
 
-Matrix Matrix::operator/(const double coefficient) const {
+Matrix Matrix::operator/(const double coefficient) const { // добавить исключение - деление на 0 (можно через класс)
     Matrix Res(cols, rows);
     for(unsigned int idx = 0; idx < rows * cols; ++idx) {
         Res.values[idx] = values[idx]/coefficient;
