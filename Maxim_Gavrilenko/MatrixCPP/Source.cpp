@@ -3,21 +3,21 @@
 #include <windows.h>
 #include <cmath>
 
-const double EPS = 0.0000001;
+const double EPS = 0.000001;
 
 class Matrix_Exception : public std::exception
 {
 public:
-	Matrix_Exception(const char* const msg) : exception(msg)
+	Matrix_Exception(const char* const &msg) : exception(msg)
 	{}
 };
 
 
-Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)");
-Matrix_Exception NOTEQUAL("Error: the matrix should have a same size");
-Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.");
-Matrix_Exception ZERODIVISION("Error: divide by zero");
-Matrix_Exception MEM_ERROR("Error: memory are not allocated");
+Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)\n");
+Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
+Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.\n");
+Matrix_Exception ZERODIVISION("Error: divide by zero\n");
+Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 
 
 class Matrix
@@ -37,8 +37,8 @@ public:
 	
 	
 	void output();
-	int getrow();
-	int getcol();
+	unsigned int getrow();
+	unsigned int getcol();
 
 	Matrix set_zero(); // Установить значения матрицы нулями
 	Matrix fill_random(unsigned int);
@@ -56,7 +56,7 @@ public:
 	Matrix& operator-=(const Matrix&);
 	Matrix& operator*=(const Matrix&);
 	Matrix& operator*=(const double);
-	Matrix& operator/=(double);
+	Matrix& operator/=(const double);
 
 	Matrix operator+ (const Matrix&);
 	Matrix operator- (const Matrix&);
@@ -66,7 +66,7 @@ public:
 
 	bool operator!=(const Matrix& mat);
 	bool operator==(const Matrix& mat);
-	friend std::ostream& operator<<(std::ostream& out, Matrix m);
+	friend std::ostream& operator<<(std::ostream& out, const Matrix m);
 
 };
 
@@ -77,11 +77,7 @@ Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 Matrix::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols) 
 {
 	values = new double[rows * cols];
-	if (values == nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 	memcpy(values, mat.values, rows * cols * sizeof(double));
 }
 
@@ -101,11 +97,7 @@ Matrix::Matrix(unsigned int num_row, unsigned int num_col)
 	rows = num_row;
 	cols = num_col;
 	values = new double[rows * cols];
-	if (this->values = nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 }
 
 
@@ -119,11 +111,13 @@ Matrix::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols
 
 Matrix::~Matrix() 
 {
-	delete[] this->values;
+	if (this->values != nullptr) {
+		delete[] this->values;
+	}
 }
 	
 
-std::ostream& operator<<(std::ostream& out, Matrix matrix) 
+std::ostream& operator<<(std::ostream& out, const Matrix matrix) 
 {
 	{
 		for (unsigned int row = 0; row < matrix.rows; row++)
@@ -196,13 +190,13 @@ void Matrix::output()
 }
 
 
-int Matrix::getrow()
+unsigned int Matrix::getrow()
 {
 	return (rows);
 }
 
 
-int Matrix::getcol()
+unsigned int Matrix::getcol()
 {
 	return (cols);
 }
@@ -343,11 +337,7 @@ Matrix& Matrix::operator=(const Matrix& A)
 	rows = A.rows;
 	cols = A.cols;
 	this->values = new double[rows * cols];
-	if (this->values = nullptr) {
-		rows = 0;
-		cols = 0;
-		throw MEM_ERROR;
-	}
+	if (!values) throw MEM_ERROR;
 	memcpy(this->values, A.values, rows * cols * sizeof(double));
 	return *this;
 }
@@ -398,7 +388,7 @@ Matrix Matrix::reverse(const Matrix matrix, const unsigned int size) // Функция 
 		}
 	}
 	reverse.set_transpose();
-	if (d < EPS) throw ZERODIVISION;
+	if (fabs(d) < EPS) throw ZERODIVISION;
 	reverse /= d;
 	return reverse;
 }
@@ -534,7 +524,8 @@ void test_det()
 						0, 9, 4,
 						8, 8, 2 };
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
-	if (matrix1.determinant(matrix1,matrix1.getrow() == -78)) {
+	double determinant = matrix1.determinant(matrix1, matrix1.getrow());
+	if (determinant != -78) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
 		std::cout << "Determinant test failed\n";
 	}
@@ -555,13 +546,14 @@ void test_rev() {
 					 0.923077,   -0.615385, -0.115385 };
 	Matrix matrix1 = Matrix(3, 3).fill_from_array(data1);
 	Matrix test_rev = Matrix(3, 3).fill_from_array(ans);
-	if (matrix1.reverse(matrix1,matrix1.getrow()) == test_rev) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-		std::cout << "Reverse test failed\n";
-	}
-	else {
+	Matrix rev = matrix1.reverse(matrix1, matrix1.getrow());
+	if (rev == test_rev) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
 		std::cout << "Reverse test passed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "Reverse test failed\n";
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
@@ -607,6 +599,24 @@ void test_set_identity()
 }
 
 
+void test_set_zero()
+{
+	double data1[3] = { 1, 7, 4 };
+	double ans[3] = { 0,0,0 };
+	Matrix matrix1 = Matrix(3, 1).fill_from_array(data1);
+	Matrix test_zero = Matrix(3, 1).fill_from_array(ans);
+	if (matrix1.set_zero() == test_zero) {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+		std::cout << "SetZero test passed\n";
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+		std::cout << "SetZero test failed\n";
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
 void test() {
 	test_add();
 	test_sub();
@@ -617,17 +627,21 @@ void test() {
 	test_rev();
 	test_transpose();
 	test_set_identity();
+	test_set_zero();
 }
 
 
 int main()
 { 
-	/*srand(time(NULL));*/
+	srand(time(NULL));
 	setlocale(LC_ALL, "ru");
-	Matrix A = Matrix(3, 3).fill_random();
-	Matrix B = Matrix(3, 3).fill_random();	
+
+	double data[9] = { 1,7,4,0,9,4,8,8,2 };
+	Matrix A = Matrix(3, 3).fill_from_array(data);
+	Matrix B = Matrix(3, 3).fill_random();
 	std::cout << "First Matrix\n" << A;
 	std::cout << "Second Matrix\n" << B;
+	
 	try {
 		std::cout << "Addiction of two matrix\n" << A + B;
 		std::cout << "Subtraction of two matrix\n" << A - B;
