@@ -4,7 +4,7 @@
 
 const double COMPARATION_CONST = 0.00001;
 static unsigned int MATRIX_MEMORY_QUANTITY = 0;
-static unsigned int memory = 0;
+static unsigned int memory = 0;  // рудимент, по идее выполняющий ту же функцию, что и Matrix_memory.total_memory
 
 
 class Matrix_Exception : public std::domain_error
@@ -459,8 +459,6 @@ Matrix_T<T> multy_k(const Matrix_T<T> x, const double k){
 }
 
 
-
-
 template <typename T>
 void Matrix_T<T>::exponent(const unsigned int p_degree) {
     if (rows != cols) throw NOT_SQUARE;
@@ -539,10 +537,11 @@ template <typename T>
 class Matrix_memory : public Matrix_T<T>
 {
 
-
 protected:
     unsigned int mem_size;
-    unsigned int quantity;
+    unsigned int quantity; // рудимент, отсчитывающий количество созданных экземпляров класса Matrix_memory
+
+    static unsigned int total_memory;
 
 
 public:
@@ -554,6 +553,7 @@ public:
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
 
         memory += mem_size;
+        total_memory += mem_size;
     }
     Matrix_memory(const unsigned int n){
         this->rows = n;
@@ -563,6 +563,7 @@ public:
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
 
         memory += mem_size;
+        total_memory += mem_size;
     }
     Matrix_memory(const unsigned int row, unsigned int col){
         this->rows = row;
@@ -572,6 +573,7 @@ public:
         this->quantity = ++MATRIX_MEMORY_QUANTITY;
 
         memory += mem_size;
+        total_memory += mem_size;
     }
     Matrix_memory(const Matrix_memory<T> &x){
         this->rows = x.rows;
@@ -589,6 +591,7 @@ public:
     }
     Matrix_memory(Matrix_memory<T> &&x){
         memory -= mem_size;
+        total_memory -= mem_size;
 
         this->rows = x.rows;
         this->cols = x.cols;
@@ -597,6 +600,7 @@ public:
         this->quantity = x.quantity;
 
         memory += mem_size;
+        total_memory += mem_size;
 
         x.rows = 0;
         x.cols = 0;
@@ -607,18 +611,43 @@ public:
     ~Matrix_memory() {
         MATRIX_MEMORY_QUANTITY--;
         memory -= mem_size;
+        total_memory -= mem_size;
     };
+
+    Matrix_memory<T>& operator=(const Matrix_memory<T> &x) {
+        if (this != &x){
+            if (!this->data)
+                delete[] this->data;
+
+            memory -= mem_size;
+            total_memory -= mem_size;
+
+            this->rows = x.rows;
+            this->cols = x.cols;
+            mem_size = this->rows * this->cols * sizeof (T);
+
+            this->data = new double[x.rows * x.cols];
+            for (unsigned int idx = 0; idx < this->rows * this->cols; idx++){
+                this->data[idx] = x.data[idx];
+            }
+
+            memory += mem_size;
+            total_memory += mem_size;
+        }
+        return *this;
+    }
 
     void output(bool f = false);
 };
-
+template <typename T>
+unsigned int Matrix_memory<T>::total_memory = 0;
 
 template <typename T>
 void Matrix_memory<T>::output(bool f){
     Matrix_T<T>::output(f);
     std::cout << "This variable hold " << mem_size << " bytes in memory\n";
     std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n";
-    std::cout << "Total memory handed in all Matrix_memory are " << memory << " bytes\n";
+    std::cout << "Total memory handed in all Matrix_memory are " << total_memory << " bytes\n\n\n";
 }
 
 
@@ -753,9 +782,18 @@ void block_output(){
     Matrix_T<float> B = Matrix_T<float> (6);
 
     Matrix_memory<double> X = Matrix_memory<double>(3, 5);
+    X.fill_random(10001);
+    X.output();
     Matrix_memory<float> Y = Matrix_memory<float>(5);
     Y.fill_random(101);
     Y.output();
+    Matrix_memory<double> Z = Matrix_memory<double>(2);
+    Z.fill_random();
+    Z.output();
+    Z = X;
+
+    Z.output();
+
 
 }
 
