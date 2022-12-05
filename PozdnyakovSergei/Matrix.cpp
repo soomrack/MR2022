@@ -30,7 +30,7 @@ public:
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
-    void transponation();  // траспонирование
+    void transposition();  // траспонирование
     void determinant();  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
@@ -173,6 +173,22 @@ void Matrix::unit_matrix() {
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
+}
+
+
+void Matrix::transposition() {
+    unsigned int row = rows;
+    unsigned int col = cols;
+    double* array = new double [rows * cols];
+    for (unsigned int row_n = 0; row_n < rows; row_n++) {
+        for (unsigned int col_n = 0; col_n < cols; col_n++) {
+            array[row_n * cols + col_n] = value [col_n * rows + row_n];
+        }
+    }
+    delete value;
+    value = array;
+    rows = row;
+    cols = col;
 }
 
 
