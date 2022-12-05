@@ -74,7 +74,7 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 Matrix::Matrix(const unsigned int n) {
     rows = n;
     cols = n;
-    value = new double [pow(n, 2)];
+    value = new double [n * n];
 }
 
 
@@ -489,9 +489,6 @@ void power_test() {
 }
 
 
-
-
-
 void all_tests() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
@@ -503,9 +500,16 @@ void all_tests() {  // Блок для вызова тестов, потом е�
 }
 
 
+void output() {
+
+}
+
+
 int main() {
 
     all_tests();  // Вызов блока тестов для прогона
+
+    output();
 
     return 0;
 }
