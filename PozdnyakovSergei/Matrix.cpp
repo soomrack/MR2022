@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <iomanip>
 #include <math.h>
 
 
@@ -31,11 +30,11 @@ public:
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
     void transposition();  // траспонирование
-    void determinant();  // определитель
+    double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
     void exponent(const unsigned int e = 5);  // матричная экспонента
-    Matrix minor(const unsigned int r, const unsigned int c);
+    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);
 
     void set_values(const unsigned int l, const double* array);
     void set_random(const unsigned int range = 21);
@@ -192,7 +191,7 @@ void Matrix::transposition() {
 }
 
 
-Matrix Matrix::minor(const unsigned int r, const unsigned int c) {
+/*Matrix Matrix::minor(const Matrix m, const unsigned int size, const unsigned int r, const unsigned int c) {
     int n_row = rows - 1;
     int n_col = cols - 1;
 
@@ -204,6 +203,23 @@ Matrix Matrix::minor(const unsigned int r, const unsigned int c) {
         }
     }
     return itog;
+}*/
+
+
+Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned int row, const unsigned int col)
+{
+    Matrix minor(size - 1, size - 1);
+    unsigned int shiftrow = 0;
+    unsigned int shiftcol;
+    for (unsigned int rows = 0; rows < size - 1; rows++) {
+        if (rows == row) {shiftrow = 1;}
+        shiftcol = 0;
+        for (unsigned int cols = 0; cols < size - 1; cols++) {
+            if (cols == col) {shiftcol = 1;}
+            minor.value[rows * (size - 1) + cols] = matrix.value[(rows + shiftrow) * size + (cols + shiftcol)];
+        }
+    }
+    return minor;
 }
 
 
@@ -228,6 +244,21 @@ void Matrix::exponent(const unsigned int e) {
         itog += (fact * temp);
     }
     *this = itog;
+}
+
+
+double Matrix::determinant(const Matrix m, unsigned int size) {
+    Matrix temp = Matrix(rows, cols);
+    temp.set_values(rows * cols, value);
+    if (cols == 1) {
+        return value[0];
+    }
+    double itog = 1.0;
+    for (unsigned int number = 0; number < temp.rows; number++) {
+        Matrix min = minor(m, size, 0, number);
+        itog += pow(-1, number) * value[number] * determinant(min, size - 1);
+    }
+    return itog;
 }
 
 
@@ -331,7 +362,7 @@ void summation_test() {
         std::cout << "Summation is correct\n";  // Суммирование верно
     }
     else {
-        std::cout << "Summation is incorrect";
+        std::cout << "Summation is incorrect\n";
     }
 }
 
@@ -373,7 +404,7 @@ void multiplication_test () {
         std::cout << ("Multiplication is correct\n");
     }
     else {
-        std::cout << ("Multiplication is incorrect");
+        std::cout << ("Multiplication is incorrect\n");
     }
 }
 
@@ -397,10 +428,35 @@ void mult_by_num_test() {
 }
 
 
+void determinant_test() {
+    Matrix m1 = Matrix(3, 3);
+    double array_1[9] = {2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    m1.set_values(9, array_1);
+    double itog = m1.determinant(m1, 3);
+    double result = -3;
+    bool res = (itog == result);
+    if (res) {
+        std::cout << ("Determinant was ound correctly\n");
+    }
+    else {
+        std::cout << ("Determinant was found incorrectly\n");
+    }
+}
 
+
+void all_tests() {  // Блок для вызова тестов, потом его в main прописать
+    summation_test();
+    subtraction_test();
+    mult_by_num_test();
+    multiplication_test();
+    determinant_test();
+}
 
 
 int main() {
+
+    all_tests();  // Вызов блока тестов для прогона
+
     return 0;
 }
 
