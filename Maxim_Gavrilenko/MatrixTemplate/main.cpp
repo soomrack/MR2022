@@ -25,9 +25,11 @@ Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 template<typename T>
 class Matrix {
 protected:
+
     unsigned int rows;
     unsigned int cols;
     T *values;
+
 public:
     //Restrictions
     static_assert(
@@ -450,40 +452,33 @@ Matrix<T> Matrix<T>::exponent(unsigned int n /*Количество членов
 
 
 template <typename T1>
-class Matrix_Memory: public Matrix<T1>
-{
+class Matrix_Memory: public Matrix<T1> {
 private:
-    T1* memory;
-    unsigned int rows;
-    unsigned int cols;
+    unsigned int memory;
+    unsigned int row;
+    unsigned int col;
 public:
-    Matrix_Memory(Matrix<T1>& A): Matrix<T1>()
-    {
-        rows = A.getrow();
-        cols = A.getcol();
-        memory = new T1 [rows * cols];
-        memcpy(memory, A.getvalues(), sizeof(T1) * rows * cols);
+    Matrix_Memory<T1>(Matrix<T1> &matrix) {
+        row = matrix.getrow();
+        col = matrix.getcol();
+        memory = sizeof(T1) * row * col + sizeof(unsigned int) + sizeof(unsigned int);
     }
 
-    void output() override
-    {
-        std::cout << "Memory for object class - " << sizeof(T1) * rows * cols + sizeof(unsigned int) + sizeof(unsigned int) << " byte" << std:: endl;
+    void output() override {
+        std::cout << "Memory for object class - " << memory << " byte" << std::endl;
     }
 
     ~Matrix_Memory()
     {
-       if (memory != nullptr){
-           delete[] memory;
-       }
     }
 };
 
-    template <typename T>
-    void memory_report(Matrix<T> A)
+   /* template <typename T>
+    void memory_report(Matrix<T> &matrix)
     {
-        Matrix_Memory<T>mem(A);
+        Matrix_Memory<T>mem(Matrix<T> matrix);
         mem.output();
-    }
+    }*/
 
 void test_add()
 {
@@ -742,7 +737,7 @@ void test() {
         catch (Matrix_Exception &e) {
             std::cerr << "Caught: " << e.what() << std::endl;
         }
-        memory_report(A);
-        memory_report(B);
+        Matrix_Memory<double> mem(A);
+        mem.output();
         test();
     }
