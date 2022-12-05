@@ -1,4 +1,4 @@
-#include "Matrix_exceptions.h"
+#include "Matrix_exception.h"
 #include <utility>
 
 

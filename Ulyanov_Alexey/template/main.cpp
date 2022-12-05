@@ -1,7 +1,22 @@
 #include <iostream>
 #include <iomanip>
 
+
 const double COMPARATION_CONST = 0.00001;
+unsigned int MATRIX_MEMORY_QUANTITY = 0;
+
+
+class Matrix_Exception : public std::domain_error
+{
+public:
+    Matrix_Exception(const char* const msg) : std::domain_error(msg)
+    {}
+};
+
+
+Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
+Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
+Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
 
 
 template <typename T>
@@ -15,7 +30,10 @@ class Matrix_T
     "type of matrix must be floating point"
     );
 
-public:
+
+protected:
+
+    const T CMP_CONST = 0.0001;
 
     unsigned int rows;
     unsigned int cols;
@@ -37,6 +55,7 @@ public:
     Matrix_T<T>& operator*=(const Matrix_T<T> &x);
     Matrix_T<T>& operator*=(const T k);
     Matrix_T<T>& operator/=(const Matrix_T<T> &x);
+    bool operator==(const Matrix_T<T> &x);
 
     void zero();
     void one();
@@ -53,9 +72,21 @@ public:
     void fill_certain(const unsigned int len, const T* array);
     void output(bool f = false);
 
-    friend Matrix_T<T> pow(const Matrix_T<T> x, const unsigned int n);
-    friend Matrix_T<T> exponent(const Matrix_T<T> x, const unsigned int p_degree);
-    friend bool operator==(const Matrix_T<T> &x, const Matrix_T<T> &y);
+    Matrix_T<T> pow_mat(const unsigned int n = 2){
+        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
+        if (rows != cols) throw NOT_SQUARE;
+
+        rez.fill_certain(rows * cols, data);
+        rez.pow(n);
+        return rez;
+    };
+    Matrix_T<T> expo_mat(const unsigned int p_degree = 3){
+        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
+        rez.fill_certain(rows * cols, data);
+
+        rez.exponent(p_degree);
+        return rez;
+    };
 
 };
 
@@ -78,22 +109,6 @@ template <typename T>
 Matrix_T<T> operator*(const Matrix_T<T> &x, const T k);
 template <typename T>
 Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y);
-
-
-template<typename T>
-Matrix_T<T> one(const unsigned int i0, const unsigned int i1);
-
-class Matrix_Exception : public std::domain_error
-{
-public:
-    Matrix_Exception(const char* const msg) : std::domain_error(msg)
-    {}
-};
-
-
-Matrix_Exception SIZE_UNMATCH("Error founded: Two datas have incompatible size");
-Matrix_Exception NOT_SQUARE("Error founded: The number of rows must be equal to cols");
-Matrix_Exception DIV_BY_ZERO("Error founded: Division by zero");
 
 
 template <typename T>
@@ -443,15 +458,6 @@ Matrix_T<T> multy_k(const Matrix_T<T> x, const double k){
 }
 
 
-template <typename T>
-Matrix_T<T> pow(const Matrix_T<T> x, const unsigned int n){
-    Matrix_T<T> rez = Matrix_T<T>(x.rows, x.cols);
-    if (x.rows != x.cols) throw NOT_SQUARE;
-
-    rez.fill_certain(x.rows * x.cols, x.data);
-    rez.pow(n);
-    return rez;
-}
 
 
 template <typename T>
@@ -473,24 +479,12 @@ void Matrix_T<T>::exponent(const unsigned int p_degree) {
 
 
 template <typename T>
-Matrix_T<T> exponent(const Matrix_T<T> x, const unsigned int p_degree = 3){
-    Matrix_T<T> rez = Matrix_T<T>(x.rows, x.cols);
-    rez.fill_certain(x.rows * x.cols, x.data);
-
-    rez.exponent(p_degree);
-    return rez;
-}
-
-
-template <typename T>
-bool operator==(const Matrix_T<T> &x, const Matrix_T<T> &y) {
-    bool flag = ((x.rows == y.rows) and (x.cols == y.cols));
-    if (!flag) return flag;
-
-    for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
-        flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
+bool Matrix_T<T>::operator==(const Matrix_T<T> &x) {
+    if (this->cols != x.cols || this->rows != x.rows) return false;
+    for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
+        if (abs(this->data[idx] - x.data[idx]) > x.CMP_CONST) return false;
     }
-    return flag;
+    return true;
 }
 
 
@@ -537,6 +531,77 @@ Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y){
     Matrix_T<T> rez = x;
     rez /= y;
     return rez;
+}
+
+
+template <typename T>
+class Matrix_memory : public Matrix_T<T>
+{
+
+protected:
+    unsigned int mem_size;
+    unsigned int quantity;
+
+public:
+    Matrix_memory(){
+        this->rows = 0;
+        this->cols = 0;
+        this->data = nullptr;
+        this->mem_size = 0;
+        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+    }
+    Matrix_memory(const unsigned int n){
+        this->rows = n;
+        this->cols = n;
+        this->data = new T [n * n];
+        this->mem_size = n * n * sizeof (T);
+        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+    }
+    Matrix_memory(const unsigned int row, unsigned int col){
+        this->rows = row;
+        this->cols = col;
+        this->data = new T [row * col];
+        this->mem_size = row * col * sizeof (T);
+        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+    }
+    Matrix_memory(const Matrix_memory<T> &x){
+        this->rows = x.rows;
+        this->cols = x.cols;
+        this->data = new T [x.rows * x.cols];
+
+        for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
+            this->data[idx] = x.data[idx];
+        }
+
+        this->mem_size = x.mem_size;
+        this->quantity = x.quantity;
+    }
+    Matrix_memory(Matrix_memory<T> &&x){
+        this->rows = x.rows;
+        this->cols = x.cols;
+        this->data = x.data;
+        this->mem_size = x.mem_size;
+        this->quantity = x.quantity;
+
+        x.rows = 0;
+        x.cols = 0;
+        x.data = nullptr;
+        x.mem_size = 0;
+        x.quantity = 0;
+    }
+    ~Matrix_memory() {
+        MATRIX_MEMORY_QUANTITY--;
+    };
+
+    void output(bool f = false);
+};
+
+
+template <typename T>
+void Matrix_memory<T>::output(bool f){
+    Matrix_T<T>::output(f);
+    std::cout << "This variable hold " << mem_size << " bytes in memory\n";
+    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n\n";
 }
 
 
@@ -639,10 +704,10 @@ void test_exp(){
     Matrix_T<double> A = Matrix_T<double>(3, 3);
     A.fill_random();
 
-    Matrix_T<double> B = exponent(A);
+    Matrix_T<double> B = A.expo_mat();
 
     Matrix_T<double> standard = Matrix_T<double>(3, 3);
-    standard = one<double>(3,3) + 1.0 * A + 0.5 * pow<double>(A, 2);
+    standard = one<double>(3,3) + 1.0 * A + A.pow_mat(2) * 0.5;
 
     A.exponent();
 
@@ -669,11 +734,17 @@ void block_output(){
 
     Matrix_T<double> A = Matrix_T<double>(3, 5);
     Matrix_T<float> B = Matrix_T<float> (6);
+
+    Matrix_memory<double> X = Matrix_memory<double>();
+    Matrix_memory<float> Y = Matrix_memory<float>(5);
+    Y.fill_random(101);
+    Y.output();
+
 }
 
 
 int main() {
-    //block_tests();
+    block_tests();
     block_output();
     return 0;
 }

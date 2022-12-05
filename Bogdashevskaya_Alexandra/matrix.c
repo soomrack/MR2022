@@ -167,9 +167,28 @@ Matrix invertible(const Matrix matrix) { // обратная матрица
 		return EMPTY;
 	}
 	Matrix transponent = transpose(matrix);
-	Matrix result = multiply_by_double(transponent, 1. / det(matrix));
-	free_matrix(&transponent);
-	return result;
+	Matrix result = init_matrix(matrix.cols, matrix.rows);
+	for (unsigned int row = 0; row < transponent.rows; ++row) {
+		for (unsigned int col = 0; col < transponent.cols; ++col) {
+			Matrix submatrix = init_matrix(transponent.cols - 1, transponent.rows - 1);
+			unsigned int row_offset = 0;
+			unsigned int col_offset = 0;
+			for (unsigned int sub_row = 0; sub_row < submatrix.rows; ++sub_row) {
+				if (row == sub_row) { row_offset = 1; }
+				for (unsigned int sub_col = 0; sub_col < submatrix.cols; ++sub_col) {
+					if (col == sub_col) { col_offset = 1; }
+					submatrix.values[sub_row * (transponent.cols - 1) + sub_col] =
+						transponent.values[(sub_row + row_offset) * transponent.cols + (sub_col + col_offset)];
+				}
+			}
+			result.values[row * matrix.cols + col] = pow(-1, row + col) * det(submatrix);
+			free(submatrix.values);
+		}
+	}
+	free(transponent.values);
+	Matrix multiplied_result = multiply_by_double(result, 1 / det(result));
+	free(result.values);
+	return multiplied_result;
 }
 
 Matrix copy(const Matrix matrix) { // копирование матрицы
