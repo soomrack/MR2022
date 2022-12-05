@@ -157,22 +157,22 @@ Matrix expo(const Matrix matrix, int accuracy) {
         errorofsize("Exp", "Matrix should be square");
         return ZERO;
     }
-    Matrix new_result, new_powered, multiplied;
+    Matrix result_, pow_, multiplied;
     Matrix result = unit(matrix.rows);
-    Matrix powered = unit(matrix.rows);
+    Matrix pow = unit(matrix.rows);
     int factorial = 1;
     for (int acc = 1; acc <= accuracy; ++acc) {
         factorial *= acc;
-        new_powered = multiply_matrices(powered, matrix);
-        powered = copy(new_powered);
-        free_matrix(&new_powered);
-        multiplied = multiply_on_number(powered, 1. / factorial);
-        new_result = add_matrices(result, multiplied);
-        result = copy(new_result);
-        free_matrix(&new_result);
+        pow_ = multiply_matrices(pow, matrix);
+        pow = copy(pow_);
+        free_matrix(&pow_);
+        multiplied = multiply_on_number(pow, 1. / factorial);
+        result_ = add_matrices(result, multiplied);
+        result = copy(result_);
+        free_matrix(&result_);
         free_matrix(&multiplied);
     }
-    free_matrix(&powered);
+    free_matrix(&pow);
     return result;
 }
 
