@@ -461,7 +461,7 @@ public:
     }
 
     void output() override {
-        std::cout << "Memory for object class - " << memory << " byte" << std::endl;
+        std::cout << "Memory allocated for class Matrix - " << memory << " byte" << std::endl;
     }
 
     ~Matrix_Memory()
@@ -470,12 +470,6 @@ public:
     }
 };
 
- template <typename T>
- void memory_report()
- {
-     Matrix_Memory<T>mem();
-     mem.output();
- }
 
 void test_add()
 {
@@ -710,7 +704,7 @@ int main() {
     B.fill_random(10);
     Matrix<long double> C (9,9);
     Matrix<long double> D (15,16);
-    std::cout << "First Matrix\n" << A;
+    /*std::cout << "First Matrix\n" << A;
     std::cout << "Second Matrix\n" << B;
 
     try {
@@ -735,7 +729,7 @@ int main() {
     }
     catch (Matrix_Exception &e) {
         std::cerr << "Caught: " << e.what() << std::endl;
-    }
+    }*/
     Matrix_Memory<double> mem;
     mem.output();
     test();
