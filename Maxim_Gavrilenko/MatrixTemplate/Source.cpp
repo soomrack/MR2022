@@ -33,7 +33,7 @@ public:
         std::is_same<double, T>::value ||
         std::is_same<float, T>::value ||
         std::is_same<long double, T>::value,
-        "T must be int, double or float"
+        "T must be long double, double or float"
         );
     const T EPS = 0.000001;
     //Constructors
