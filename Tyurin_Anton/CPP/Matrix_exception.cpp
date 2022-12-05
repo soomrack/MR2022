@@ -1,18 +1,14 @@
 #include "Matrix_exception.h"
-#include <utility>
 
-
-MatrixException::MatrixException(int input_code, std::string input_message) {
-    error_code = input_code;
-    message = std::move(input_message);
+/*
+MatrixException::MatrixException(const char* const msg){
+    message = std::move(msg);
 }
-
-
+*/
 std::string MatrixException::get_message() const {
     return message;
 }
 
-
-int MatrixException::get_error_code() const {
-    return error_code;
+void MatrixException::print_message(const std::string &text, const MatrixException &Exception_object) {
+    std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }

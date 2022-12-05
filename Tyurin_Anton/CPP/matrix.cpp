@@ -4,7 +4,9 @@
 #include <cmath>
 #include "Matrix_exception.h"
 
-
+MatrixException WRONG_SIZES("Размеры некорректны для вычисления");
+MatrixException MEMORY_DIDNOT_ALLOCATED("Память не выделилась");
+MatrixException DIVIDE_BY_ZERO("Деление на ноль");
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
         cols = cols_m;
@@ -29,7 +31,7 @@ Matrix::Matrix(const Matrix &A) {  // Конструктор копирован�
     }
 }
 
-Matrix::Matrix(Matrix&& A) {  // Конструктор переноса
+Matrix::Matrix(Matrix&& A)  noexcept {  // Конструктор переноса
     rows = A.rows;
     cols = A.cols;
     values = A.values;
@@ -81,7 +83,7 @@ Matrix::Matrix(unsigned int cols_m) {  // Конструктор единичн�
     // delete[] matrix.values;
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1 : 0;
+            values[row * cols + col] = (row == col) ? 1.0 : 0.0;
 
         }
     }
@@ -131,10 +133,7 @@ Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оп�
     return mult;
 }
 
-Matrix Matrix::operator= (Matrix&& X)  { // Перегрузка оператора присваивания
-    if((X.values == nullptr)){
-        throw MEMORY_DIDNOT_ALLOCATED;
-    }
+Matrix Matrix::operator= (Matrix&& X) noexcept { // Перегрузка оператора присваивания
     if (this == &X) {
         return *this;
     }
@@ -147,9 +146,6 @@ Matrix Matrix::operator= (Matrix&& X)  { // Перегрузка операто�
 }
 
 Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
-    if(X.values == nullptr){
-        throw MEMORY_DIDNOT_ALLOCATED;
-    }
     if (this == &X) {
     return *this;
     }
@@ -157,6 +153,9 @@ Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператор
     cols = X.cols;
     delete[]values;
     values = new double [cols * rows];
+    if(values == nullptr){
+        throw MEMORY_DIDNOT_ALLOCATED;
+    }
     memcpy(values, X.values, rows * cols * sizeof(double));
     return *this;
 }
@@ -170,19 +169,17 @@ Matrix Matrix::operator^ (double X) const { // Перегрузка операт
     if (X == 1.0) {
         return power;
     }
-    else {
-       const Matrix &start(power);
-       Matrix power1(power.cols);
-        for (unsigned int idx = 0; idx < X; idx++) {
-            power1 = power1 * start;
-        }
-        power = power1;
-        return power;
+    const Matrix &start(power);
+    Matrix power1(power.cols);
+    for (unsigned int idx = 0; idx < X; idx++) {
+        power1 = power1 * start;
     }
+    power = power1;
+    return power;
 }
 
 Matrix Matrix::operator/ (const double X) const { // Перегрузка оператора деления(на числа)
-    if(X == 0){
+    if(abs(X) < PRECISION){
         throw DIVIDE_BY_ZERO;
     }
     Matrix divide(cols, rows);
@@ -207,25 +204,20 @@ void Matrix::fill_with(double Number) {
     for(unsigned int idx = 0; idx < cols * rows; idx++){
         values[idx] = Number;
     }
-
 }
 
-bool Matrix::is_equal(const Matrix& X){
-    bool equalness;
-    if ((rows == X.rows)&&(cols == X.cols)){
-        for (unsigned int idx = 0; idx < cols * rows; idx++){
-            if(round(values[idx] * 1000) / 1000 == X.values[idx]){
-                equalness = true;
-            }
-            else {
-                equalness = false;
+void Matrix::is_equal(const Matrix& X) {
+    int error = 0;
+    if ((rows == X.rows) && (cols == X.cols)) {
+        for (unsigned int idx = 0; idx < cols * rows; idx++) {
+            if (abs(values[idx] - X.values[idx]) > PRECISION) {
+                error++;
             }
         }
     }
-    else{
-        equalness = false;
+    if (error != 0){
+        std::cout << "Calculation error";
     }
-    return equalness;
 }
 
 int main() {
