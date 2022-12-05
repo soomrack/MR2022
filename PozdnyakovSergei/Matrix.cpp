@@ -378,6 +378,28 @@ void multiplication_test () {
 }
 
 
+void mult_by_num_test() {
+    Matrix m1 = Matrix(3, 3);
+    double num = 5;
+    double array_1[9] = {{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}};
+    m1.set_values(9, array_1);
+    Matrix itog = m1 * num;
+    Matrix result = Matrix(3, 3);
+    double array_result[9] = {5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0};
+    result.set_values(9, array_result);
+    bool res = (itog = result);
+    if (res) {
+        std::cout << ("Multiplication matrix by number is correct\n");
+    }
+    else {
+        std::cout << ("Multiplication matrix by number is incorrect\n");
+    }
+}
+
+
+
+
+
 int main() {
     return 0;
 }
