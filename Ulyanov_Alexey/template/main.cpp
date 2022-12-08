@@ -91,25 +91,27 @@ public:
 
 };
 
-template <typename T>
-Matrix_T<T> undefinded();
-template <typename T>
-Matrix_T<T> zero(const unsigned int row, const unsigned int col);
-template <typename T>
-Matrix_T<T> one(const unsigned int row, const unsigned int col);
 
-template <typename T>
-Matrix_T<T> operator+(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator-(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator*(const T k, const Matrix_T<T> &x);
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const T k);
-template <typename T>
-Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> undefinded();
+template <typename T, template <typename> class CLS>
+CLS<T> zero(const unsigned int row, const unsigned int col);
+template <typename T, template <typename> class CLS>
+CLS<T> one(const unsigned int row, const unsigned int col);
+
+
+template <typename T, template <typename> class CLS>
+CLS<T> operator+(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator-(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const T k, const CLS<T> &x);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const T k);
+template <typename T, template <typename> class CLS>
+CLS<T> operator/(const CLS<T> &x, const CLS<T> &y);
 
 
 template <typename T>
@@ -630,7 +632,6 @@ Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
 
         memory -= mem_size;
         total_memory -= mem_size;
-        std::cout << "Memory swap by op= M_M founded\n(-" << mem_size << "; +";
 
         this->rows = x.rows;
         this->cols = x.cols;
@@ -643,7 +644,6 @@ Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
 
         memory += mem_size;
         total_memory += mem_size;
-        std::cout << mem_size << ")\n\n";
     }
     return *this;
 }
