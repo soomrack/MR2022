@@ -428,32 +428,32 @@ void Matrix_T<T>::output(bool f){
 }
 
 
-template <typename T>
-Matrix_T<T> undefinded(){
-    Matrix_T<T> rez = Matrix_T<T>();
+template <typename T, template <typename> class CLS>
+CLS<T> undefinded(){
+    CLS<T> rez = CLS<T>();
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> zero(const unsigned int row, const unsigned int col){
-    Matrix_T<T> rez = Matrix_T<T>(row, col);
+template <typename T, template <typename> class CLS>
+CLS<T> zero(const unsigned int row, const unsigned int col){
+    CLS<T> rez = CLS<T>(row, col);
     rez.zero();
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> one(const unsigned int row, const unsigned int col){
-    Matrix_T<T> rez = Matrix_T<T>(row, col);
+template <typename T, template <typename> class CLS>
+CLS<T> one(const unsigned int row, const unsigned int col){
+    CLS<T> rez = CLS<T>(row, col);
     rez.one();
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> multy_k(const Matrix_T<T> x, const double k){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> multy_k(const CLS<T> x, const double k){
+    CLS<T> rez = x;
     rez.multy_k(k);
     return rez;
 }
@@ -486,48 +486,47 @@ bool Matrix_T<T>::operator==(const Matrix_T<T> &x) {
     return true;
 }
 
-
-template <typename T>
-Matrix_T<T> operator+(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator+(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez += y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator-(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator-(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez -= y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez *= y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const T k, const Matrix_T<T> &x){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const T k, const CLS<T> &x){
+    CLS<T> rez = x;
     rez *= k;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const T k){
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const T k){
     return k * x;
 }
 
 
-template <typename T>
-Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator/(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez /= y;
     return rez;
 }
@@ -614,33 +613,65 @@ public:
         total_memory -= mem_size;
     };
 
-    Matrix_memory<T>& operator=(const Matrix_memory<T> &x) {
-        if (this != &x){
-            if (!this->data)
-                delete[] this->data;
-
-            memory -= mem_size;
-            total_memory -= mem_size;
-
-            this->rows = x.rows;
-            this->cols = x.cols;
-            mem_size = this->rows * this->cols * sizeof (T);
-
-            this->data = new double[x.rows * x.cols];
-            for (unsigned int idx = 0; idx < this->rows * this->cols; idx++){
-                this->data[idx] = x.data[idx];
-            }
-
-            memory += mem_size;
-            total_memory += mem_size;
-        }
-        return *this;
-    }
+    Matrix_memory<T>& operator=(const Matrix_memory<T> &x);
+    Matrix_memory<T>& operator*=(const Matrix_memory<T> &x);
 
     void output(bool f = false);
 };
 template <typename T>
 unsigned int Matrix_memory<T>::total_memory = 0;
+
+
+template <typename T>
+Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
+    if (this != &x){
+        if (!this->data)
+            delete[] this->data;
+
+        memory -= mem_size;
+        total_memory -= mem_size;
+        std::cout << "Memory swap by op= M_M founded\n(-" << mem_size << "; +";
+
+        this->rows = x.rows;
+        this->cols = x.cols;
+        mem_size = this->rows * this->cols * sizeof (T);
+
+        this->data = new T[x.rows * x.cols];
+        for (unsigned int idx = 0; idx < this->rows * this->cols; idx++){
+            this->data[idx] = x.data[idx];
+        }
+
+        memory += mem_size;
+        total_memory += mem_size;
+        std::cout << mem_size << ")\n\n";
+    }
+    return *this;
+}
+
+
+template <typename T>
+Matrix_memory<T>& Matrix_memory<T>::operator*=(const Matrix_memory<T> &x) {
+    if (this->cols != x.rows) throw SIZE_UNMATCH;
+
+    Matrix_memory<T> rez = Matrix_memory<T>(this->rows, x.cols);
+    rez.zero();
+    total_memory -= mem_size; memory -= mem_size;
+
+    for (unsigned int row = 0; row < rez.rows; row++){
+        for (unsigned int col = 0; col < rez.cols; col++){
+            for (unsigned int idx = 0; idx < x.rows; idx++){
+                rez.data[row * rez.cols + col] += this->data[row * this->cols + idx] * this->data[idx * x.cols + col];
+            }
+        }
+    }
+
+    *this = rez;
+    total_memory += mem_size;
+    memory += mem_size;
+
+    return *this;
+}
+
 
 template <typename T>
 void Matrix_memory<T>::output(bool f){
