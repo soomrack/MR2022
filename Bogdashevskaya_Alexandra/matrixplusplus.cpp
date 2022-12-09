@@ -15,15 +15,16 @@ Matrix_Exception NOTSQUARE("Matrix should be square\n");
 
 
 class Matrix {
-	unsigned int cols {0};
-	unsigned int rows {0};
-	double* values {NULL};
+private:
+	unsigned int cols{ 0 };
+	unsigned int rows{ 0 };
+	double* values{ nullptr };
 
 public:
 	Matrix() = default;
-	Matrix(unsigned int cols, unsigned int rows);
+	Matrix(unsigned int cols, unsigned int rows, double value = 0.);
 	Matrix(const Matrix& matrix);
-	Matrix(Matrix&& matrix);
+	Matrix(Matrix&& matrix) noexcept;
 	~Matrix();
 
 	unsigned int get_cols();
@@ -45,117 +46,44 @@ public:
 	double det();
 	Matrix transpose();
 	Matrix invertible();
-	Matrix expo(int accuracy);
+	Matrix expm(unsigned int accuracy = 10); 
 
-	Matrix& operator=(Matrix&&) noexcept;
-	Matrix& operator=(const Matrix&);
+	Matrix& operator=(Matrix&& matrix) noexcept;
+	Matrix& operator=(const Matrix& matrix);
+
+	Matrix operator+ (const Matrix& matrix);
+	Matrix operator- (const Matrix& matrix);
+	Matrix operator* (const Matrix& matrix);
+	Matrix operator* (const double number);
+
+	void operator+=(const Matrix& matrix);
+	void operator-=(const Matrix& matrix);
+	void operator*=(const Matrix& matrix);
+	void operator*=(const double number);
 };
+
 
 Matrix identity(unsigned int dimention) {
 	Matrix result(dimention, dimention);
-	unsigned int cols = result.get_cols();
-	unsigned int rows = result.get_rows();
-	for (unsigned int row = 0; row < rows; ++row) {
-		for (unsigned int col = 0; col < cols; ++col) {
-			if (row == col) {
-				result.set_value(row * result.get_cols() + col, 1.);
-			}
-			else {
-				result.set_value(row * result.get_cols() + col, 0.);
-
-			}
-		}
+	for (unsigned int n = 0; n < dimention; ++n) {
+		result.set_value(n * dimention + n, 1.);
 	}
 	return result;
 }
 
-int main() {
-	Matrix A(2, 2);
-	A.set_random_values();
-	std::cout << "Matrix A:\n";
-	A.print_matrix();
-
-	Matrix B(2, 2);
-	B.set_random_values();
-	std::cout << "Matrix B:\n";
-	B.print_matrix();
-
-	try {
-		std::cout << "A + B:\n";
-		A.add(B).print_matrix();
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Addition is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		std::cout << "A - B:\n";
-		A.substruct(B).print_matrix();
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Substruction is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-
-	std::cout << "A * 2:\n";
-	A.multiply_by_double(2.).print_matrix();
-
-	try {
-		std::cout << "A * B:\n";
-		A.multiply(B).print_matrix();
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Multiplication is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		std::cout << "det(A):\n";
-		std::cout << A.det() << "\n\n";
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Getting determinant is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-
-	std::cout << "Transponent A:\n";
-	A.transpose().print_matrix();
-
-	try {
-		std::cout << "Inverted A:\n";
-		A.invertible().print_matrix();
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Inverting is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-	/*
-	try {
-		std::cout << "Exp(A):\n";
-		A.expo(3).print_matrix();
-	}
-	catch (const Matrix_Exception& e) {
-		std::cout << "Inverting is impossible\n";
-		std::cerr << e.what() << std::endl;
-	}
-	*/
-	
-	return 0;
-}
-
 
 Matrix::~Matrix() {
-	free(values);
+	delete[] values;
 }
 
-Matrix::Matrix(unsigned int cols, unsigned int rows) {
+
+Matrix::Matrix(unsigned int cols, unsigned int rows, double value) {
 	this->cols = cols;
 	this->rows = rows;
 	unsigned int n_values = cols * rows;
-	values = (double*)malloc(n_values * sizeof(double));
+	values = new double [n_values];
 	for (unsigned int i = 0; i < n_values; ++i) {
-		values[i] = 0.;
+		values[i] = value;
 	}
 }
 
@@ -163,13 +91,11 @@ Matrix::Matrix(const Matrix& matrix) {
 	cols = matrix.cols;
 	rows = matrix.rows;	
 	unsigned int n_values = cols * rows;
-	values = (double*)malloc(n_values * sizeof(double));
-	for (unsigned int idx = 0; idx < n_values; ++idx) {
-		values[idx] = matrix.values[idx];
-	}
+	values = new double[n_values];
+	memcpy(values, matrix.values, n_values * sizeof(double));
 }
 
-Matrix::Matrix(Matrix&& matrix) {
+Matrix::Matrix(Matrix&& matrix) noexcept{
 	cols = matrix.cols;
 	rows = matrix.rows;
 	values = matrix.values;
@@ -181,15 +107,13 @@ Matrix::Matrix(Matrix&& matrix) {
 
 Matrix& Matrix::operator=(const Matrix& matrix) {
 	if (this != &matrix) {
-		free(values);
+		delete[] values;
 
 		rows = matrix.rows;
 		cols = matrix.cols;
 
-		values = (double*)malloc(rows * cols * sizeof(double));
-		for (unsigned int idx = 0; idx < rows * cols; idx++) {
-			values[idx] = matrix.values[idx];
-		}
+		values = new double [rows * cols];
+		memcpy(values, matrix.values, rows * cols * sizeof(double));
 	}
 
 	return *this;
@@ -199,7 +123,6 @@ Matrix& Matrix::operator=(const Matrix& matrix) {
 Matrix& Matrix::operator=(Matrix&& matrix) noexcept
 {
 	if (this == &matrix) return *this;
-	free(matrix.values);
 	rows = matrix.rows;
 	cols = matrix.cols;
 	values = matrix.values;
@@ -207,6 +130,44 @@ Matrix& Matrix::operator=(Matrix&& matrix) noexcept
 	return *this;
 }
 
+
+Matrix Matrix::operator+ (const Matrix& matrix) {
+	return add(matrix);
+}
+
+
+Matrix Matrix::operator- (const Matrix& matrix) {
+	return substruct(matrix);
+}
+
+
+Matrix Matrix::operator* (const Matrix& matrix) {
+	return multiply(matrix);
+}
+
+
+Matrix Matrix::operator* (const double number) {
+	return multiply_by_double(number);
+}
+
+
+void Matrix::operator+=(const Matrix& matrix) {
+	*this = add(matrix);
+}
+
+
+void Matrix::operator-=(const Matrix& matrix) {
+	*this = substruct(matrix);
+}
+
+
+void Matrix::operator*=(const Matrix& matrix) {
+	*this = multiply(matrix);
+}
+
+void Matrix::operator*=(const double number) {
+	*this = multiply_by_double(number);
+}
 
 
 unsigned int Matrix::get_cols() {
@@ -251,7 +212,7 @@ bool Matrix::is_null() {
 
 Matrix Matrix::add(const Matrix& matrix) { 
 	if (this->rows != matrix.rows || this->cols != matrix.cols) throw NOTEQUAL;
-	Matrix result(matrix.cols, matrix.rows);
+	Matrix result(cols, rows); 
 	unsigned int n_values = result.cols * result.rows;
 	for (unsigned int index = 0; index < n_values; ++index) {
 		result.values[index] = matrix.values[index] + this->values[index];
@@ -261,7 +222,7 @@ Matrix Matrix::add(const Matrix& matrix) {
 
 Matrix Matrix::substruct(const Matrix& matrix) {
 	if (this->rows != matrix.rows || this->cols != matrix.cols) throw NOTEQUAL;
-	Matrix result(matrix.cols, matrix.rows);
+	Matrix result(cols, rows);
 	unsigned int n_values = result.cols * result.rows;
 	for (unsigned int index = 0; index < n_values; ++index) {
 		result.values[index] = this->values[index] - matrix.values[index];
@@ -357,17 +318,91 @@ Matrix Matrix::invertible() {
 	return result.multiply_by_double(1 / result.det());
 }
 
-Matrix Matrix::expo(int accuracy) { 
+Matrix Matrix::expm(unsigned int accuracy) { 
 	if (cols != rows) throw NOTSQUARE;
 	Matrix result = identity(rows);
-	Matrix powered = *this;
+	Matrix powered(* this);
 	int factorial = 1;
 	for (int acc = 1; acc <= accuracy; ++acc) {
 		factorial *= acc;
-		powered = powered.multiply(*this);
-		powered = powered.multiply_by_double(1. / factorial);
-		result = result.add(powered);
+		powered *= *this;
+		powered *= (1. / factorial);
+		result += powered;
 	}
 	return result;
 }
 
+int main() {
+	Matrix A(2, 2);
+	A.set_random_values();
+	std::cout << "Matrix A:\n";
+	A.print_matrix();
+
+	Matrix B(2, 2);
+	B.set_random_values();
+	std::cout << "Matrix B:\n";
+	B.print_matrix();
+
+	try {
+		std::cout << "A + B:\n";
+		A.add(B).print_matrix();
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Addition is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		std::cout << "A - B:\n";
+		A.substruct(B).print_matrix();
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Substruction is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+	std::cout << "A * 2:\n";
+	A.multiply_by_double(2.).print_matrix();
+
+	try {
+		std::cout << "A * B:\n";
+		A.multiply(B).print_matrix();
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Multiplication is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		std::cout << "det(A):\n";
+		std::cout << A.det() << "\n\n";
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Getting determinant is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+	std::cout << "Transponent A:\n";
+	A.transpose().print_matrix();
+
+	try {
+		std::cout << "Inverted A:\n";
+		A.invertible().print_matrix();
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Inverting is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		std::cout << "Exp(A):\n";
+		A.expm().print_matrix();
+	}
+	catch (const Matrix_Exception& e) {
+		std::cout << "Inverting is impossible\n";
+		std::cerr << e.what() << std::endl;
+	}
+
+
+	return 0;
+}
