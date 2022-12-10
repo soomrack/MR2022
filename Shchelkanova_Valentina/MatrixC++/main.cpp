@@ -217,7 +217,7 @@ Matrix Matrix::operator/(const double coefficient) const {
 }
 
 
-Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
+Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
     Matrix Res = one + A;
@@ -230,7 +230,7 @@ Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Мат
 }
 
 
-Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) {
+Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
