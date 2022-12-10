@@ -9,7 +9,8 @@
 #include "Matrix.h"
 
 
-class EMatrix: public Matrix {
+template<typename T>
+class EMatrix: public Matrix<T> {
 private:
     unsigned int memory_size;
     inline static unsigned int counter = 0;
@@ -18,12 +19,15 @@ private:
 public:
     EMatrix();
     EMatrix(int input_rows, int input_cols);
-    EMatrix(int input_rows, int input_cols, double number);
-    EMatrix(int input_rows, int input_cols, const std::vector<double>& v);
-    EMatrix(int identity_size);
+    EMatrix(int input_rows, int input_cols, T number);
+    EMatrix(int input_rows, int input_cols, const std::vector<T>& v);
+    explicit EMatrix(int identity_size);
     ~EMatrix();
 
     static unsigned int get_counter();
+    static unsigned int getGenSize();
+    unsigned int getMemSize();
+
 };
 
 
