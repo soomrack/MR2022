@@ -45,25 +45,25 @@ public:
     void output() const;
     void test();
 
-    Matrix& operator= (Matrix const &other);
-    Matrix& operator= (Matrix<T> &&other) noexcept;
+    Matrix<T>& operator= (Matrix const &other);
+    Matrix<T>& operator= (Matrix<T> &&other) noexcept;
     Matrix<T> operator+ (const Matrix<T> &matrix) const;
-    Matrix operator+ (T number) const;
-    Matrix operator- (const Matrix<T> &matrix) const;
-    Matrix operator* (const Matrix<T> &matrix) const;
-    Matrix operator* (T number) const;
-    Matrix operator/ (const Matrix<T> &matrix) const;
-    Matrix operator/ (T number) const;
+    Matrix<T> operator+ (T number) const;
+    Matrix<T> operator- (const Matrix<T> &matrix) const;
+    Matrix<T> operator* (const Matrix<T> &matrix) const;
+    Matrix<T> operator* (T number) const;
+    Matrix<T> operator/ (const Matrix<T> &matrix) const;
+    Matrix<T> operator/ (T number) const;
 
-    Matrix minor_init(int excluded_row, int excluded_col) const;
+    Matrix<T> minor_init(int excluded_row, int excluded_col) const;
     T determinant() const;
-    Matrix transposition() const;
+    Matrix<T> transposition() const;
 private:
-    static Matrix minor_transformation(const Matrix<T> &matrix);
+    static Matrix<T> minor_transformation(const Matrix<T> &matrix);
 public:
-    Matrix inversion() const;
-    Matrix power(int power) const;
-    static Matrix exp(const Matrix<T> &matrix, int STEPS=DEFAULT_EXP_STEPS);
+    Matrix<T> inversion() const;
+    Matrix<T> power(int power) const;
+    static Matrix<T> exp(const Matrix<T> &matrix, int STEPS=DEFAULT_EXP_STEPS);
     static int is_equal(Matrix<T> matrix1, Matrix<T> matrix2);
 };
 
