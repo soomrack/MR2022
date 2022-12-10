@@ -148,6 +148,9 @@ Matrix minor_init(Matrix matrix, int crossed_row, int crossed_col) {
 
 
 double recursive_determinant(Matrix matrix) {
+    if (matrix.rows == 0 || matrix.cols == 0) {
+        return NAN;
+    }
     if(matrix.rows != matrix.cols) {
         return NAN;
     }
@@ -373,9 +376,14 @@ void test() {
     Matrix exp_matrix = matrix_exp(matrix3);
     test_matrix_operation(exp_true_array, exp_matrix, "Matrix exp");
 
+    printf("\n");
+    matrix_output(matrix1);
+    Matrix matrix4 = matrix_number_filling(2,2,2);
+
     free_memory(&matrix1);
     free_memory(&matrix2);
     free_memory(&matrix3);
+    free_memory(&matrix4);
 }
 
 
