@@ -56,6 +56,7 @@ Matrix_Exception DivisionError ("Can't divide by zero\n")
 Matrix::Matrix() {
     cols = 0;
     rows = 0;
+    values = nullptr;
 }
 
 
