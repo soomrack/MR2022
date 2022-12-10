@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-typedef struct Matrix {
+typedef struct Matrix 
+{
 	uint16_t cols;
 	uint16_t rows;
 	double* values;
@@ -360,7 +361,7 @@ Matrix expo(const Matrix matrix, int accuracy)
 	}
 	Matrix new_result, new_powered, multiplied;
 	Matrix result = identity(matrix.rows);
-	Matrix powered = matrix;
+	Matrix powered = identity(matrix.rows);
 	int factorial = 1;
 	for (int acc = 1; acc <= accuracy; ++acc) 
 	{

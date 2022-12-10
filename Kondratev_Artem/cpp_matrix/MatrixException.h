@@ -14,7 +14,7 @@ private:
     std::string message;
     int error_code;
 public:
-    MatrixException(int input_code, std::string input_message);
+    MatrixException(const std::string &arg, int input_code, std::string input_message);
     ~MatrixException() override = default;
 
     std::string get_message() const;
