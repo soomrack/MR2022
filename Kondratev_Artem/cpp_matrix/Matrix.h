@@ -16,7 +16,7 @@
 
 template <typename T>
 class Matrix {
-private:
+protected:
     int rows;
     int cols;
     int size;
@@ -38,6 +38,8 @@ public:
     int get_rows() const;
     int get_cols() const;
     int get_size() const;
+    void set_rows(int input_rows);
+    void set_cols(int input_cols);
     T get_value(int cell) const;
     T get_value(int row, int col) const;
     void set_value(int cell, T number);

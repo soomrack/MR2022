@@ -6,8 +6,8 @@
 
 
 template<typename T>
-unsigned int EMatrix<T>::calc_memory(int rows, int cols) {
-    return rows * cols * sizeof(T) + rows * sizeof(T *);
+unsigned int EMatrix<T>::calc_memory(int c_rows, int c_cols) {
+    return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
 
 
@@ -51,10 +51,39 @@ EMatrix<T>::EMatrix(int identity_size): Matrix<T>(identity_size) {
 
 
 template<typename T>
+EMatrix<T>::EMatrix(const EMatrix<T> &other): Matrix<T>(other) {
+    memory_size = other.memory_size;
+}
+
+
+template<typename T>
+EMatrix<T>::EMatrix(EMatrix<T> &&other) noexcept: Matrix<T>(other) {
+    memory_size = other.memory_size;
+    other.memory_size = 0;
+}
+
+
+template<typename T>
 EMatrix<T>::~EMatrix() {
     counter--;
     general_size -= memory_size;
     memory_size = 0;
+}
+
+
+template<typename T>
+EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &other) {
+    Matrix<T>::operator=(other);
+    general_size += other.memory_size - memory_size;
+    memory_size = other.memory_size;
+    return *this;
+}
+
+
+template<typename T>
+EMatrix<T>& EMatrix<T>::operator=(EMatrix<T> &&other) noexcept {
+    Matrix<T>::operator=(other);
+    return *this;
 }
 
 

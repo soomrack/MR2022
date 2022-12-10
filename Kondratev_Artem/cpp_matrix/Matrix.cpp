@@ -69,11 +69,11 @@ Matrix<T>::Matrix(int identity_size): Matrix<T>(identity_size, identity_size) {
 
 
 template<typename T>
-Matrix<T>::Matrix(const Matrix<T> &other) {
+Matrix<T>::Matrix(const Matrix<T>& other) {
     rows = other.rows;
     cols = other.cols;
     size = other.size;
-    data = new T *[rows];
+    data = new T* [rows];
     values = new T[size];
     if (data == nullptr || values == nullptr) {
         delete[] data;
@@ -87,17 +87,12 @@ Matrix<T>::Matrix(const Matrix<T> &other) {
 
 
 template<typename T>
-Matrix<T>::Matrix(Matrix<T> &&other) noexcept {
+Matrix<T>::Matrix(Matrix<T>&& other) noexcept {
     rows = other.rows;
     cols = other.cols;
     size = other.size;
     data = other.data;
     values = other.values;
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw NULL_MEMORY;
-    }
     other.data = nullptr;
     other.values = nullptr;
     for (int row = 0; row < rows; row++)
@@ -130,6 +125,26 @@ int Matrix<T>::get_cols() const {
 template<typename T>
 int Matrix<T>::get_size() const {
     return size;
+}
+
+
+template<typename T>
+void Matrix<T>::set_rows(int input_rows) {
+    if (rows < 0) {
+        throw WRONG_PARAMETERS;
+    }
+    rows = input_rows;
+    size = rows * cols;
+}
+
+
+template<typename T>
+void Matrix<T>::set_cols(int input_cols) {
+    if (cols < 0) {
+        throw WRONG_PARAMETERS;
+    }
+    cols = input_cols;
+    size = rows * cols;
 }
 
 
@@ -207,7 +222,7 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> const &other) {
 
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
+Matrix<T> &Matrix<T>::operator=(Matrix<T>&& other) noexcept {
     if (this != &other) {
         delete[] data;
         delete[] values;

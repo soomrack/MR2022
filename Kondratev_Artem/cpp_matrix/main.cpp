@@ -42,5 +42,10 @@ int main() {
     std::cout << EMatrix<double>::get_counter() << std::endl;
     std::cin >> a;
 
+    EMatrix<double> C(2,2,4);
+    EMatrix<double> D(3,3,5);
+    C = D;
+    C.output();
+
     return 0;
 }
