@@ -1,14 +1,16 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+/*
 #include <time.h>
+*/
 
 
 const double EPS_CONST = pow(10, -5);
 
 
 class Matrix {
-protected:  // в чем отливие между private и protected?
+private:  // в чем отливие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
@@ -58,6 +60,10 @@ Matrix operator* (const Matrix &m1, const Matrix &m2);
 Matrix operator* (const Matrix &m, const double num);
 
 
+Matrix zero_matrix(const unsigned int row, const unsigned int col);
+Matrix unit_matrix(const unsigned int row, const unsigned int col);
+
+
 Matrix::Matrix() : rows(0), cols(0), value(nullptr) {}
 
 
@@ -69,7 +75,7 @@ Matrix::~Matrix() {
 Matrix::Matrix(const unsigned int r, const unsigned int c) {
     rows = r;
     cols = c;
-    value = new double [rows * cols];  // выделение памяти под элементы матрицы
+    value = new double [r * c];  // выделение памяти под элементы матрицы
 }
 
 
@@ -95,6 +101,9 @@ Matrix::Matrix(Matrix&& m) {
 
 
 Matrix& Matrix::operator=(const Matrix &m) {
+   /* if (this != &m){
+        if (!value)
+            delete[] value;*/
     rows = m.rows;
     cols = m.cols;
     int total_num = rows * cols;
@@ -273,10 +282,10 @@ void Matrix::set_random(const unsigned int range) {
 
 
 void Matrix::output(bool f) {  // Вывод
-    if (f) std::cout << rows << "" << cols << "\n";
+    if (f) std::cout << rows << " " << cols << " \n";
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            std::cout << this -> value [row * cols + col] << "";
+            std::cout << this -> value [row * cols + col] << " ";
         }
         std::cout << "\n";
     }
@@ -320,8 +329,8 @@ Matrix operator* (const Matrix &m, const double num) {
 
 
 bool operator== (const Matrix &m1, const Matrix &m2) {
-    bool f = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
-    if (!f) return f;
+    bool fl = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!fl) return fl;
 
 }
 
@@ -387,6 +396,9 @@ void summation_test() {
         std::cout << "Summation is incorrect\n";
     }
 }
+
+
+/* При проверки корректности выдает такое: Condition is always false*/
 
 
 void subtraction_test() {
