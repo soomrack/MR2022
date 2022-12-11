@@ -202,25 +202,37 @@ Matrix matrix_exp(const Matrix matrix){
     Matrix res_mat = create_one_matrix(matrix.rows,matrix.cols);
     Matrix n_member = create_one_matrix(matrix.rows,matrix.cols);
     Matrix n1_member = create_zero_matrix(0,0);
-    Matrix prev_mat;
-    Matrix mem_mat;
-    for(int k = 1; k <= EXPONENT_STEPS; k++){
+    Matrix prev_mat = create_zero_matrix(0,0);
+    Matrix mem_mat = create_zero_matrix(0,0);
+    Matrix mult_mat = create_zero_matrix(0,0);
+    for(int m = 1; m <= EXPONENT_STEPS; m++){
+        free_mat(&prev_mat);
         prev_mat = copy_mat(res_mat);
+        free_mat(&mult_mat);
+        mult_mat = matrix_mult_by_num(1.0 / m, matrix);
         free_mat(&n1_member);
-        n1_member = matrix_mult(n_member,matrix_mult_by_num(1.0 / k, matrix));
+        n1_member = matrix_mult(n_member, mult_mat);
+        free_mat(&mem_mat);
         mem_mat = copy_mat(res_mat);
         free_mat(&res_mat);
         res_mat = matrix_add(mem_mat,n1_member);
-        free_mat(&mem_mat);
         free_mat(&n_member);
-        n_member = n1_member;
+        n_member = copy_mat(n1_member);
         if(fabs(check_max_dif(res_mat,prev_mat)) < EXPONENT_ACCURACY){
+            free_mat(&mem_mat);
             free_mat(&prev_mat);
+            free_mat(&n_member);
+            free_mat(&n1_member);
+            free_mat(&mult_mat);
             //printf("%d",k);
             return res_mat;
         }
-        free_mat(&prev_mat);
     }
+    free_mat(&prev_mat);
+    free_mat(&mem_mat);
+    free_mat(&n1_member);
+    free_mat(&n_member);
+    free_mat(&mult_mat);
     return res_mat;
 }
 

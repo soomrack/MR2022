@@ -56,7 +56,7 @@ public:
 	Matrix& operator-=(const Matrix&);
 	Matrix& operator*=(const Matrix&);
 	Matrix& operator*=(const double);
-	Matrix& operator/=(double);
+	Matrix& operator/=(const double);
 
 	Matrix operator+ (const Matrix&);
 	Matrix operator- (const Matrix&);
@@ -66,7 +66,7 @@ public:
 
 	bool operator!=(const Matrix& mat);
 	bool operator==(const Matrix& mat);
-	friend std::ostream& operator<<(std::ostream& out, Matrix m);
+	friend std::ostream& operator<<(std::ostream& out, const Matrix m);
 
 };
 
@@ -111,11 +111,13 @@ Matrix::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols
 
 Matrix::~Matrix() 
 {
-	delete[] this->values;
+	if (this->values != nullptr) {
+		delete[] this->values;
+	}
 }
 	
 
-std::ostream& operator<<(std::ostream& out, Matrix matrix) 
+std::ostream& operator<<(std::ostream& out, const Matrix matrix) 
 {
 	{
 		for (unsigned int row = 0; row < matrix.rows; row++)
@@ -634,14 +636,6 @@ int main()
 	srand(time(NULL));
 	setlocale(LC_ALL, "ru");
 
-	try { // Проверка выделения памяти
-		Matrix A = Matrix(0, 0).fill_random();
-	}
-	catch (const Matrix_Exception& e)
-	{
-		std::cerr << "Caught: " << e.what() << std::endl;
-		std::cerr << "Type: " << typeid(e).name() << std::endl;
-	}
 	double data[9] = { 1,7,4,0,9,4,8,8,2 };
 	Matrix A = Matrix(3, 3).fill_from_array(data);
 	Matrix B = Matrix(3, 3).fill_random();
