@@ -136,7 +136,7 @@ Matrix E(int row){
             E.values[idx] = 0;}
     return E;}
 
-Matrix power (const Matrix A, const int n) { // Возведение в степень
+Matrix power (const Matrix A, const int n) { 
     Matrix M = allocate_memory(A.rows, A.cols);
     M.values = A.values;
     for (int count = 1; count < n; count++) {
