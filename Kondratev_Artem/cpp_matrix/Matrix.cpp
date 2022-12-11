@@ -13,7 +13,8 @@ MatrixException WRONG_LENGTH(9, "length of vector is wrong");
 MatrixException ZERO_LENGTH(10, "rows || cols is/are zero");
 
 
-Matrix::Matrix() {
+template<class T>
+Matrix<T>::Matrix() {
     rows = 0;
     cols = 0;
     size = 0;
@@ -22,15 +23,16 @@ Matrix::Matrix() {
 }
 
 
-Matrix::Matrix(int input_rows, int input_cols, double number) {
+template<typename T>
+Matrix<T>::Matrix(int input_rows, int input_cols) {
     if (input_rows <= 0 || input_cols <= 0) {
         throw WRONG_PARAMETERS;
     }
     rows = input_rows;
     cols = input_cols;
     size = rows * cols;
-    data = new double *[rows];
-    values = new double [size];
+    data = new T *[rows];
+    values = new T[size];
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
@@ -38,58 +40,18 @@ Matrix::Matrix(int input_rows, int input_cols, double number) {
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
-    if (not std::isnan(number)) {
-        for (int cell = 0; cell < size; cell++)
-            values[cell] = number;
-    }
 }
 
 
-Matrix::Matrix(const Matrix &other) {
-    rows = other.rows;
-    cols = other.cols;
-    size = rows * cols;
-    data = new double *[rows];
-    values = new double[size];
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw NULL_MEMORY;
-    }
-    for (int row = 0; row < rows; row++)
-        data[row] = values + row * cols;
-    std::memcpy(values, other.values, sizeof(double) * other.size);
+template<typename T>
+Matrix<T>::Matrix(int input_rows, int input_cols, T number): Matrix{input_rows, input_cols} {
+    for (int cell = 0; cell < size; cell++)
+        values[cell] = number;
 }
 
 
-Matrix::Matrix(Matrix &&other) noexcept {
-    rows = other.rows;
-    cols = other.cols;
-    size = other.size;
-    data = other.data;
-    values = other.values;
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw NULL_MEMORY;
-    }
-    other.data = nullptr;
-    other.values = nullptr;
-    for (int row = 0; row < rows; row++)
-        data[row] = values + row * cols;
-}
-
-
-Matrix::~Matrix() {
-    rows = 0;
-    cols = 0;
-    size = 0;
-    delete[] data;
-    delete[] values;
-}
-
-
-void Matrix::fillFromVector(std::vector<double> vector) {
+template<typename T>
+Matrix<T>::Matrix(int input_rows, int input_cols, const std::vector<T> &vector): Matrix<T>(input_rows, input_cols) {
     if (size != vector.size()) {
         throw WRONG_LENGTH;
     }
@@ -98,32 +60,85 @@ void Matrix::fillFromVector(std::vector<double> vector) {
 }
 
 
-void Matrix::set_identity() {
-    if (rows != cols) {
-        throw NOT_SQUARE;
-    }
+template<typename T>
+Matrix<T>::Matrix(int identity_size): Matrix<T>(identity_size, identity_size) {
     for (int row = 0; row < rows; row++)
         for (int col = 0; col < cols; col++)
             data[row][col] = (row == col) ? 1 : 0;
 }
 
 
-int Matrix::get_rows() const {
+template<typename T>
+Matrix<T>::Matrix(const Matrix<T>& other) {
+    rows = other.rows;
+    cols = other.cols;
+    size = other.size;
+    data = new T* [rows];
+    values = new T[size];
+    if (data == nullptr || values == nullptr) {
+        delete[] data;
+        delete[] values;
+        throw NULL_MEMORY;
+    }
+    for (int row = 0; row < rows; row++)
+        data[row] = values + row * cols;
+    std::memcpy(values, other.values, sizeof(T) * other.size);
+}
+
+
+template<typename T>
+Matrix<T>::Matrix(Matrix<T>&& other) noexcept {
+    rows = other.rows;
+    cols = other.cols;
+    size = other.size;
+    data = other.data;
+    values = other.values;
+    other.data = nullptr;
+    other.values = nullptr;
+    for (int row = 0; row < rows; row++)
+        data[row] = values + row * cols;
+}
+
+
+template<typename T>
+Matrix<T>::~Matrix() {
+    rows = 0;
+    cols = 0;
+    size = 0;
+    delete[] data;
+    delete[] values;
+}
+
+
+template<typename T>
+int Matrix<T>::getRows() const {
     return rows;
 }
 
 
-int Matrix::get_cols() const {
+template<typename T>
+int Matrix<T>::getCols() const {
     return cols;
 }
 
 
-int Matrix::get_size() const {
+template<typename T>
+int Matrix<T>::getSize() const {
     return size;
 }
 
 
-double Matrix::get_value(int row, int col) const {
+template<typename T>
+T Matrix<T>::getValue(int cell) const {
+    if (cell < 0) {
+        throw WRONG_PARAMETERS;
+    }
+    return values[cell];
+}
+
+
+template<typename T>
+T Matrix<T>::getValue(int row, int col) const {
     if (row < 0 || col < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -131,28 +146,48 @@ double Matrix::get_value(int row, int col) const {
 }
 
 
-void Matrix::output() const {
+template<typename T>
+void Matrix<T>::setValue(int cell, T number) {
+    if (cell < 0) {
+        throw WRONG_PARAMETERS;
+    }
+    values[cell] = number;
+}
+
+
+template<typename T>
+void Matrix<T>::setValue(int row, int col, T number) {
+    if (row < 0 || col < 0) {
+        throw WRONG_PARAMETERS;
+    }
+    data[row][col] = number;
+}
+
+
+template<typename T>
+void Matrix<T>::output() const {
     if (data == nullptr || values == nullptr) {
         throw NULL_MEMORY;
     }
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
             std::cout << std::scientific << std::setw(13) << data[row][col] << "  ";
-        std::cout << "\n";
+        std::cout << std::endl;
     }
-    std::cout << "\n";
+    std::cout << std::endl;
 }
 
 
-Matrix& Matrix::operator= (Matrix const &other) {
+template<typename T>
+Matrix<T> &Matrix<T>::operator=(Matrix<T> const &other) {
     if (this != &other) {
         delete[] data;
         delete[] values;
         rows = other.rows;
         cols = other.cols;
         size = rows * cols;
-        data = new double *[rows];
-        values = new double[size];
+        data = new T *[rows];
+        values = new T[size];
         if (data == nullptr || values == nullptr) {
             delete[] data;
             delete[] values;
@@ -160,13 +195,14 @@ Matrix& Matrix::operator= (Matrix const &other) {
         }
         for (int row = 0; row < rows; row++)
             data[row] = values + row * cols;
-
-        std::memcpy(values, other.values, sizeof(double) * other.size);
+        std::memcpy(values, other.values, sizeof(T) * other.size);
     }
+    return *this;
 }
 
 
-Matrix& Matrix::operator= (Matrix &&other) noexcept {
+template<typename T>
+Matrix<T> &Matrix<T>::operator=(Matrix<T>&& other) noexcept {
     if (this != &other) {
         delete[] data;
         delete[] values;
@@ -180,49 +216,54 @@ Matrix& Matrix::operator= (Matrix &&other) noexcept {
         for (int row = 0; row < rows; row++)
             data[row] = values + row * cols;
     }
+    return *this;
 }
 
 
-Matrix Matrix::operator+ (Matrix const &matrix) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator+(Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw ADDITION_ERROR;
     }
-    Matrix sum_matrix = *this;
+    Matrix<T> sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
         sum_matrix.values[cell] += matrix.values[cell];
     return sum_matrix;
 }
 
 
-Matrix Matrix::operator+ (double number) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator+(T number) const {
     if (std::isnan(number)) {
         throw NAN_NUMBER;
     }
-    Matrix sum_matrix = *this;
+    Matrix<T> sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
         sum_matrix.values[cell] += number;
     return sum_matrix;
 }
 
 
-Matrix Matrix::operator- (Matrix const &matrix) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator-(Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw SUBTRACTION_ERROR;
     }
-    Matrix sub_matrix = *this;
+    Matrix<T> sub_matrix = *this;
     for (int cell = 0; cell < size; cell++)
         sub_matrix.values[cell] -= matrix.values[cell];
     return sub_matrix;
 }
 
 
-Matrix Matrix::operator* (Matrix const &matrix) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator*(Matrix<T> const &matrix) const {
     if (cols != matrix.rows) {
         throw MULTIPLICATION_ERROR;
     }
-    Matrix multiplied_matrix(cols, matrix.rows);
-    for(int row = 0; row < multiplied_matrix.rows; row++)
-        for(int col = 0; col < multiplied_matrix.cols; col++) {
+    Matrix<T> multiplied_matrix(cols, matrix.rows);
+    for (int row = 0; row < multiplied_matrix.rows; row++)
+        for (int col = 0; col < multiplied_matrix.cols; col++) {
             multiplied_matrix.data[row][col] = 0;
             for (int k = 0; k < cols; k++)
                 multiplied_matrix.data[row][col] += data[row][k] * matrix.data[k][col];
@@ -231,53 +272,56 @@ Matrix Matrix::operator* (Matrix const &matrix) const {
 }
 
 
-Matrix Matrix::operator* (double number) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator*(T number) const {
     if (std::isnan(number)) {
         throw NAN_NUMBER;
     }
-    Matrix multiplied_matrix = *this;
-    for(int cell = 0; cell < size; cell++)
+    Matrix<T> multiplied_matrix = *this;
+    for (int cell = 0; cell < size; cell++)
         multiplied_matrix.values[cell] *= number;
     return multiplied_matrix;
 }
 
 
-Matrix Matrix::minor_init(int excluded_row, int excluded_col) const {
+template<typename T>
+Matrix<T> Matrix<T>::minorInit(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
         throw WRONG_PARAMETERS;
     }
-    Matrix minor(rows - 1, cols - 1);
+    Matrix<T> minor(rows - 1, cols - 1);
     int row_shift = 0;
-    for(int i = 0; i < minor.rows; i++) {
-        if(excluded_row == i)
-            row_shift += 1;
+    for (int row = 0; row < minor.rows; row++) {
+        if (excluded_row == row)
+            row_shift++;
         int col_shift = 0;
-        for (int j = 0; j < minor.cols; j++) {
-            if(j == excluded_col) {
-                col_shift += 1;
+        for (int col = 0; col < minor.cols; col++) {
+            if (col == excluded_col) {
+                col_shift++;
             }
-            minor.data[i][j] = data[i + row_shift][j + col_shift];
+            minor.data[row][col] = data[row + row_shift][col + col_shift];
         }
     }
     return minor;
 }
 
 
-double Matrix::determinant() const{
+template<typename T>
+T Matrix<T>::determinant() const {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
     if (rows == 0 || cols == 0) {
         throw ZERO_LENGTH;
     }
-    double determinant = 0;
+    T determinant = 0;
     if (rows == 1) {
         determinant = data[0][0];
         return determinant;
     }
-    float k = 1.0;
+    T k = 1.0;
     for (int col = 0; col < cols; col++) {
-        Matrix minor = minor_init(0, col);
+        Matrix<T> minor = minorInit(0, col);
         determinant += k * data[0][col] * minor.determinant();
         k = -k;
     }
@@ -285,29 +329,31 @@ double Matrix::determinant() const{
 }
 
 
-Matrix Matrix::transposition() const {
+template<typename T>
+Matrix<T> Matrix<T>::transposition() const {
     int new_rows = cols;
     int new_cols = rows;
-    Matrix transposed_matrix(new_rows, new_cols);
-    for(int row = 0; row < transposed_matrix.rows; row++)
-        for(int col = 0; col < transposed_matrix.cols; col++)
+    Matrix<T> transposed_matrix(new_rows, new_cols);
+    for (int row = 0; row < transposed_matrix.rows; row++)
+        for (int col = 0; col < transposed_matrix.cols; col++)
             transposed_matrix.data[row][col] = data[col][row];
     return transposed_matrix;
 }
 
 
-Matrix Matrix::minor_transformation(const Matrix &matrix) {
+template<typename T>
+Matrix<T> Matrix<T>::minorTransformation(const Matrix<T> &matrix) {
     if (matrix.rows != matrix.cols) {
         throw NOT_SQUARE;
     }
-    Matrix transformed_matrix(matrix.rows, matrix.cols);
-    if(matrix.rows == 1) {
+    Matrix<T> transformed_matrix(matrix.rows, matrix.cols);
+    if (matrix.rows == 1) {
         transformed_matrix = matrix;
         return transformed_matrix;
     }
-    for(int row = 0; row < matrix.rows; row++) {
-        for(int col = 0; col < matrix.cols; col++) {
-            Matrix minor = matrix.minor_init(row, col);
+    for (int row = 0; row < matrix.rows; row++) {
+        for (int col = 0; col < matrix.cols; col++) {
+            Matrix<T> minor = matrix.minorInit(row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
             transformed_matrix.data[row][col] = k * minor.determinant();
         }
@@ -316,30 +362,32 @@ Matrix Matrix::minor_transformation(const Matrix &matrix) {
 }
 
 
-Matrix Matrix::inversion() const {
+template<typename T>
+Matrix<T> Matrix<T>::inversion() const {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
     if (std::abs(this->determinant()) < EPSILON) {
         throw DIVISION_BY_ZERO;
     }
-    Matrix transformed_matrix = minor_transformation(this->transposition());
-    Matrix inverse_matrix = transformed_matrix * (1 / this->determinant());
+    Matrix<T> transformed_matrix = minorTransformation(this->transposition());
+    Matrix<T> inverse_matrix = transformed_matrix * (1 / this->determinant());
     return inverse_matrix;
 }
 
 
-Matrix Matrix::operator/ (const Matrix &matrix) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator/(const Matrix<T> &matrix) const {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
     if (std::abs(this->determinant()) < EPSILON) {
         throw DIVISION_BY_ZERO;
     }
-    Matrix inverse_matrix = matrix.inversion();
-    Matrix inverse_multiplied_matrix(cols, inverse_matrix.rows);
-    for(int row = 0; row < inverse_multiplied_matrix.rows; row++)
-        for(int col = 0; col < inverse_multiplied_matrix.cols; col++) {
+    Matrix<T> inverse_matrix = matrix.inversion();
+    Matrix<T> inverse_multiplied_matrix(cols, inverse_matrix.rows);
+    for (int row = 0; row < inverse_multiplied_matrix.rows; row++)
+        for (int col = 0; col < inverse_multiplied_matrix.cols; col++) {
             inverse_multiplied_matrix.data[row][col] = 0;
             for (int k = 0; k < cols; k++)
                 inverse_multiplied_matrix.data[row][col] += data[row][k] * inverse_matrix.data[k][col];
@@ -348,33 +396,33 @@ Matrix Matrix::operator/ (const Matrix &matrix) const {
 }
 
 
-Matrix Matrix::operator/ (double number) const {
+template<typename T>
+Matrix<T> Matrix<T>::operator/(T number) const {
     if (std::isnan(number)) {
         throw NAN_NUMBER;
     }
     if (std::abs(number) < EPSILON) {
         throw DIVISION_BY_ZERO;
     }
-    Matrix divided_matrix = *this;
-    for(int cell = 0; cell < size; cell++)
+    Matrix<T> divided_matrix = *this;
+    for (int cell = 0; cell < size; cell++)
         divided_matrix.values[cell] /= number;
     return divided_matrix;
 }
 
 
-Matrix Matrix::power(int power) const {
+template<typename T>
+Matrix<T> Matrix<T>::power(int power) const {
     if (rows != cols) {
         throw NOT_SQUARE;
     }
     if (power == 0) {
-        Matrix powered_matrix(this->rows, this->cols);
-        powered_matrix.set_identity();
-        return powered_matrix;
+        return Matrix<T>(this->rows);
     }
     if (power == 1) {
         return *this;
     }
-    Matrix powered_matrix;
+    Matrix<T> powered_matrix;
     if (power > 1) {
         powered_matrix = *this;
     }
@@ -389,16 +437,36 @@ Matrix Matrix::power(int power) const {
 }
 
 
-Matrix Matrix::exp(const Matrix& matrix, int STEPS) {
+template<typename T>
+Matrix<T> Matrix<T>::exp(const Matrix<T> &matrix, int STEPS) {
     if (matrix.rows != matrix.cols) {
         throw NOT_SQUARE;
     }
-    Matrix exp_matrix(matrix.rows, matrix.cols);
-    exp_matrix.set_identity();
-    double k = 1.0;
-    for(int s = 1; s < STEPS; s++) {
-        k /= s;
-        exp_matrix = exp_matrix + matrix.power(s) * k;
+    Matrix<T> exp_matrix(matrix.rows);
+    T k = 1.0;
+    for (int s = 1; s < STEPS; s++) {
+        k *= s;
+        exp_matrix = exp_matrix + matrix.power(s) / k;
     }
     return exp_matrix;
 }
+
+
+template<typename T>
+int Matrix<T>::isEqual(Matrix<T> matrix1, Matrix<T> matrix2) {
+    if (matrix1.rows != matrix2.rows || matrix1.cols != matrix2.cols) {
+        return 1;
+    }
+    for (int cell = 0; cell < matrix1.size; cell++)
+        if (std::abs(matrix1.values[cell] - matrix2.values[cell]) >= Matrix::EPSILON) {
+            return 1;
+        }
+    return 0;
+}
+
+
+template
+class Matrix<double>;
+
+template
+class Matrix<float>;
