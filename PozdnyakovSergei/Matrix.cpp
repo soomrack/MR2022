@@ -243,20 +243,6 @@ void Matrix::exponent(const unsigned int e) {
 }
 
 
-void Matrix::set_values(const unsigned int l, const double *array) {
-    for (unsigned int number = 0; number < rows * cols; number++) {
-        value[number] = array[number];
-    }
-}
-
-
-void Matrix::set_random(const unsigned int range) {
-    for (unsigned int number = 0; number < rows * cols; number++) {
-        value[number] = rand() % range;
-    }
-}
-
-
 double Matrix::determinant(const Matrix m, unsigned int size) {
     Matrix temp = Matrix(rows, cols);
     temp.set_values(rows * cols, value);
@@ -272,9 +258,30 @@ double Matrix::determinant(const Matrix m, unsigned int size) {
 }
 
 
+void Matrix::set_values(const unsigned int l, const double *array) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = array[number];
+    }
+}
 
 
+void Matrix::set_random(const unsigned int range) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = rand() % range;
+    }
+}
 
+
+void Matrix::output(bool f) {  // Вывод
+    if (f) std::cout << rows << "" << cols << "\n";
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int col = 0; col < cols; col++) {
+            std::cout << this -> value [row * cols + col] << "";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}
 
 
 Matrix operator+ (const Matrix &m1, const Matrix &m2) {
@@ -309,6 +316,13 @@ Matrix operator* (const Matrix &m, const double num) {
     Matrix itog = m;
     itog *= num;
     return itog;
+}
+
+
+bool operator== (const Matrix &m1, const Matrix &m2) {
+    bool f = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!f) return f;
+
 }
 
 
@@ -436,11 +450,11 @@ void mult_by_num_test() {
 }
 
 
-void determinant_test() {
-    Matrix m1 = Matrix(3, 3);
+/*void determinant_test() {
+    Matrix m = Matrix(3, 3);
     double array_1[9] = {2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    m1.set_values(9, array_1);
-    double itog = m1.determinant(m1, 3);
+    m.set_values(9, array_1);
+    double itog = m.determinant(m, 3);
     double result = -3;
     bool res = (itog == result);
     if (res) {
@@ -449,7 +463,7 @@ void determinant_test() {
     else {
         std::cout << ("Determinant was found incorrectly\n");
     }
-}
+}*/
 
 
 void exponent_test() {
@@ -465,7 +479,7 @@ void exponent_test() {
         std::cout << ("Exponent is calculated correctly");
     }
     else {
-        std::cout << ("Exponent is calculated incorrectly");
+        std::cout << ("Exponent is calculated incorrectly\n");
     }
 }
 
@@ -484,7 +498,7 @@ void power_test() {
         std::cout << ("Matrix power is calculated correctly");
     }
     else {
-        std::cout << ("Matrix power is calculates incorrectly");
+        std::cout << ("Matrix power is calculates incorrectly\n");
     }
 }
 
@@ -494,7 +508,7 @@ void all_tests() {  // Блок для вызова тестов, потом е�
     subtraction_test();
     mult_by_num_test();
     multiplication_test();
-    determinant_test();
+    /*determinant_test();*/
     power_test();
     exponent_test();
 }
