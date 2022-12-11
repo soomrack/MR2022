@@ -111,25 +111,25 @@ Matrix<T>::~Matrix() {
 
 
 template<typename T>
-int Matrix<T>::get_rows() const {
+int Matrix<T>::getRows() const {
     return rows;
 }
 
 
 template<typename T>
-int Matrix<T>::get_cols() const {
+int Matrix<T>::getCols() const {
     return cols;
 }
 
 
 template<typename T>
-int Matrix<T>::get_size() const {
+int Matrix<T>::getSize() const {
     return size;
 }
 
 
 template<typename T>
-void Matrix<T>::set_rows(int input_rows) {
+void Matrix<T>::setRows(int input_rows) {
     if (rows < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -139,7 +139,7 @@ void Matrix<T>::set_rows(int input_rows) {
 
 
 template<typename T>
-void Matrix<T>::set_cols(int input_cols) {
+void Matrix<T>::setCols(int input_cols) {
     if (cols < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -149,7 +149,7 @@ void Matrix<T>::set_cols(int input_cols) {
 
 
 template<typename T>
-T Matrix<T>::get_value(int cell) const {
+T Matrix<T>::getValue(int cell) const {
     if (cell < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -158,7 +158,7 @@ T Matrix<T>::get_value(int cell) const {
 
 
 template<typename T>
-T Matrix<T>::get_value(int row, int col) const {
+T Matrix<T>::getValue(int row, int col) const {
     if (row < 0 || col < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -167,7 +167,7 @@ T Matrix<T>::get_value(int row, int col) const {
 
 
 template<typename T>
-void Matrix<T>::set_value(int cell, T number) {
+void Matrix<T>::setValue(int cell, T number) {
     if (cell < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -176,7 +176,7 @@ void Matrix<T>::set_value(int cell, T number) {
 
 
 template<typename T>
-void Matrix<T>::set_value(int row, int col, T number) {
+void Matrix<T>::setValue(int row, int col, T number) {
     if (row < 0 || col < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -305,7 +305,7 @@ Matrix<T> Matrix<T>::operator*(T number) const {
 
 
 template<typename T>
-Matrix<T> Matrix<T>::minor_init(int excluded_row, int excluded_col) const {
+Matrix<T> Matrix<T>::minorInit(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
         throw WRONG_PARAMETERS;
     }
@@ -341,7 +341,7 @@ T Matrix<T>::determinant() const {
     }
     T k = 1.0;
     for (int col = 0; col < cols; col++) {
-        Matrix<T> minor = minor_init(0, col);
+        Matrix<T> minor = minorInit(0, col);
         determinant += k * data[0][col] * minor.determinant();
         k = -k;
     }
@@ -362,7 +362,7 @@ Matrix<T> Matrix<T>::transposition() const {
 
 
 template<typename T>
-Matrix<T> Matrix<T>::minor_transformation(const Matrix<T> &matrix) {
+Matrix<T> Matrix<T>::minorTransformation(const Matrix<T> &matrix) {
     if (matrix.rows != matrix.cols) {
         throw NOT_SQUARE;
     }
@@ -373,7 +373,7 @@ Matrix<T> Matrix<T>::minor_transformation(const Matrix<T> &matrix) {
     }
     for (int row = 0; row < matrix.rows; row++) {
         for (int col = 0; col < matrix.cols; col++) {
-            Matrix<T> minor = matrix.minor_init(row, col);
+            Matrix<T> minor = matrix.minorInit(row, col);
             int k = ((row + col) % 2 == 0) ? 1 : -1;
             transformed_matrix.data[row][col] = k * minor.determinant();
         }
@@ -390,7 +390,7 @@ Matrix<T> Matrix<T>::inversion() const {
     if (std::abs(this->determinant()) < EPSILON) {
         throw DIVISION_BY_ZERO;
     }
-    Matrix<T> transformed_matrix = minor_transformation(this->transposition());
+    Matrix<T> transformed_matrix = minorTransformation(this->transposition());
     Matrix<T> inverse_matrix = transformed_matrix * (1 / this->determinant());
     return inverse_matrix;
 }
@@ -473,7 +473,7 @@ Matrix<T> Matrix<T>::exp(const Matrix<T> &matrix, int STEPS) {
 
 
 template<typename T>
-int Matrix<T>::is_equal(Matrix<T> matrix1, Matrix<T> matrix2) {
+int Matrix<T>::isEqual(Matrix<T> matrix1, Matrix<T> matrix2) {
     if (matrix1.rows != matrix2.rows || matrix1.cols != matrix2.cols) {
         return 1;
     }

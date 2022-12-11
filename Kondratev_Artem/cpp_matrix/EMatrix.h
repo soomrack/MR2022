@@ -15,7 +15,7 @@ private:
     unsigned int memory_size;
     static inline unsigned int counter = 0;
     static inline unsigned int general_size = 0;
-    static unsigned int calc_memory(int c_rows, int c_cols);
+    static unsigned int calcMemory(int c_rows, int c_cols);
 public:
     EMatrix();
     EMatrix(int input_rows, int input_cols);
@@ -26,10 +26,10 @@ public:
     EMatrix(EMatrix<T> &&other) noexcept;
     ~EMatrix();
 
-    EMatrix<T>& operator=(EMatrix const &other);
+    EMatrix<T>& operator=(const EMatrix& other);
     EMatrix<T>& operator=(EMatrix&& other) noexcept;
 
-    static unsigned int get_counter();
+    static unsigned int getCounter();
     static unsigned int getGenSize();
     unsigned int getMemSize();
 

@@ -35,15 +35,15 @@ public:
     Matrix(const Matrix<T> &other);
     Matrix(Matrix<T> &&other) noexcept;
 
-    int get_rows() const;
-    int get_cols() const;
-    int get_size() const;
-    void set_rows(int input_rows);
-    void set_cols(int input_cols);
-    T get_value(int cell) const;
-    T get_value(int row, int col) const;
-    void set_value(int cell, T number);
-    void set_value(int row, int col, T number);
+    int getRows() const;
+    int getCols() const;
+    int getSize() const;
+    void setRows(int input_rows);
+    void setCols(int input_cols);
+    T getValue(int cell) const;
+    T getValue(int row, int col) const;
+    void setValue(int cell, T number);
+    void setValue(int row, int col, T number);
     void output() const;
     void test();
 
@@ -57,16 +57,16 @@ public:
     Matrix<T> operator/ (const Matrix<T> &matrix) const;
     Matrix<T> operator/ (T number) const;
 
-    Matrix<T> minor_init(int excluded_row, int excluded_col) const;
+    Matrix<T> minorInit(int excluded_row, int excluded_col) const;
     T determinant() const;
     Matrix<T> transposition() const;
 private:
-    static Matrix<T> minor_transformation(const Matrix<T> &matrix);
+    static Matrix<T> minorTransformation(const Matrix<T> &matrix);
 public:
     Matrix<T> inversion() const;
     Matrix<T> power(int power) const;
     static Matrix<T> exp(const Matrix<T> &matrix, int STEPS=DEFAULT_EXP_STEPS);
-    static int is_equal(Matrix<T> matrix1, Matrix<T> matrix2);
+    static int isEqual(Matrix<T> matrix1, Matrix<T> matrix2);
 };
 
 

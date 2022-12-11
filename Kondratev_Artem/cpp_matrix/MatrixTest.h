@@ -25,27 +25,27 @@ private:
     inline static int power = 3;
 
 public:
-    static void using_unused();
-    static void calculation_check(T true_array[], Matrix<T> *matrix, const std::string& text);
-    static Matrix<T> create_matrix(const std::vector<T>& vector);
-    static void output_test();
-    static void overload_test();
-    static void addition_test();
-    static void number_addition_test();
-    static void subtraction_test();
-    static void multiplication_test();
-    static void number_multiplication_test();
-    static void determinant_test();
-    static void transposition_test();
-    static void inversion_test();
-    static void inverse_multiplication_test();
-    static void number_division_test();
-    static void power_test();
-    static void exp_test();
-    static void equal_test();
-    static void counter_test();
-    static void matrix_mem_test();
-    static void gen_mem_test();
+    static void usingUnused();
+    static void calculationCheck(T true_array[], Matrix<T> *matrix, const std::string& text);
+    static Matrix<T> createMatrix(const std::vector<T>& vector);
+    static void outputTest();
+    static void overloadTest();
+    static void additionTest();
+    static void numberAdditionTest();
+    static void subtractionTest();
+    static void multiplicationTest();
+    static void numberMultiplicationTest();
+    static void determinantTest();
+    static void transpositionTest();
+    static void inversionTest();
+    static void inverseMultiplicationTest();
+    static void numberDivisionTest();
+    static void powerTest();
+    static void expTest();
+    static void equalTest();
+    static void counterTest();
+    static void matrixMemTest();
+    static void genMemTest();
 };
 
 
