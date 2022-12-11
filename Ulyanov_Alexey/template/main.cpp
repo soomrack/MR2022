@@ -71,9 +71,9 @@ public:
     void fill_certain(const unsigned int len, const T* array);
     void output(bool f = false);
 
-    unsigned int getRows() { return rows; };
-    unsigned int getCols() { return cols; };
-    T * getData() { return data; };
+    unsigned int getRows() const { return rows; };
+    unsigned int getCols() const { return cols; };
+    T * getData() const { return data; };
     char * getName() { return "Matrix_T"; };
 
 };
@@ -525,8 +525,13 @@ CLS<T> operator*(const CLS<T> &x, const CLS<T> &y){
 
 template <typename T, template <typename> class CLS>
 CLS<T> operator*(const T k, const CLS<T> &x){
-    CLS<T> rez = x;
-    rez *= k;
+    CLS<T> rez = zero<T, CLS>(x.getRows(), x.getCols());
+    const unsigned int len = x.getRows() * x.getCols();
+    T rezData[len];
+    for (unsigned int idx = 0; idx < len; idx++){
+        rezData[idx] = x.getData()[idx] * k;
+    }
+    rez.fill_certain(len, rezData);
     return rez;
 }
 
@@ -806,8 +811,9 @@ void test_exp(){
     CLSS<TPE> temp = zero<TPE, CLSS>(3, 3);
     temp = A; temp.pow(2);
 
+    TPE a1 = 1.0, a2 = 0.5;
     CLSS<TPE> standard = CLSS<TPE>(3, 3);
-    standard = one<TPE, CLSS>(3,3) + (TPE) 1.0 * A + temp * (TPE) 0.5;
+    standard = one<TPE, CLSS>(3,3) + a1 * A + temp * a2;
 
     A.exponent();
 

@@ -7,8 +7,7 @@ inline void print_message(const std::string& text, const MatrixException& Except
 
 
 void MatrixTest::using_unused() {
-    Matrix matrix(2, 2);
-    matrix.fillFromVector(vector1);
+    Matrix matrix = create_matrix(vector1);
     matrix.get_rows();
     matrix.get_cols();
     matrix.get_size();
@@ -35,18 +34,21 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const st
 }
 
 
+Matrix MatrixTest::create_matrix(const std::vector<double>& vector) {
+    return Matrix (2,2, vector);
+}
+
+
 void MatrixTest::output_test() {
     std::cout << "output test:" << std::endl;
-    Matrix matrix1(2, 2);
-    matrix1.fillFromVector(vector1);
+    Matrix matrix1 = create_matrix(vector1);
     matrix1.output();
 }
 
 
 void MatrixTest::overload_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         Matrix res_matrix = matrix1;
         double eq_true_array[] = {2, 8, 1, 3};
         calculation_check(eq_true_array, &res_matrix, "= overload");
@@ -59,10 +61,8 @@ void MatrixTest::overload_test() {
 
 void MatrixTest::addition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.fillFromVector(vector2);
+        Matrix matrix1 = create_matrix(vector1);
+        Matrix matrix2 = create_matrix(vector2);
         Matrix res_matrix = matrix1 + matrix2;
         double sum_true_array[] = {6, 17, 22, 16};
         calculation_check(sum_true_array, &res_matrix, "addition (matrix)");
@@ -75,8 +75,7 @@ void MatrixTest::addition_test() {
 
 void MatrixTest::number_addition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         Matrix res_matrix = matrix1 + 2;
         double snum_true_array[] = {4, 10, 3, 5};
         calculation_check(snum_true_array, &res_matrix, "addition (number)");
@@ -89,10 +88,8 @@ void MatrixTest::number_addition_test() {
 
 void MatrixTest::subtraction_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.fillFromVector(vector2);
+        Matrix matrix1 = create_matrix(vector1);
+        Matrix matrix2 = create_matrix(vector2);
         Matrix res_matrix = matrix1 - matrix2;
         double sub_true_array[] = {-2, -1, -20, -10};
         calculation_check(sub_true_array, &res_matrix, "subtraction");
@@ -105,10 +102,8 @@ void MatrixTest::subtraction_test() {
 
 void MatrixTest::multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.fillFromVector(vector2);
+        Matrix matrix1 = create_matrix(vector1);
+        Matrix matrix2 = create_matrix(vector2);
         Matrix res_matrix = matrix1 * matrix2;
         double multi_true_array[] = {176, 122, 67, 48};
         calculation_check(multi_true_array, &res_matrix, "multiplication (matrix)");
@@ -121,8 +116,7 @@ void MatrixTest::multiplication_test() {
 
 void MatrixTest::number_multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         Matrix res_matrix = matrix1 * 2;
         double mnum_true_array[] = {4, 16, 2, 6};
         calculation_check(mnum_true_array, &res_matrix, "multiplication (number)");
@@ -135,8 +129,7 @@ void MatrixTest::number_multiplication_test() {
 
 void MatrixTest::determinant_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         double determinant_true_array[] = {-2};
         Matrix det_matrix(1, 1, matrix1.determinant());
         calculation_check(determinant_true_array, &det_matrix, "determinant");
@@ -149,8 +142,7 @@ void MatrixTest::determinant_test() {
 
 void MatrixTest::transposition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         double transp_true_array[] = {2, 1, 8, 3};
         Matrix res_matrix = matrix1.transposition();
         calculation_check(transp_true_array, &res_matrix, "transposition");
@@ -163,8 +155,7 @@ void MatrixTest::transposition_test() {
 
 void MatrixTest::inversion_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         double inv_true_array[] = {-1.5, 4, 0.5, -1};
         Matrix res_matrix = matrix1.inversion();
         calculation_check(inv_true_array, &res_matrix, "inversion");
@@ -177,10 +168,8 @@ void MatrixTest::inversion_test() {
 
 void MatrixTest::inverse_multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.fillFromVector(vector2);
+        Matrix matrix1 = create_matrix(vector1);
+        Matrix matrix2 = create_matrix(vector2);
         double inv_multi_true_array[] = {1.036496, -0.102189, 0.364963, -0.021897};
         Matrix res_matrix = matrix1 / matrix2;
         calculation_check(inv_multi_true_array, &res_matrix, "inverse multiplication");
@@ -193,8 +182,7 @@ void MatrixTest::inverse_multiplication_test() {
 
 void MatrixTest::number_division_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         Matrix res_matrix = matrix1 / 2;
         double snum_true_array[] = {1, 4, 0.5, 1.5};
         calculation_check(snum_true_array, &res_matrix, "division (number)");
@@ -207,8 +195,7 @@ void MatrixTest::number_division_test() {
 
 void MatrixTest::power_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.fillFromVector(vector1);
+        Matrix matrix1 = create_matrix(vector1);
         Matrix res_matrix = matrix1.power(power);
         calculation_check(power_array, &res_matrix, "power");
     }
@@ -220,8 +207,7 @@ void MatrixTest::power_test() {
 
 void MatrixTest::exp_test() {
     try {
-        Matrix matrix3(2, 2);
-        matrix3.fillFromVector(vector3);
+        Matrix matrix3 = create_matrix(vector3);
         double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
         Matrix res_matrix = Matrix::exp(matrix3);
         calculation_check(exp_true_array, &res_matrix, "Matrix exp");

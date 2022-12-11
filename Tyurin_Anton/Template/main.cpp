@@ -8,16 +8,18 @@ MatrixException WRONG_SIZES("Размеры некорректны для выч
 MatrixException MEMORY_DIDNOT_ALLOCATED("Память не выделилась");
 MatrixException DIVIDE_BY_ZERO("Деление на ноль");
 
-Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
-        cols = cols_m;
-        rows = rows_m;
-        values = new double[cols * rows];
-        for (unsigned int idx = 0; idx < cols * rows; idx++){
-            values[idx] = 0.0;
-        }
+template <typename T>
+Matrix<T>::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
+    cols = cols_m;
+    rows = rows_m;
+    values = new double[cols * rows];
+    for (unsigned int idx = 0; idx < cols * rows; idx++){
+        values[idx] = 0.0;
+    }
 }
 
-Matrix::Matrix(const Matrix &A) {  // Конструктор копирования
+template <typename T>
+Matrix<T>::Matrix(const Matrix &A) {  // Конструктор копирования
     rows = A.rows;
     cols = A.cols;
     values = new double[rows * cols];
@@ -31,25 +33,29 @@ Matrix::Matrix(const Matrix &A) {  // Конструктор копирован�
     }
 }
 
-Matrix::Matrix(Matrix&& A)  noexcept {  // Конструктор переноса
+template <typename T>
+Matrix<T>::Matrix(Matrix&& A)  noexcept {  // Конструктор переноса
     rows = A.rows;
     cols = A.cols;
     values = A.values;
     A.values = nullptr;
 }
 
-Matrix::~Matrix() {  // Деструктор
+template <typename T>
+Matrix<T>::~Matrix() {  // Деструктор
     delete[] values;
 }
 
-Matrix Matrix::data_input(Matrix *matrix, const double arr[]){  // Заполнение матрицы данными массива
-        for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++) {
-            matrix->values[idx] = arr[idx];
-        }
-        return *matrix;
+template <typename T>
+Matrix<T> Matrix<T>::data_input(Matrix *matrix, const double arr[]){  // Заполнение матрицы данными массива
+    for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++) {
+        matrix->values[idx] = arr[idx];
+    }
+    return *matrix;
 }
 
-void Matrix::print_matrix(const Matrix& X) {  // Вывод матрицы на экран
+template <typename T>
+void Matrix<T>::print_matrix(const Matrix& X) {  // Вывод матрицы на экран
     std::cout << "Matrix\n";
     for (unsigned int row = 0; row < X.rows; row++) {
         for (unsigned int col = 0; col < X.cols; col++) {
@@ -59,7 +65,8 @@ void Matrix::print_matrix(const Matrix& X) {  // Вывод матрицы на 
     }
 }
 
-void Matrix::print_matrix(const Matrix& matrix, char symbol){  // Вывод матрицы на экран
+template <typename T>
+void Matrix<T>::print_matrix(const Matrix& matrix, char symbol){  // Вывод матрицы на экран
     std::cout << "Matrix";
     switch(symbol){
         case '+': std::cout << "\tsumm\n"; break;
@@ -76,7 +83,8 @@ void Matrix::print_matrix(const Matrix& matrix, char symbol){  // Вывод м�
     }
 }
 
-Matrix::Matrix(unsigned int cols_m) {  // Конструктор единичной матрицы
+template <typename T>
+Matrix<T>::Matrix(unsigned int cols_m) {  // Конструктор единичной матрицы
     cols = cols_m;
     rows = cols_m;
     values = new double[cols * rows];
@@ -89,24 +97,20 @@ Matrix::Matrix(unsigned int cols_m) {  // Конструктор единичн�
     }
 }
 
-/*Matrix Matrix::error(){
-    Matrix error(0,0);
-    error.values = nullptr;
-    return error;
-}*/
-
-Matrix Matrix::operator+ (const Matrix& X) const { // Перегрузка оператора сложения
+template <typename T>
+Matrix<T> Matrix<T>::operator+ (const Matrix& X) const { // Перегрузка оператора сложения
     if((cols != X.cols) && (rows != X.rows)){
         throw WRONG_SIZES;
-}
+    }
     Matrix sum(X.cols, X.rows);
     for (unsigned int idx = 0; idx < X.cols * X.rows; idx++) {
-      sum.values[idx] = values[idx] + X.values[idx];
+        sum.values[idx] = values[idx] + X.values[idx];
     }
     return sum;
 }
 
-Matrix Matrix::operator- (const Matrix& X) const { // Перегрузка оператора вычитания
+template <typename T>
+Matrix<T> Matrix<T>::operator- (const Matrix& X) const { // Перегрузка оператора вычитания
     if((cols != X.cols) && (rows != X.rows)){
         throw WRONG_SIZES;
     }
@@ -117,7 +121,8 @@ Matrix Matrix::operator- (const Matrix& X) const { // Перегрузка оп�
     return sub;
 }
 
-Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оператора умножения
+template <typename T>
+Matrix<T> Matrix<T>::operator* (const Matrix& X) const { // Перегрузка оператора умножения
     if(cols != X.rows){
         throw WRONG_SIZES;
     }
@@ -133,7 +138,8 @@ Matrix Matrix::operator* (const Matrix& X) const { // Перегрузка оп�
     return mult;
 }
 
-Matrix Matrix::operator= (Matrix&& X) noexcept { // Перегрузка оператора присваивания
+template <typename T>
+Matrix<T> Matrix<T>::operator= (Matrix&& X) noexcept { // Перегрузка оператора присваивания
     if (this == &X) {
         return *this;
     }
@@ -145,9 +151,10 @@ Matrix Matrix::operator= (Matrix&& X) noexcept { // Перегрузка опе�
     return *this;
 }
 
-Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
+template <typename T>
+Matrix<T> Matrix<T>::operator= (Matrix& X)  { // Перегрузка оператора присваивания
     if (this == &X) {
-    return *this;
+        return *this;
     }
     rows = X.rows;
     cols = X.cols;
@@ -160,7 +167,8 @@ Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператор
     return *this;
 }
 
-Matrix Matrix::operator^ (double X) const { // Перегрузка оператора ^(возведение матрицы в степень)
+template <typename T>
+Matrix<T> Matrix<T>::operator^ (double X) const { // Перегрузка оператора ^(возведение матрицы в степень)
     Matrix power(*this);
     if (X == 0.0) {
         Matrix one(rows);
@@ -178,18 +186,20 @@ Matrix Matrix::operator^ (double X) const { // Перегрузка операт
     return power;
 }
 
-Matrix Matrix::operator/ (const double X) const { // Перегрузка оператора деления(на числа)
+template <typename T>
+Matrix<T> Matrix<T>::operator/ (const double X) const { // Перегрузка оператора деления(на числа)
     if(abs(X) < PRECISION){
         throw DIVIDE_BY_ZERO;
     }
     Matrix divide(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
-                divide.values[idx] = values[idx] / X;
-            }
+        divide.values[idx] = values[idx] / X;
+    }
     return divide;
 }
 
-Matrix Matrix::exp(const Matrix& A){ // Матричная экспонента
+template <typename T>
+Matrix<T> Matrix<T>::exp(const Matrix& A){ // Матричная экспонента
     Matrix one(A.cols);
     Matrix exp = one + A;
     double factorial = 1;
@@ -200,13 +210,15 @@ Matrix Matrix::exp(const Matrix& A){ // Матричная экспонента
     return exp;
 }
 
-void Matrix::fill_with(double Number) {
+template <typename T>
+void Matrix<T>::fill_with(double Number) {
     for(unsigned int idx = 0; idx < cols * rows; idx++){
         values[idx] = Number;
     }
 }
 
-void Matrix::is_equal(const Matrix& X) {
+template <typename T>
+void Matrix<T>::is_equal(const Matrix& X) {
     int error = 0;
     if ((rows == X.rows) && (cols == X.cols)) {
         for (unsigned int idx = 0; idx < cols * rows; idx++) {
@@ -227,7 +239,7 @@ int main() {
     Matrix::data_input(&A, arr_A);
     Matrix B(3, 3);
     double arr_B[] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
-    Matrix::data_input(&B, arr_B);
+    Matrix<T>::data_input(&B, arr_B);
     // Тест вычислений
     Matrix_test::test();
     // Блок вычислений
