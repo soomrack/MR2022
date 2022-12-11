@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <time.h>
 
 
 const double EPS_CONST = pow(10, -5);
@@ -13,11 +14,11 @@ private:
     double *value;
 
 public:
-    Matrix();  //
-    Matrix(const Matrix& m);  // copy
-    Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
-    ~Matrix();  // destructor
-    Matrix(Matrix&& m);
+    Matrix();  //пустые матрицы
+    Matrix(const Matrix& m);  // копирование
+    Matrix(const unsigned int row, const unsigned int col);  // прямоугольные матрицы
+    ~Matrix();  // деструктор
+    Matrix(Matrix&& m); // перенос
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -33,15 +34,15 @@ public:
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
     void exponent(const unsigned int e = 3);  // матричная экспонента
-    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);
+    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);  // минор марицы
 
-    void set_values(const unsigned int l, const double* array);
-    void set_random(const unsigned int range = 21);
-    /*void output(bool f = false);*/
+    void set_values(const unsigned int l, const double* array);  // заполнение из массива
+    void set_random(const unsigned int range = 21);  // заполнение рандомно
+    void output(bool f = false);
 
     friend Matrix exponent(const Matrix m, const unsigned int e);
     friend Matrix power(const Matrix m, const unsigned int n);
-    friend bool operator==(const Matrix &m1, const Matrix &m2);
+    friend bool operator== (const Matrix &m1, const Matrix &m2);
 };
 
 
@@ -60,10 +61,15 @@ Matrix operator* (const Matrix &m, const double num);
 Matrix::Matrix() : rows(0), cols(0), value(nullptr) {}
 
 
+Matrix::~Matrix() {
+    delete[] value;
+}
+
+
 Matrix::Matrix(const unsigned int r, const unsigned int c) {
     rows = r;
     cols = c;
-    value = new double [rows * cols];
+    value = new double [rows * cols];  // выделение памяти под элементы матрицы
 }
 
 
@@ -105,7 +111,7 @@ Matrix& Matrix::operator+=(const Matrix &m) {
     cols = m.cols;
     int total_num = rows * cols;
     for (unsigned int number = 0; number < total_num; number++) {
-        value[number] = +m.value[number];
+        value[number] += m.value[number];
     }
     return *this;
 }
@@ -158,6 +164,7 @@ void Matrix::zero_matrix() {
 }
 
 void Matrix::unit_matrix() {
+    this -> zero_matrix();
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
@@ -236,6 +243,13 @@ void Matrix::exponent(const unsigned int e) {
 }
 
 
+void Matrix::set_values(const unsigned int l, const double *array) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = array[number];
+    }
+}
+
+
 void Matrix::set_random(const unsigned int range) {
     for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = rand() % range;
@@ -258,9 +272,6 @@ double Matrix::determinant(const Matrix m, unsigned int size) {
 }
 
 
-Matrix::~Matrix() {
-    delete[] value;
-}
 
 
 
