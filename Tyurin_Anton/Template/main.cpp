@@ -9,12 +9,12 @@ MatrixException MEMORY_DIDNOT_ALLOCATED("Память не выделилась"
 MatrixException DIVIDE_BY_ZERO("Деление на ноль");
 
 Matrix::Matrix(const unsigned int cols_m, const unsigned int rows_m){  // Инициализация матрицы
-        cols = cols_m;
-        rows = rows_m;
-        values = new double[cols * rows];
-        for (unsigned int idx = 0; idx < cols * rows; idx++){
-            values[idx] = 0.0;
-        }
+    cols = cols_m;
+    rows = rows_m;
+    values = new double[cols * rows];
+    for (unsigned int idx = 0; idx < cols * rows; idx++){
+        values[idx] = 0.0;
+    }
 }
 
 Matrix::Matrix(const Matrix &A) {  // Конструктор копирования
@@ -43,10 +43,10 @@ Matrix::~Matrix() {  // Деструктор
 }
 
 Matrix Matrix::data_input(Matrix *matrix, const double arr[]){  // Заполнение матрицы данными массива
-        for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++) {
-            matrix->values[idx] = arr[idx];
-        }
-        return *matrix;
+    for (unsigned int idx = 0; idx < matrix->cols * matrix->rows; idx++) {
+        matrix->values[idx] = arr[idx];
+    }
+    return *matrix;
 }
 
 void Matrix::print_matrix(const Matrix& X) {  // Вывод матрицы на экран
@@ -98,10 +98,10 @@ Matrix::Matrix(unsigned int cols_m) {  // Конструктор единичн�
 Matrix Matrix::operator+ (const Matrix& X) const { // Перегрузка оператора сложения
     if((cols != X.cols) && (rows != X.rows)){
         throw WRONG_SIZES;
-}
+    }
     Matrix sum(X.cols, X.rows);
     for (unsigned int idx = 0; idx < X.cols * X.rows; idx++) {
-      sum.values[idx] = values[idx] + X.values[idx];
+        sum.values[idx] = values[idx] + X.values[idx];
     }
     return sum;
 }
@@ -147,7 +147,7 @@ Matrix Matrix::operator= (Matrix&& X) noexcept { // Перегрузка опе�
 
 Matrix Matrix::operator= (Matrix& X)  { // Перегрузка оператора присваивания
     if (this == &X) {
-    return *this;
+        return *this;
     }
     rows = X.rows;
     cols = X.cols;
@@ -184,8 +184,8 @@ Matrix Matrix::operator/ (const double X) const { // Перегрузка опе
     }
     Matrix divide(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
-                divide.values[idx] = values[idx] / X;
-            }
+        divide.values[idx] = values[idx] / X;
+    }
     return divide;
 }
 
