@@ -39,7 +39,8 @@ public:
     int getCols() const;
     int getSize() const;
     T getValue(int cell) const;
-    T getValue(int row, int col) const;
+
+    [[maybe_unused]] T getValue(int row, int col) const;
     void setValue(int cell, T number);
     void setValue(int row, int col, T number);
     void output() const;

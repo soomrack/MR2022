@@ -12,13 +12,13 @@
 class MatrixException: public std::exception {
 private:
     std::string message;
-    int error_code;
 public:
-    MatrixException(int input_code, std::string input_message);
+    explicit MatrixException(std::string input_message);
+    MatrixException(const MatrixException &other) = default;
+    MatrixException(MatrixException &&other) = default;
     ~MatrixException() override = default;
 
     std::string getMessage() const;
-    int getErrorCode() const;
 };
 
 

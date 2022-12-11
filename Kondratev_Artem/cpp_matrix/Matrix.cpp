@@ -1,18 +1,6 @@
 #include "Matrix.h"
 
 
-MatrixException WRONG_PARAMETERS(1, "matrix parameters are less than zero");
-MatrixException NULL_MEMORY(2, "memory is not allocated");
-MatrixException ADDITION_ERROR(3, "wrong matrix sizes for addition");
-MatrixException SUBTRACTION_ERROR(4, "wrong matrix sizes for subtraction");
-MatrixException NAN_NUMBER(5, "number is NAN");
-MatrixException MULTIPLICATION_ERROR(6, "wrong matrix sizes for multiplication");
-MatrixException DIVISION_BY_ZERO(7, "division_by_zero");
-MatrixException NOT_SQUARE(8, "matrix is not square");
-MatrixException WRONG_LENGTH(9, "length of vector is wrong");
-MatrixException ZERO_LENGTH(10, "rows || cols is/are zero");
-
-
 template<class T>
 Matrix<T>::Matrix() {
     rows = 0;
@@ -26,7 +14,7 @@ Matrix<T>::Matrix() {
 template<typename T>
 Matrix<T>::Matrix(int input_rows, int input_cols) {
     if (input_rows <= 0 || input_cols <= 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     rows = input_rows;
     cols = input_cols;
@@ -36,7 +24,7 @@ Matrix<T>::Matrix(int input_rows, int input_cols) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw NULL_MEMORY;
+        throw MatrixException("memory is not allocated");
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
@@ -53,7 +41,7 @@ Matrix<T>::Matrix(int input_rows, int input_cols, T number): Matrix{input_rows, 
 template<typename T>
 Matrix<T>::Matrix(int input_rows, int input_cols, const std::vector<T> &vector): Matrix<T>(input_rows, input_cols) {
     if (size != vector.size()) {
-        throw WRONG_LENGTH;
+        throw MatrixException("length of vector is wrong");
     }
     for (int cell = 0; cell < size; cell++)
         values[cell] = vector[cell];
@@ -78,7 +66,7 @@ Matrix<T>::Matrix(const Matrix<T>& other) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw NULL_MEMORY;
+        throw MatrixException("memory is not allocated");
     }
     for (int row = 0; row < rows; row++)
         data[row] = values + row * cols;
@@ -131,7 +119,7 @@ int Matrix<T>::getSize() const {
 template<typename T>
 T Matrix<T>::getValue(int cell) const {
     if (cell < 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     return values[cell];
 }
@@ -140,7 +128,7 @@ T Matrix<T>::getValue(int cell) const {
 template<typename T>
 T Matrix<T>::getValue(int row, int col) const {
     if (row < 0 || col < 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     return data[row][col];
 }
@@ -149,7 +137,7 @@ T Matrix<T>::getValue(int row, int col) const {
 template<typename T>
 void Matrix<T>::setValue(int cell, T number) {
     if (cell < 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     values[cell] = number;
 }
@@ -158,7 +146,7 @@ void Matrix<T>::setValue(int cell, T number) {
 template<typename T>
 void Matrix<T>::setValue(int row, int col, T number) {
     if (row < 0 || col < 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     data[row][col] = number;
 }
@@ -167,7 +155,7 @@ void Matrix<T>::setValue(int row, int col, T number) {
 template<typename T>
 void Matrix<T>::output() const {
     if (data == nullptr || values == nullptr) {
-        throw NULL_MEMORY;
+        throw MatrixException("memory is not allocated");
     }
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
@@ -191,7 +179,7 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> const &other) {
         if (data == nullptr || values == nullptr) {
             delete[] data;
             delete[] values;
-            throw NULL_MEMORY;
+            throw MatrixException("memory is not allocated");
         }
         for (int row = 0; row < rows; row++)
             data[row] = values + row * cols;
@@ -223,7 +211,7 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T>&& other) noexcept {
 template<typename T>
 Matrix<T> Matrix<T>::operator+(Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
-        throw ADDITION_ERROR;
+        throw MatrixException("wrong matrix sizes for addition");
     }
     Matrix<T> sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
@@ -235,7 +223,7 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> const &matrix) const {
 template<typename T>
 Matrix<T> Matrix<T>::operator+(T number) const {
     if (std::isnan(number)) {
-        throw NAN_NUMBER;
+        throw MatrixException("number is NAN");
     }
     Matrix<T> sum_matrix = *this;
     for (int cell = 0; cell < size; cell++)
@@ -247,7 +235,7 @@ Matrix<T> Matrix<T>::operator+(T number) const {
 template<typename T>
 Matrix<T> Matrix<T>::operator-(Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
-        throw SUBTRACTION_ERROR;
+        throw MatrixException("wrong matrix sizes for subtraction");
     }
     Matrix<T> sub_matrix = *this;
     for (int cell = 0; cell < size; cell++)
@@ -259,7 +247,7 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> const &matrix) const {
 template<typename T>
 Matrix<T> Matrix<T>::operator*(Matrix<T> const &matrix) const {
     if (cols != matrix.rows) {
-        throw MULTIPLICATION_ERROR;
+        throw MatrixException("wrong matrix sizes for multiplication");
     }
     Matrix<T> multiplied_matrix(cols, matrix.rows);
     for (int row = 0; row < multiplied_matrix.rows; row++)
@@ -275,7 +263,7 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> const &matrix) const {
 template<typename T>
 Matrix<T> Matrix<T>::operator*(T number) const {
     if (std::isnan(number)) {
-        throw NAN_NUMBER;
+        throw MatrixException("number is NAN");
     }
     Matrix<T> multiplied_matrix = *this;
     for (int cell = 0; cell < size; cell++)
@@ -287,7 +275,7 @@ Matrix<T> Matrix<T>::operator*(T number) const {
 template<typename T>
 Matrix<T> Matrix<T>::minorInit(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
-        throw WRONG_PARAMETERS;
+        throw MatrixException("matrix parameters are less than zero");
     }
     Matrix<T> minor(rows - 1, cols - 1);
     int row_shift = 0;
@@ -309,10 +297,10 @@ Matrix<T> Matrix<T>::minorInit(int excluded_row, int excluded_col) const {
 template<typename T>
 T Matrix<T>::determinant() const {
     if (rows != cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     if (rows == 0 || cols == 0) {
-        throw ZERO_LENGTH;
+        throw MatrixException("rows || cols is/are zero");
     }
     T determinant = 0;
     if (rows == 1) {
@@ -344,7 +332,7 @@ Matrix<T> Matrix<T>::transposition() const {
 template<typename T>
 Matrix<T> Matrix<T>::minorTransformation(const Matrix<T> &matrix) {
     if (matrix.rows != matrix.cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     Matrix<T> transformed_matrix(matrix.rows, matrix.cols);
     if (matrix.rows == 1) {
@@ -365,10 +353,10 @@ Matrix<T> Matrix<T>::minorTransformation(const Matrix<T> &matrix) {
 template<typename T>
 Matrix<T> Matrix<T>::inversion() const {
     if (rows != cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     if (std::abs(this->determinant()) < EPSILON) {
-        throw DIVISION_BY_ZERO;
+        throw MatrixException("division_by_zero");
     }
     Matrix<T> transformed_matrix = minorTransformation(this->transposition());
     Matrix<T> inverse_matrix = transformed_matrix * (1 / this->determinant());
@@ -379,10 +367,10 @@ Matrix<T> Matrix<T>::inversion() const {
 template<typename T>
 Matrix<T> Matrix<T>::operator/(const Matrix<T> &matrix) const {
     if (rows != cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     if (std::abs(this->determinant()) < EPSILON) {
-        throw DIVISION_BY_ZERO;
+        throw MatrixException("division_by_zero");
     }
     Matrix<T> inverse_matrix = matrix.inversion();
     Matrix<T> inverse_multiplied_matrix(cols, inverse_matrix.rows);
@@ -399,10 +387,10 @@ Matrix<T> Matrix<T>::operator/(const Matrix<T> &matrix) const {
 template<typename T>
 Matrix<T> Matrix<T>::operator/(T number) const {
     if (std::isnan(number)) {
-        throw NAN_NUMBER;
+        throw MatrixException("number is NAN");
     }
     if (std::abs(number) < EPSILON) {
-        throw DIVISION_BY_ZERO;
+        throw MatrixException("division_by_zero");
     }
     Matrix<T> divided_matrix = *this;
     for (int cell = 0; cell < size; cell++)
@@ -414,7 +402,7 @@ Matrix<T> Matrix<T>::operator/(T number) const {
 template<typename T>
 Matrix<T> Matrix<T>::power(int power) const {
     if (rows != cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     if (power == 0) {
         return Matrix<T>(this->rows);
@@ -440,7 +428,7 @@ Matrix<T> Matrix<T>::power(int power) const {
 template<typename T>
 Matrix<T> Matrix<T>::exp(const Matrix<T> &matrix, int STEPS) {
     if (matrix.rows != matrix.cols) {
-        throw NOT_SQUARE;
+        throw MatrixException("matrix is not square");
     }
     Matrix<T> exp_matrix(matrix.rows);
     T k = 1.0;
