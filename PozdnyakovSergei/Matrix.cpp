@@ -503,7 +503,7 @@ void power_test() {
 }
 
 
-void all_tests() {  // Блок для вызова тестов, потом его в main прописать
+void test_part() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
     mult_by_num_test();
@@ -514,16 +514,34 @@ void all_tests() {  // Блок для вызова тестов, потом е�
 }
 
 
-void output() {
+void output_part() {
 
+    Matrix M1 = Matrix (3, 4);
+    double array_m1[12] = {1, 2, 3, 4,
+                           5, 6, 7, 8,
+                           9, 0, 11, 12};
+    M1.set_values(12, array_m1);
+    M1.output();
+
+    Matrix M2 = Matrix (3, 4);
+    M2.set_random(21);
+    M1.output();
+
+    Matrix M3 = Matrix(3, 3);
+    M3.zero_matrix();
+    M3.output();
+
+    Matrix M4 = Matrix(3, 3);
+    M4.unit_matrix();
+    M4.output();
 }
 
 
 int main() {
 
-    all_tests();  // Вызов блока тестов для прогона
+    test_part();  // Вызов блока тестов для прогона
 
-    output();
+    output_part();
 
     return 0;
 }
