@@ -1,44 +1,37 @@
 //
-// Created by user on 08.11.22.
+// Created by User on 05.12.2022.
 //
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef MR2022_MATRIX_H
+#define MR2022_MATRIX_H
 
 
 #include <iostream>
-#include <iomanip>
 #include <vector>
 #include <cmath>
-#include <cstring>
-#include "MatrixException.h"
 
 
-class Matrix {
-    friend class MatrixTest;
+class Matrix{
 private:
-    int rows;
-    int cols;
-    int size;
-    double **data;
-    double *values;
+    unsigned int rows;
+    unsigned int columns;std::vector <std::vector <double>> cells;
 public:
     inline static const double EPSILON = 0.000001;
     inline static const int DEFAULT_EXP_STEPS = 177;
 
     Matrix();  //  empty matrix
-    Matrix(int input_rows, int input_cols);
-    Matrix(int input_rows, int input_cols, double number);
-    Matrix(int input_rows, int input_cols, const std::vector<double> &vector);
-    explicit Matrix(int identity_size);
+    Matrix(int input_rows, int input_cols, double number=NAN);
     ~Matrix();
     Matrix(const Matrix &other);
     Matrix(Matrix &&other) noexcept;
 
-    int get_rows() const;
-    int get_cols() const;
-    int get_size() const;
-    double get_value(int row, int col) const;
+    void vector_fill(std::vector<double> vector);
+    void vector_fill(const std::vector<std::vector<double>>&);
+    void set_identity();
+    unsigned int get_rows() const;
+    unsigned int get_columns() const;
+    unsigned int get_size() const;
+    double get_cell(int row, int column) const;
     void output() const;
 
     Matrix &operator= (Matrix const &other);
@@ -63,4 +56,4 @@ public:
 };
 
 
-#endif //MATRIX_H
+#endif //MR2022_MATRIX_H

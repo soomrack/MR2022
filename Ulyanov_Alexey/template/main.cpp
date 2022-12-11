@@ -2,9 +2,7 @@
 #include <iomanip>
 
 
-const double COMPARATION_CONST = 0.00001;
-static unsigned int MATRIX_MEMORY_QUANTITY = 0;
-static unsigned int memory = 0;
+static unsigned int memory = 0;  // отслеживает выделенную память для ВСЕХ экземпляров Matrix_memory
 
 
 class Matrix_Exception : public std::domain_error
@@ -73,43 +71,40 @@ public:
     void fill_certain(const unsigned int len, const T* array);
     void output(bool f = false);
 
-    Matrix_T<T> pow_mat(const unsigned int n = 2){
-        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
-        if (rows != cols) throw NOT_SQUARE;
-
-        rez.fill_certain(rows * cols, data);
-        rez.pow(n);
-        return rez;
-    };
-    Matrix_T<T> expo_mat(const unsigned int p_degree = 3){
-        Matrix_T<T> rez = Matrix_T<T>(rows, cols);
-        rez.fill_certain(rows * cols, data);
-
-        rez.exponent(p_degree);
-        return rez;
-    };
+    unsigned int getRows() const { return rows; };
+    unsigned int getCols() const { return cols; };
+    T * getData() const { return data; };
+    char * getName() { return "Matrix_T"; };
 
 };
 
-template <typename T>
-Matrix_T<T> undefinded();
-template <typename T>
-Matrix_T<T> zero(const unsigned int row, const unsigned int col);
-template <typename T>
-Matrix_T<T> one(const unsigned int row, const unsigned int col);
 
-template <typename T>
-Matrix_T<T> operator+(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator-(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const Matrix_T<T> &y);
-template <typename T>
-Matrix_T<T> operator*(const T k, const Matrix_T<T> &x);
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const T k);
-template <typename T>
-Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> undefinded();
+template <typename T, template <typename> class CLS>
+CLS<T> zero(const unsigned int row, const unsigned int col);
+template <typename T, template <typename> class CLS>
+CLS<T> one(const unsigned int row, const unsigned int col);
+
+
+template <typename T, template <typename> class CLS>
+CLS<T> operator+(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator-(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const CLS<T> &y);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const T k, const CLS<T> &x);
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const T k);
+template <typename T, template <typename> class CLS>
+CLS<T> operator/(const CLS<T> &x, const CLS<T> &y);
+
+
+template <typename T, template <typename> class CLS>
+CLS<T> expo_mat(const CLS<T> &x, const unsigned int p_degree = 3);
+template <typename T, template <typename> class CLS>
+CLS<T> pow_mat(const CLS<T> &x, const unsigned int n = 2);
 
 
 template <typename T>
@@ -216,10 +211,12 @@ Matrix_T<T>& Matrix_T<T>::operator*=(const Matrix_T<T> &x){
 
     Matrix_T<T> rez = Matrix_T(rows, x.cols);
     rez.zero();
+
     for (unsigned int row = 0; row < rez.rows; row++){
         for (unsigned int col = 0; col < rez.cols; col++){
+
             for (unsigned int idx = 0; idx < x.rows; idx++){
-                rez.data[row * rez.cols + col] += data[row * cols + idx] * data[idx * x.cols + col];
+                rez.data[row * rez.cols + col] += data[row * cols + idx] * x.data[idx * x.cols + col];
             }
         }
     }
@@ -325,7 +322,7 @@ void Matrix_T<T>::triangle(){
 
     for (unsigned int step = 1; step < rows; step++) {
         for (unsigned int cur_row = step; cur_row < rows; cur_row++) {
-            if (data[(step - 1) * (cols + 1)] < COMPARATION_CONST){
+            if (data[(step - 1) * (cols + 1)] < CMP_CONST){
                 throw DIV_BY_ZERO;
             }
             T ratio = data[cur_row * cols + step - 1] / data[(step - 1) * cols + step - 1];
@@ -372,7 +369,7 @@ void Matrix_T<T>::reverse() {
     }
 
     temp.tran();
-    if (abs(deter - 0.0) < COMPARATION_CONST)  throw DIV_BY_ZERO;
+    if (abs(deter - 0.0) < CMP_CONST)  throw DIV_BY_ZERO;
     temp.multy_k(1/deter);
 
     this->fill_certain(temp.rows * temp.cols, temp.data);
@@ -428,37 +425,27 @@ void Matrix_T<T>::output(bool f){
 }
 
 
-template <typename T>
-Matrix_T<T> undefinded(){
-    Matrix_T<T> rez = Matrix_T<T>();
+template <typename T, template <typename> class CLS>
+CLS<T> undefinded(){
+    CLS<T> rez = CLS<T>();
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> zero(const unsigned int row, const unsigned int col){
-    Matrix_T<T> rez = Matrix_T<T>(row, col);
+template <typename T, template <typename> class CLS>
+CLS<T> zero(const unsigned int row, const unsigned int col){
+    CLS<T> rez = CLS<T>(row, col);
     rez.zero();
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> one(const unsigned int row, const unsigned int col){
-    Matrix_T<T> rez = Matrix_T<T>(row, col);
+template <typename T, template <typename> class CLS>
+CLS<T> one(const unsigned int row, const unsigned int col){
+    CLS<T> rez = CLS<T>(row, col);
     rez.one();
     return rez;
 }
-
-
-template <typename T>
-Matrix_T<T> multy_k(const Matrix_T<T> x, const double k){
-    Matrix_T<T> rez = x;
-    rez.multy_k(k);
-    return rez;
-}
-
-
 
 
 template <typename T>
@@ -481,55 +468,83 @@ void Matrix_T<T>::exponent(const unsigned int p_degree) {
 
 template <typename T>
 bool Matrix_T<T>::operator==(const Matrix_T<T> &x) {
-    if (this->cols != x.cols || this->rows != x.rows) return false;
-    for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
-        if (abs(this->data[idx] - x.data[idx]) > x.CMP_CONST) return false;
+    if ((this->cols != x.cols) || (this->rows != x.rows)) return false;
+
+    for (unsigned int idx = 0; idx < this->rows * this->cols; idx++) {
+        if (abs(this->data[idx] - x.data[idx]) > CMP_CONST) return false;
     }
     return true;
 }
 
 
-template <typename T>
-Matrix_T<T> operator+(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+
+template <typename T, template <typename> class CLS>
+CLS<T> pow_mat(const CLS<T> &x, const unsigned int n){
+    CLS<T> rez = CLS<T>(x.getRows(), x.getCols());
+    if (rez.rows != rez.cols) throw NOT_SQUARE;
+
+    rez.fill_certain(x.getRows() * x.getCols(), x.getData());
+    rez.pow(n);
+    return rez;
+};
+
+
+template <typename T, template <typename> class CLS>
+CLS<T> expo_mat(const CLS<T> &x, const unsigned int p_degree){
+    CLS<T> rez = CLS<T>(x.getRows(), x.getCols());
+    rez.fill_certain(x.getRows() * x.getCols(), x.getData());
+
+    rez.exponent(p_degree);
+    return rez;
+};
+
+
+template <typename T, template <typename> class CLS>
+CLS<T> operator+(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez += y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator-(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator-(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez -= y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez *= y;
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const T k, const Matrix_T<T> &x){
-    Matrix_T<T> rez = x;
-    rez *= k;
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const T k, const CLS<T> &x){
+    CLS<T> rez = zero<T, CLS>(x.getRows(), x.getCols());
+    const unsigned int len = x.getRows() * x.getCols();
+    T rezData[len];
+    for (unsigned int idx = 0; idx < len; idx++){
+        rezData[idx] = x.getData()[idx] * k;
+    }
+    rez.fill_certain(len, rezData);
     return rez;
 }
 
 
-template <typename T>
-Matrix_T<T> operator*(const Matrix_T<T> &x, const T k){
+template <typename T, template <typename> class CLS>
+CLS<T> operator*(const CLS<T> &x, const T k){
     return k * x;
 }
 
 
-template <typename T>
-Matrix_T<T> operator/(const Matrix_T<T> &x, const Matrix_T<T> &y){
-    Matrix_T<T> rez = x;
+template <typename T, template <typename> class CLS>
+CLS<T> operator/(const CLS<T> &x, const CLS<T> &y){
+    CLS<T> rez = x;
     rez /= y;
     return rez;
 }
@@ -539,10 +554,11 @@ template <typename T>
 class Matrix_memory : public Matrix_T<T>
 {
 
-
 protected:
     unsigned int mem_size;
-    unsigned int quantity;
+    static unsigned int quantity; // рудимент, отсчитывающий количество созданных экземпляров класса Matrix_memory
+
+    static unsigned int total_memory;
 
 
 public:
@@ -550,28 +566,28 @@ public:
         this->rows = 0;
         this->cols = 0;
         this->data = nullptr;
-        this->mem_size = 0;
-        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+        mem_size = 0;
+        quantity++;
 
-        memory += mem_size;
+        memory += mem_size;  total_memory += mem_size;
     }
     Matrix_memory(const unsigned int n){
         this->rows = n;
         this->cols = n;
         this->data = new T [n * n];
-        this->mem_size = n * n * sizeof (T);
-        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+        mem_size = n * n * sizeof (T);
+        quantity++;
 
-        memory += mem_size;
+        memory += mem_size;  total_memory += mem_size;
     }
     Matrix_memory(const unsigned int row, unsigned int col){
         this->rows = row;
         this->cols = col;
         this->data = new T [row * col];
-        this->mem_size = row * col * sizeof (T);
-        this->quantity = ++MATRIX_MEMORY_QUANTITY;
+        mem_size = row * col * sizeof (T);
+        quantity++;
 
-        memory += mem_size;
+        memory += mem_size;  total_memory += mem_size;
     }
     Matrix_memory(const Matrix_memory<T> &x){
         this->rows = x.rows;
@@ -582,166 +598,250 @@ public:
             this->data[idx] = x.data[idx];
         }
 
-        this->mem_size = x.mem_size;
-        this->quantity = x.quantity;
-
-        memory = memory;
+        mem_size = x.mem_size;
+        quantity++;
+        memory += mem_size;  total_memory += mem_size;
     }
     Matrix_memory(Matrix_memory<T> &&x){
         memory -= mem_size;
+        total_memory -= mem_size;
 
         this->rows = x.rows;
         this->cols = x.cols;
         this->data = x.data;
-        this->mem_size = x.mem_size;
-        this->quantity = x.quantity;
+        mem_size = x.mem_size;
 
-        memory += mem_size;
+        memory += mem_size;  total_memory += x.mem_size;
 
         x.rows = 0;
         x.cols = 0;
         x.data = nullptr;
         x.mem_size = 0;
-        x.quantity = 0;
     }
     ~Matrix_memory() {
-        MATRIX_MEMORY_QUANTITY--;
-        memory -= mem_size;
+        quantity--;
+        memory -= mem_size;  total_memory -= mem_size;
     };
 
-    void output(bool f = false);
+    Matrix_memory<T>& operator=(const Matrix_memory<T> &x);
+    Matrix_memory<T>& operator*=(const Matrix_memory<T> &x);
+
+    void output(const bool mem_flg = true, const bool extra_flag = false);
+
+    static int getQuantity() { return quantity; };
+    static int getMemory() { return total_memory; };
+
+    char * getName() { return "Matrix_memory"; };
 };
+template <typename T>
+unsigned int Matrix_memory<T>::total_memory = 0;
+template <typename T>
+unsigned int Matrix_memory<T>::quantity = 0;
 
 
 template <typename T>
-void Matrix_memory<T>::output(bool f){
-    Matrix_T<T>::output(f);
-    std::cout << "This variable hold " << mem_size << " bytes in memory\n";
-    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n";
-    std::cout << "Total memory handed in all Matrix_memory are " << memory << " bytes\n";
+Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
+    if (this != &x){
+        if (!this->data)
+            delete[] this->data;
+
+        memory -= mem_size;  total_memory -= mem_size;
+
+        this->rows = x.rows;
+        this->cols = x.cols;
+        mem_size = this->rows * this->cols * sizeof (T);
+
+        this->data = new T[x.rows * x.cols];
+        for (unsigned int idx = 0; idx < this->rows * this->cols; idx++){
+            this->data[idx] = x.data[idx];
+        }
+
+        memory += mem_size;  total_memory += mem_size;
+    }
+    return *this;
 }
 
 
-void test_sum(){
-    Matrix_T<double> A = Matrix_T<double>(3, 3);
-    Matrix_T<double> B = Matrix_T<double>(3, 3);
+template <typename T>
+Matrix_memory<T>& Matrix_memory<T>::operator*=(const Matrix_memory<T> &x) {
+    if (this->cols != x.rows) throw SIZE_UNMATCH;
 
-    double arrey_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    double arrey_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    Matrix_memory<T> rez = Matrix_memory<T>(this->rows, x.cols);
+    rez.zero();
+
+    for (unsigned int row = 0; row < rez.rows; row++){
+        for (unsigned int col = 0; col < rez.cols; col++){
+
+            for (unsigned int idx = 0; idx < x.rows; idx++){
+                rez.data[row * rez.cols + col] += this->data[row * this->cols + idx] * x.data[idx * x.cols + col];
+            }
+        }
+    }
+
+    total_memory -= mem_size;  memory -= mem_size;
+    total_memory += rez.mem_size;  memory += rez.mem_size;
+
+    *this = rez;
+    return *this;
+}
+
+
+template <typename T>
+void Matrix_memory<T>::output(const bool mem_flg, const bool extra_flag) {
+    Matrix_T<T>::output(extra_flag);
+    if (mem_flg) {
+        std::cout << "This variable hold " << mem_size << " bytes in memory\n";
+        std::cout << "There was defended " << getQuantity() << " variables of the Matrix_memory type\n";
+        std::cout << "Total memory handed in all Matrix_memory are " << getMemory() << "/" << memory << " bytes\n\n\n";
+    }
+}
+
+
+template <typename TPE, template <typename> class CLSS>
+void test_sum(){
+    CLSS<TPE> A = CLSS<TPE>(3, 3);
+    CLSS<TPE> B = CLSS<TPE>(3, 3);
+
+    TPE arrey_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    TPE arrey_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 
     A.fill_certain(9, arrey_a);
     B.fill_certain(9, arrey_b);
 
-    Matrix_T<double> rez = A + B;
+    CLSS<TPE> rez = zero<TPE, CLSS>(3,3);
+    rez = A + B;
 
-    Matrix_T<double> standard = Matrix_T<double>(3, 3);
-    double arrey_s[9] = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0};
+    CLSS<TPE> standard = CLSS<TPE>(3, 3);
+    TPE arrey_s[9] = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0};
     standard.fill_certain(9, arrey_s);
 
     bool final = (rez == standard);
+    std::cout << standard.getName() << " test of summation was ";
     if (final){
-        std::cout << "Test of summation was successful\n";
+        std::cout << "successful\n";
     } else {
-        std::cout << "Test of summation was failed\n";
+        std::cout << "failed\n";
     }
 }
 
 
-
+template <typename TPE, template <typename> class CLSS>
 void test_sub(){
-    Matrix_T<float> A = Matrix_T<float>(3, 3);
-    Matrix_T<float> B = Matrix_T<float>(3, 3);
+    CLSS<TPE> A = CLSS<TPE>(3, 3);
+    CLSS<TPE> B = CLSS<TPE>(3, 3);
 
-    float array_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    float array_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    TPE array_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    TPE array_b[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 
     A.fill_certain(9, array_a);
     B.fill_certain(9, array_b);
 
-    Matrix_T<float> rez = A - B;
+    CLSS<TPE> rez = zero<TPE, CLSS>(3, 3);
+    rez = A - B;
 
-    Matrix_T<float> standard = Matrix_T<float>(3, 3);
-    float array_s[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    CLSS<TPE> standard = CLSS<TPE>(3, 3);
+    TPE array_s[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     standard.fill_certain(9, array_s);
 
     bool final = (rez == standard);
+    std::cout << standard.getName() << " test of subtraction was ";
     if (final){
-        std::cout << "Test of subtraction was successful\n";
+        std::cout << "successful\n";
     } else {
-        std::cout << "Test of subtraction was failed\n";
+        std::cout << "failed\n";
     }
 }
 
 
+template <typename TPE, template <typename> class CLSS>
 void test_mul(){
-    Matrix_T<long double> A = Matrix_T<long double>(3, 3);
-    Matrix_T<long double> B = Matrix_T<long double>(3, 3);
+    CLSS<TPE> A = CLSS<TPE>(3, 3);
+    CLSS<TPE> B = CLSS<TPE>(3, 3);
 
-    long double array_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    long double array_b[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
+    TPE array_a[9] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    TPE array_b[9] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0};
 
     A.fill_certain(9, array_a);
     B.fill_certain(9, array_b);
 
-    Matrix_T<long double> rez = A * B;
+    CLSS<TPE> rez = zero<TPE, CLSS>(3, 3);
+    rez = A * B;
 
-    Matrix_T<long double> standard = Matrix_T<long double>(3, 3);
-    long double array_s[9] = {30.0, 24.0, 18.0, 84.0, 69.0, 54.0, 138.0, 114.0, 90.0};
+    CLSS<TPE> standard = CLSS<TPE>(3, 3);
+    TPE array_s[9] = {30.0, 24.0, 18.0, 84.0, 69.0, 54.0, 138.0, 114.0, 90.0};
     standard.fill_certain(9, array_s);
 
     bool final = (rez == standard);
+    std::cout << standard.getName() << " test of multiplication was ";
     if (final){
-        std::cout << "Test of multiplication was successful\n";
+        std::cout << "successful\n";
     } else {
-        std::cout << "Test of multiplication was failed\n";
+        std::cout << "failed\n";
     }
 }
 
 
+template <typename TPE, template <typename> class CLSS>
 void test_reverse(){
     const unsigned int n = 3;
-    Matrix_T<double> A = Matrix_T<double>(n, n);
+    CLSS<TPE> A = CLSS<TPE>(n, n);
     A.fill_random();
 
-    Matrix_T<double> B = A;
+    CLSS<TPE> B = A;
     B.reverse();
 
-    Matrix_T<double> standard = one<double>(n, n);
+    CLSS<TPE> standard = one<TPE, CLSS>(n, n);
 
     bool final = (standard == A * B);
+    std::cout << standard.getName() << " test of reverse was ";
     if (final){
-        std::cout << "Test of reverse was successful\n";
+        std::cout << "successful\n";
     } else {
-        std::cout << "Test of reverse was failed\n";
+        std::cout << "failed\n";
     }
 }
 
 
+template <typename TPE, template <typename> class CLSS>
 void test_exp(){
-    Matrix_T<double> A = Matrix_T<double>(3, 3);
+    CLSS<TPE> A = CLSS<TPE>(3, 3);
     A.fill_random();
 
-    Matrix_T<double> B = A.expo_mat();
+    CLSS<TPE> B = A; B.exponent();
+    CLSS<TPE> temp = zero<TPE, CLSS>(3, 3);
+    temp = A; temp.pow(2);
 
-    Matrix_T<double> standard = Matrix_T<double>(3, 3);
-    standard = one<double>(3,3) + 1.0 * A + A.pow_mat(2) * 0.5;
+    TPE a1 = 1.0, a2 = 0.5;
+    CLSS<TPE> standard = CLSS<TPE>(3, 3);
+    standard = one<TPE, CLSS>(3,3) + a1 * A + temp * a2;
 
     A.exponent();
 
     bool final = ((A == standard) and (B == standard));
+    std::cout << A.getName() << " test of exponent was ";
     if (final){
-        std::cout << "Test of exponent was successful\n";
+        std::cout << "successful\n";
     } else {
-        std::cout << "Test of exponent was failed\n";
+        std::cout << "failed\n";
     }
 }
 
+
 void block_tests(){
-    test_sum();
-    test_sub();
-    test_mul();
-    test_reverse();
-    test_exp();
+    test_sum<double, Matrix_T>();
+    test_sub<float, Matrix_T>();
+    test_mul<long double, Matrix_T>();
+    test_reverse<double, Matrix_T>();
+    test_exp<float, Matrix_T>();
+
+    std::cout << "\n";
+
+    test_sum<float, Matrix_memory>();
+    test_sub<double, Matrix_memory>();
+    test_mul<double, Matrix_memory>();
+    test_reverse<long double, Matrix_memory>();
+    test_exp<long double, Matrix_memory>();
+
     std::cout << "\n";
 }
 
@@ -749,13 +849,17 @@ void block_tests(){
 void block_output(){
     std::cout << std::fixed << std::setprecision(2);
 
-    Matrix_T<double> A = Matrix_T<double>(3, 5);
-    Matrix_T<float> B = Matrix_T<float> (6);
+    Matrix_T<double> X = Matrix_T<double>(3, 5);
+    Matrix_T<float> Y = Matrix_T<float> (6);
 
-    Matrix_memory<double> X = Matrix_memory<double>(3, 5);
-    Matrix_memory<float> Y = Matrix_memory<float>(5);
-    Y.fill_random(101);
-    Y.output();
+    Matrix_memory<double> A = Matrix_memory<double>();
+    Matrix_memory<double> B = Matrix_memory<double>(3);
+    Matrix_memory<double> C = Matrix_memory<double>(3, 5);
+
+    C.output();
+
+    Matrix_memory<float> D= Matrix_memory<float>(4);
+    D.output();
 
 }
 
