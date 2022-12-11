@@ -8,7 +8,6 @@ const int MONTH_PAY = 25957 * 100; // BOB'S MONTHLY WASTE ON FLAT (KOP)
 const int PERIOD = 20; // YEARS
 
 struct Client {
-    unsigned int month_increase; // KOP
     unsigned long long int bank_account; // KOP
     unsigned int month_cash; // CASH THAT IS AVAILABLE UNTIL END OF THE MONTH (KOP)
     int salary; // KOP
@@ -49,7 +48,6 @@ void init_bob(struct Client *init_Bob) {
     init_Bob->month_cash = 0;
     init_Bob->salary = 150000 * 100;
     init_Bob->waste = 10000 * 100;
-    init_Bob->month_increase = init_Bob->salary - init_Bob->waste - MONTH_PAY;
     init_Bob->year_percent = 7;
 }
 
@@ -59,7 +57,6 @@ void init_alice(struct Client *init_Alice) {
     init_Alice->month_cash = 0;
     init_Alice->salary = 150000 * 100;
     init_Alice->waste = 40000 * 100;
-    init_Alice->month_increase = init_Alice->salary - init_Alice->waste;
     init_Alice->year_percent = 7;
 }
 

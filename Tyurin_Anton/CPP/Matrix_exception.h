@@ -1,19 +1,23 @@
-#include <exception>
 #include <string>
+#include <iostream>
 #include <cstdlib>
+#include <windows.h>
+#include <exception>
 
 #ifndef MATRIX_EXCEPTION_H
 #define MATRIX_EXCEPTION_H
 
-class MatrixException: public domain_error {
+
+class MatrixException: public std::domain_error {
 private:
     std::string message;
-    int error_code;
 public:
-    MatrixException(int input_code, std::string input_message);
-//    ~MatrixException() override = default;
-
-    std::string get_message() const;
-    int get_error_code() const;
+    explicit MatrixException(const char* const msg) : std::domain_error(msg)
+    {}
+    [[nodiscard]] std::string get_message() const;
+    void print_message(const std::string& text, const MatrixException& Exception_object);
 };
+
+
+
 #endif

@@ -15,7 +15,6 @@ private:
 public:
     Matrix();  //
     Matrix(const Matrix& m);  // copy
-    Matrix(const unsigned int n);  // square matrix
     Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
     ~Matrix();  // destructor
     Matrix(Matrix&& m);
@@ -38,7 +37,7 @@ public:
 
     void set_values(const unsigned int l, const double* array);
     void set_random(const unsigned int range = 21);
-    void output(bool f = false);
+    /*void output(bool f = false);*/
 
     friend Matrix exponent(const Matrix m, const unsigned int e);
     friend Matrix power(const Matrix m, const unsigned int n);
@@ -58,23 +57,13 @@ Matrix operator* (const Matrix &m1, const Matrix &m2);
 Matrix operator* (const Matrix &m, const double num);
 
 
-Matrix::Matrix() {
-    rows = 0;
-    cols = 0;
-}
+Matrix::Matrix() : rows(0), cols(0), value(nullptr) {}
 
 
 Matrix::Matrix(const unsigned int r, const unsigned int c) {
     rows = r;
     cols = c;
     value = new double [rows * cols];
-}
-
-
-Matrix::Matrix(const unsigned int n) {
-    rows = n;
-    cols = n;
-    value = new double [pow(n, 2)];
 }
 
 
@@ -489,9 +478,6 @@ void power_test() {
 }
 
 
-
-
-
 void all_tests() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
@@ -503,9 +489,16 @@ void all_tests() {  // Блок для вызова тестов, потом е�
 }
 
 
+void output() {
+
+}
+
+
 int main() {
 
     all_tests();  // Вызов блока тестов для прогона
+
+    output();
 
     return 0;
 }
