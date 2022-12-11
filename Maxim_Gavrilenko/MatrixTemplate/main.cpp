@@ -4,8 +4,7 @@
 #include <cmath>
 #include <type_traits>
 
-const double EPS = 0.000001;
-
+long int total_memory = 0;
 
 class Matrix_Exception : public std::domain_error
 {
@@ -25,9 +24,11 @@ Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
 template<typename T>
 class Matrix {
 protected:
+
     unsigned int rows;
     unsigned int cols;
     T *values;
+
 public:
     //Restrictions
     static_assert(
@@ -36,6 +37,7 @@ public:
             std::is_same<long double, T>::value,
             "T must be int, double or float"
     );
+    const double EPS = 0.000001;
     //Constructors
     Matrix(unsigned int, unsigned int, T *);
     Matrix(unsigned int, unsigned int);
@@ -48,13 +50,13 @@ public:
     T* getvalues();
     unsigned int getrow();
     unsigned int getcol();
-    void output();
+    virtual void output();
     Matrix<T> fill_random(unsigned int n);
     Matrix<T> set_zero();
     Matrix<T> set_identity();
     Matrix set_transpose();
     Matrix fill_from_array(T*);
-    double determinant(const Matrix<T>, unsigned int);
+    double determinant(const Matrix<T>, const unsigned int);
     Matrix reverse(const Matrix<T>, const unsigned int);
     Matrix minor(const Matrix<T>, const unsigned, const unsigned, const unsigned);
     Matrix exponent(unsigned int);
@@ -91,171 +93,171 @@ public:
 };
 
 
-    template <typename T>
-    Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col, T* value)
-    {
-        rows = num_row;
-        cols = num_col;
-        values = new T[rows * cols];
-        if (!values) throw MEM_ERROR;
-        for (unsigned int idx = 0; idx < rows * cols; idx++) {
-            values[idx] = value[idx];
-        }
-    }
+template <typename T>
+Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col, T* value)
+{
+    rows = num_row;
+    cols = num_col;
+    values = new T[rows * cols];
+    if (!values) throw MEM_ERROR;
+    memcpy(values,value,sizeof(T) * rows * cols);
+    total_memory = sizeof(T) * rows * cols;
+}
 
 
-    template <typename T>
-    Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col)
-    {
-        rows = num_row;
-        cols = num_col;
-        values = new T[rows * cols];
-        if (!values) throw MEM_ERROR;
-    }
+template <typename T>
+Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col)
+{
+    rows = num_row;
+    cols = num_col;
+    values = new T[rows * cols];
+    if (!values) throw MEM_ERROR;
+    total_memory = sizeof(T) * rows * cols;
+}
 
 
-    template <class T>
-    Matrix<T>::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols(mat.cols)
-    {
-        mat.values = nullptr;
-        mat.rows = 0;
-        mat.cols = 0;
-    }
+template <class T>
+Matrix<T>::Matrix(Matrix&& mat) noexcept : values(mat.values), rows(mat.rows), cols(mat.cols)
+{
+    mat.values = nullptr;
+    mat.rows = 0;
+    mat.cols = 0;
+}
 
 
-    template <class T>
-    Matrix<T>::Matrix() : rows(0), cols(0), values(nullptr) {}
+template <class T>
+Matrix<T>::Matrix() : rows(0), cols(0), values(nullptr) {}
 
 
-    template <class T>
-    Matrix<T>::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
-    {
+template <class T>
+Matrix<T>::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
+{
     values = new T[rows * cols];
     if (!values) throw MEM_ERROR;
     memcpy(values, mat.values, rows * cols * sizeof(T));
-    }
+}
 
 
-    template <typename T>
-    Matrix<T>::~Matrix()
-    {
-        if (values != nullptr) {
-            delete[] values;
-        }
-    }
-
-
-    template <typename T>
-    unsigned int Matrix<T>::getrow()
-    {
-        return (rows);
-    }
-
-
-    template <typename T>
-    unsigned int Matrix<T>::getcol()
-    {
-        return (cols);
-    }
-
-
-    template <typename T>
-    T* Matrix<T>::getvalues()
-    {
-        T* data = new T [rows * cols];
-        memcpy(data,values,sizeof(T) * rows * cols);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::set_zero() {
-        for (unsigned int idx = 0; idx < this->rows * this->cols; idx++) {
-            this->values[idx] = 0;
-        }
-        return (*this);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::set_identity() {
-        set_zero();
-        for (unsigned int idx = 0; idx < this->cols * this->rows; idx += rows + 1) {
-            this->values[idx] = 1.0;
-        }
-        return (*this);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::set_transpose()
-    {
-        Matrix trans(this->cols, this->rows);
-        for (unsigned int row = 0; row < trans.rows; row++) {
-            for (unsigned int col = 0; col < trans.cols; col++) {
-                trans.values[row * trans.cols + col] = this->values[col * trans.rows + row];
-            }
-        }
-        *this = trans;
-        return (*this);
-    }
-
-
-    template <typename T>
-    bool Matrix<T>::operator==(const Matrix<T> &A)
-    {
-        if (this->cols != A.cols || this->rows != A.rows) return false;
-        for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
-            if (abs(this->values[idx] - A.values[idx]) > EPS) return false;
-        }
-        return true;
-    }
-
-
-    template <typename T>
-    bool Matrix<T>::operator!=(const Matrix<T>& mat)
-    {
-        return !(*this == mat);
-    }
-
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator=(const Matrix& A)
-    {
-        if (this == &A) return *this;
+template <typename T>
+Matrix<T>::~Matrix()
+{
+    if (values != nullptr) {
         delete[] values;
-        rows = A.rows;
-        cols = A.cols;
-        this->values = new T[rows * cols];
-        if (!values) throw MEM_ERROR;
-        memcpy(this->values, A.values, rows * cols * sizeof(T));
-        return *this;
     }
+}
 
 
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& matrix)
-    {
-        if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
-        for (unsigned int index = 0; index < rows * cols; ++index) {
-            this->values[index] += matrix.values[index];
+template <typename T>
+unsigned int Matrix<T>::getrow()
+{
+    return (rows);
+}
+
+
+template <typename T>
+unsigned int Matrix<T>::getcol()
+{
+    return (cols);
+}
+
+
+template <typename T>
+T* Matrix<T>::getvalues()
+{
+    T* data = new T [rows * cols];
+    memcpy(data,values,sizeof(T) * rows * cols);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::set_zero() {
+    for (unsigned int idx = 0; idx < this->rows * this->cols; idx++) {
+        this->values[idx] = 0;
+    }
+    return (*this);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::set_identity() {
+    set_zero();
+    for (unsigned int idx = 0; idx < this->cols * this->rows; idx += rows + 1) {
+        this->values[idx] = 1.0;
+    }
+    return (*this);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::set_transpose()
+{
+    Matrix trans(this->cols, this->rows);
+    for (unsigned int row = 0; row < trans.rows; row++) {
+        for (unsigned int col = 0; col < trans.cols; col++) {
+            trans.values[row * trans.cols + col] = this->values[col * trans.rows + row];
         }
-        return *this;
     }
+    *this = trans;
+    return (*this);
+}
 
 
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& matrix)
-    {
-        if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
-        for (unsigned int index = 0; index < rows * cols; ++index) {
-            this->values[index] -= matrix.values[index];
-        }
-        return *this;
+template <typename T>
+bool Matrix<T>::operator==(const Matrix<T> &A)
+{
+    if (this->cols != A.cols || this->rows != A.rows) return false;
+    for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
+        if (abs(this->values[idx] - A.values[idx]) > EPS) return false;
     }
+    return true;
+}
 
 
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& matrix)
-    {
+template <typename T>
+bool Matrix<T>::operator!=(const Matrix<T>& mat)
+{
+    return !(*this == mat);
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix& A)
+{
+    if (this == &A) return *this;
+    delete[] values;
+    rows = A.rows;
+    cols = A.cols;
+    this->values = new T[rows * cols];
+    if (!values) throw MEM_ERROR;
+    memcpy(this->values, A.values, rows * cols * sizeof(T));
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& matrix)
+{
+    if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
+    for (unsigned int index = 0; index < rows * cols; ++index) {
+        this->values[index] += matrix.values[index];
+    }
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& matrix)
+{
+    if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
+    for (unsigned int index = 0; index < rows * cols; ++index) {
+        this->values[index] -= matrix.values[index];
+    }
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& matrix)
+{
     if (cols != matrix.rows) throw MULTIPLYERROR;
     Matrix multiplication(rows, matrix.cols);
     for (unsigned int row = 0; row < multiplication.rows; row++) {
@@ -269,129 +271,129 @@ public:
     }
     *this = multiplication;
     return (*this);
-    }
-
-
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator*=(const T k) // Умножение матрицы на число
-    {
-        for (unsigned int idx = 0; idx < rows * cols; idx++) {
-            this->values[idx] *= k;
-        }
-        return *this;
-    }
-
-
-    template <typename T>
-    Matrix<T>& Matrix<T>::operator/=(const T k) // Деление матрицы на число
-    {
-        for (unsigned int idx = 0; idx < rows * cols; idx++) {
-            this->values[idx] /= k;
-        }
-        return *this;
-    }
-
-
-    template <typename T>
-        Matrix<T> Matrix<T>::operator+(const Matrix<T>& matrix)
-        {
-            Matrix add(*this);
-            add += matrix;
-            return (add);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::operator-(const Matrix<T>& matrix)
-    {
-        Matrix sub(*this);
-        sub -= matrix;
-        return (sub);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::operator*(const Matrix<T>& matrix)
-    {
-        Matrix multiply(*this);
-        multiply *= matrix;
-        return (multiply);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::operator*(const T value)
-    {
-        Matrix multiply(*this);
-        multiply *= value;
-        return (multiply);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::operator/(const T value)
-    {
-        Matrix multiply(*this);
-        multiply /= value;
-        return (multiply);
-    }
-
-
-    template<typename T>
-    void Matrix<T>::output()
-    {
-        for (unsigned int row = 0; row < rows; row++)
-        {
-            for (unsigned int col = 0; col < cols; col++)
-            {
-                std::cout << values[row * cols + col] << "\t";
-            }
-            std::cout << std::endl;
-        }
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::fill_from_array(T* array)
-    {
-        memcpy(values, array, rows * cols * sizeof(T));
-        return (*this);
-    }
-
-
-    template<typename T>
-    Matrix<T> Matrix<T>::fill_random(unsigned int n /*Максимальное значение*/)
-    {
-        for (unsigned int index = 0; index < cols * rows; index++) {
-            this->values[index] = T(rand() % n);
-        }
-        return (*this);
-    }
-
-
-    template <typename T>
-    Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col)
-    {
-        Matrix minor(size - 1, size - 1);
-        unsigned int shiftrow = 0; //Смещение индекса строки в матрице
-        unsigned int shiftcol; //Смещение индекса столбца в матрице
-        for (unsigned int rows = 0; rows < size - 1; rows++) {
-            //Пропустить row-ую строку
-            if (rows == row) { shiftrow = 1; } //Как только встретили строку,
-            //которую надо пропустить, делаем смещение для исходной матрицы
-            shiftcol = 0; //Обнулить смещение столбца
-            for (unsigned int cols = 0; cols < size - 1; cols++) {
-                if (cols == col) { shiftcol = 1; }
-                minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow)
-                                                                       * size + (cols + shiftcol)];
-            }
-        }
-        return minor;
-    }
+}
 
 
 template <typename T>
-double Matrix<T>::determinant(const Matrix matrix, unsigned int size)
+Matrix<T>& Matrix<T>::operator*=(const T k) // Умножение матрицы на число
+{
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
+        this->values[idx] *= k;
+    }
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator/=(const T k) // Деление матрицы на число
+{
+    for (unsigned int idx = 0; idx < rows * cols; idx++) {
+        this->values[idx] /= k;
+    }
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::operator+(const Matrix<T>& matrix)
+{
+    Matrix add(*this);
+    add += matrix;
+    return (add);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::operator-(const Matrix<T>& matrix)
+{
+    Matrix sub(*this);
+    sub -= matrix;
+    return (sub);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::operator*(const Matrix<T>& matrix)
+{
+    Matrix multiply(*this);
+    multiply *= matrix;
+    return (multiply);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::operator*(const T value)
+{
+    Matrix multiply(*this);
+    multiply *= value;
+    return (multiply);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::operator/(const T value)
+{
+    Matrix multiply(*this);
+    multiply /= value;
+    return (multiply);
+}
+
+
+template<typename T>
+void Matrix<T>::output()
+{
+    for (unsigned int row = 0; row < rows; row++)
+    {
+        for (unsigned int col = 0; col < cols; col++)
+        {
+            std::cout << values[row * cols + col] << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::fill_from_array(T* array)
+{
+    memcpy(values, array, rows * cols * sizeof(T));
+    return (*this);
+}
+
+
+template<typename T>
+Matrix<T> Matrix<T>::fill_random(unsigned int n /*Максимальное значение*/)
+{
+    for (unsigned int index = 0; index < cols * rows; index++) {
+        this->values[index] = T(rand() % n);
+    }
+    return (*this);
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const unsigned int row, const unsigned int col)
+{
+    Matrix minor(size - 1, size - 1);
+    unsigned int shiftrow = 0; //Смещение индекса строки в матрице
+    unsigned int shiftcol; //Смещение индекса столбца в матрице
+    for (unsigned int rows = 0; rows < size - 1; rows++) {
+        //Пропустить row-ую строку
+        if (rows == row) { shiftrow = 1; } //Как только встретили строку,
+        //которую надо пропустить, делаем смещение для исходной матрицы
+        shiftcol = 0; //Обнулить смещение столбца
+        for (unsigned int cols = 0; cols < size - 1; cols++) {
+            if (cols == col) { shiftcol = 1; }
+            minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow)
+                                                                   * size + (cols + shiftcol)];
+        }
+    }
+    return minor;
+}
+
+
+template <typename T>
+double Matrix<T>::determinant(const Matrix matrix, const unsigned int size)
 {
     if (matrix.rows != matrix.cols) throw NOTSQUARE;
     double det = 0;
@@ -450,40 +452,24 @@ Matrix<T> Matrix<T>::exponent(unsigned int n /*Количество членов
 
 
 template <typename T1>
-class Matrix_Memory: public Matrix<T1>
-{
+class Matrix_Memory: public Matrix<T1> {
 private:
-    T1* memory;
-    unsigned int rows;
-    unsigned int cols;
+    unsigned int memory = 0;
 public:
-    Matrix_Memory(Matrix<T1>& A): Matrix<T1>()
-    {
-        rows = A.getrow();
-        cols = A.getcol();
-        memory = new T1 [rows * cols];
-        memcpy(memory, A.getvalues(), sizeof(T1) * rows * cols);
+    Matrix_Memory<T1>() {
+        memory += total_memory;
     }
 
-    void memory_size()
-    {
-        std::cout << "Memory for object class - " << sizeof(T1) * rows * cols + sizeof(unsigned int) + sizeof(unsigned int) << " byte" << std:: endl;
+    void output() override {
+        std::cout << "Memory allocated for class Matrix - " << memory << " byte" << std::endl;
     }
 
     ~Matrix_Memory()
     {
-       if (memory != nullptr){
-           delete[] memory;
-       }
+        memory -= total_memory;
     }
 };
 
-    template <typename T>
-    void memory_report(Matrix<T> A)
-    {
-        Matrix_Memory<T>mem(A);
-        mem.memory_size();
-    }
 
 void test_add()
 {
@@ -703,46 +689,48 @@ void test() {
 }
 
 
-    int main() {
-        try
-        { // Проверка выделения памяти
-            Matrix<double> A(0,0);
-        }
-        catch (const Matrix_Exception &e) {
-            std::cerr << "Caught: " << e.what() << std::endl;
-            exit(404);
-        }
+int main() {
+    try
+    { // Проверка выделения памяти
         Matrix<double> A(3,3);
-        A.fill_random(10);
-        Matrix<double> B(3,3);
-        B.fill_random(10);
-        std::cout << "First Matrix\n" << A;
-        std::cout << "Second Matrix\n" << B;
-
-        try {
-            std::cout << "Addiction of two matrix\n" << A + B;
-            std::cout << "Subtraction of two matrix\n" << A - B;
-
-        }
-        catch (const Matrix_Exception &e) {
-            std::cerr << "Caught: " << e.what() << std::endl;
-        }
-        try {
-            std::cout << "Multiplication of two matrix\n" << A * B;
-        }
-        catch (const Matrix_Exception &e) {
-            std::cerr << "Caught: " << e.what() << std::endl;
-        }
-
-        try {
-            std::cout << "Determinant\n" << A.determinant(A, A.getrow()) << std::endl;
-            std::cout << "Reverse Matrix\n" << A.reverse(A, A.getrow()) << std::endl;
-            std::cout << "Exponent Matrix\n" << A.exponent(30);
-        }
-        catch (Matrix_Exception &e) {
-            std::cerr << "Caught: " << e.what() << std::endl;
-        }
-        memory_report(A);
-        memory_report(B);
-        test();
     }
+    catch (std::bad_alloc& e) {
+        std::cerr << "Caught: " << e.what() << std::endl;
+        exit(101);
+    }
+    Matrix<double> A(3,3);
+    A.fill_random(10);
+    Matrix<double> B(3,3);
+    B.fill_random(10);
+    Matrix<long double> C (9,9);
+    Matrix<long double> D (15,16);
+    /*std::cout << "First Matrix\n" << A;
+    std::cout << "Second Matrix\n" << B;
+
+    try {
+        std::cout << "Addiction of two matrix\n" << A + B;
+        std::cout << "Subtraction of two matrix\n" << A - B;
+
+    }
+    catch (const Matrix_Exception &e) {
+        std::cerr << "Caught: " << e.what() << std::endl;
+    }
+    try {
+        std::cout << "Multiplication of two matrix\n" << A * B;
+    }
+    catch (const Matrix_Exception &e) {
+        std::cerr << "Caught: " << e.what() << std::endl;
+    }
+
+    try {
+        std::cout << "Determinant\n" << A.determinant(A, A.getrow()) << std::endl;
+        std::cout << "Reverse Matrix\n" << A.reverse(A, A.getrow()) << std::endl;
+        std::cout << "Exponent Matrix\n" << A.exponent(30);
+    }
+    catch (Matrix_Exception &e) {
+        std::cerr << "Caught: " << e.what() << std::endl;
+    }*/
+    Matrix_Memory<double> mem;
+    mem.output();
+    test();
+}

@@ -4,10 +4,11 @@
 
 
 const double COMPARATION_CONST = 0.0001;
+unsigned int MATRIX_MEMORY_QUANTITY = 0;
 
 
 class Matrix {
-private:
+protected:
 
     unsigned int rows;
     unsigned int cols;
@@ -82,6 +83,7 @@ Matrix::Matrix() {
     cols = 0;
 }
 
+
 Matrix::Matrix(const unsigned int n) {
     rows = n;
     cols = n;
@@ -89,12 +91,14 @@ Matrix::Matrix(const unsigned int n) {
     data = new double[n * n];
 }
 
+
 Matrix::Matrix(const unsigned int row, const unsigned int col) {
     rows = row;
     cols = col;
 
     data = new double[row * col];
 }
+
 
 Matrix::Matrix(const Matrix &x) {
     rows = x.rows;
@@ -108,6 +112,7 @@ Matrix::Matrix(const Matrix &x) {
     }
 }
 
+
 Matrix::Matrix(Matrix&& x){
     rows = x.rows;
     cols = x.cols;
@@ -117,6 +122,7 @@ Matrix::Matrix(Matrix&& x){
     x.cols = 0;
     x.data = nullptr;
 }
+
 
 Matrix::~Matrix() {
     delete[] data;
@@ -140,6 +146,7 @@ Matrix& Matrix::operator=(const Matrix &x) {
     return *this;
 }
 
+
 Matrix& Matrix::operator+=(const Matrix &x) {
     if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
 
@@ -149,6 +156,7 @@ Matrix& Matrix::operator+=(const Matrix &x) {
 
     return *this;
 }
+
 
 Matrix& Matrix::operator-=(const Matrix &x) {
     if ((rows != x.rows) or (cols != x.cols)) throw SIZE_UNMATCH;
@@ -160,11 +168,13 @@ Matrix& Matrix::operator-=(const Matrix &x) {
     return *this;
 }
 
+
 Matrix& Matrix::operator*=(const double k) {
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
+
 
 Matrix& Matrix::operator*=(const Matrix &x) {
     if (cols != x.rows) throw SIZE_UNMATCH;
@@ -191,6 +201,7 @@ void Matrix::zero(){
     }
 }
 
+
 void Matrix::one(){
     this->zero();
     for (unsigned int idx = 0; idx < rows; idx++){
@@ -198,11 +209,13 @@ void Matrix::one(){
     }
 }
 
+
 void Matrix::multy_k(const double k){
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         data[idx] *= k;
     }
 }
+
 
 void Matrix::tran(){
     unsigned int row = cols;
@@ -222,6 +235,7 @@ void Matrix::tran(){
     cols = col;
 }
 
+
 Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
     int new_row = rows - 1, new_col = cols - 1;
     if (cur_row >= rows) new_row++;
@@ -237,6 +251,7 @@ Matrix Matrix::minor(const unsigned int cur_row, const unsigned int cur_col){
 
     return rez;
 }
+
 
 void Matrix::triangle() {
     if (rows == 1) return;
@@ -264,19 +279,14 @@ void Matrix::triangle() {
     }
 }
 
+
 double Matrix::det(){
-    if (rows != cols){
-        throw NOT_SQUARE;
-        return 0.0;
-    }
+    if (rows != cols) throw NOT_SQUARE;
 
     Matrix temp = Matrix(rows, cols);
     temp.fill_certain(rows * cols, data);
-    try {
-        temp.triangle();
-    } catch (std::runtime_error &rte){
-        std::cout << "Ops, division by zero\n" << rte.what() << "\n";
-    }
+    temp.triangle();
+
     double rez = 1.0;
     for (unsigned int idx = 0; idx < temp.rows; idx++){
         rez *= temp.data[idx * cols + idx];
@@ -285,10 +295,10 @@ double Matrix::det(){
     return rez;
 }
 
+
 void Matrix::reverse() {
     double deter = this->det();
     if (rows != cols) throw NOT_SQUARE;
-    //if (deter == 0) return;
 
     Matrix temp = Matrix(rows, cols);
     int ratio = 1;
@@ -305,6 +315,7 @@ void Matrix::reverse() {
 
     this->fill_certain(temp.rows * temp.cols, temp.data);
 }
+
 
 void Matrix::pow(const unsigned int n) {
     if (rows != cols) throw NOT_SQUARE;
@@ -326,6 +337,7 @@ void Matrix::fill_random(const unsigned int max_range) {
     }
 }
 
+
 void Matrix::fill_certain(const unsigned int len, const double* arrey) {
     if (len != rows * cols) throw SIZE_UNMATCH;
 
@@ -333,6 +345,7 @@ void Matrix::fill_certain(const unsigned int len, const double* arrey) {
         data[idx] = arrey[idx];
     }
 }
+
 
 void Matrix::output(bool f){
     if (f) std::cout << rows << " " << cols << "\n";
@@ -352,11 +365,13 @@ Matrix undefinded(){
     return rez;
 }
 
+
 Matrix zero(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
     rez.zero();
     return rez;
 }
+
 
 Matrix one(const unsigned int row, const unsigned int col){
     Matrix rez = Matrix(row, col);
@@ -454,6 +469,119 @@ bool operator==(const Matrix &x, const Matrix &y){
         flag *= (abs(x.data[idx] - y.data[idx]) < COMPARATION_CONST);
     }
     return flag;
+}
+
+
+class Matrix_memory : public Matrix
+{
+protected:
+
+    unsigned int mem_size;
+    unsigned int quantity;
+
+public:
+
+    Matrix_memory();
+    Matrix_memory(const unsigned int n);
+    Matrix_memory(const unsigned int row, const unsigned int col);
+    Matrix_memory(const Matrix_memory &x);
+    Matrix_memory(Matrix_memory &&x);
+    ~Matrix_memory();
+
+    Matrix_memory& operator=(const Matrix_memory &x);
+
+    void output(bool f = false);
+};
+
+
+
+Matrix_memory::Matrix_memory() {
+    rows = 0;
+    cols = 0;
+    data = nullptr;
+    mem_size = 0;
+    quantity = ++MATRIX_MEMORY_QUANTITY;
+}
+
+
+Matrix_memory::Matrix_memory(const unsigned int n) {
+    rows = n;
+    cols = n;
+    mem_size = n * n;
+    data = new double[mem_size];
+    quantity = ++MATRIX_MEMORY_QUANTITY;
+}
+
+
+Matrix_memory::Matrix_memory(const unsigned int row, const unsigned int col) {
+    rows = row;
+    cols = col;
+    mem_size = row * col;
+    data = new double[mem_size];
+
+    quantity = ++MATRIX_MEMORY_QUANTITY;
+}
+
+
+Matrix_memory::Matrix_memory(const Matrix_memory &x) {
+    rows = x.rows;
+    cols = x.cols;
+    mem_size = x.mem_size;
+    quantity = x.quantity;
+    //delete[] data;
+    data = new double[mem_size];
+
+    for (unsigned int idx = 0; idx < rows * cols; idx++){
+        data[idx] = x.data[idx];
+    }
+}
+
+
+Matrix_memory::Matrix_memory(Matrix_memory&& x){
+    rows = x.rows;
+    cols = x.cols;
+    data = x.data;
+    mem_size = x.mem_size;
+    quantity = x.quantity;
+
+    x.rows = 0;
+    x.cols = 0;
+    x.mem_size = 0;
+    x.quantity = 0;
+    x.data = nullptr;
+}
+
+
+Matrix_memory::~Matrix_memory() {
+    //delete[] data;
+    MATRIX_MEMORY_QUANTITY--;
+}
+
+
+Matrix_memory& Matrix_memory::operator=(const Matrix_memory &x) {
+    if (this != &x){
+        if (!data)
+            delete[] data;
+
+        rows = x.rows;
+        cols = x.cols;
+        mem_size = x.mem_size;
+        quantity = x.quantity;
+
+        this->data = new double[rows * cols];
+        for (unsigned int idx = 0; idx < rows * cols; idx++){
+            data[idx] = x.data[idx];
+        }
+    }
+
+    return *this;
+}
+
+
+void Matrix_memory::output(bool f) {
+    Matrix::output(f);
+    std::cout << "This variable hold " << mem_size * sizeof(double) << " bytes in memory\n";
+    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n\n";
 }
 
 
@@ -581,8 +709,18 @@ void block_output(){
                           11, 43, 29, 16, 9};
     A.fill_certain(15, arrey_a);
     A.output();
-    A.triangle();
-    A.output();
+
+    Matrix_memory X = Matrix_memory();
+    Matrix_memory Y = Matrix_memory(5);
+    Matrix_memory Z = Matrix_memory(5, 5);
+
+    X = Y;
+    X.fill_random(101);
+    Y.fill_random(101);
+    Z.one();
+    Z += X;
+
+    Z.output();
 
 }
 
@@ -600,8 +738,9 @@ void block_tests(){
 
 int main() {
 
+
     block_tests();
-    for (unsigned int idx = 0; idx < 100; idx++)
+    //for (unsigned int idx = 0; idx < 100; idx++)
         block_output();
 
     return 0;

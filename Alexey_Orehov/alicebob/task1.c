@@ -59,6 +59,7 @@ void monthly_payment(struct Client* client){
 void simulate(struct Client* data, struct Client* client_array, int client_num, int years){
     for (int year = 0; year < years; year++){
         switch (year) {
+
             case 0:
                 client_array[1].bank -= 300 * 1000 * 100;  // Боб платит первый взнос за квартиру
                 break;

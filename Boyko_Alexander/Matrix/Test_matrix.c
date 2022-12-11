@@ -48,7 +48,7 @@ void check_add(){
     Matrix A = create_zero_matrix(3,3);
     Matrix res;
     fill_matrix_summ(&A);
-    Matrix B = create_zero_matrix(3, 3);
+    Matrix B = create_zero_matrix(3,3);
     fill_matrix_mult(&B);
 
     res = matrix_add(A,B);
@@ -69,7 +69,7 @@ void check_sub(){
     Matrix A = create_zero_matrix(3,3);
     Matrix res;
     fill_matrix_summ(&A);
-    Matrix B = create_zero_matrix(3, 3);
+    Matrix B = create_zero_matrix(3,3);
     fill_matrix_mult(&B);
 
     res = matrix_subt(A,B);
@@ -90,7 +90,7 @@ void check_mult(){
     Matrix A = create_zero_matrix(3,4);
     Matrix res;
     fill_matrix_summ(&A);
-    Matrix B = create_zero_matrix(4, 3);
+    Matrix B = create_zero_matrix(4,3);
     fill_matrix_mult(&B);
 
     res = matrix_mult(A,B);
@@ -132,21 +132,19 @@ void check_exp(){
     free_mat(&A);
     free_mat(&res);
     printf("EXPONENT CORRECT\n");
+    return;
 }
 
 int main() {
-    for(int k = 0; k < 100; k++){
-        check_add();
+    check_add();
 
-        check_sub();
+    check_sub();
 
-        check_mult();
+    check_mult();
 
-        check_det();
+    check_det();
 
-        check_exp();
-
-    }
+    check_exp();
 
     return 0;
 }

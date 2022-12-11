@@ -1,7 +1,7 @@
 #include "MatrixTest.h"
 
 
-inline void print_message(const std::string& text, const MatrixException& Exception_object) {
+[[maybe_unused]] inline void print_message(const std::string& text, const MatrixException& Exception_object) {
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
 

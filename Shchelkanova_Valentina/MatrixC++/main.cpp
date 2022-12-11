@@ -32,8 +32,8 @@ public:
     Matrix operator=(Matrix&& one);
     Matrix operator^(const int coefficient) const;
     Matrix operator/(const double coefficient) const;
-    static Matrix  Exp(const Matrix& one, const unsigned int accuracy);
-    Matrix Minor(Matrix& A, unsigned int row, unsigned int col);
+    static Matrix  exp_m(const Matrix& one, const unsigned int accuracy);
+    Matrix minor(Matrix& A, unsigned int row, unsigned int col);
     Matrix transpose();
 
 
@@ -50,10 +50,13 @@ public:
 
 Matrix_Exception NotSquare("The matrix should be square\n");
 Matrix_Exception WrongSize("The matrix should have another size\n");
+Matrix_Exception MemoryError("Memory has not been allocated\n");
+Matrix_Exception DivisionError ("Can't divide by zero\n")
 
 Matrix::Matrix() {
     cols = 0;
     rows = 0;
+    values = nullptr;
 }
 
 
@@ -72,6 +75,7 @@ Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
     values = new double[rows * cols];
+    if (!values) throw MemoryError;
     memcpy(values,matrix.values,rows * cols * sizeof(double));
 }
 
@@ -108,7 +112,7 @@ Matrix::Matrix(unsigned int col) {
     values = new double[cols * rows];
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1 : 0;
+            values[row * cols + col] = (row == col) ? 1.0 : 0.0;
 
         }
     }
@@ -196,17 +200,16 @@ Matrix Matrix::operator^(int coefficient) const { // Возведение мат
     if (coefficient == 1) {
         return Res;
     }
-    else {
         const Matrix &start(Res);
         for (unsigned int idx = 0; idx < coefficient; idx++){
             Res = Res * start;
         }
         return Res;
-    }
 }
 
 
 Matrix Matrix::operator/(const double coefficient) const {
+    if (coefficient == 0) throw DivisionError;
     Matrix Res(cols, rows);
     for(unsigned int idx = 0; idx < rows * cols; ++idx) {
         Res.values[idx] = values[idx]/coefficient;
@@ -215,7 +218,7 @@ Matrix Matrix::operator/(const double coefficient) const {
 }
 
 
-Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
+Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
     Matrix Res = one + A;
@@ -228,7 +231,7 @@ Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Мат
 }
 
 
-Matrix Matrix::Minor(Matrix& A, unsigned int row, unsigned int col) {
+Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
