@@ -129,26 +129,6 @@ int Matrix<T>::getSize() const {
 
 
 template<typename T>
-void Matrix<T>::setRows(int input_rows) {
-    if (rows < 0) {
-        throw WRONG_PARAMETERS;
-    }
-    rows = input_rows;
-    size = rows * cols;
-}
-
-
-template<typename T>
-void Matrix<T>::setCols(int input_cols) {
-    if (cols < 0) {
-        throw WRONG_PARAMETERS;
-    }
-    cols = input_cols;
-    size = rows * cols;
-}
-
-
-template<typename T>
 T Matrix<T>::getValue(int cell) const {
     if (cell < 0) {
         throw WRONG_PARAMETERS;

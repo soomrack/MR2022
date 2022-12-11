@@ -17,9 +17,9 @@
 template <typename T>
 class Matrix {
 protected:
-    int rows;
-    int cols;
-    int size;
+    int rows{};
+    int cols{};
+    int size{};
     T **data;
     T *values;
 public:
@@ -38,14 +38,11 @@ public:
     int getRows() const;
     int getCols() const;
     int getSize() const;
-    void setRows(int input_rows);
-    void setCols(int input_cols);
     T getValue(int cell) const;
     T getValue(int row, int col) const;
     void setValue(int cell, T number);
     void setValue(int row, int col, T number);
     void output() const;
-    void test();
 
     Matrix<T>& operator= (Matrix const &other);
     Matrix<T>& operator= (Matrix<T> &&other) noexcept;

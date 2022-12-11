@@ -8,14 +8,14 @@
 template<typename T>
 void MatrixTest<T>::usingUnused() {
     Matrix<T> matrix(2, 2, vector1);
-    matrix.setValue(0, 0, vector1[0]);
-    matrix.getValue(0, 0);
+    matrix.setValue(0, 0, matrix.getValue(0, 0));
     matrix.getRows();
     matrix.getCols();
     matrix.getSize();
-    matrix.getValue(0, 0);
+    matrix.getValue(0);
     MatrixException TEST(-15, "TEST");
     TEST.getErrorCode();
+    EMatrix<double> identity_matrix(1);
 }
 
 
