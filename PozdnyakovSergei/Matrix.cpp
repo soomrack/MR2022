@@ -8,7 +8,7 @@ const double EPS_CONST = pow(10, -5);
 
 
 class Matrix {
-private:
+protected:  // в чем отливие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
