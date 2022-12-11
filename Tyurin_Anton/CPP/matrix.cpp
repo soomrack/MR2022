@@ -216,7 +216,7 @@ void Matrix::is_equal(const Matrix& X) {
         }
     }
     if (error != 0){
-        std::cout << "Calculation error";
+        std::cout << "Calculation error" << std::endl;
     }
 }
 
