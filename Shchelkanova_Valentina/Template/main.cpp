@@ -7,7 +7,7 @@
 
 template<typename T>
 class Matrix {
-private:
+protected:
     unsigned int cols;
     unsigned int rows;
     T *values;
@@ -281,6 +281,78 @@ double Matrix<T>::determinant(const Matrix<T>& matrix)
         sign = -sign;
     }
     return det;
+}
+
+
+template <typename T1>
+class Matrix_Memory : public Matrix<T1> {
+protected:
+    static unsigned long memory_size;
+    static unsigned long total_memory;
+public:
+    Matrix_Memory<T1>();
+    Matrix_Memory<T1>(unsigned int, unsigned int);
+    Matrix_Memory<T1>(const Matrix_Memory<T1>&);
+    Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
+    void output() override;
+    ~Matrix_Memory();
+};
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory()
+{
+    this->rows = 0;
+    this->cols = 0;
+    this->values = nullptr;
+    this->memory_size = 0;
+    this->total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
+{
+    this->rows = row;
+    this->cols = col;
+    this->values = new T[this->rows * this->cols];
+    this->memory_size = row * col * sizeof(T);
+    this-> total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
+{
+    this->rows = matrix.rows;
+    this->cols = matrix.cols;
+    this->values = new T[matrix.rows * matrix.cols];
+    memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
+    this->memory_size = matrix.memory_size;
+    this->total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
+{
+
+this->rows = matrix.rows;
+this->cols = matrix.cols;
+this->data = matrix.data;
+this->memory_size = matrix.memory_size;
+
+matrix.rows = 0;
+matrix.cols = 0;
+matrix.values = nullptr;
+matrix.memory_size = 0;
+}
+
+
+template <typename T>
+void Matrix_Memory<T>::output()
+{
+    std::cout << "Memory allocated for matrix - " << this->total_memory << " byte" << std::endl;
 }
 
 
