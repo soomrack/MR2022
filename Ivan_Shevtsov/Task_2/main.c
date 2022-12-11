@@ -136,29 +136,35 @@ Matrix E(int row){
             E.values[idx] = 0;}
     return E;}
 
+Matrix power (const Matrix A, const int n) { // Возведение в степень
+    Matrix M = allocate_memory(A.rows, A.cols);
+    M.values = A.values;
+    for (int count = 1; count < n; count++) {
+        M = multiplication(M,A);
+    }
+    return M;
+}
+
 Matrix exponent(Matrix A){
     if (A.cols != A.rows) {
         error(1);}
-    Matrix expon = allocate_memory(A.rows, A.cols);
-    Matrix temp = allocate_memory(A.rows, A.cols);
-    Matrix temp_mult;
-    Matrix temp_sum;
-    long double unfactorial = 1;
-    double accuracy = 100;  //iteration count
-    for (int acc = 0; acc < accuracy; acc++) {
-        unfactorial /= acc;
-        temp_mult = multiplication(temp, A);
-        free(temp.values);
-        temp = temp_mult;
-        temp_sum = addition(expon, multiplication_scalar(temp, unfactorial));
-        free(expon.values);
-        expon = temp_sum;
+    Matrix expon = E(A.rows);
+    Matrix sum = allocate_memory(A.rows, A.cols);
+    Matrix mul = allocate_memory(A.rows, A.cols);
+    mul.values = A.values;
+    expon = addition(expon, A);
+    double factorial = 1;
+    double itc = 10;  //iteration count
+    for (int idx = 2; idx < itc; idx++) {
+        factorial *= idx;
+        mul = multiplication(mul, A);
+        sum = multiplication_scalar(mul, (1.0 / factorial));
+        expon = addition(expon, sum);
+        free(sum.values);
     }
-    free(temp_mult.values);
+    free(mul.values);
     return expon;
 }
-
-
 
 Matrix transposition(Matrix A){
     Matrix tr = allocate_memory(A.rows,  A.cols);
@@ -291,6 +297,7 @@ int main() {
     output_Matrix("Second Matrix", B);
 
     menu(A, B);
+
 
 #ifdef MANUAL_INPUT
     free(A.values);
