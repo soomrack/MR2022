@@ -1,13 +1,13 @@
 #ifndef UNTITLED_MATRIX_H
 #define UNTITLED_MATRIX_H
 
-template<typename T1>
+template<typename T>
 class Matrix {
 private:
     double PRECISION = 0.001;
     unsigned int cols;
     unsigned int rows;
-    T1 *values;
+    T *values;
 public:
     Matrix(unsigned int cols_m, unsigned int rows_m);
     Matrix(const Matrix &A);

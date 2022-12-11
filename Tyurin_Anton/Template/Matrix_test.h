@@ -5,7 +5,7 @@
 #include "Matrix.h"
 #include "Matrix_exception.h"
 
-template <typename T2>
+template <typename T>
 class Matrix_test {
 public:
     static void summ_test();
