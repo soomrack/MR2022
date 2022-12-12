@@ -6,9 +6,10 @@ template<typename T>
 class Matrix {
 private:
     double PRECISION = 0.001;
-    unsigned int cols;
+protected:
     unsigned int rows;
     T *values;
+    unsigned int cols;
 public:
     Matrix(unsigned int cols_m, unsigned int rows_m);
     Matrix(const Matrix &A);
