@@ -25,6 +25,7 @@ public:
     ~Matrix();  // деструктор
 
     Matrix& operator=(const Matrix &x);
+    Matrix& operator=(Matrix &&x);
     Matrix& operator+=(const Matrix &x);
     Matrix& operator-=(const Matrix &x);
     Matrix& operator*=(const double k);
@@ -471,13 +472,29 @@ bool operator==(const Matrix &x, const Matrix &y){
     return flag;
 }
 
+Matrix &Matrix::operator=(Matrix &&x) {
+    if (this != &x){
+        if (!data)
+            delete[] data;
+        rows = x.rows;
+        cols = x.cols;
+        for (unsigned int idx = 0; idx < rows * cols; idx++){
+            data[idx] = x.data[idx];
+        }
+    }
+    x.rows = 0;
+    x.cols = 0;
+    x.data = nullptr;
+    return *this;
+}
+
 
 class Matrix_memory : public Matrix
 {
 protected:
 
-    unsigned int mem_size;
-    unsigned int quantity;
+    static unsigned int mem_size;
+    static unsigned int quantity;
 
 public:
 
@@ -744,4 +761,5 @@ int main() {
     block_output();
 
     return 0;
+
 }
