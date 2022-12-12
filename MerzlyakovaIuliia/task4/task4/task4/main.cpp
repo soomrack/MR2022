@@ -20,12 +20,12 @@ protected:
 
 public:
 
-    Matrix();  // Конструктор пустой матрицы
-    Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
-    Matrix(unsigned int col);  // Конструктор единичной матрицы
-    Matrix(const Matrix& matrix);  // Конструктор копирования матрицы
-    Matrix(Matrix&& matrix);  // Конструктор переноса матрицы
-    ~Matrix();  // Деструктор
+    Matrix();                                       // Конструктор пустой матрицы
+    Matrix(unsigned int col, unsigned int row);     // Конструктор прямоугольной матрицы
+    Matrix(unsigned int col);                       // Конструктор единичной матрицы
+    Matrix(const Matrix& matrix);                   // Конструктор копирования матрицы
+    Matrix(Matrix&& matrix);                        // Конструктор переноса матрицы
+    ~Matrix();                                      // Деструктор
 
 
     void matrixPrint();
@@ -62,6 +62,11 @@ template <typename T>
 Matrix<T>::Matrix() {
     cols = 0;
     rows = 0;
+}
+
+Matrix::~Matrix() 
+{
+    if (values != nullptr) delete[] values;
 }
 
 template <typename T>
@@ -223,13 +228,15 @@ Matrix<T> Matrix<T>::operator/(const T coefficient) const {
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::Exp(const Matrix<T>& A, const unsigned int accuracy = 10){
+Matrix<T> Matrix<T>::Exp(const Matrix<T>& A, const unsigned int accuracy = 30){
     if (A.rows != A.cols) throw errSqr;
     Matrix one(A.cols);
+    Matrix tmp (A.cols);
     Matrix Res = one + A;
     double factorial = 1;
     for (int step = 1; step < accuracy; step++) {
         factorial *= step;
+        tmp = tmp * A;
         Res = Res + (A ^ step) / factorial;
     }
     return Res;
@@ -352,7 +359,7 @@ matrix.memory_size = 0;
 template <typename T>
 void Matrix_Memory<T>::output()
 {
-    std::cout << "Memory allocated for matrix - " << this->total_memory << " byte" << std::endl;
+    std::cout << "Памяти много ещь, неоптимально " << this->total_memory << " байт" << std::endl;
 }
 
 

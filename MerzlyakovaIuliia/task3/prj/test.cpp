@@ -13,12 +13,12 @@ private:
     double* values;
 
 public:
-    Matrix();  // Конструктор пустой матрицы
-    Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
-    Matrix(unsigned int col);  // Конструктор единичной матрицы
-    Matrix(const Matrix& matrix);  // Конструктор копирования матрицы
-    Matrix(Matrix&& matrix);  // Конструктор переноса матрицы
-    ~Matrix();  // Деструктор
+    Matrix();                                       // Конструктор пустой матрицы
+    Matrix(unsigned int col, unsigned int row);     // Конструктор прямоугольной матрицы
+    Matrix(unsigned int col);                       // Конструктор единичной матрицы
+    Matrix(const Matrix& matrix);                   // Конструктор копирования матрицы
+    Matrix(Matrix&& matrix);                        // Конструктор переноса матрицы
+    ~Matrix();                                      // Деструктор
 
 
     void print_matrix();
@@ -57,6 +57,12 @@ Matrix::Matrix() {
     cols = 0;
     rows = 0;
     values = nullptr;
+}
+
+
+Matrix::~Matrix() 
+{
+    if (values != nullptr) delete[] values;
 }
 
 
@@ -221,10 +227,12 @@ Matrix Matrix::operator/(const double coefficient) const {
 Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
+    Matrix tmp(A.cols);
     Matrix Res = one + A;
     double factorial = 1;
     for (int step = 1; step < accuracy; step++) {
         factorial *= step;
+        tmp = tmp * A;
         Res = Res + (A ^ step) / factorial;
     }
     return Res;
