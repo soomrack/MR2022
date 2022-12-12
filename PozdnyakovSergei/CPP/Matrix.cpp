@@ -16,11 +16,12 @@ private:  // в чем отличие между private и protected?
     double *value;
 
 public:
-    Matrix();  //пустые матрицы
-    Matrix(const Matrix& m);  // копирование
-    Matrix(const unsigned int row, const unsigned int col);  // прямоугольные матрицы
-    ~Matrix();  // деструктор
-    
+    Matrix ();  //пустые матрицы
+    Matrix (const Matrix& m);  // копирование
+    Matrix (const unsigned int row, const unsigned int col);  // прямоугольные матрицы
+    Matrix (Matrix&& m);  // Добавить оператор переноса
+    ~Matrix ();  // деструктор
+
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -49,7 +50,7 @@ public:
 
 
 /*
-добавить exceptions
+добавил exceptions
 */
 
 
@@ -60,9 +61,9 @@ public:
 };
 
 
-Matrix_exceptions Size_Error ("Error: unequal size of matrices");
-Matrix_exceptions Not_Square ("Error: matrix not square");
-Matrix_exceptions Div_by_zero ("Error: division by zero");
+Matrix_exceptions SIZE_ERROR ("Error: unequal size of matrices");
+Matrix_exceptions NOT_SQUARE ("Error: matrix not square");
+Matrix_exceptions DIV_BY_ZERO ("Error: division by zero");
 
 
 
@@ -95,23 +96,31 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 Matrix::Matrix(const Matrix &m) {
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
 }
 
 
-Matrix& Matrix::operator=(const Matrix &m) {
-   /* if (this != &m){
-        if (!value)
-            delete[] value;*/
+Matrix::Matrix(Matrix&& m){
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    this->value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = m.value;
+
+    m.rows = 0;
+    m.cols = 0;
+    m.value = nullptr;
+}
+
+
+Matrix& Matrix::operator=(const Matrix &m) {
+
+    delete[] value;
+    rows = m.rows;
+    cols = m.cols;
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
     return *this;
@@ -121,13 +130,9 @@ Matrix& Matrix::operator=(const Matrix &m) {
 Matrix& Matrix::operator+=(const Matrix &m) {
 
     if ((cols *= m.cols) or (rows != m.rows)) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
-
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] += m.value[number];
     }
     return *this;
@@ -137,13 +142,9 @@ Matrix& Matrix::operator+=(const Matrix &m) {
 Matrix& Matrix::operator-=(const Matrix &m) {
 
     if ((cols *= m.cols) or (rows != m.rows)) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
-
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] -= m.value[number];
     }
     return *this;
@@ -160,7 +161,7 @@ Matrix& Matrix::operator*=(const double num) {
 Matrix& Matrix::operator*=(const Matrix &m) {
 
     if (cols *= m.rows) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
 
     Matrix itog = Matrix(rows, cols);
@@ -191,7 +192,7 @@ void Matrix::zero_matrix() {
 }
 
 void Matrix::unit_matrix() {
-    this -> zero_matrix();
+    this->zero_matrix();
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
@@ -215,7 +216,7 @@ void Matrix::unit_matrix() {
 
 
 Matrix Matrix::transposition() {
-    Matrix itog = {cols, rows};
+    Matrix itog(rows, cols);
     for (unsigned int row = 0; row < itog.rows; row++) {
         for (unsigned int col = 0; col < itog.cols; col++) {
             itog.value[row * itog.cols + col] = value[col * itog.cols + row];
@@ -258,19 +259,19 @@ Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned
 
 
 void Matrix::power(const unsigned int n) {
-    Matrix itog = Matrix (rows, cols);
+    Matrix itog (rows, cols);
     itog.unit_matrix();
-    for (unsigned int number = 0; number < n; number++) {
+    for (unsigned int number = 1; number <= n; number++) {
         itog *= *this;
     }
-    this->set_values(rows * cols, itog.value);
+    *this = itog;
 }
 
 
 void Matrix::exponent(const unsigned int e) {
 
     if (cols != rows) {
-        throw Not_Square;
+        throw NOT_SQUARE;
     }
 
     Matrix itog = Matrix (rows, cols);
@@ -278,8 +279,7 @@ void Matrix::exponent(const unsigned int e) {
     double fact = 1.0;
     Matrix temp = itog;
     for (unsigned int number = 1; number < e; number++) {
-        temp *= *this;
-        fact /= number;
+        temp *= *this * (1/number);
         itog += (fact * temp);
     }
     *this = itog;
@@ -289,7 +289,7 @@ void Matrix::exponent(const unsigned int e) {
 double Matrix::determinant(const Matrix m, unsigned int size) {
 
     if (rows != cols) {
-        throw Not_Square;
+        throw NOT_SQUARE;
     }
 
     Matrix temp = Matrix(rows, cols);
@@ -324,7 +324,7 @@ void Matrix::output(bool f) {  // Вывод
     if (f) std::cout << rows << " " << cols << " \n";
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            std::cout << this -> value [row * cols + col] << " ";
+            std::cout << this->value [row * cols + col] << " ";
         }
         std::cout << "\n";
     }

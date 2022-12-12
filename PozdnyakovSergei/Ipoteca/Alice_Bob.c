@@ -89,8 +89,6 @@ void deposit_increase(struct Client *client){ //ставка повысилас�
 /*void bank_roubles(struct Client *client){
     client->bank_roubles = client->bank_account/100 + client->house_value/100;
 }
-
-
 void bank_cops(struct Client *client){
     client->bank_cops = client->bank_account%100 + client->house_value%100;
 }
@@ -170,12 +168,11 @@ void simulation (){
             printf("%d year\n", month/12);
         }
 
-  /*      bank_roubles(&alice);
-        bank_roubles(&bob);
-
-        bank_cops(&alice);
-        bank_cops(&bob);
-*/
+        /*      bank_roubles(&alice);
+              bank_roubles(&bob);
+              bank_cops(&alice);
+              bank_cops(&bob);
+      */
 
     }
 }
