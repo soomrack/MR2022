@@ -53,6 +53,20 @@ public:
 */
 
 
+class Matrix_exceptions : public std::domain_error
+{
+public:
+    Matrix_exceptions(const char* const error) : std::domain_error(error)
+    {}
+};
+
+
+Matrix_exceptions Size_Error ("Error: unequal size of matrices");
+Matrix_exceptions Not_Square ("Error: matrix not square");
+Matrix_exceptions Div_by_zero ("Error: division by zero");
+
+
+
 Matrix operator+ (const Matrix &m1, const Matrix &m2);
 Matrix operator- (const Matrix &m1, const Matrix &m2);
 Matrix operator* (const double num, const Matrix &m);
@@ -116,6 +130,11 @@ Matrix& Matrix::operator=(const Matrix &m) {
 
 
 Matrix& Matrix::operator+=(const Matrix &m) {
+
+    if (cols *= m.rows) {
+        throw Size_Error;
+    }
+
     rows = m.rows;
     cols = m.cols;
     int total_num = rows * cols;
@@ -127,6 +146,11 @@ Matrix& Matrix::operator+=(const Matrix &m) {
 
 
 Matrix& Matrix::operator-=(const Matrix &m) {
+
+    if (cols *= m.rows) {
+        throw Size_Error;
+    }
+
     rows = m.rows;
     cols = m.cols;
     int total_num = rows * cols;
@@ -145,6 +169,11 @@ Matrix& Matrix::operator*=(const double num) {
 
 
 Matrix& Matrix::operator*=(const Matrix &m) {
+
+    if (cols *= m.rows) {
+        throw Size_Error;
+    }
+
     Matrix itog = Matrix(rows, cols);
     itog.zero_matrix();
     for (unsigned int row = 0; row < itog.rows; row++) {
@@ -239,6 +268,11 @@ void Matrix::power(const unsigned int n) {
 
 
 void Matrix::exponent(const unsigned int e) {
+
+    if (cols != rows) {
+        throw Not_Square;
+    }
+
     Matrix itog = Matrix (rows, cols);
     itog.unit_matrix();
     double fact = 1.0;
@@ -253,6 +287,11 @@ void Matrix::exponent(const unsigned int e) {
 
 
 double Matrix::determinant(const Matrix m, unsigned int size) {
+
+    if (rows != cols) {
+        throw Not_Square;
+    }
+
     Matrix temp = Matrix(rows, cols);
     temp.set_values(rows * cols, value);
     if (cols == 1) {
