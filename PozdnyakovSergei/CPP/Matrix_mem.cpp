@@ -10,7 +10,7 @@ const double EPS_CONST = pow(10, -9); // Задание константы дл�
 unsigned int MATRIX_MEMORY = 0;
 
 class Matrix {
-private:  // в чем отличие между private и protected?
+protected:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
@@ -412,6 +412,72 @@ Matrix exponent (const Matrix m, const unsigned int e = 5) {
     itog.set_values(m.rows * m.cols, m.value);
     itog.exponent(e);
     return itog;
+}
+
+
+class Matrix_Memory : public Matrix {
+protected:
+    unsigned int memory_size;
+    unsigned int var_number;
+
+public:
+    Matrix_Memory ();
+    Matrix_Memory (const unsigned int rows, const unsigned int cols);
+    Matrix_Memory (const Matrix_Memory &m);
+    Matrix_Memory(Matrix_Memory &&m);
+    ~Matrix_Memory();
+
+    Matrix_Memory operator= (const Matrix_Memory &m);
+    void output (bool fl = false);
+};
+
+
+Matrix_Memory::Matrix_Memory() {
+    rows = 0;
+    cols = 0;
+    value = nullptr;
+    memory_size = 0;
+    var_number = ++MATRIX_MEMORY;
+}
+
+Matrix_Memory::~Matrix_Memory() {
+    MATRIX_MEMORY--;
+}
+
+
+Matrix_Memory::Matrix_Memory(const unsigned int r, const unsigned int c) {
+    rows = r;
+    cols = c;
+    memory_size = r * c;
+    value = new double [memory_size];  // выделение памяти под элементы матрицы
+    var_number = ++MATRIX_MEMORY;
+}
+
+
+Matrix_Memory::Matrix_Memory(const Matrix_Memory &m) {
+    rows = m.rows;
+    cols = m.cols;
+    value = new double [rows * cols];
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = m.value[number];
+    }
+}
+
+
+Matrix_Memory::Matrix_Memory(Matrix_Memory&& m){
+    rows = m.rows;
+    cols = m.cols;
+    value = m.value;
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+
+    m.rows = 0;
+    m.cols = 0;
+    m.value = nullptr;
+    m.memory_size = 0;
+    m.var_number = 0;
 }
 
 
