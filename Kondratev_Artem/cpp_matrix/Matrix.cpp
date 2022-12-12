@@ -1,7 +1,7 @@
 #include "Matrix.h"
 
 
-template<class T>
+template<typename T>
 Matrix<T>::Matrix() {
     rows = 0;
     cols = 0;
