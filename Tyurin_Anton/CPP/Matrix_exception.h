@@ -18,6 +18,4 @@ public:
     void print_message(const std::string& text, const MatrixException& Exception_object);
 };
 
-
-
 #endif

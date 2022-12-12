@@ -29,6 +29,7 @@ public:
     Matrix operator * (Matrix second_matrix);
     Matrix operator ^ (int x);
     Matrix operator / (double x);
+    Matrix T ();
 };
 
 Matrix Matrix::operator + (Matrix second_matrix)
@@ -73,13 +74,14 @@ Matrix Matrix::operator * (Matrix second_matrix)
     return multiplication_matrix;
 }
 
-Matrix Matrix::operator ^ (int x) {
-
+Matrix Matrix::operator ^ (int x)
+{
     Matrix result_matrix(rows, cols);
-    result_matrix.values = values;
+    Matrix const_matrix(rows, cols);
+    const_matrix.values = values;
     for (int i = 1; i < x; x++)
     {
-        result_matrix = result_matrix * result_matrix;
+        result_matrix = result_matrix * const_matrix;
     }
     return result_matrix;
 }
@@ -96,6 +98,20 @@ Matrix Matrix::operator / (double x)
     }
     return result_matrix;
 }
+
+Matrix Matrix::T ()
+{
+    Matrix copy_matrix(rows, cols);
+    for (int rows = 0; rows < copy_matrix.rows; rows++)
+    {
+        for (int cols = 0; cols < copy_matrix.cols; cols++)
+        {
+            copy_matrix.values[rows][cols] = values[cols][rows];
+        }
+    }
+    return copy_matrix;
+}
+
 
 Matrix A(n, m);
 Matrix B(n, m);

@@ -4,7 +4,7 @@
 class Matrix {
     friend class Matrix_test;
 private:
-    double PRECISION = 0.000000000001;
+    double PRECISION = 0.001;
     unsigned int cols;
     unsigned int rows;
     double *values;

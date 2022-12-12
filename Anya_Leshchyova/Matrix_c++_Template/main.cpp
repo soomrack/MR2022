@@ -62,13 +62,18 @@ void Matrix_Exception<T1>::set_mistake (T1 error){
     }
 }
 
-template<class T2>
+template<class T2> // сделай приватными
 class Matrix {
-public:
+protected:
     unsigned int rows;
     unsigned int cols;
     T2* line;
     T2** massive;
+public:
+
+    unsigned int getrow();
+    unsigned int getcol();
+    T2* getline();
 
 // Конструкторы и деструкторы класса
     Matrix();  // условный конструктор ( с пустыми параметрами)
@@ -84,8 +89,22 @@ public:
     Matrix& operator-=(const Matrix &X);
     Matrix& operator*=(const double k);
     Matrix& operator*=(const Matrix &X);
+    bool operator==(const Matrix &X);
+
+    Matrix operator+ (const Matrix &X);
+    Matrix operator- (const Matrix &X);
+    Matrix operator* (const Matrix &X);
+    Matrix operator* (const double k);
+
+
+
+
+
 
 //Методы класса
+    Matrix empty();
+    Matrix zero();
+    Matrix indentity();
     Matrix addition(const Matrix X);
     Matrix subtraction (const Matrix X);
     Matrix multiplication (const Matrix X);
@@ -96,6 +115,11 @@ public:
     Matrix pow (const Matrix X, unsigned int k);
     Matrix inverce ();
     Matrix transposition ();
+};
+template<class T2>
+class Memory_Matrix: protected Matrix <T2>{
+
+
 };
 
 
@@ -113,27 +137,25 @@ template<class T2>
 void test_inv (const Matrix<T2> X, const Matrix<T2> Y);
 template<class T2>
 
-bool operator== (const Matrix<T2> &X, const Matrix<T2> &Y);
-template<class T2>
-Matrix<T2> operator+ (const Matrix<T2> &X, const Matrix<T2> &Y);
-template<class T2>
-Matrix<T2> operator- (const Matrix<T2> &X, const Matrix<T2> &Y);
-template<class T2>
-Matrix<T2> operator* (const Matrix<T2> &X, const Matrix<T2> &Y);
-template<class T2>
-Matrix<T2> operator^ (const Matrix<T2> &X,const double k);
-template<class T2>
-Matrix<T2> operator% (const Matrix<T2> &X,const double k);
-
-template<class T2>
-Matrix<T2> empty();
-template<class T2>
-Matrix<T2> zero(const Matrix<T2> X);
-template<class T2>
-Matrix<T2> indentity(const Matrix<T2> X);
 
 unsigned int min (unsigned int a, unsigned int b);
 double factorial (unsigned int k);
+
+template<class T2>
+unsigned int Matrix<T2>::getrow() {  // показать строку
+    return (rows);
+}
+
+template<class T2>
+unsigned int Matrix<T2>::getcol() {  // показать столбец
+    return (cols);
+}
+
+
+template<class T2>
+T2* Matrix<T2>::getline(){  // показыть линию
+    return (line);
+}
 
 
 //Описание конструкторов и деструкторов
@@ -276,52 +298,52 @@ Matrix<T2>& Matrix<T2>:: operator*=(const Matrix &X) {
 }
 
 template<class T2>
-bool operator==(const Matrix<T2> &X, const Matrix<T2> &Y) {  // работает
-    if (!(Y.rows == X.rows || Y.cols == X.cols )) return false;
-    for (unsigned int number = 0; number < Y.rows * Y.cols; number ++){
-        if (fabs(Y.line[number] - X. line[number]) > DELTA ) return false;
+bool Matrix<T2>:: operator==(const Matrix<T2> &X) {  // работает
+    if (this->cols != X.cols || this->rows != X.rows) return false;
+    for (unsigned int number = 0; number < this->cols * this->rows; number++) {
+        if (abs(this->massive[number] - X.massive[number]) > DELTA) return false;
     }
     return true;
 }
 
 template<class T2>
-Matrix<T2> operator +(const Matrix<T2> &X, const Matrix<T2> &Y) {  //работает
-    if (X.rows != Y.rows || X.cols != Y.cols){
+Matrix<T2> Matrix<T2>:: operator +(const Matrix<T2> &X) {  //работает
+    if (rows != X.rows || cols != X.cols){
         throw different_sizes;
         return empty<T2>();
     }
-    Matrix summa = Matrix(X.rows, X.cols);
+    Matrix summa = Matrix(rows, cols);
     for (unsigned int number = 0; number < summa.cols * summa.rows; number++) {
-        summa.line[number] = X.line[number] + Y.line[number];
+        summa.line[number] = line[number] + X.line[number];
     }
     return summa;
 }
 
 template<class T2>
-Matrix<T2> operator-(const Matrix<T2> &X, const Matrix<T2> &Y) {  //работает
-    if (X.rows != Y.rows || X.cols != Y.cols) {
+Matrix<T2> Matrix<T2>:: operator-(const Matrix<T2> &X) {  //работает
+    if (rows != X.rows || cols != X.cols) {
         throw different_sizes;
         return empty<T2>();
     }
-    Matrix minys = Matrix(X.rows, X.cols);
+    Matrix minys = Matrix(rows, cols);
     for (unsigned int number = 0; number < minys.cols * minys.rows; number++) {
-        minys.line[number] = X.line[number] - Y.line[number];
+        minys.line[number] = line[number] - X.line[number];
     }
     return minys;
 }
 
 template<class T2>
-Matrix<T2> operator*(const Matrix<T2> &Y, const Matrix<T2> &X) {  // работает
-    if (Y.cols != X.rows) {
+Matrix<T2> Matrix<T2>:: operator*( const Matrix<T2> &X) {  // работает
+    if (cols != X.rows) {
         throw cannot_be_multiplied;
-        return empty<T2>();
+       // return empty<T2>();
     }
-    Matrix res = Matrix<T2>(Y.rows, X.cols); //
+    Matrix res = Matrix<T2>(rows, X.cols); //
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
             res.massive[row][col] = 0;
-            for (unsigned int h = 0; h < Y.cols; h++) {
-                res.massive[row][col] += Y.massive[row][h] * X.massive[h][col];
+            for (unsigned int h = 0; h < cols; h++) {
+                res.massive[row][col] += massive[row][h] * X.massive[h][col];
             }
         }
     }
@@ -329,21 +351,22 @@ Matrix<T2> operator*(const Matrix<T2> &Y, const Matrix<T2> &X) {  // работ�
 }
 
 template<class T2>
-Matrix<T2> operator*(const Matrix<T2> &X, double k ) {
-    Matrix  res = Matrix<T2> ( X.rows, X.cols);
-    for (unsigned int number = 0; number < X.cols * X.rows; number++){
-        res.line[number] = X.line [number] * k;
+Matrix<T2> Matrix<T2>:: operator*(double k ) {
+    Matrix  res = Matrix<T2> ( rows, cols);
+    for (unsigned int number = 0; number < cols * rows; number++){
+        res.line[number] = line [number] * k;
     }
     return res;
 }
 
 template<class T2>
 Matrix<T2> operator^(const Matrix<T2> &X, const double step){
-    Matrix power = Matrix<T2> (X.rows, X.cols);
-    power = indentity(X);
+    Matrix help = X;
+    Matrix power = Matrix<T2> (help.getrow(), help.getcol());
+    power = power.indentity();
     if (step == 0) return power;
     for (unsigned int i = 1; i <= step; i++){
-        power = X * power;
+        power = help * power;
     }
 
     return power;
@@ -351,12 +374,13 @@ Matrix<T2> operator^(const Matrix<T2> &X, const double step){
 }
 
 template<class T2>
-Matrix<T2> operator%(const Matrix<T2> &X,const double step){
-    if(X.cols != X.rows) {
+Matrix<T2>  operator%(const Matrix<T2> &X,const double step){
+    Matrix help = X;
+    if(help.getcol() != help.getrow()) {
         throw not_square;
-        return empty<T2>();
+        //return empty<T2>();
     }
-    Matrix result_exp = Matrix<T2>(X.rows, X.cols);
+    Matrix result_exp = Matrix<T2>(help.getrow(), help.getcol());
     result_exp = X;
     double factor = 0.5;
     for(int unsigned i = 2; i <= step; i++) {
@@ -365,13 +389,14 @@ Matrix<T2> operator%(const Matrix<T2> &X,const double step){
         result_exp = result_exp.addition(fact);
         factor = 1 / factorial(i+1);
     }
-    Matrix result = result_exp.addition(indentity(result_exp));
+    Matrix result = result_exp.addition(result_exp.indentity());
     return result ;
 }
 
+
 // Описание методов
 template<class T2>
-Matrix<T2> empty(){
+Matrix<T2> Matrix<T2>:: empty(){
     Matrix empty = Matrix<T2>();
     return empty;
 }
@@ -396,7 +421,7 @@ template<class T2>
 Matrix<T2> Matrix<T2>::addition ( const Matrix X) {
     if ((rows != X.rows) || (cols != X.cols)) {
         throw different_sizes;
-        return empty<T2>();
+       // return empty<T2>();
     }
     Matrix result = Matrix(rows, cols);
     for (unsigned int number = 0; number < result.rows * result.cols; number++) {
@@ -409,7 +434,7 @@ template<class T2>
 Matrix<T2> Matrix<T2>::subtraction ( const Matrix X){
     if( (rows != X.rows) || (cols != X.cols)){
         throw different_sizes;
-        return empty<T2>();
+        //return empty<T2>();
     }
     Matrix result = Matrix(rows , cols);
     for (unsigned int number=0 ; number < result.rows * result.cols; number++){
@@ -471,7 +496,7 @@ template<class T2>
 Matrix<T2> Matrix<T2>::multiplication(const Matrix X) {
     if (cols != X.rows){
         throw cannot_be_multiplied;
-        return empty<T2>();
+       // return empty<T2>();
     }
     Matrix  res = Matrix ( rows, X.cols); //
     for (unsigned int row = 0; row < res.rows; row++) {
@@ -486,23 +511,23 @@ Matrix<T2> Matrix<T2>::multiplication(const Matrix X) {
 }
 
 template<class T2>
-Matrix<T2>  zero (const Matrix<T2> X){
-    Matrix zero = Matrix<T2> (X.rows, X.cols);
-    for (unsigned int number = 0; number < X.rows * X.cols; number ++){
+Matrix<T2> Matrix<T2> ::  zero (){
+    Matrix zero = Matrix<T2> (rows, cols);
+    for (unsigned int number = 0; number < rows * cols; number ++){
         zero.line[number] = 0.00;
     }
     return zero;
 }
 
 template<class T2>
-Matrix<T2> indentity(const Matrix<T2> X){
-    if (X.rows != X. cols){
+Matrix<T2> Matrix<T2>:: indentity(){
+    if (rows !=  cols){
         throw not_square;
-        return empty<T2>();
+       // return empty<T2>();
     }
-    Matrix one = Matrix<T2> (X.rows , X.cols);
-    one = zero (X)   ;
-    unsigned int minimum = min(X.rows, X.cols);
+    Matrix one = Matrix<T2> (rows , cols);
+    one = zero ()   ;
+    unsigned int minimum = min(rows, cols);
     for (unsigned int  number = 0; number < minimum ; number ++){
         one.massive[number][number] = 1.00;
     }
@@ -516,10 +541,10 @@ Matrix<T2> Matrix<T2>:: pow(const Matrix X, const unsigned int step){
         catch (Matrix_Exception<int> error){
             error.set_mistake(2);
         }
-        return empty<T2>();
+       // return empty<T2>();
     }
     Matrix power = Matrix (X.rows, X.cols);
-    power = indentity(X);
+    power = power.indentity();
     if (step == 0) return power;
     for (unsigned int i = 1; i <= step; i++){
         power = multiplication(power);
@@ -542,7 +567,7 @@ template<class T2>
 Matrix<T2> Matrix<T2>::inverce() {
     if (rows != cols ){
         throw determinant_is_zero;
-        return empty<T2>();
+      //  return empty<T2>();
     }
     double det_A = determinant();
     double znak = 1.00;
@@ -550,7 +575,7 @@ Matrix<T2> Matrix<T2>::inverce() {
     Matrix result_trans =  Matrix(rows, cols);
     if(fabs(det_A) < DELTA) {
         throw determinant_is_zero;
-        return empty<T2>();
+      //  return empty<T2>();
     }
     for(int row = 0; row < rows; row++) {
         for(int col = 0; col < cols; col++) {
@@ -575,7 +600,7 @@ void  test_add (const Matrix<T2> X, const Matrix<T2> Y){
     Matrix prototype_B = Y;
     std::cout << "Addition test";
     try{
-        Proverka(prototype_A.addition(prototype_B) == (prototype_B * 2));
+        Proverka(prototype_A.addition(prototype_B) == (prototype_B * 2.00));
     }
     catch (Matrix_Exception<int> error){
         error.set_mistake(1);
@@ -588,7 +613,7 @@ void  test_sub (const Matrix<T2> X, const Matrix<T2> Y){
     Matrix prototype_B = Y;
     std::cout << "Subtraction test";
     try{
-        Proverka(prototype_B.subtraction(prototype_A) == zero( prototype_A));
+        Proverka(prototype_B.subtraction(prototype_A) ==  prototype_A.zero());
     }
     catch (Matrix_Exception<int> error){
         error.set_mistake(1);
@@ -601,7 +626,7 @@ void  test_mult (const Matrix<T2> X, const Matrix<T2> Y){
     Matrix prototype_B = Y;
     std::cout << "Multiplication test";
     try{
-        Proverka( prototype_A.multiplication(zero(prototype_B)) == zero(prototype_B));
+        Proverka( prototype_A.multiplication(prototype_B.zero()) == prototype_B.zero());
     }
     catch (Matrix_Exception<int> error){
         error.set_mistake(3);
@@ -639,8 +664,8 @@ template<class T2>
 void  test_inv (const Matrix<T2> X, const Matrix<T2> Y){
     Matrix prototype_A = X;
     Matrix prototype_B = Y;
-    prototype_A.line [5] = 55.00;
-    prototype_B.line [5] = -55.00;
+    prototype_A.getline() [5] = 55.00;
+    prototype_B.getline() [5] = -55.00;
     std::cout << "Inverce test ";
     try{
         Proverka( prototype_A.inverce() == prototype_B );
@@ -655,10 +680,12 @@ template<class T2>
 void  test_pow (const Matrix<T2> A, const Matrix<T2> B) {
     try {
         std::cout << "Pow test";
-        Matrix prototype_A = indentity(A) ;
-        Matrix prototype_B = indentity(B);
+        Matrix X= A;
+        Matrix Y= B;
+        Matrix prototype_A = X.indentity() ;
+        Matrix prototype_B = Y.indentity();
 
-        Proverka(prototype_A.pow(prototype_A, 2) == ( (prototype_A )*4));
+        Proverka(prototype_A.pow(prototype_A, 2) == ( (prototype_A )* 4.00));
     }
     catch (Matrix_Exception<int> error){
         error.set_mistake(2);
@@ -681,34 +708,34 @@ void Matrix<T2>::output (){
 int main() {
     Matrix A = Matrix<double>(5, 5);
     double k= 1.00;
-    for (unsigned int row = 0; row < A.rows*A.cols; row++) {
-        A.line[row] = k;
+    for (unsigned int row = 0; row < A.getrow() * A.getcol(); row++) {
+        A.getline()[row] = k;
         k = k + 1.00;
 
     }
     Matrix B = Matrix<double>(5, 5);
     k= 0.00;
-    for (unsigned int row = 0; row < B.rows*B.cols; row++) {
-        B.line[row] = k;
+    for (unsigned int row = 0; row < B.getrow() * B.getrow(); row++) {
+        B.getline()[row] = k;
         k = k + 1.00;
-        B.line[8] = 21.30;
-        B.line[5] = 3.00;
-        B.line[6] = 12.00;
-        B.line[20] = 1.00;
-        B.line[16] = 77.00;
-        B.line[12] = 43.00;
+        B.getline()[8] = 21.30;
+        B.getline()[5] = 3.00;
+        B.getline()[6] = 12.00;
+        B.getline()[20] = 1.00;
+        B.getline()[16] = 77.00;
+        B.getline()[12] = 43.00;
     }
 
 
 
-    test_add (A, B);
-    test_sub (A, B);
-    test_mult (A, B);
-    test_exp (A, B);
-    test_det(A, B);
-    test_inv (A, B);
-    test_pow(A, B);
-
+   test_add (A, B);
+   test_sub (A, B);
+   test_mult (A, B);
+   test_exp (A, B);
+   test_det(A, B);
+   test_inv (A, B);
+   test_pow(A, B);
+/*
     std::cout << "Matrix A =\n";
     A.output();
     std::cout << "Matrix B =\n";
@@ -741,6 +768,6 @@ int main() {
 
    // std::cout << "Matrix A ^ -1 =\n";
   // A.inverce().output();
-
+*/
     return 0;
 }
