@@ -5,7 +5,7 @@
 #include <exception>
 
 double DELTA = 0.0000001;
-
+static unsigned int MEMORY = 0;
 
 
 class Matrix_Exception {
@@ -112,6 +112,23 @@ public:
     double* getline();
 };
 
+
+class Matrix_Memory : public Matrix
+{
+protected:
+
+    unsigned int var_size;
+
+public:
+
+    Matrix_Memory();
+    Matrix_Memory(const unsigned int row, const unsigned int col);
+    Matrix_Memory(const Matrix_Memory &x);
+    Matrix_Memory(Matrix_Memory &&x);
+    ~Matrix_Memory();
+    Matrix_Memory& operator=(const Matrix_Memory &x);
+    void output(bool k = true);
+};
 
 
 void test(const Matrix A, const Matrix B);
@@ -684,22 +701,6 @@ void Matrix::output (){
 }
 
 
-class Matrix_Memory : public Matrix
-{
-protected:
-
-     unsigned int var_size;
-
-public:
-
-    Matrix_Memory();
-    Matrix_Memory(const unsigned int row, const unsigned int col);
-    Matrix_Memory(const Matrix_Memory &x);
-    Matrix_Memory(Matrix_Memory &&x);
-    //~Matrix_Memory();
-    Matrix_Memory& operator=(const Matrix_Memory &x);
-    void output();
-};
 
 
 
@@ -708,14 +709,17 @@ Matrix_Memory::Matrix_Memory() {
     cols = 0;
     line = nullptr;
     var_size = 0;
+    MEMORY += var_size;
+
 }
 
 
 Matrix_Memory::Matrix_Memory(const unsigned int row, const unsigned int col) {
     rows = row;
     cols = col;
-    var_size = row * col;
-    line = new double[var_size];
+    line = new double[row * col];
+    var_size =  row * col * sizeof (double);
+    MEMORY += var_size;
 }
 
 
@@ -724,9 +728,10 @@ Matrix_Memory::Matrix_Memory(const Matrix_Memory &X) {
     cols = X.cols;
     var_size = X.var_size;
     line = new double[var_size];
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        line[idx] = X.line[idx];
+    for (unsigned int number = 0; number < rows * cols; number++){
+        line[number] = X.line[number];
     }
+    MEMORY += var_size;
 }
 
 
@@ -735,6 +740,7 @@ Matrix_Memory::Matrix_Memory(Matrix_Memory&& X){
     cols = X.cols;
     line = X.line;
     var_size = X.var_size;
+    MEMORY += var_size;
 
     X.rows = 0;
     X.cols = 0;
@@ -742,11 +748,11 @@ Matrix_Memory::Matrix_Memory(Matrix_Memory&& X){
     X.line = nullptr;
 }
 
-/*
+
 Matrix_Memory::~Matrix_Memory() {
-    delete[] line;
+    MEMORY -= var_size;
 }
-*/
+
 
 Matrix_Memory& Matrix_Memory::operator=(const Matrix_Memory &X) {
     if (this != &X){
@@ -763,15 +769,14 @@ Matrix_Memory& Matrix_Memory::operator=(const Matrix_Memory &X) {
 }
 
 
-void Matrix_Memory::output() {
+void Matrix_Memory::output(bool k) {
     std::cout << "This variable takes " << var_size * sizeof(double) << " bytes in memory\n";
+    std::cout << "Total memory takes " << MEMORY << " bytes\n\n\n";
 }
 
 
 
 int main() {
-    Matrix_Memory U =Matrix_Memory (5, 5);
-    U.output();
     Matrix A = Matrix(5, 5);
 double k= 1.00;
     for (unsigned int row = 0; row < A.getrow() * A.getcol(); row++) {
