@@ -761,7 +761,7 @@ Matrix_Memory::~Matrix_Memory() {
 
 
 Matrix_Memory& Matrix_Memory::operator=(const Matrix_Memory &X) {
-    if (this != &X){
+    if (this != &X) {
         if (!line) delete[] line;
         rows = X.rows;
         cols = X.cols;
