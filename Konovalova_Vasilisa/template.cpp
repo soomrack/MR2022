@@ -12,6 +12,20 @@ public:
 
 Matrix_Exception NOTSQUARE("Make matrix square\n");
 Matrix_Exception ERRORSIZE("Change matrix size\n");
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include <cstring>
+
+class Matrix_Exception : public std::domain_error
+{
+public:
+    Matrix_Exception(const char* const message) : std::domain_error(message)
+    {}
+};
+
+Matrix_Exception NOTSQUARE("Make matrix square\n");
+Matrix_Exception ERRORSIZE("Change matrix size\n");
 
 template<typename T>
 class Matrix {
@@ -279,16 +293,29 @@ public:
     Matrix_Memory<T1>(const Matrix_Memory<T1>&);
     Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
     ~Matrix_Memory();
+    Matrix_Memory<T1>&  operator= (const  Matrix_Memory<T1>& );
     void report() override;
 };
 
+template <typename T>
+Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
+    if (this == &matrix)
+    {
+        return *this;
+    }
+    this->rows = matrix.rows;
+    this->cols = matrix.cols;
+    delete[] this->values;
+    this->values = new T[this->cols * this->rows];
+    memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
+    memory_size += matrix.memory_size;
+    total_memory += memory_size;
+    return *this;
+}
 
 template <typename T>
 Matrix_Memory<T>::Matrix_Memory()
 {
-    this->rows = 0;
-    this->cols = 0;
-    this->values = nullptr;
     this->memory_size += 0;
     this->total_memory += 0;
 }
@@ -313,8 +340,6 @@ Matrix_Memory<T>::~Matrix_Memory()
 template <typename T>
 Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
 {
-    this->rows = matrix.rows;
-    this->cols = matrix.cols;
     this->values = new T[this->rows * this->cols];
     memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
     memory_size = matrix.memory_size;
@@ -326,9 +351,6 @@ template <typename T>
 Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
 {
 
-this->rows = matrix.rows;
-this->cols = matrix.cols;
-this->values = matrix.values;
 memory_size = matrix.memory_size;
 
 matrix.rows = 0;
