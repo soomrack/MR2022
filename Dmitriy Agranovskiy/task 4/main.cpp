@@ -513,13 +513,13 @@ public:
 
 
 
-Matrix_memory::Matrix_memory() {
+Matrix_memory::Matrix_memory() : Matrix(row, col) {
     quantity++;
     mem_size= mem_size+sizeof(double)*rows*cols;
 }
 
 
-Matrix_memory::Matrix_memory(const unsigned int n) {
+Matrix_memory::Matrix_memory(const unsigned int n) : Matrix(row, col){
     quantity++;
     mem_size= mem_size+sizeof(double)*rows*cols;
 }
@@ -533,32 +533,35 @@ Matrix_memory::Matrix_memory(const unsigned int row, const unsigned int col): Ma
 
 Matrix_memory::Matrix_memory(const Matrix_memory &x): Matrix(x) {
     quantity = x.quantity;
-    mem_size= mem_size+sizeof(double)*rows*cols;
+    mem_size = x.mem_size+sizeof(double)*rows*cols;
 }
 
 
 Matrix_memory::Matrix_memory(Matrix_memory&& x): Matrix(x){
     quantity = x.quantity;
+    mem_size += x.mem_size;
 }
 
 
 Matrix_memory::~Matrix_memory() {
     //delete[] data;
     quantity--;
-    mem_size= mem_size-sizeof(double)*rows*cols;
+    mem_size = mem_size-sizeof(double)*rows*cols;
 }
 
 
 Matrix_memory& Matrix_memory::operator=(const Matrix_memory &x) {
+    mem_size = mem_size-sizeof(double)*x.rows*x.cols;
     Matrix::operator=(x);
-    
+    mem_size+=x.mem_size; 
     return *this;
-}
+} 
 
 
 Matrix_memory& Matrix_memory::operator=(Matrix_memory &&x) {
+    mem_size = mem_size-sizeof(double)*x.rows*x.cols;
     Matrix::operator=(x);
-
+    mem_size+=2*x.mem_size; //деструктор вычитает 2 раза
     return *this;
 }
 
