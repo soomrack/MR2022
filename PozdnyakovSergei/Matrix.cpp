@@ -6,7 +6,7 @@
 */
 
 
-const double EPS_CONST = pow(10, -5);
+const double EPS_CONST = pow(10, -9); // Задание константы для сравнения равенства
 
 
 class Matrix {
@@ -20,7 +20,7 @@ public:
     Matrix(const Matrix& m);  // копирование
     Matrix(const unsigned int row, const unsigned int col);  // прямоугольные матрицы
     ~Matrix();  // деструктор
-    Matrix(Matrix&& m); // перенос
+    
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -100,16 +100,6 @@ Matrix::Matrix(const Matrix &m) {
     for (unsigned int number = 0; number < total_num; number++) {
         value[number] = m.value[number];
     }
-}
-
-
-Matrix::Matrix(Matrix&& m) {
-    rows = m.rows;
-    cols = m.cols;
-    value = m.value;
-    m.rows = 0;
-    m.cols = 0;
-    m.value = nullptr;
 }
 
 
@@ -377,7 +367,7 @@ Matrix operator* (const Matrix &m, const double num) {
 }
 
 
-bool operator== (const Matrix &m1, const Matrix &m2) {
+bool operator== (const Matrix &m1, const Matrix &m2) {  // Равенство определяется с заданной точностью.
     bool eq = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
     if (!eq) return eq;
     for (unsigned int number = 0; number <m1.rows * m1.cols; number++) {
