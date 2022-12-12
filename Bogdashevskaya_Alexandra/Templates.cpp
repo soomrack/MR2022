@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-unsigned int GLOBAL_MEMORY_SIZE = 0;
-
 class Matrix_Exception : public std::exception
 {
 public:
@@ -348,7 +346,7 @@ Matrix<T> Matrix<T>::expm(unsigned int accuracy) {
 	Matrix<T> result = identity<T>(rows);
 	Matrix<T> powered(*this);
 	int factorial = 1;
-	for (int acc = 1; acc <= accuracy; ++acc) {
+	for (unsigned int acc = 1; acc <= accuracy; ++acc) {
 		factorial *= acc;
 		powered *= *this;
 		powered *= (1. / factorial);
@@ -360,12 +358,12 @@ Matrix<T> Matrix<T>::expm(unsigned int accuracy) {
 
 template <typename T>
 class Matrix_with_memory : public Matrix<T> {
-private:
-	//unsigned int quantity{ 0 };
+protected:
+	static unsigned int quantity;
 	unsigned int memory_size{ 0 };
-	unsigned int total_memory{ 0 };
-	//unsigned int created{ 0 };
-	//unsigned int destroyed{ 0 };
+	static unsigned int total_memory;
+	static unsigned int created;
+	static unsigned int destroyed;
 
 public:
 	Matrix_with_memory();
@@ -380,74 +378,50 @@ public:
 	void print_report();
 };
 
+template <typename T>
+unsigned int Matrix_with_memory<T>::total_memory = 0;
 
 template <typename T>
-Matrix_with_memory<T>::Matrix_with_memory() {
-	this->rows = 0;
-	this->cols = 0;
-	this->values = nullptr;
+unsigned int Matrix_with_memory<T>::quantity = 0;
 
+template <typename T>
+unsigned int Matrix_with_memory<T>::created = 0;
+
+template <typename T>
+unsigned int Matrix_with_memory<T>::destroyed = 0;
+
+template <typename T>
+Matrix_with_memory<T>::Matrix_with_memory() : Matrix<T>() {
 	this->memory_size = 0;
 	this->total_memory += this->memory_size;
-	//this->quantity++;
-	//this->created++;
-	GLOBAL_MEMORY_SIZE += this->memory_size;
+	this->quantity++;
+	this->created++;
 }
 
 
 template <typename T>
-Matrix_with_memory<T>::Matrix_with_memory(unsigned int cols, unsigned int rows, T value) {
-	this->cols = cols;
-	this->rows = rows;
-	unsigned int n_values = cols * rows;
-	this->values = new T[n_values];
-	for (unsigned int i = 0; i < n_values; ++i) {
-		this->values[i] = value;
-	}
-
-	this->memory_size = n_values * sizeof(T);
+Matrix_with_memory<T>::Matrix_with_memory(unsigned int cols, unsigned int rows, T value) : Matrix<T> (cols, rows, value) {
+	this->memory_size = cols * rows * sizeof(T);
 	this->total_memory += this->memory_size;
-	//this->quantity++;
-	//this->created++;
-	GLOBAL_MEMORY_SIZE += this->memory_size;
+	this->quantity++;
+	this->created++;
 }
 
 
 template <typename T>
-Matrix_with_memory<T>::Matrix_with_memory<T>(const Matrix_with_memory& matrix) {
-	this->cols = matrix.cols;
-	this->rows = matrix.rows;
-	unsigned int n_values = this->cols * this->rows;
-	this->values = new T[n_values];
-	memcpy(this->values, matrix.values, n_values * sizeof(T));
-
+Matrix_with_memory<T>::Matrix_with_memory(const Matrix_with_memory& matrix) : Matrix(matrix) {
 	this->memory_size = matrix.memory_size;
 	this->total_memory += this->memory_size;
-	//this->quantity++;
-	//this->created++;
-	GLOBAL_MEMORY_SIZE += this->memory_size;
+	this->quantity++;
+	this->created++;
 }
 
 
 template <typename T>
-Matrix_with_memory<T>::Matrix_with_memory(Matrix_with_memory&& matrix) noexcept {
-	this->cols = matrix.cols;
-	this->rows = matrix.rows;
-	this->values = matrix.values;
+Matrix_with_memory<T>::Matrix_with_memory(Matrix_with_memory&& matrix) noexcept : Matrix(matrix) {
 	this->memory_size = matrix.memory_size;
-	this->total_memory = matrix.total_memort_size;
-	//this->quantity = matrix.quantity;
-	//this->created = matrix.created;
-	//this->destroyed = matrix.destroyed;
 
-
-	matrix.cols = 0;
-	matrix.rows = 0;
-	matrix.values = nullptr;
 	matrix.memory_size = 0;
-	matrix.total_memory_size = 0;
-	//matrix.created = 0;
-	//matrix.destroyed = 0;
 
 }
 
@@ -456,13 +430,10 @@ template <typename T>
 Matrix_with_memory<T>::~Matrix_with_memory() {
 	std::cout << "Matrix is destroyed\n";
 	print_report();
-	
-	//delete[] this->values;
 
 	this->total_memory -= this->memory_size;
-	//this->quantity--;
-	//this->destroyed++;
-	GLOBAL_MEMORY_SIZE -= this->memory_size;
+	this->quantity--;
+	this->destroyed++;
 	this->memory_size = 0;
 
 
@@ -470,23 +441,11 @@ Matrix_with_memory<T>::~Matrix_with_memory() {
 
 template <typename T>
 Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(Matrix_with_memory&& matrix) noexcept {
-	if (this == &matrix) return *this;
-	this->rows = matrix.rows;
-	this->cols = matrix.cols;
-	this->values = matrix.values;
-	this->memory_size = matrix.memory_size;
-	this->total_memory = matrix.total_memort_size;
-	//this->quantity = matrix.quantity;
-	//this->created = matrix.created;
-	//this->destroyed = matrix.destroyed;
+	if (this != &matrix) {
+		this->memory_size = matrix.memory_size;
 
-	matrix.cols = 0;
-	matrix.rows = 0;
-	matrix.values = nullptr;
-	matrix.memory_size = 0;
-	matrix.total_memort_size = 0;
-//	matrix.created = 0;
-	//matrix.destroyed = 0;
+		matrix.memory_size = 0;
+	}
 
 }
 
@@ -506,9 +465,8 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(const Matrix_with_memory
 
 	this->memory_size = matrix.memory_size;
 	this->total_memory += this->memory_size;
-	//this->quantity++;
-	//this->created++;
-	GLOBAL_MEMORY_SIZE += this->memory_size;
+	this->quantity++;
+	this->created++;
 
 }
 
@@ -517,10 +475,9 @@ template <typename T>
 void Matrix_with_memory<T>::print_report() {
 	std::cout << "Memory size: " << this->memory_size << "\n";
 	std::cout << "Total memory size: " << this->total_memory << "\n";
-	std::cout << "Global memory size: " << GLOBAL_MEMORY_SIZE << "\n\n";
-	//std::cout << "Quantity: " << this->quantity << "\n";
-	//std::cout << "Created: " << this->created << "\n";
-	//std::cout << "Destroyd: " << this->destroyed << "\n";
+	std::cout << "Quantity: " << this->quantity << "\n";
+	std::cout << "Created: " << this->created << "\n";
+	std::cout << "Destroyed: " << this->destroyed << "\n\n";
 }
 
 
@@ -605,13 +562,11 @@ int main() {
 	Matrix_with_memory<int> C(3, 3);
 	C.set_random_values();
 	C.print_matrix();
-	
+
 	Matrix_with_memory<int> D(3, 3);
 	D.set_random_values();
 	D.print_matrix();
 
-	C.add(D).print_matrix();
-	
 
 	return 0;
 }
