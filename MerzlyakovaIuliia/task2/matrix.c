@@ -4,8 +4,8 @@
 #include <math.h>
 
 
-#define MATIX_ROWS 4
-#define MATRIX_COLS 4
+#define MATIX_ROWS 3
+#define MATRIX_COLS 3
 #define TOP_BORDER 1000
 
 typedef struct Matrix 
@@ -170,10 +170,10 @@ void matrixPrint(const Matrix matrix)
 	for (uint16_t row = 0; row < matrix.rows; ++row)
 	{
 		for (uint16_t col = 0; col < matrix.cols; ++col)
-			printf("%.2f\t", matrix.values[row * matrix.cols + col]);
+			printf("%.2f\t | \t", matrix.values[row * matrix.cols + col]);
 		printf("\n");
 	}
-	printf("\n");
+	printf("\n\n");
 }
 /////////////
 
