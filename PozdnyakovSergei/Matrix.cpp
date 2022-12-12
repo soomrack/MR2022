@@ -31,7 +31,7 @@ public:
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
-    void transposition();  // траспонирование
+    Matrix transposition();  // траспонирование
     double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
@@ -209,7 +209,7 @@ void Matrix::unit_matrix() {
 }
 
 
-void Matrix::transposition() {
+/*void Matrix::transposition() {
     unsigned int row = rows;
     unsigned int col = cols;
     double* array = new double [rows * cols];
@@ -222,6 +222,17 @@ void Matrix::transposition() {
     value = array;
     rows = row;
     cols = col;
+}*/
+
+
+Matrix Matrix::transposition() {
+    Matrix itog = {cols, rows};
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = value[col * itog.cols + row];
+        }
+    }
+    return itog;
 }
 
 
