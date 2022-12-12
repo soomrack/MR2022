@@ -739,7 +739,7 @@ Matrix_Memory::Matrix_Memory(const Matrix_Memory &X) {
 }
 
 
-Matrix_Memory::Matrix_Memory(Matrix_Memory&& X){
+Matrix_Memory::Matrix_Memory(Matrix_Memory&& X) {
     rows = X.rows;
     cols = X.cols;
     line = X.line;
