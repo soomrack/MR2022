@@ -334,7 +334,7 @@ void Matrix::output(bool f) {  // Вывод
     if (f) std::cout << rows << " " << cols << " \n";
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            std::cout << this -> value [row * cols + col] << " ";
+            std::cout << this->value [row * cols + col] << " ";
         }
         std::cout << "\n";
     }
