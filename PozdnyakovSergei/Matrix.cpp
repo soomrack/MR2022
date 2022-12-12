@@ -6,11 +6,11 @@
 */
 
 
-const double EPS_CONST = pow(10, -5);
+const double EPS_CONST = pow(10, -9); // Задание константы для сравнения равенства
 
 
 class Matrix {
-private:  // в чем отливие между private и protected?
+private:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
@@ -20,7 +20,7 @@ public:
     Matrix(const Matrix& m);  // копирование
     Matrix(const unsigned int row, const unsigned int col);  // прямоугольные матрицы
     ~Matrix();  // деструктор
-    Matrix(Matrix&& m); // перенос
+    
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -31,7 +31,7 @@ public:
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
-    void transposition();  // траспонирование
+    Matrix transposition();  // траспонирование
     double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
@@ -53,11 +53,10 @@ public:
 */
 
 
-class Matrix_exceptions : public std::domain_error
-{
+class Matrix_exceptions : public std::domain_error {  // Класс исключений
 public:
-    Matrix_exceptions(const char* const error) : std::domain_error(error)
-    {}
+    Matrix_exceptions(const char* const error) : std::domain_error(error) {
+    }
 };
 
 
@@ -101,16 +100,6 @@ Matrix::Matrix(const Matrix &m) {
     for (unsigned int number = 0; number < total_num; number++) {
         value[number] = m.value[number];
     }
-}
-
-
-Matrix::Matrix(Matrix&& m) {
-    rows = m.rows;
-    cols = m.cols;
-    value = m.value;
-    m.rows = 0;
-    m.cols = 0;
-    m.value = nullptr;
 }
 
 
@@ -209,7 +198,7 @@ void Matrix::unit_matrix() {
 }
 
 
-void Matrix::transposition() {
+/*void Matrix::transposition() {
     unsigned int row = rows;
     unsigned int col = cols;
     double* array = new double [rows * cols];
@@ -222,6 +211,17 @@ void Matrix::transposition() {
     value = array;
     rows = row;
     cols = col;
+}*/
+
+
+Matrix Matrix::transposition() {
+    Matrix itog = {cols, rows};
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = value[col * itog.cols + row];
+        }
+    }
+    return itog;
 }
 
 
@@ -367,10 +367,13 @@ Matrix operator* (const Matrix &m, const double num) {
 }
 
 
-bool operator== (const Matrix &m1, const Matrix &m2) {
-    bool fl = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
-    if (!fl) return fl;
-
+bool operator== (const Matrix &m1, const Matrix &m2) {  // Равенство определяется с заданной точностью.
+    bool eq = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!eq) return eq;
+    for (unsigned int number = 0; number <m1.rows * m1.cols; number++) {
+        eq *= (abs(m1.value[number] - m2.value[number]) < EPS_CONST);
+    }
+    return eq;
 }
 
 
