@@ -319,12 +319,14 @@ MemoryCount<T>& MemoryCount<T>::operator=(const MemoryCount<T>& X) {
     Matrix<T>::operator=((Matrix<double> &&) X);
     general_memory += X.local_memory - local_memory;
     local_memory = X.local_memory;
+    general_memory += local_memory;
     return *this;
 }
 
 template<typename T>
 MemoryCount<T>& MemoryCount<T>::operator=(MemoryCount<T>&& X) {
     Matrix<T>::operator=(X);
+
     return *this;
 }
 
