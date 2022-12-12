@@ -400,7 +400,7 @@ void summation_test() {
 
 /* При проверки корректности выдает такое: Condition is always false */
 
-
+// Тест для вычитания
 void subtraction_test() {
     Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
     Matrix m2 = Matrix(3, 3);
@@ -421,7 +421,7 @@ void subtraction_test() {
     }
 }
 
-
+// Тест для перемножения
 void multiplication_test () {
     Matrix m1 = Matrix(3, 3);
     Matrix m2 = Matrix(3, 3);
@@ -442,7 +442,7 @@ void multiplication_test () {
     }
 }
 
-
+// Тест для умножения на число
 void mult_by_num_test() {
     Matrix m1 = Matrix(3, 3);
     double num = 5;
