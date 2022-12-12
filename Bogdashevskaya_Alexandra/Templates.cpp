@@ -452,22 +452,12 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(Matrix_with_memory&& mat
 
 template <typename T>
 Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(const Matrix_with_memory& matrix) {
-	if (this == &matrix) {
-		return *this;
+	if (this != &matrix) {
+		this->memory_size = matrix.memory_size;
+		this->total_memory += this->memory_size;
+		this->quantity++;
+		this->created++;
 	}
-	delete[] this->values;
-
-	this->rows = matrix.rows;
-	this->cols = matrix.cols;
-
-	this->values = new T[this->rows * this->cols];
-	memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
-
-	this->memory_size = matrix.memory_size;
-	this->total_memory += this->memory_size;
-	this->quantity++;
-	this->created++;
-
 }
 
 
