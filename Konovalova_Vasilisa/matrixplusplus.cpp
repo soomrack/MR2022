@@ -49,6 +49,10 @@ public:
 
 };
 
+Matrix::~Matrix() {
+    if (values!=nullptr)
+    delete[] values;
+}
 
 
 Matrix::Matrix() {
@@ -215,7 +219,7 @@ Matrix Matrix::operator/(const double number) const {
 }
 
 
-Matrix Matrix::exp(const Matrix& A, const unsigned int accuracy = 10){
+Matrix Matrix::exp(const Matrix& A, const unsigned int accuracy = 30){
     if (A.rows != A.cols) throw NOTSQUARE;
     Matrix result(A.cols);
     Matrix temp(A.cols);
