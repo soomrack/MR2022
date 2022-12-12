@@ -118,6 +118,7 @@ class Matrix_Memory : public Matrix
 protected:
 
     unsigned int var_size;
+    static unsigned int full_size;
 
 public:
 
@@ -710,6 +711,7 @@ Matrix_Memory::Matrix_Memory() {
     line = nullptr;
     var_size = 0;
     MEMORY += var_size;
+    full_size += var_size;
 
 }
 
@@ -720,6 +722,7 @@ Matrix_Memory::Matrix_Memory(const unsigned int row, const unsigned int col) {
     line = new double[row * col];
     var_size =  row * col * sizeof (double);
     MEMORY += var_size;
+    full_size += var_size;
 }
 
 
@@ -732,6 +735,7 @@ Matrix_Memory::Matrix_Memory(const Matrix_Memory &X) {
         line[number] = X.line[number];
     }
     MEMORY += var_size;
+    full_size += X.var_size;
 }
 
 
@@ -741,6 +745,7 @@ Matrix_Memory::Matrix_Memory(Matrix_Memory&& X){
     line = X.line;
     var_size = X.var_size;
     MEMORY += var_size;
+    full_size += X.var_size;
 
     X.rows = 0;
     X.cols = 0;
@@ -751,6 +756,7 @@ Matrix_Memory::Matrix_Memory(Matrix_Memory&& X){
 
 Matrix_Memory::~Matrix_Memory() {
     MEMORY -= var_size;
+    full_size -= var_size;
 }
 
 
