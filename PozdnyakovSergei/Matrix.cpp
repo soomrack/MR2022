@@ -131,7 +131,7 @@ Matrix& Matrix::operator=(const Matrix &m) {
 
 Matrix& Matrix::operator+=(const Matrix &m) {
 
-    if (cols *= m.rows) {
+    if ((cols *= m.cols) or (rows != m.rows)) {
         throw Size_Error;
     }
 
@@ -147,7 +147,7 @@ Matrix& Matrix::operator+=(const Matrix &m) {
 
 Matrix& Matrix::operator-=(const Matrix &m) {
 
-    if (cols *= m.rows) {
+    if ((cols *= m.cols) or (rows != m.rows)) {
         throw Size_Error;
     }
 
