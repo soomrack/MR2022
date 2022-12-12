@@ -1,23 +1,27 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+/*
+#include <time.h>
+*/
 
 
-const double EPS_CONST = pow(10, -5);
+const double EPS_CONST = pow(10, -9); // Задание константы для сравнения равенства
 
 
 class Matrix {
-private:
+private:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
 
 public:
-    Matrix();  //
-    Matrix(const Matrix& m);  // copy
-    Matrix(const unsigned int row, const unsigned int col);  // rectangle matrix
-    ~Matrix();  // destructor
-    Matrix(Matrix&& m);
+    Matrix ();  //пустые матрицы
+    Matrix (const Matrix& m);  // копирование
+    Matrix (const unsigned int row, const unsigned int col);  // прямоугольные матрицы
+    Matrix (Matrix&& m);  // Добавить оператор переноса
+    ~Matrix ();  // деструктор
+
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -28,26 +32,39 @@ public:
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
-    void transposition();  // траспонирование
+    Matrix transposition();  // траспонирование
     double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
     void exponent(const unsigned int e = 3);  // матричная экспонента
-    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);
+    Matrix minor(const Matrix, const unsigned int size, const unsigned int r, const unsigned int c);  // минор марицы
 
-    void set_values(const unsigned int l, const double* array);
-    void set_random(const unsigned int range = 21);
-    /*void output(bool f = false);*/
+    void set_values(const unsigned int l, const double* array);  // заполнение из массива
+    void set_random(const unsigned int range = 21);  // заполнение рандомно
+    void output(bool f = false);
 
     friend Matrix exponent(const Matrix m, const unsigned int e);
     friend Matrix power(const Matrix m, const unsigned int n);
-    friend bool operator==(const Matrix &m1, const Matrix &m2);
+    friend bool operator== (const Matrix &m1, const Matrix &m2);
 };
 
 
 /*
-добавить exceptions
+добавил exceptions
 */
+
+
+class Matrix_exceptions : public std::domain_error {  // Класс исключений
+public:
+    Matrix_exceptions(const char* const error) : std::domain_error(error) {
+    }
+};
+
+
+Matrix_exceptions SIZE_ERROR ("Error: unequal size of matrices");
+Matrix_exceptions NOT_SQUARE ("Error: matrix not square");
+Matrix_exceptions DIV_BY_ZERO ("Error: division by zero");
+
 
 
 Matrix operator+ (const Matrix &m1, const Matrix &m2);
@@ -57,31 +74,40 @@ Matrix operator* (const Matrix &m1, const Matrix &m2);
 Matrix operator* (const Matrix &m, const double num);
 
 
+Matrix zero_matrix(const unsigned int row, const unsigned int col);
+Matrix unit_matrix(const unsigned int row, const unsigned int col);
+
+
 Matrix::Matrix() : rows(0), cols(0), value(nullptr) {}
+
+
+Matrix::~Matrix() {
+    delete[] value;
+}
 
 
 Matrix::Matrix(const unsigned int r, const unsigned int c) {
     rows = r;
     cols = c;
-    value = new double [rows * cols];
+    value = new double [r * c];  // выделение памяти под элементы матрицы
 }
 
 
 Matrix::Matrix(const Matrix &m) {
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
 }
 
 
-Matrix::Matrix(Matrix&& m) {
+Matrix::Matrix(Matrix&& m){
     rows = m.rows;
     cols = m.cols;
     value = m.value;
+
     m.rows = 0;
     m.cols = 0;
     m.value = nullptr;
@@ -89,11 +115,12 @@ Matrix::Matrix(Matrix&& m) {
 
 
 Matrix& Matrix::operator=(const Matrix &m) {
+
+    delete[] value;
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    this->value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
     return *this;
@@ -101,21 +128,23 @@ Matrix& Matrix::operator=(const Matrix &m) {
 
 
 Matrix& Matrix::operator+=(const Matrix &m) {
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
-        value[number] = +m.value[number];
+
+    if ((cols *= m.cols) or (rows != m.rows)) {
+        throw SIZE_ERROR;
+    }
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] += m.value[number];
     }
     return *this;
 }
 
 
 Matrix& Matrix::operator-=(const Matrix &m) {
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+
+    if ((cols *= m.cols) or (rows != m.rows)) {
+        throw SIZE_ERROR;
+    }
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] -= m.value[number];
     }
     return *this;
@@ -130,6 +159,11 @@ Matrix& Matrix::operator*=(const double num) {
 
 
 Matrix& Matrix::operator*=(const Matrix &m) {
+
+    if (cols *= m.rows) {
+        throw SIZE_ERROR;
+    }
+
     Matrix itog = Matrix(rows, cols);
     itog.zero_matrix();
     for (unsigned int row = 0; row < itog.rows; row++) {
@@ -158,13 +192,14 @@ void Matrix::zero_matrix() {
 }
 
 void Matrix::unit_matrix() {
+    this->zero_matrix();
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
 }
 
 
-void Matrix::transposition() {
+/*void Matrix::transposition() {
     unsigned int row = rows;
     unsigned int col = cols;
     double* array = new double [rows * cols];
@@ -177,6 +212,17 @@ void Matrix::transposition() {
     value = array;
     rows = row;
     cols = col;
+}*/
+
+
+Matrix Matrix::transposition() {
+    Matrix itog(rows, cols);
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = value[col * itog.cols + row];
+        }
+    }
+    return itog;
 }
 
 
@@ -213,37 +259,39 @@ Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned
 
 
 void Matrix::power(const unsigned int n) {
-    Matrix itog = Matrix (rows, cols);
+    Matrix itog (rows, cols);
     itog.unit_matrix();
-    for (unsigned int number = 0; number < n; number++) {
+    for (unsigned int number = 1; number <= n; number++) {
         itog *= *this;
     }
-    this->set_values(rows * cols, itog.value);
+    *this = itog;
 }
 
 
 void Matrix::exponent(const unsigned int e) {
+
+    if (cols != rows) {
+        throw NOT_SQUARE;
+    }
+
     Matrix itog = Matrix (rows, cols);
     itog.unit_matrix();
     double fact = 1.0;
     Matrix temp = itog;
     for (unsigned int number = 1; number < e; number++) {
-        temp *= *this;
-        fact /= number;
+        temp *= *this * (1/number);
         itog += (fact * temp);
     }
     *this = itog;
 }
 
 
-void Matrix::set_random(const unsigned int range) {
-    for (unsigned int number = 0; number < rows * cols; number++) {
-        value[number] = rand() % range;
-    }
-}
-
-
 double Matrix::determinant(const Matrix m, unsigned int size) {
+
+    if (rows != cols) {
+        throw NOT_SQUARE;
+    }
+
     Matrix temp = Matrix(rows, cols);
     temp.set_values(rows * cols, value);
     if (cols == 1) {
@@ -258,12 +306,30 @@ double Matrix::determinant(const Matrix m, unsigned int size) {
 }
 
 
-Matrix::~Matrix() {
-    delete[] value;
+void Matrix::set_values(const unsigned int l, const double *array) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = array[number];
+    }
 }
 
 
+void Matrix::set_random(const unsigned int range) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = rand() % range;
+    }
+}
 
+
+void Matrix::output(bool f) {  // Вывод
+    if (f) std::cout << rows << " " << cols << " \n";
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int col = 0; col < cols; col++) {
+            std::cout << this->value [row * cols + col] << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}
 
 
 Matrix operator+ (const Matrix &m1, const Matrix &m2) {
@@ -298,6 +364,16 @@ Matrix operator* (const Matrix &m, const double num) {
     Matrix itog = m;
     itog *= num;
     return itog;
+}
+
+
+bool operator== (const Matrix &m1, const Matrix &m2) {  // Равенство определяется с заданной точностью.
+    bool eq = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!eq) return eq;
+    for (unsigned int number = 0; number <m1.rows * m1.cols; number++) {
+        eq *= (abs(m1.value[number] - m2.value[number]) < EPS_CONST);
+    }
+    return eq;
 }
 
 
@@ -364,6 +440,9 @@ void summation_test() {
 }
 
 
+/* При проверки корректности выдает такое: Condition is always false */
+
+// Тест для вычитания
 void subtraction_test() {
     Matrix m1 = Matrix(3, 3);  // Инициализация матриц для теста
     Matrix m2 = Matrix(3, 3);
@@ -384,7 +463,7 @@ void subtraction_test() {
     }
 }
 
-
+// Тест для перемножения
 void multiplication_test () {
     Matrix m1 = Matrix(3, 3);
     Matrix m2 = Matrix(3, 3);
@@ -405,7 +484,7 @@ void multiplication_test () {
     }
 }
 
-
+// Тест для умножения на число
 void mult_by_num_test() {
     Matrix m1 = Matrix(3, 3);
     double num = 5;
@@ -425,11 +504,11 @@ void mult_by_num_test() {
 }
 
 
-void determinant_test() {
-    Matrix m1 = Matrix(3, 3);
+/*void determinant_test() {
+    Matrix m = Matrix(3, 3);
     double array_1[9] = {2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    m1.set_values(9, array_1);
-    double itog = m1.determinant(m1, 3);
+    m.set_values(9, array_1);
+    double itog = m.determinant(m, 3);
     double result = -3;
     bool res = (itog == result);
     if (res) {
@@ -438,7 +517,7 @@ void determinant_test() {
     else {
         std::cout << ("Determinant was found incorrectly\n");
     }
-}
+}*/
 
 
 void exponent_test() {
@@ -454,7 +533,7 @@ void exponent_test() {
         std::cout << ("Exponent is calculated correctly");
     }
     else {
-        std::cout << ("Exponent is calculated incorrectly");
+        std::cout << ("Exponent is calculated incorrectly\n");
     }
 }
 
@@ -473,32 +552,50 @@ void power_test() {
         std::cout << ("Matrix power is calculated correctly");
     }
     else {
-        std::cout << ("Matrix power is calculates incorrectly");
+        std::cout << ("Matrix power is calculates incorrectly\n");
     }
 }
 
 
-void all_tests() {  // Блок для вызова тестов, потом его в main прописать
+void test_part() {  // Блок для вызова тестов, потом его в main прописать
     summation_test();
     subtraction_test();
     mult_by_num_test();
     multiplication_test();
-    determinant_test();
+    /*determinant_test();*/
     power_test();
     exponent_test();
 }
 
 
-void output() {
+void output_part() {
 
+    Matrix M1 = Matrix (3, 4);
+    double array_m1[12] = {1, 2, 3, 4,
+                           5, 6, 7, 8,
+                           9, 0, 11, 12};
+    M1.set_values(12, array_m1);
+    M1.output();
+
+    Matrix M2 = Matrix (3, 4);
+    M2.set_random(21);
+    M1.output();
+
+    Matrix M3 = Matrix(3, 3);
+    M3.zero_matrix();
+    M3.output();
+
+    Matrix M4 = Matrix(3, 3);
+    M4.unit_matrix();
+    M4.output();
 }
 
 
 int main() {
 
-    all_tests();  // Вызов блока тестов для прогона
+    test_part();  // Вызов блока тестов для прогона
 
-    output();
+    output_part();
 
     return 0;
 }

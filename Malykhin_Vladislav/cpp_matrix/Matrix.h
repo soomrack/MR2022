@@ -9,20 +9,22 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <iomanip>
 
 
 class Matrix{
 private:
-    unsigned int rows;
-    unsigned int columns;std::vector <std::vector <double>> cells;
+    int rows;
+    int columns;
+    std::vector <std::vector <double>> cells;
 public:
     inline static const double EPSILON = 0.000001;
     inline static const int DEFAULT_EXP_STEPS = 177;
 
-    Matrix();  //  empty matrix
-    Matrix(int input_rows, int input_cols, double number=NAN);
-    ~Matrix();
-    Matrix(const Matrix &other);
+    Matrix() noexcept;  //  empty matrix
+    Matrix(int input_rows, int input_cols, double number = NAN);
+    ~Matrix() noexcept;
+    Matrix(const Matrix &other) noexcept;
     Matrix(Matrix &&other) noexcept;
 
     void vector_fill(std::vector<double> vector);
@@ -39,16 +41,15 @@ public:
     Matrix operator+ (const Matrix &matrix) const;
     Matrix operator+ (double number) const;
     Matrix operator- (const Matrix &matrix) const;
+    Matrix operator- (double number) const;
     Matrix operator* (const Matrix &matrix) const;
     Matrix operator* (double number) const;
     Matrix operator/ (const Matrix &matrix) const;
     Matrix operator/ (double number) const;
 
-    Matrix minor_init(int excluded_row, int excluded_col) const;
+    Matrix minor_matrix(int excluded_row, int excluded_col) const;
     double determinant() const;
     Matrix transposition() const;
-private:
-    static Matrix minor_transformation(const Matrix &matrix);
 public:
     Matrix inversion() const;
     Matrix power(int power) const;

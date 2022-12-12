@@ -147,7 +147,7 @@ Matrix multiply_m_by_m (const Matrix matrix1, const Matrix matrix2) {  // Умн
             double result = 0.0;
             for (unsigned int k = 0; k < matrix1.cols; k++) {
                 result += matrix1.value[row * matrix1.cols + k] *
-                        matrix2.value[k * matrix2.cols + col];
+                          matrix2.value[k * matrix2.cols + col];
             }
             itog.value[row * itog_cols + col] = result;
         }
@@ -245,8 +245,8 @@ Matrix matrix_power (const struct Matrix matrix, unsigned int num) {  // Воз�
         Matrix new = multiply_m_by_m(matrix, itog);
         itog = new;
         if (number == num) {
-        clean_memory(new); //почистить всегда ИСПРАВИТЬ
-      }
+            clean_memory(new); //почистить всегда ИСПРАВИТЬ
+        }
     }
     return itog;
 }
@@ -291,10 +291,10 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
      * прописаны отдельной строкой с дальнейшей очиской
      * памяти, выделенной под эти матрицы*/
 
-   /* Matrix transponent = transponation(matrix);
-    Matrix itog = multiply_by_num(transponent, 1. / determinant(matrix));
-    clean_memory(transponent);
-    return itog;*/
+    /* Matrix transponent = transponation(matrix);
+     Matrix itog = multiply_by_num(transponent, 1. / determinant(matrix));
+     clean_memory(transponent);
+     return itog;*/
 }
 
 
@@ -336,15 +336,10 @@ Matrix inverse_matrix (const struct Matrix matrix) {  // Обратная мат
         clean_memory(powered_t1);
         multiplied = mult_m_by_num(powered_t, 1. / factorial);
         new_result = summation(exponent, multiplied);
-
         clean_memory(multiplied);
-
         exponent = copy_matrix(new_result);
-
         clean_memory(new_result);
-
         clean_memory(powered_t);
-
     }
     clean_memory(powered_t);
     return exponent;

@@ -136,7 +136,7 @@ void transposition (Matrix A)
     freeing_memory(&copy_matrix);
 }
 
-void exponent (Matrix A)
+void exponent (Matrix A)  // Вынести умножение
 {
     printf("EXPONENTIAL MATRIX:\n");
 

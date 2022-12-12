@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+
+#define MATIX_ROWS 3
+#define MATRIX_COLS 3
+#define TOP_BORDER 1000
+
 typedef struct Matrix 
 {
 	uint16_t cols;
@@ -16,89 +21,98 @@ const Matrix EMPTY = { 0, 0, NULL };
 
 
 
-Matrix init_matrix(const unsigned int cols, const unsigned int rows);
-void set_matrix_values(Matrix* matrix);
-void error_size(char* operation_name, char* error);
-int is_null(const Matrix matrix);
-void print_matrix(const Matrix matrix);
-void free_matrix(Matrix* matrix);
-Matrix add(const Matrix matrix1, const Matrix matrix2);
+Matrix matrixInitialization(const uint16_t cols, const uint16_t rows);
+void startValues(Matrix* matrix);
+void errorOfSize(char* operation_name, char* error);
+int16_t isMatrixZero(const Matrix matrix);
+void matrixPrint(const Matrix matrix);
+void matrixRelease(Matrix* matrix);
+Matrix quantum(const Matrix matrix1, const Matrix matrix2);
 Matrix substruct(const Matrix matrix1, const Matrix matrix2);
-Matrix multiply_by_double(const Matrix matrix, double number);
+Matrix numericMultiplication(const Matrix matrix, double number);
 Matrix multiply(const Matrix matrix1, const Matrix matrix2);
 double det(const Matrix matrix);
 Matrix transpose(const Matrix matrix);
-Matrix identity(unsigned int dimention);
+Matrix identity(uint16_t dimention);
 Matrix invertible(const Matrix matrix);
 Matrix copy(const Matrix matrix);
-Matrix expo(const Matrix matrix, int accuracy);
+Matrix expo(const Matrix matrix, int16_t accuracy);
 
 
 
 
 
 
-void main() 
+int main(void)
 {
 	Matrix m1, m2;
 
-	m1 = init_matrix(3, 3);
-	set_matrix_values(&m1);
-	print_matrix(m1);
+	m1 = matrixInitialization(MATIX_ROWS, MATRIX_COLS);
+	startValues(&m1);
+    printf("%s", "Начальная матрица 1:\n");
+	matrixPrint(m1);
 
-	m2 = init_matrix(3, 3);
-	set_matrix_values(&m2);
-	print_matrix(m2);
+	m2 = matrixInitialization(3, 3);
+	startValues(&m2);
+    printf("%s", "Начальная матрица 2:\n");
+	matrixPrint(m2);
 
-	Matrix addition;
-	addition = add(m1, m2);
-	print_matrix(addition);
-	free_matrix(&addition);
+	Matrix quant;
+	quant = quantum(m1, m2);
+    printf("%s", "Сумма двух матриц:\n");
+	matrixPrint(quant);
+	matrixRelease(&quant);
 
 	Matrix substruction;
 	substruction = substruct(m1, m2);
-	print_matrix(substruction);
-	free_matrix(&substruction);
+    printf("%s", "Произведение матриц:\n");
+	matrixPrint(substruction);
+	matrixRelease(&substruction);
 
 
 	double determinant;
 	determinant = det(m1);
+    printf("%s", "Определитель матрицы 1:\n");
 	printf("%.2f\n\n", determinant);
 
 	determinant = det(m2);
+    printf("%s", "Определитель матрицы 2:\n");
 	printf("%.2f\n\n", determinant);
 
 	Matrix multiplication1;
-	multiplication1 = multiply_by_double(m1, 5.);
-	print_matrix(multiplication1);
-	free_matrix(&multiplication1);
+	multiplication1 = numericMultiplication(m1, 5.);
+    printf("%s", "Умножение матрицы на число:\n");
+	matrixPrint(multiplication1);
+	matrixRelease(&multiplication1);
 
 
 	Matrix multiplication2;
 	multiplication2 = multiply(m1, m2);
-	print_matrix(multiplication2);
-	free_matrix(&multiplication2);
+    printf("%s", "Умножение матрицы на матрицу:\n");
+	matrixPrint(multiplication2);
+	matrixRelease(&multiplication2);
 
 
 	Matrix trans;
 	trans = transpose(m1);
-	print_matrix(trans);
-	free_matrix(&trans);
+    printf("%s", "Транспонированная матрица:\n");
+	matrixPrint(trans);
+	matrixRelease(&trans);
 
 	Matrix invert;
 	invert = invertible(m1);
-	print_matrix(invert);
-	free_matrix(&invert);	
+    printf("%s", "Обратная матрица:\n");
+	matrixPrint(invert);
+	matrixRelease(&invert);
 
 	Matrix exponenta;
 	exponenta = expo(m1, 3);
-	print_matrix(exponenta);
-	free_matrix(&exponenta);
+    printf("%s","Матричная экспонента:\n");
+	matrixPrint(exponenta);
+	matrixRelease(&exponenta);
 
-	free_matrix(&m1);
-	free_matrix(&m2);
-
-
+	matrixRelease(&m1);
+	matrixRelease(&m2);
 }
 
 
@@ -106,12 +120,12 @@ void main()
 
 
 /////////////// создание новой матрицы с выделением памяти
-Matrix init_matrix(const unsigned int cols, const unsigned int rows) 
+Matrix matrixInitialization(const uint16_t cols, const uint16_t rows)
 { 
 	Matrix matrix;
 	matrix.cols = cols;
 	matrix.rows = rows;
-	unsigned int n_values = matrix.cols * matrix.rows;
+	uint16_t n_values = matrix.cols * matrix.rows;
 	matrix.values = malloc(n_values * sizeof(double));
 	return matrix;
 }
@@ -119,26 +133,26 @@ Matrix init_matrix(const unsigned int cols, const unsigned int rows)
 
 
 ////////////// заполнение матрицы рандомными числами
-void set_matrix_values(Matrix* matrix) 
-{  
-	for (unsigned int index = 0; index < matrix -> cols * matrix -> rows; ++index) 
+void startValues(Matrix* matrix)
+{
+	for (uint16_t index = 0; index < matrix -> cols * matrix -> rows; ++index)
 	{
-		matrix -> values[index] = (double)rand();
+		matrix -> values[index] = (double)(rand()%TOP_BORDER);
 	}
 }
 /////////////
 
 
 ////////////// выведение заданной ошибки
-void error_size(char* operation_name, char* error) 
+void errorOfSize(char* operation_name, char* error)
 {  
-	printf("%s is impossible. %s\n", operation_name, error);
+	printf("В %s случился косяяяк!. %s\n", operation_name, error);
 }
 /////////////
 
 
 ////////////// проверка: нулевая ли матрица
-int is_null(const Matrix matrix) 
+int16_t isMatrixZero(const Matrix matrix)
 { 
 	return matrix.cols == 0 && matrix.rows == 0 ?  1 : 0;
 }
@@ -146,26 +160,26 @@ int is_null(const Matrix matrix)
 
 
 ////////////// вывести матрицу в консоль
-void print_matrix(const Matrix matrix) 
+void matrixPrint(const Matrix matrix)
 { 
-	if (is_null(matrix)) 
+	if (isMatrixZero(matrix))
 	{
-		printf("The matrix doesn't exist\n\n");
+		printf("Матрицы нет\n\n");
 		return;
 	}
-	for (unsigned int row = 0; row < matrix.rows; ++row) 
+	for (uint16_t row = 0; row < matrix.rows; ++row)
 	{
-		for (unsigned int col = 0; col < matrix.cols; ++col) 
-			printf("%.2f ", matrix.values[row * matrix.cols + col]);
+		for (uint16_t col = 0; col < matrix.cols; ++col)
+			printf("%.2f\t | \t", matrix.values[row * matrix.cols + col]);
 		printf("\n");
 	}
-	printf("\n");
+	printf("\n\n");
 }
 /////////////
 
 
 ////////////// отчистить память
-void free_matrix(Matrix* matrix) 
+void matrixRelease(Matrix* matrix)
 { 
 	free(matrix->values);
 }
@@ -173,16 +187,16 @@ void free_matrix(Matrix* matrix)
 
 
 ////////////// сумма матриц
-Matrix add(const Matrix matrix1, const Matrix matrix2) 
+Matrix quantum(const Matrix matrix1, const Matrix matrix2)
 { 
 	if (matrix1.rows != matrix2.rows || matrix1.cols != matrix2.cols) 
 	{
-		error_size("Addition", "Matrixes should have equal sizes");
+		errorOfSize("quantum", "Необходимо сделать матрицы одного размера");
 		return EMPTY;
 	}
-	Matrix result = init_matrix(matrix1.cols, matrix1.rows);
-	unsigned int n_values = result.cols * result.rows;
-	for (unsigned int index = 0; index < n_values; ++index) 
+	Matrix result = matrixInitialization(matrix1.cols, matrix1.rows);
+	uint16_t n_values = result.cols * result.rows;
+	for (uint16_t index = 0; index < n_values; ++index)
 		result.values[index] = matrix1.values[index] + matrix2.values[index];
 
 	return result;
@@ -195,12 +209,12 @@ Matrix substruct(const Matrix matrix1, const Matrix matrix2)
 { 
 	if (matrix1.rows != matrix2.rows && matrix1.cols != matrix2.cols) 
 	{
-		error_size("Substruction", "Matrixes should have equal sizes");
+		errorOfSize("Substruct", "Необходимо сделать матрицы одного размера");
 		return EMPTY;
 	}
-	Matrix result = init_matrix(matrix1.cols, matrix1.rows);
-	unsigned int n_values = result.cols * result.rows;
-	for (unsigned int index = 0; index < n_values; ++index) 
+	Matrix result = matrixInitialization(matrix1.cols, matrix1.rows);
+	uint16_t n_values = result.cols * result.rows;
+	for (uint16_t index = 0; index < n_values; ++index)
 		result.values[index] = matrix1.values[index] - matrix2.values[index];
 
 	return result;
@@ -209,11 +223,11 @@ Matrix substruct(const Matrix matrix1, const Matrix matrix2)
 
 
 ////////////// умножение матрицы на число
-Matrix multiply_by_double(const Matrix matrix, double number) 
+Matrix numericMultiplication(const Matrix matrix, double number)
 { 
-	Matrix result = init_matrix(matrix.cols, matrix.rows);
-	unsigned int n_values = result.cols * result.rows;
-	for (unsigned int index = 0; index < n_values; ++index) 
+	Matrix result = matrixInitialization(matrix.cols, matrix.rows);
+	uint16_t n_values = result.cols * result.rows;
+	for (uint16_t index = 0; index < n_values; ++index)
 		result.values[index] = matrix.values[index] * number;
 	
 	return result;
@@ -226,24 +240,22 @@ Matrix multiply(const Matrix matrix1, const Matrix matrix2)
 { 
 	if (matrix1.cols != matrix2.rows) 
 	{
-		error_size("Multiplication", "Matrixes should have certain sizes");
+		errorOfSize("multiply", "Матрицы должны иметь определенные размеры");
 		return EMPTY;
 	}
-	unsigned int n_cols = matrix2.cols;
-	unsigned int n_rows = matrix1.rows;
-	Matrix result = init_matrix(n_cols, n_rows);
-	for (unsigned int row = 0; row < n_rows; ++row) 
+	uint16_t n_cols = matrix2.cols;
+	uint16_t n_rows = matrix1.rows;
+	Matrix result = matrixInitialization(n_cols, n_rows);
+	for (uint16_t row = 0; row < n_rows; ++row)
 	{
-		for (unsigned int col = 0; col < n_cols; ++col) 
+		for (uint16_t col = 0; col < n_cols; ++col)
 		{
-			double summa = 0.0;
-			for (unsigned int k = 0; k < matrix1.cols; ++k) 
+			double summ = 0.0;
+			for (uint16_t k = 0; k < matrix1.cols; ++k)
 			{
-				summa +=
-					matrix1.values[row * matrix1.cols + k] * 
-					matrix2.values[k * matrix2.cols + col];
+				summ += matrix1.values[row * matrix1.cols + k] * matrix2.values[k * matrix2.cols + col];
 			}
-			result.values[row * n_cols + col] = summa;
+			result.values[row * n_cols + col] = summ;
 		}
 	}
 	return result;
@@ -256,25 +268,25 @@ double det(const Matrix matrix)
 { 
 	if (matrix.cols != matrix.rows) 
 	{
-		error_size("Getting determinant", "Matrix should be square");
+		errorOfSize("det", "Операция применима к квадратным матрицам");
 		return 0.;
 	}
 	double result = 0;
-	unsigned int n = matrix.cols;
+	uint16_t n = matrix.cols;
 	if (n == 1) 
 	{
 		result = matrix.values[0];
 		return result;
 	}
-	for (unsigned int row = 0; row < n; ++row) 
+	for (uint16_t row = 0; row < n; ++row)
 	{
-		unsigned int col = 0;
-		Matrix submatrix = init_matrix(n - 1, n - 1);
-		unsigned int row_offset = 0;
-		unsigned int col_offset = 0;
-		for (unsigned int sub_row = 0; sub_row < n - 1; ++sub_row) 
+		uint16_t col = 0;
+		Matrix submatrix = matrixInitialization(n - 1, n - 1);
+		uint16_t row_offset = 0;
+		uint16_t col_offset = 0;
+		for (uint16_t sub_row = 0; sub_row < n - 1; ++sub_row)
 		{
-			for (unsigned int sub_col = 0; sub_col < n - 1; ++sub_col) 
+			for (uint16_t sub_col = 0; sub_col < n - 1; ++sub_col)
 			{
 				if (sub_row == row)  row_offset = 1; 
 				if (sub_col == col)  col_offset = 1;
@@ -283,7 +295,7 @@ double det(const Matrix matrix)
 			}
 		}
 		result += pow(-1, row + col) * matrix.values[row * n + col] * det(submatrix);
-		free_matrix(&submatrix);
+		matrixRelease(&submatrix);
 		}
 	return result;
 }
@@ -293,10 +305,10 @@ double det(const Matrix matrix)
 ////////////// транспонированная матрица
 Matrix transpose(const Matrix matrix) 
 { 
-	Matrix result = init_matrix(matrix.rows, matrix.cols);
-	for (unsigned int row = 0; row < result.rows; ++row) 
+	Matrix result = matrixInitialization(matrix.rows, matrix.cols);
+	for (uint16_t row = 0; row < result.rows; ++row)
 	{
-		for (unsigned int col = 0; col < result.cols; ++col) 
+		for (uint16_t col = 0; col < result.cols; ++col)
 		{
 			result.values[row * result.cols + col] = matrix.values[col * result.rows + row];
 		}
@@ -307,12 +319,12 @@ Matrix transpose(const Matrix matrix)
 
 
 ////////////// единичная матрица
-Matrix identity(unsigned int dimention) 
+Matrix identity(uint16_t dimention)
 { 
-	Matrix result = init_matrix(dimention, dimention);
-	for (unsigned int row = 0; row < result.rows; ++row) 
+	Matrix result = matrixInitialization(dimention, dimention);
+	for (uint16_t row = 0; row < result.rows; ++row)
 	{
-		for (unsigned int col = 0; col < result.cols; ++col) 
+		for (uint16_t col = 0; col < result.cols; ++col)
 		{
 			result.values[row * result.cols + col] = (row == col) ? 1. : 0.;
 		}
@@ -327,12 +339,12 @@ Matrix invertible(const Matrix matrix)
 { 
 	if (matrix.cols != matrix.rows) 
 	{
-		error_size("Getting invertible matrix", "Matrix should be square");
+		errorOfSize("invertibe", "Операция применима к квадратным матрицам");
 		return EMPTY;
 	}
 	Matrix transponent = transpose(matrix);
-	Matrix result = multiply_by_double(transponent, 1. / det(matrix));
-	free_matrix(&transponent);
+	Matrix result = numericMultiplication(transponent, 1. / det(matrix));
+	matrixRelease(&transponent);
 	return result;
 }
 /////////////
@@ -341,8 +353,8 @@ Matrix invertible(const Matrix matrix)
 ////////////// копирование матрицы
 Matrix copy(const Matrix matrix) 
 { 
-	Matrix result = init_matrix(matrix.cols, matrix.rows);
-	for (unsigned int index = 0; index < matrix.cols * matrix.rows; ++index) 
+	Matrix result = matrixInitialization(matrix.cols, matrix.rows);
+	for (uint16_t index = 0; index < matrix.cols * matrix.rows; ++index)
 	{
 		result.values[index] = matrix.values[index];
 	}
@@ -352,34 +364,34 @@ Matrix copy(const Matrix matrix)
 
 
 ////////////// экпонента
-Matrix expo(const Matrix matrix, int accuracy) 
+Matrix expo(const Matrix matrix, int16_t accuracy)
 { 
 	if (matrix.cols != matrix.rows) 
 	{
-		error_size("Exp", "Matrix should be square");
+		errorOfSize("Exp", "Операция применима к квадратным матрицам");
 		return EMPTY;
 	}
 	Matrix new_result, new_powered, multiplied;
 	Matrix result = identity(matrix.rows);
 	Matrix powered = identity(matrix.rows);
-	int factorial = 1;
-	for (int acc = 1; acc <= accuracy; ++acc) 
+	int16_t factorial = 1;
+	for (int16_t acc = 1; acc <= accuracy; ++acc)
 	{
 		factorial *= acc;
 
 		new_powered = multiply(powered, matrix);
 		powered = copy(new_powered);
-		free_matrix(&new_powered);
+		matrixRelease(&new_powered);
 
-		multiplied = multiply_by_double(powered, 1. / factorial);
+		multiplied = numericMultiplication(powered, 1. / factorial);
 
-		new_result = add(result, multiplied);
+		new_result = quantum(result, multiplied);
 		result = copy(new_result);
-		free_matrix(&new_result);
+		matrixRelease(&new_result);
 
-		free_matrix(&multiplied);
+		matrixRelease(&multiplied);
 	}
-	free_matrix(&powered);
+	matrixRelease(&powered);
 	return result;
 }
 /////////////
