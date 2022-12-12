@@ -53,11 +53,10 @@ public:
 */
 
 
-class Matrix_exceptions : public std::domain_error
-{
+class Matrix_exceptions : public std::domain_error {  // Класс исключений
 public:
-    Matrix_exceptions(const char* const error) : std::domain_error(error)
-    {}
+    Matrix_exceptions(const char* const error) : std::domain_error(error) {
+    }
 };
 
 
