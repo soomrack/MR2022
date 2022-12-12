@@ -445,7 +445,7 @@ Matrix_with_memory<T>::Matrix_with_memory(Matrix_with_memory&& matrix) noexcept 
 	matrix.rows = 0;
 	matrix.values = nullptr;
 	matrix.memory_size = 0;
-	matrix.total_memort_size = 0;
+	matrix.total_memory_size = 0;
 	//matrix.created = 0;
 	//matrix.destroyed = 0;
 
@@ -457,7 +457,7 @@ Matrix_with_memory<T>::~Matrix_with_memory() {
 	std::cout << "Matrix is destroyed\n";
 	print_report();
 	
-	delete[] this->values;
+	//delete[] this->values;
 
 	this->total_memory -= this->memory_size;
 	//this->quantity--;
@@ -488,7 +488,6 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(Matrix_with_memory&& mat
 //	matrix.created = 0;
 	//matrix.destroyed = 0;
 
-	return *this;
 }
 
 
@@ -511,7 +510,6 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(const Matrix_with_memory
 	//this->created++;
 	GLOBAL_MEMORY_SIZE += this->memory_size;
 
-	return *this;
 }
 
 
@@ -519,7 +517,7 @@ template <typename T>
 void Matrix_with_memory<T>::print_report() {
 	std::cout << "Memory size: " << this->memory_size << "\n";
 	std::cout << "Total memory size: " << this->total_memory << "\n";
-	std::cout << "Global memory size: " << GLOBAL_MEMORY_SIZE << "\n";
+	std::cout << "Global memory size: " << GLOBAL_MEMORY_SIZE << "\n\n";
 	//std::cout << "Quantity: " << this->quantity << "\n";
 	//std::cout << "Created: " << this->created << "\n";
 	//std::cout << "Destroyd: " << this->destroyed << "\n";
@@ -607,10 +605,13 @@ int main() {
 	Matrix_with_memory<int> C(3, 3);
 	C.set_random_values();
 	C.print_matrix();
+	
 	Matrix_with_memory<int> D(3, 3);
 	D.set_random_values();
 	D.print_matrix();
+
 	C.add(D).print_matrix();
+	
 
 	return 0;
 }
