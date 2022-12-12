@@ -242,7 +242,7 @@ void Matrix<T>::is_equal(const Matrix<T>& X) {
     int error = 0;
     if ((rows == X.rows) && (cols == X.cols)) {
         for (unsigned int idx = 0; idx < cols * rows; idx++) {
-            if (abs(values[idx] - X.values[idx]) > PRECISION) {
+            if (fabs(values[idx] - X.values[idx]) > PRECISION) {
                 error++;
             }
         }
@@ -253,7 +253,99 @@ void Matrix<T>::is_equal(const Matrix<T>& X) {
 }
 
 
+template <typename T>
+class MemoryCount : public Matrix<T> {
+private:
+    static inline unsigned int object_count;
+    unsigned int local_memory;
+    static inline unsigned int general_memory;
+public:
+    unsigned int MemoryCalc(unsigned int i_rows, unsigned int i_cols);
+    MemoryCount(unsigned int cols_m, unsigned int rows_m);
+    MemoryCount(MemoryCount<T>& X);
+    MemoryCount(MemoryCount<T>&& X);
+    MemoryCount<T>& operator=(const MemoryCount<T>& X);
+    MemoryCount<T>& operator=( MemoryCount<T>&& X);
+    ~MemoryCount();
+    static unsigned int getMem();
+    static unsigned int getCounter();
+    static void mtest();
+};
+
+template<typename T>
+unsigned int MemoryCount<T>::MemoryCalc(unsigned int i_rows, unsigned int i_cols){
+return i_cols * i_rows * sizeof(T);
+}
+
+template<typename T>
+MemoryCount<T>::MemoryCount(unsigned int cols_m, unsigned int rows_m): Matrix<T>(cols_m, rows_m) {
+    object_count++;
+    local_memory = MemoryCalc(cols_m, rows_m);
+    general_memory += local_memory;
+}
+
+template <typename T>
+MemoryCount<T>::~MemoryCount() {  // Деструктор
+    general_memory -= local_memory;
+    local_memory = 0;
+    object_count--;
+}
+
+template<typename T>
+unsigned int MemoryCount<T>::getMem() {
+    return general_memory;
+}
+
+template<typename T>
+unsigned int MemoryCount<T>::getCounter() {
+    return object_count;
+}
+
+template<typename T>
+MemoryCount<T>::MemoryCount(MemoryCount<T>& X) : Matrix<T>(X) {
+    object_count++;
+    local_memory = X.local_memory;
+    general_memory += local_memory;
+}
+
+template<typename T>
+MemoryCount<T>::MemoryCount(MemoryCount<T>&& X) : Matrix<T>(X) {
+    local_memory = X.local_memory;
+    X.local_memory = 0;
+}
+
+template<typename T>
+MemoryCount<T>& MemoryCount<T>::operator=(const MemoryCount<T>& X) {
+    Matrix<T>::operator=((Matrix<double> &&) X);
+    general_memory += X.local_memory - local_memory;
+    local_memory = X.local_memory;
+    general_memory += local_memory;
+    return *this;
+}
+
+template<typename T>
+MemoryCount<T>& MemoryCount<T>::operator=(MemoryCount<T>&& X) {
+    Matrix<T>::operator=(X);
+    local_memory += X.local_memory - local_memory;
+    X.local_memory = 0;
+    return *this;
+}
+
+template<typename T>
+void MemoryCount<T>::mtest() {
+    std::cout << "Memory and objects test" << std::endl;
+    std::cout << "Memory :" << MemoryCount<T>::getMem() << std::endl;
+    std::cout << "Objects :" <<  MemoryCount<T>::getCounter() << std::endl;
+    MemoryCount<T> X(2, 2);
+    std::cout << "Memory :" << MemoryCount<T>::getMem() << std::endl;
+    std::cout << "Objects :" << MemoryCount<T>::getCounter() << std::endl;
+    MemoryCount<T> Y(2, 2);
+    std::cout << "Memory :" << MemoryCount<T>::getMem() << std::endl;
+    std::cout << "Objects :" << MemoryCount<T>::getCounter() << std::endl;
+}
+
 template class Matrix<double>;
+template class MemoryCount<double>;
 
 int main() {
     // Создание матриц
@@ -277,5 +369,7 @@ int main() {
     Matrix<double>::print_matrix(Sub, '-');
     Matrix<double>::print_matrix(Mult, '*');
     Matrix<double>::print_matrix(exp, 'e');
+    // Тест подсчета выделенной памяти и количества объектов
+    MemoryCount<double>::mtest();
     return 0;
 }

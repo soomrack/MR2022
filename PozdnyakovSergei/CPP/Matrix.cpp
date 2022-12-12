@@ -6,21 +6,22 @@
 */
 
 
-const double EPS_CONST = pow(10, -5);
+const double EPS_CONST = pow(10, -9); // Задание константы для сравнения равенства
 
 
 class Matrix {
-private:  // в чем отливие между private и protected?
+private:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
 
 public:
-    Matrix();  //пустые матрицы
-    Matrix(const Matrix& m);  // копирование
-    Matrix(const unsigned int row, const unsigned int col);  // прямоугольные матрицы
-    ~Matrix();  // деструктор
-    Matrix(Matrix&& m); // перенос
+    Matrix ();  //пустые матрицы
+    Matrix (const Matrix& m);  // копирование
+    Matrix (const unsigned int row, const unsigned int col);  // прямоугольные матрицы
+    Matrix (Matrix&& m);  // Добавить оператор переноса
+    ~Matrix ();  // деструктор
+
 
     Matrix& operator= (const Matrix &m);
     Matrix& operator+= (const Matrix &m);
@@ -31,7 +32,7 @@ public:
     void zero_matrix();  // нулевая матрица
     void unit_matrix();  // едничная матрица
     void mult_by_num(const double num);  // умножение на число
-    void transposition();  // траспонирование
+    Matrix transposition();  // траспонирование
     double determinant(const Matrix, unsigned int);  // определитель
     void invert();  // обратная матрица
     void power(const unsigned int n);  // возведение матрицы в степень
@@ -49,21 +50,20 @@ public:
 
 
 /*
-добавить exceptions
+добавил exceptions
 */
 
 
-class Matrix_exceptions : public std::domain_error
-{
+class Matrix_exceptions : public std::domain_error {  // Класс исключений
 public:
-    Matrix_exceptions(const char* const error) : std::domain_error(error)
-    {}
+    Matrix_exceptions(const char* const error) : std::domain_error(error) {
+    }
 };
 
 
-Matrix_exceptions Size_Error ("Error: unequal size of matrices");
-Matrix_exceptions Not_Square ("Error: matrix not square");
-Matrix_exceptions Div_by_zero ("Error: division by zero");
+Matrix_exceptions SIZE_ERROR ("Error: unequal size of matrices");
+Matrix_exceptions NOT_SQUARE ("Error: matrix not square");
+Matrix_exceptions DIV_BY_ZERO ("Error: division by zero");
 
 
 
@@ -96,18 +96,18 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 Matrix::Matrix(const Matrix &m) {
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
 }
 
 
-Matrix::Matrix(Matrix&& m) {
+Matrix::Matrix(Matrix&& m){
     rows = m.rows;
     cols = m.cols;
     value = m.value;
+
     m.rows = 0;
     m.cols = 0;
     m.value = nullptr;
@@ -115,14 +115,12 @@ Matrix::Matrix(Matrix&& m) {
 
 
 Matrix& Matrix::operator=(const Matrix &m) {
-   /* if (this != &m){
-        if (!value)
-            delete[] value;*/
+
+    delete[] value;
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    this->value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
     return *this;
@@ -132,13 +130,9 @@ Matrix& Matrix::operator=(const Matrix &m) {
 Matrix& Matrix::operator+=(const Matrix &m) {
 
     if ((cols *= m.cols) or (rows != m.rows)) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
-
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] += m.value[number];
     }
     return *this;
@@ -148,13 +142,9 @@ Matrix& Matrix::operator+=(const Matrix &m) {
 Matrix& Matrix::operator-=(const Matrix &m) {
 
     if ((cols *= m.cols) or (rows != m.rows)) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
-
-    rows = m.rows;
-    cols = m.cols;
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] -= m.value[number];
     }
     return *this;
@@ -171,7 +161,7 @@ Matrix& Matrix::operator*=(const double num) {
 Matrix& Matrix::operator*=(const Matrix &m) {
 
     if (cols *= m.rows) {
-        throw Size_Error;
+        throw SIZE_ERROR;
     }
 
     Matrix itog = Matrix(rows, cols);
@@ -202,14 +192,14 @@ void Matrix::zero_matrix() {
 }
 
 void Matrix::unit_matrix() {
-    this -> zero_matrix();
+    this->zero_matrix();
     for (unsigned int number = 0; number < cols * rows; number += cols + 1) {
         value[number] = 1.0;
     }
 }
 
 
-void Matrix::transposition() {
+/*void Matrix::transposition() {
     unsigned int row = rows;
     unsigned int col = cols;
     double* array = new double [rows * cols];
@@ -222,6 +212,17 @@ void Matrix::transposition() {
     value = array;
     rows = row;
     cols = col;
+}*/
+
+
+Matrix Matrix::transposition() {
+    Matrix itog(rows, cols);
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = value[col * itog.cols + row];
+        }
+    }
+    return itog;
 }
 
 
@@ -258,19 +259,19 @@ Matrix Matrix::minor(const Matrix matrix,const unsigned int size, const unsigned
 
 
 void Matrix::power(const unsigned int n) {
-    Matrix itog = Matrix (rows, cols);
+    Matrix itog (rows, cols);
     itog.unit_matrix();
-    for (unsigned int number = 0; number < n; number++) {
+    for (unsigned int number = 1; number <= n; number++) {
         itog *= *this;
     }
-    this->set_values(rows * cols, itog.value);
+    *this = itog;
 }
 
 
 void Matrix::exponent(const unsigned int e) {
 
     if (cols != rows) {
-        throw Not_Square;
+        throw NOT_SQUARE;
     }
 
     Matrix itog = Matrix (rows, cols);
@@ -278,8 +279,7 @@ void Matrix::exponent(const unsigned int e) {
     double fact = 1.0;
     Matrix temp = itog;
     for (unsigned int number = 1; number < e; number++) {
-        temp *= *this;
-        fact /= number;
+        temp *= *this * (1/number);
         itog += (fact * temp);
     }
     *this = itog;
@@ -289,7 +289,7 @@ void Matrix::exponent(const unsigned int e) {
 double Matrix::determinant(const Matrix m, unsigned int size) {
 
     if (rows != cols) {
-        throw Not_Square;
+        throw NOT_SQUARE;
     }
 
     Matrix temp = Matrix(rows, cols);
@@ -324,7 +324,7 @@ void Matrix::output(bool f) {  // Вывод
     if (f) std::cout << rows << " " << cols << " \n";
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            std::cout << this -> value [row * cols + col] << " ";
+            std::cout << this->value [row * cols + col] << " ";
         }
         std::cout << "\n";
     }
@@ -367,10 +367,13 @@ Matrix operator* (const Matrix &m, const double num) {
 }
 
 
-bool operator== (const Matrix &m1, const Matrix &m2) {
-    bool fl = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
-    if (!fl) return fl;
-
+bool operator== (const Matrix &m1, const Matrix &m2) {  // Равенство определяется с заданной точностью.
+    bool eq = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!eq) return eq;
+    for (unsigned int number = 0; number <m1.rows * m1.cols; number++) {
+        eq *= (abs(m1.value[number] - m2.value[number]) < EPS_CONST);
+    }
+    return eq;
 }
 
 
