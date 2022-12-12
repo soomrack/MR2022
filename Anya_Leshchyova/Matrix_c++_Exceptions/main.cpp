@@ -781,7 +781,6 @@ void Matrix_Memory::output(bool k) {
 }
 
 
-
 int main() {
     Matrix A = Matrix(5, 5);
 double k= 1.00;
