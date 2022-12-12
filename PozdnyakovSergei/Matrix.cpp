@@ -10,7 +10,7 @@ const double EPS_CONST = pow(10, -5);
 
 
 class Matrix {
-private:  // в чем отливие между private и protected?
+private:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
@@ -378,9 +378,12 @@ Matrix operator* (const Matrix &m, const double num) {
 
 
 bool operator== (const Matrix &m1, const Matrix &m2) {
-    bool fl = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
-    if (!fl) return fl;
-
+    bool eq = ((m1.rows == m2.rows) and (m1.cols == m2.cols));
+    if (!eq) return eq;
+    for (unsigned int number = 0; number <m1.rows * m1.cols; number++) {
+        eq *= (abs(m1.value[number] - m2.value[number]) < EPS_CONST);
+    }
+    return eq;
 }
 
 
