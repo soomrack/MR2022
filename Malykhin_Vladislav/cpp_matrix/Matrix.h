@@ -10,7 +10,8 @@
 #include <vector>
 #include <cmath>
 #include <iomanip>
-
+#include "MatrixException.h"
+//#include "MatrixTest.h"
 
 class Matrix{
 private:
@@ -23,12 +24,12 @@ public:
 
     Matrix() noexcept;  //  empty matrix
     Matrix(int input_rows, int input_cols, double number = NAN);
-    ~Matrix() noexcept;
+    ~Matrix() noexcept = default;
     Matrix(const Matrix &other) noexcept;
     Matrix(Matrix &&other) noexcept;
 
     void vector_fill(std::vector<double> vector);
-    void vector_fill(const std::vector<std::vector<double>>&);
+    //void vector_fill(const std::vector<std::vector<double>>&);
     void set_identity();
     unsigned int get_rows() const;
     unsigned int get_columns() const;
