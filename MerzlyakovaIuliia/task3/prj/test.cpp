@@ -5,21 +5,14 @@
 
 
 
-template<typename T>
+
 class Matrix {
-protected:
+private:
     unsigned int cols;
     unsigned int rows;
-    T *values;
+    double* values;
 
 public:
-
-    static_assert(
-            std::is_same<double, T>::value ||
-            std::is_same<float,T>::value ||
-            std::is_same<long double,T>::value ||
-            "T could be double, float or long double"
-            );
     Matrix();  // Конструктор пустой матрицы
     Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
     Matrix(unsigned int col);  // Конструктор единичной матрицы
@@ -29,19 +22,19 @@ public:
 
 
     void print_matrix();
-    void set_values();
+    void set_values(int max_value);
 
-    Matrix operator+(const Matrix<T>&);
-    Matrix operator-(const Matrix<T>&);
-    Matrix operator*(const Matrix<T>&);
-    Matrix operator*(const T);
-    Matrix operator=(Matrix<T>&);
-    Matrix operator^(const T) const;
-    Matrix operator/(const T) const;
-    static Matrix  Exp(const Matrix<T>&, const T);
-    Matrix Minor(Matrix<T>&, const unsigned int row, const unsigned int col);
+    Matrix operator+(const Matrix& one) const; //все функции с маленькой буквы
+    Matrix operator-(const Matrix& one) const;
+    Matrix operator*(const Matrix& one) const;
+    Matrix operator*(double coefficient) const;
+    Matrix operator=(Matrix& one);
+    Matrix operator=(Matrix&& one);
+    Matrix operator^(const int coefficient) const;
+    Matrix operator/(const double coefficient) const;
+    static Matrix  exp_m(const Matrix& one, const unsigned int accuracy);
+    Matrix minor(Matrix& A, unsigned int row, unsigned int col);
     Matrix transpose();
-    double determinant(const Matrix<T>&);
 
 
 };
@@ -58,41 +51,40 @@ public:
 Matrix_Exception NotSquare("The matrix should be square\n");
 Matrix_Exception WrongSize("The matrix should have another size\n");
 
-template <typename T>
-Matrix<T>::Matrix() {
+Matrix::Matrix() { // посмореть функцию которая как мемкопи
     cols = 0;
     rows = 0;
 }
 
-template <typename T>
-Matrix<T>::Matrix(unsigned int col, unsigned int row) {
+
+Matrix::Matrix(unsigned int col, unsigned int row) {
     cols = col;
     rows = row;
     unsigned int n_values = cols * rows;
-    values = new T[cols*rows];
+    values = new double[cols*rows];
     for (unsigned int idx = 0; idx < n_values; ++idx) {
         values[idx] = 0.0;
     }
 }
 
-template <typename T>
-Matrix<T>::Matrix(const Matrix<T>& matrix) {
+
+Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new T[rows * cols];
-    memcpy(values,matrix.values,rows * cols * sizeof(T));
+    values = new double[rows * cols]; // добавить исключение про невыделение памяти
+    memcpy(values,matrix.values,rows * cols * sizeof(double));
 }
 
-template <typename T>
-Matrix<T>::Matrix(Matrix<T>&& matrix) {
+
+Matrix::Matrix(Matrix&& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
     values = matrix.values;
     matrix.values = nullptr;
 }
 
-template <typename T>
-void Matrix<T>::print_matrix() {
+
+void Matrix::print_matrix() {
     for (unsigned int row = 0; row < rows; ++row) {
         for (unsigned int col = 0; col < cols; ++col) {
             std::cout << values[row * cols + col] << " ";
@@ -102,28 +94,28 @@ void Matrix<T>::print_matrix() {
     std::cout << "\n";
 }
 
-template <typename T>
-void Matrix<T>::set_values() {
+
+void Matrix::set_values(int max_value = 10) {
     for (unsigned int index = 0; index < rows * cols; ++index) {
-        values[index] = rand();
+        values[index] = rand() % max_value;
     }
 }
 
-template <typename T>
-Matrix<T>::Matrix(unsigned int col) {
+
+Matrix::Matrix(unsigned int col) {
     cols = col;
     rows = col;
-    values = new T[cols * rows];
+    values = new double[cols * rows];
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1 : 0;
+            values[row * cols + col] = (row == col) ? 1.0 : 0.0;
 
         }
     }
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator+ (const Matrix<T>& One) {
+
+Matrix Matrix::operator+ (const Matrix& One) const {
     if (rows != One.rows) throw WrongSize;
     Matrix res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
@@ -132,8 +124,8 @@ Matrix<T> Matrix<T>::operator+ (const Matrix<T>& One) {
     return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator- (const Matrix<T>& One)  {
+
+Matrix Matrix::operator- (const Matrix& One) const {
     if (rows != One.rows) throw WrongSize;
     Matrix Res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
@@ -142,8 +134,8 @@ Matrix<T> Matrix<T>::operator- (const Matrix<T>& One)  {
     return Res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator* (const Matrix<T>& One)  {
+
+Matrix Matrix::operator* (const Matrix& One) const {
     if (rows != One.rows) throw WrongSize;
     Matrix Res(One);
     for (unsigned int row = 0; row < Res.rows; row++) {
@@ -157,8 +149,8 @@ Matrix<T> Matrix<T>::operator* (const Matrix<T>& One)  {
     return Res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator* (const T coefficient) {
+
+Matrix Matrix::operator* (const double coefficient) const {
     Matrix Res(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         Res.values[idx] = values[idx] * coefficient;
@@ -167,21 +159,21 @@ Matrix<T> Matrix<T>::operator* (const T coefficient) {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::operator= (Matrix<T>& one)  {
+
+Matrix Matrix::operator= (Matrix& one)  { // Перегрузка оператора присваивания
     if (this == &one) {
         return *this;
     }
     rows = one.rows;
     cols = one.cols;
     delete[]values;
-    values = new T[cols * rows];
+    values = new double [cols * rows];
     memcpy(values, one.values, rows * cols * sizeof(double));
     return *this;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator= (Matrix<T>&& one)  {
+
+Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка оператора присваивания
     if (this == &one) {
         return *this;
     }
@@ -193,8 +185,8 @@ Matrix<T> Matrix<T>::operator= (Matrix<T>&& one)  {
     return *this;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator^(const T coefficient) const {
+
+Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень убрать елсе
     if(cols != rows) throw NotSquare;
     Matrix Res(*this);
     if (coefficient == 0) {
@@ -213,8 +205,8 @@ Matrix<T> Matrix<T>::operator^(const T coefficient) const {
     }
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator/(const T coefficient) const {
+
+Matrix Matrix::operator/(const double coefficient) const { // добавить исключение - деление на 0 (можно через класс)
     Matrix Res(cols, rows);
     for(unsigned int idx = 0; idx < rows * cols; ++idx) {
         Res.values[idx] = values[idx]/coefficient;
@@ -222,8 +214,8 @@ Matrix<T> Matrix<T>::operator/(const T coefficient) const {
     return Res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::Exp(const Matrix<T>& A, const unsigned int accuracy = 10){
+
+Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
     Matrix Res = one + A;
@@ -235,8 +227,8 @@ Matrix<T> Matrix<T>::Exp(const Matrix<T>& A, const unsigned int accuracy = 10){
     return Res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::Minor(Matrix<T>& A, unsigned int row, unsigned int col) {
+
+Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
@@ -252,8 +244,8 @@ Matrix<T> Matrix<T>::Minor(Matrix<T>& A, unsigned int row, unsigned int col) {
 
     return Res;
 }
-template <typename T>
-Matrix<T> Matrix<T>::transpose() {
+
+Matrix Matrix::transpose() {
     Matrix res = {cols, rows};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
@@ -263,17 +255,15 @@ Matrix<T> Matrix<T>::transpose() {
     return res;
 }
 
-template <typename T>
-double Matrix<T>::determinant(const Matrix<T>& matrix)
+double Matrix::determinant(const Matrix matrix)
 {
-    if(cols != rows) throw NotSquare;
     double det = 0;
     int sign = 1;
-    if (rows == 0 and cols == 0)
+    if (rows == 0)
         return 0;
-    if (rows == 1 and cols == 1)
+    if (rows == 1)
         return matrix.values[0];
-    if (rows == 2 and cols == 2) {
+    if (rows == 2) {
         return (matrix.values[0] * matrix.values[3] - matrix.values[2] * matrix.values[1]);
     }
     for (unsigned int idx = 0; idx < rows; idx++) {
@@ -281,78 +271,6 @@ double Matrix<T>::determinant(const Matrix<T>& matrix)
         sign = -sign;
     }
     return det;
-}
-
-
-template <typename T1>
-class Matrix_Memory : public Matrix<T1> {
-protected:
-    static unsigned long memory_size;
-    static unsigned long total_memory;
-public:
-    Matrix_Memory<T1>();
-    Matrix_Memory<T1>(unsigned int, unsigned int);
-    Matrix_Memory<T1>(const Matrix_Memory<T1>&);
-    Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
-    void output() override;
-    ~Matrix_Memory();
-};
-
-
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory()
-{
-    this->rows = 0;
-    this->cols = 0;
-    this->values = nullptr;
-    this->memory_size = 0;
-    this->total_memory += this->memory_size;
-}
-
-
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
-{
-    this->rows = row;
-    this->cols = col;
-    this->values = new T[this->rows * this->cols];
-    this->memory_size = row * col * sizeof(T);
-    this-> total_memory += this->memory_size;
-}
-
-
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
-{
-    this->rows = matrix.rows;
-    this->cols = matrix.cols;
-    this->values = new T[matrix.rows * matrix.cols];
-    memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
-    this->memory_size = matrix.memory_size;
-    this->total_memory += this->memory_size;
-}
-
-
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
-{
-
-this->rows = matrix.rows;
-this->cols = matrix.cols;
-this->data = matrix.data;
-this->memory_size = matrix.memory_size;
-
-matrix.rows = 0;
-matrix.cols = 0;
-matrix.values = nullptr;
-matrix.memory_size = 0;
-}
-
-
-template <typename T>
-void Matrix_Memory<T>::output()
-{
-    std::cout << "Memory allocated for matrix - " << this->total_memory << " byte" << std::endl;
 }
 
 
