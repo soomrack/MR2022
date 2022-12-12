@@ -398,7 +398,7 @@ void summation_test() {
 }
 
 
-/* При проверки корректности выдает такое: Condition is always false*/
+/* При проверки корректности выдает такое: Condition is always false */
 
 
 void subtraction_test() {
