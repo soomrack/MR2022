@@ -27,13 +27,14 @@ public:
     inline static const int DEFAULT_EXP_STEPS = 177;
 
     Matrix();  //  empty matrix
-    Matrix(int input_rows, int input_cols, double number=NAN);
+    Matrix(int input_rows, int input_cols);
+    Matrix(int input_rows, int input_cols, double number);
+    Matrix(int input_rows, int input_cols, const std::vector<double> &vector);
+    explicit Matrix(int identity_size);
     ~Matrix();
     Matrix(const Matrix &other);
     Matrix(Matrix &&other) noexcept;
 
-    void fillFromVector(std::vector<double> vector);
-    void set_identity();
     int get_rows() const;
     int get_cols() const;
     int get_size() const;
