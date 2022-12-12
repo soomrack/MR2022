@@ -427,7 +427,7 @@ public:
     Matrix_Memory(Matrix_Memory &&m);
     ~Matrix_Memory();
 
-    Matrix_Memory operator= (const Matrix_Memory &m);
+    Matrix_Memory& operator=(const Matrix_Memory &m);
     void output (bool fl = false);
 };
 
@@ -437,7 +437,7 @@ Matrix_Memory::Matrix_Memory() {
     cols = 0;
     value = nullptr;
     memory_size = 0;
-    var_number = ++MATRIX_MEMORY;
+    var_number = MATRIX_MEMORY++;
 }
 
 Matrix_Memory::~Matrix_Memory() {
@@ -450,7 +450,7 @@ Matrix_Memory::Matrix_Memory(const unsigned int r, const unsigned int c) {
     cols = c;
     memory_size = r * c;
     value = new double [memory_size];  // выделение памяти под элементы матрицы
-    var_number = ++MATRIX_MEMORY;
+    var_number = MATRIX_MEMORY++;
 }
 
 
@@ -478,6 +478,29 @@ Matrix_Memory::Matrix_Memory(Matrix_Memory&& m){
     m.value = nullptr;
     m.memory_size = 0;
     m.var_number = 0;
+}
+
+
+
+Matrix_Memory& Matrix_Memory::operator=(const Matrix_Memory &m) {
+
+    delete[] value;
+    rows = m.rows;
+    cols = m.cols;
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = m.value[number];
+    }
+    return *this;
+}
+
+
+void Matrix_Memory::output(bool fl) {
+    Matrix::output(fl);
+    std::cout << "This variable takes " << memory_size * sizeof(double) << " bytes in memory\n";
+    std::cout << "There was used " << MATRIX_MEMORY << " variables of the type Matrix_Memory\n\n";
 }
 
 
@@ -654,6 +677,17 @@ void output_part() {
     Matrix M4 = Matrix(3, 3);
     M4.unit_matrix();
     M4.output();
+
+    Matrix_Memory M11 = Matrix_Memory();
+    Matrix_Memory M12 = Matrix_Memory(3, 3);
+    Matrix_Memory M13 = Matrix_Memory(3, 3);
+    M11 = M12;
+    M11.set_random(21);
+    M12.set_random(21);
+    M13.unit_matrix();
+    M13 -= M11;
+    M13.output();
+
 }
 
 
