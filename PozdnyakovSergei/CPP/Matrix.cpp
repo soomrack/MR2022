@@ -96,9 +96,8 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 Matrix::Matrix(const Matrix &m) {
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
 }
@@ -120,9 +119,8 @@ Matrix& Matrix::operator=(const Matrix &m) {
     delete[] value;
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    this->value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
     return *this;
@@ -134,11 +132,7 @@ Matrix& Matrix::operator+=(const Matrix &m) {
     if ((cols *= m.cols) or (rows != m.rows)) {
         throw SIZE_ERROR;
     }
-
-    /*rows = m.rows;
-    cols = m.cols;*/
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] += m.value[number];
     }
     return *this;
@@ -150,11 +144,7 @@ Matrix& Matrix::operator-=(const Matrix &m) {
     if ((cols *= m.cols) or (rows != m.rows)) {
         throw SIZE_ERROR;
     }
-
-   /* rows = m.rows;
-    cols = m.cols;*/
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] -= m.value[number];
     }
     return *this;

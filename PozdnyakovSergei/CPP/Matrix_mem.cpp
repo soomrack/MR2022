@@ -7,10 +7,10 @@
 
 
 const double EPS_CONST = pow(10, -9); // Задание константы для сравнения равенства
-
+unsigned int MATRIX_MEMORY = 0;
 
 class Matrix {
-private:  // в чем отличие между private и protected?
+protected:  // в чем отличие между private и protected?
     unsigned int rows;
     unsigned int cols;
     double *value;
@@ -96,9 +96,8 @@ Matrix::Matrix(const unsigned int r, const unsigned int c) {
 Matrix::Matrix(const Matrix &m) {
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
 }
@@ -120,9 +119,8 @@ Matrix& Matrix::operator=(const Matrix &m) {
     delete[] value;
     rows = m.rows;
     cols = m.cols;
-    int total_num = rows * cols;
-    this->value = new double [total_num];
-    for (unsigned int number = 0; number < total_num; number++) {
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] = m.value[number];
     }
     return *this;
@@ -134,11 +132,7 @@ Matrix& Matrix::operator+=(const Matrix &m) {
     if ((cols *= m.cols) or (rows != m.rows)) {
         throw SIZE_ERROR;
     }
-
-    /*rows = m.rows;
-    cols = m.cols;*/
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] += m.value[number];
     }
     return *this;
@@ -150,11 +144,7 @@ Matrix& Matrix::operator-=(const Matrix &m) {
     if ((cols *= m.cols) or (rows != m.rows)) {
         throw SIZE_ERROR;
     }
-
-   /* rows = m.rows;
-    cols = m.cols;*/
-    int total_num = rows * cols;
-    for (unsigned int number = 0; number < total_num; number++) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
         value[number] -= m.value[number];
     }
     return *this;
@@ -425,6 +415,95 @@ Matrix exponent (const Matrix m, const unsigned int e = 5) {
 }
 
 
+class Matrix_Memory : public Matrix {
+protected:
+    unsigned int memory_size;
+    unsigned int var_number;
+
+public:
+    Matrix_Memory ();
+    Matrix_Memory (const unsigned int rows, const unsigned int cols);
+    Matrix_Memory (const Matrix_Memory &m);
+    Matrix_Memory(Matrix_Memory &&m);
+    ~Matrix_Memory();
+
+    Matrix_Memory& operator=(const Matrix_Memory &m);
+    void output (bool fl = false);
+};
+
+
+Matrix_Memory::Matrix_Memory() {
+    rows = 0;
+    cols = 0;
+    value = nullptr;
+    memory_size = 0;
+    var_number = MATRIX_MEMORY++;
+}
+
+Matrix_Memory::~Matrix_Memory() {
+    MATRIX_MEMORY--;
+}
+
+
+Matrix_Memory::Matrix_Memory(const unsigned int r, const unsigned int c) {
+    rows = r;
+    cols = c;
+    memory_size = r * c;
+    value = new double [memory_size];  // выделение памяти под элементы матрицы
+    var_number = MATRIX_MEMORY++;
+}
+
+
+Matrix_Memory::Matrix_Memory(const Matrix_Memory &m) {
+    rows = m.rows;
+    cols = m.cols;
+    value = new double [rows * cols];
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = m.value[number];
+    }
+}
+
+
+Matrix_Memory::Matrix_Memory(Matrix_Memory&& m){
+    rows = m.rows;
+    cols = m.cols;
+    value = m.value;
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+
+    m.rows = 0;
+    m.cols = 0;
+    m.value = nullptr;
+    m.memory_size = 0;
+    m.var_number = 0;
+}
+
+
+
+Matrix_Memory& Matrix_Memory::operator=(const Matrix_Memory &m) {
+
+    delete[] value;
+    rows = m.rows;
+    cols = m.cols;
+    memory_size = m.memory_size;
+    var_number = m.var_number;
+    this->value = new double [rows * cols];
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = m.value[number];
+    }
+    return *this;
+}
+
+
+void Matrix_Memory::output(bool fl) {
+    Matrix::output(fl);
+    std::cout << "This variable takes " << memory_size * sizeof(double) << " bytes in memory\n";
+    std::cout << "There was used " << MATRIX_MEMORY << " variables of the type Matrix_Memory\n\n";
+}
+
+
 /*Тесты для проверки работоспособности программы*/
 
 // Тест для суммирование
@@ -598,6 +677,17 @@ void output_part() {
     Matrix M4 = Matrix(3, 3);
     M4.unit_matrix();
     M4.output();
+
+    Matrix_Memory M11 = Matrix_Memory();
+    Matrix_Memory M12 = Matrix_Memory(3, 3);
+    Matrix_Memory M13 = Matrix_Memory(3, 3);
+    M11 = M12;
+    M11.set_random(21);
+    M12.set_random(21);
+    M13.unit_matrix();
+    M13 -= M11;
+    M13.output();
+
 }
 
 
@@ -609,5 +699,3 @@ int main() {
 
     return 0;
 }
-
-// Спросить как кидать проверки
