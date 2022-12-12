@@ -1,7 +1,3 @@
-//
-// Created by User on 05.12.2022.
-//
-
 #include "MatrixTest.h"
 
 inline void print_message(const std::string& text, const MatrixException& Exception_object) {

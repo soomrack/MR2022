@@ -1,7 +1,3 @@
-//
-// Created by User on 05.12.2022.
-//
-
 #include "Matrix.h"
 
 Matrix::Matrix() noexcept {
