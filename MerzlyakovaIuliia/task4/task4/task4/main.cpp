@@ -1,3 +1,9 @@
+//
+//  main.cpp
+//  task4
+//
+//
+//
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
@@ -5,14 +11,15 @@
 
 
 
-
+template<typename T>
 class Matrix {
-private:
+protected:
     unsigned int cols;
     unsigned int rows;
-    double* values;
+    T *values;
 
 public:
+
     Matrix();                                       // Конструктор пустой матрицы
     Matrix(unsigned int col, unsigned int row);     // Конструктор прямоугольной матрицы
     Matrix(unsigned int col);                       // Конструктор единичной матрицы
@@ -21,20 +28,20 @@ public:
     ~Matrix();                                      // Деструктор
 
 
-    void print_matrix();
-    void set_values(int max_value);
+    void matrixPrint();
+    void set_values();
 
-    Matrix operator+(const Matrix& one) const;
-    Matrix operator-(const Matrix& one) const;
-    Matrix operator*(const Matrix& one) const;
-    Matrix operator*(double coefficient) const;
-    Matrix operator=(Matrix& one);
-    Matrix operator=(Matrix&& one);
-    Matrix operator^(const int coefficient) const;
-    Matrix operator/(const double coefficient) const;
-    static Matrix  exp_m(const Matrix& one, const unsigned int accuracy);
-    Matrix minor(Matrix& A, unsigned int row, unsigned int col);
+    Matrix operator+(const Matrix<T>&);
+    Matrix operator-(const Matrix<T>&);
+    Matrix operator*(const Matrix<T>&);
+    Matrix operator*(const T);
+    Matrix operator=(Matrix<T>&);
+    Matrix operator^(const T) const;
+    Matrix operator/(const T) const;
+    static Matrix  Exp(const Matrix<T>&, const T);
+    Matrix Minor(Matrix<T>&, const unsigned int row, const unsigned int col);
     Matrix transpose();
+    double determinant(const Matrix<T>&);
 
 
 };
@@ -48,53 +55,49 @@ public:
 };
 
 
-Matrix_Exception NotSquare("The matrix should be square\n");
-Matrix_Exception WrongSize("The matrix should have another size\n");
-Matrix_Exception MemoryError("Memory has not been allocated\n");
-Matrix_Exception DivisionError ("Can't divide by zero\n");
+Matrix_Exception errSqr("The matrix should be square\n");
+Matrix_Exception errSize("The matrix should have another size\n");
 
-Matrix::Matrix() {
+template <typename T>
+Matrix<T>::Matrix() {
     cols = 0;
     rows = 0;
-    values = nullptr;
 }
-
 
 Matrix::~Matrix() 
 {
     if (values != nullptr) delete[] values;
 }
 
-
-Matrix::Matrix(unsigned int col, unsigned int row) {
+template <typename T>
+Matrix<T>::Matrix(unsigned int col, unsigned int row) {
     cols = col;
     rows = row;
     unsigned int n_values = cols * rows;
-    values = new double[cols*rows];
+    values = new T[cols*rows];
     for (unsigned int idx = 0; idx < n_values; ++idx) {
         values[idx] = 0.0;
     }
 }
 
-
-Matrix::Matrix(const Matrix& matrix) {
+template <typename T>
+Matrix<T>::Matrix(const Matrix<T>& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new double[rows * cols];
-    if (!values) throw MemoryError;
-    memcpy(values,matrix.values,rows * cols * sizeof(double));
+    values = new T[rows * cols];
+    memcpy(values,matrix.values,rows * cols * sizeof(T));
 }
 
-
-Matrix::Matrix(Matrix&& matrix) {
+template <typename T>
+Matrix<T>::Matrix(Matrix<T>&& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
     values = matrix.values;
     matrix.values = nullptr;
 }
 
-
-void Matrix::print_matrix() {
+template <typename T>
+void Matrix<T>::matrixPrint() {
     for (unsigned int row = 0; row < rows; ++row) {
         for (unsigned int col = 0; col < cols; ++col) {
             std::cout << values[row * cols + col] << " ";
@@ -104,29 +107,29 @@ void Matrix::print_matrix() {
     std::cout << "\n";
 }
 
-
-void Matrix::set_values(int max_value = 10) {
+template <typename T>
+void Matrix<T>::set_values() {
     for (unsigned int index = 0; index < rows * cols; ++index) {
-        values[index] = rand() % max_value;
+        values[index] = rand();
     }
 }
 
-
-Matrix::Matrix(unsigned int col) {
+template <typename T>
+Matrix<T>::Matrix(unsigned int col) {
     cols = col;
     rows = col;
-    values = new double[cols * rows];
+    values = new T[cols * rows];
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1.0 : 0.0;
+            values[row * cols + col] = (row == col) ? 1 : 0;
 
         }
     }
 }
 
-
-Matrix Matrix::operator+ (const Matrix& One) const {
-    if (rows != One.rows) throw WrongSize;
+template <typename T>
+Matrix<T> Matrix<T>::operator+ (const Matrix<T>& One) {
+    if (rows != One.rows) throw errSize;
     Matrix res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
         res.values[idx] += values[idx];
@@ -134,9 +137,9 @@ Matrix Matrix::operator+ (const Matrix& One) const {
     return res;
 }
 
-
-Matrix Matrix::operator- (const Matrix& One) const {
-    if (rows != One.rows) throw WrongSize;
+template <typename T>
+Matrix<T> Matrix<T>::operator- (const Matrix<T>& One)  {
+    if (rows != One.rows) throw errSize;
     Matrix Res(One);
     for (unsigned int idx = 0; idx < One.cols * One.rows; idx++) {
         Res.values[idx] -= values[idx];
@@ -144,9 +147,9 @@ Matrix Matrix::operator- (const Matrix& One) const {
     return Res;
 }
 
-
-Matrix Matrix::operator* (const Matrix& One) const {
-    if (rows != One.rows) throw WrongSize;
+template <typename T>
+Matrix<T> Matrix<T>::operator* (const Matrix<T>& One)  {
+    if (rows != One.rows) throw errSize;
     Matrix Res(One);
     for (unsigned int row = 0; row < Res.rows; row++) {
         for (unsigned int col = 0; col < Res.cols; col++) {
@@ -159,8 +162,8 @@ Matrix Matrix::operator* (const Matrix& One) const {
     return Res;
 }
 
-
-Matrix Matrix::operator* (const double coefficient) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator* (const T coefficient) {
     Matrix Res(cols, rows);
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         Res.values[idx] = values[idx] * coefficient;
@@ -169,21 +172,21 @@ Matrix Matrix::operator* (const double coefficient) const {
 }
 
 
-
-Matrix Matrix::operator= (Matrix& one)  { 
+template <typename T>
+Matrix<T> Matrix<T>::operator= (Matrix<T>& one)  {
     if (this == &one) {
         return *this;
     }
     rows = one.rows;
     cols = one.cols;
     delete[]values;
-    values = new double [cols * rows];
+    values = new T[cols * rows];
     memcpy(values, one.values, rows * cols * sizeof(double));
     return *this;
 }
 
-
-Matrix Matrix::operator= (Matrix&& one)  {
+template <typename T>
+Matrix<T> Matrix<T>::operator= (Matrix<T>&& one)  {
     if (this == &one) {
         return *this;
     }
@@ -195,9 +198,9 @@ Matrix Matrix::operator= (Matrix&& one)  {
     return *this;
 }
 
-
-Matrix Matrix::operator^(int coefficient) const { 
-    if(cols != rows) throw NotSquare;
+template <typename T>
+Matrix<T> Matrix<T>::operator^(const T coefficient) const {
+    if(cols != rows) throw errSqr;
     Matrix Res(*this);
     if (coefficient == 0) {
         Matrix one(cols);
@@ -206,16 +209,17 @@ Matrix Matrix::operator^(int coefficient) const {
     if (coefficient == 1) {
         return Res;
     }
+    else {
         const Matrix &start(Res);
         for (unsigned int idx = 0; idx < coefficient; idx++){
             Res = Res * start;
         }
         return Res;
+    }
 }
 
-
-Matrix Matrix::operator/(const double coefficient) const {
-    if (coefficient == 0) throw DivisionError;
+template <typename T>
+Matrix<T> Matrix<T>::operator/(const T coefficient) const {
     Matrix Res(cols, rows);
     for(unsigned int idx = 0; idx < rows * cols; ++idx) {
         Res.values[idx] = values[idx]/coefficient;
@@ -223,11 +227,11 @@ Matrix Matrix::operator/(const double coefficient) const {
     return Res;
 }
 
-
-Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
-    if (A.rows != A.cols) throw NotSquare;
+template <typename T>
+Matrix<T> Matrix<T>::Exp(const Matrix<T>& A, const unsigned int accuracy = 30){
+    if (A.rows != A.cols) throw errSqr;
     Matrix one(A.cols);
-    Matrix tmp(A.cols);
+    Matrix tmp (A.cols);
     Matrix Res = one + A;
     double factorial = 1;
     for (int step = 1; step < accuracy; step++) {
@@ -238,8 +242,8 @@ Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Ма
     return Res;
 }
 
-
-Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {
+template <typename T>
+Matrix<T> Matrix<T>::Minor(Matrix<T>& A, unsigned int row, unsigned int col) {
     int new_row = A.rows -1;
     int new_col = A.cols - 1;
     if (row >= A.rows) new_row++;
@@ -255,8 +259,8 @@ Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {
 
     return Res;
 }
-
-Matrix Matrix::transpose() {
+template <typename T>
+Matrix<T> Matrix<T>::transpose() {
     Matrix res = {cols, rows};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
@@ -266,15 +270,17 @@ Matrix Matrix::transpose() {
     return res;
 }
 
-double Matrix::determinant(const Matrix matrix)
+template <typename T>
+double Matrix<T>::determinant(const Matrix<T>& matrix)
 {
+    if(cols != rows) throw errSqr;
     double det = 0;
     int sign = 1;
-    if (rows == 0)
+    if (rows == 0 and cols == 0)
         return 0;
-    if (rows == 1)
+    if (rows == 1 and cols == 1)
         return matrix.values[0];
-    if (rows == 2) {
+    if (rows == 2 and cols == 2) {
         return (matrix.values[0] * matrix.values[3] - matrix.values[2] * matrix.values[1]);
     }
     for (unsigned int idx = 0; idx < rows; idx++) {
@@ -285,31 +291,96 @@ double Matrix::determinant(const Matrix matrix)
 }
 
 
+template <typename T1>
+class Matrix_Memory : public Matrix<T1> {
+protected:
+    static unsigned long memory_size;
+    static unsigned long total_memory;
+public:
+    Matrix_Memory<T1>();
+    Matrix_Memory<T1>(unsigned int, unsigned int);
+    Matrix_Memory<T1>(const Matrix_Memory<T1>&);
+    Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
+    void output() override;
+    ~Matrix_Memory();
+};
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory()
+{
+    this->rows = 0;
+    this->cols = 0;
+    this->values = nullptr;
+    this->memory_size = 0;
+    this->total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
+{
+    this->rows = row;
+    this->cols = col;
+    this->values = new T[this->rows * this->cols];
+    this->memory_size = row * col * sizeof(T);
+    this-> total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
+{
+    this->rows = matrix.rows;
+    this->cols = matrix.cols;
+    this->values = new T[matrix.rows * matrix.cols];
+    memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
+    this->memory_size = matrix.memory_size;
+    this->total_memory += this->memory_size;
+}
+
+
+template <typename T>
+Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
+{
+
+this->rows = matrix.rows;
+this->cols = matrix.cols;
+this->data = matrix.data;
+this->memory_size = matrix.memory_size;
+
+matrix.rows = 0;
+matrix.cols = 0;
+matrix.values = nullptr;
+matrix.memory_size = 0;
+}
+
+
+template <typename T>
+void Matrix_Memory<T>::output()
+{
+    std::cout << "Памяти много ещь, неоптимально " << this->total_memory << " байт" << std::endl;
+}
+
+
 int main() {
-
-    Matrix M1(3,3);
-    M1.set_values();
-    M1.print_matrix();
-
-    Matrix M2(3, 3);
-    M2.set_values();
-    M2.print_matrix();
-    Matrix Sum = M1 + M2;
-    Sum.print_matrix();
-
-    Matrix Sub = M1 - M2;
-    Sub.print_matrix();
-
-    Matrix Mult = M1 * M2;
-    Mult.print_matrix();
-
-    Matrix Mult_double = M1 * 4;
-    Mult_double.print_matrix();
-
-    Matrix Power = M1^2;
-    Power.print_matrix();
-
-    Matrix Exponent = Matrix::Exp(M1);
+    Matrix A(5,5);
+    A.set_values();
+    A.matrixPrint();
+    Matrix B(5, 5);
+    B.set_values();
+    B.matrixPrint();
+    Matrix Sum = A + B;
+    Sum.matrixPrint();
+    Matrix Sub = A - B;
+    Sub.matrixPrint();
+    Matrix Mult = A * B;
+    Mult.matrixPrint();
+    Matrix Mult_double = A * 4;
+    Mult_double.matrixPrint();
+    Matrix Power = A^2;
+    Power.matrixPrint();
+    Matrix Exponent = Matrix::Exp(A);
     return 0;
 }
 

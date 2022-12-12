@@ -7,7 +7,7 @@
 
 class Matrix_test {
 public:
-    static void summ_test();
+    static void sum_test();
     static void sub_test();
     static void mult_test();
     static void exp_test();

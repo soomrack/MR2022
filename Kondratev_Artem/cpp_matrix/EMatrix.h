@@ -12,10 +12,11 @@
 template<typename T>
 class EMatrix: public Matrix<T> {
 private:
-    unsigned int memory_size;
     static inline unsigned int counter = 0;
     static inline unsigned int general_size = 0;
     static unsigned int calcMemory(int c_rows, int c_cols);
+private:
+    unsigned int memory_size;
 public:
     EMatrix();
     EMatrix(int input_rows, int input_cols);
@@ -32,7 +33,6 @@ public:
     static unsigned int getCounter();
     static unsigned int getGenSize();
     unsigned int getMemSize();
-
 };
 
 
