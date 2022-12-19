@@ -27,7 +27,7 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const st
             error_flag += 1;
         }
         std::cout << "true: " << std::scientific << std::setw(13) << true_array[row * matrix->get_columns() + column];
-        std::cout << " res: " << std::scientific << std::setw(13) << true_array[row * matrix->get_columns() + column] << " | " << cell_flag << "\n";
+        std::cout << " res: " << std::scientific << std::setw(13) << matrix->get_cell(row,column) << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
@@ -35,10 +35,10 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const st
 
 
 void MatrixTest::output_test() {
-    std::cout << "output test:" << std::endl;
+    std::cout << "print test:" << std::endl;
     Matrix matrix1(2, 2);
     matrix1.vector_fill(vector1);
-    matrix1.output();
+    matrix1.print();
 }
 
 

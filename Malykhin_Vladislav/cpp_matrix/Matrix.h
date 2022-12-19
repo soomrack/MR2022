@@ -31,7 +31,7 @@ public:
     unsigned int get_columns() const;
     unsigned int get_size() const;
     double get_cell(int row, int column) const;
-    void output() const;
+    void print() const;
 
     Matrix &operator= (Matrix const &other);
     Matrix &operator= (Matrix &&other) noexcept;

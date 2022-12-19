@@ -6,27 +6,17 @@ Matrix::Matrix() noexcept {
 }
 
 Matrix::Matrix(int input_rows, int input_columns, double number) {
-    if (input_rows <= 0 || input_columns <= 0) {
+    if(input_rows <= 0 || input_columns <= 0) {
           throw MatrixException("matrix parameters are less than zero");
     }
     rows = input_rows;
     columns = input_columns;
-    if (std::isnan(number)) {
-        for (int row = 0; row < rows; row++) {
-            std::vector <double> column_vector;
-            for (int column = 0; column < columns; column++)
-                column_vector.push_back(0.0);
-            cells.push_back(column_vector);
-        }
-    }
-    else {
-        for (int row = 0; row < rows; row++) {
-            std::vector <double> column_vector;
-            for (int column = 0; column < columns; column++)
-                column_vector.push_back(number);
-            cells.push_back(column_vector);
-        }
-    }
+    cells.reserve(rows);
+    std::vector <double> column_vector;
+    column_vector.reserve(columns);
+    if(std::isnan(number)) column_vector.resize(columns,0);
+    else column_vector.resize(columns,number);
+    cells.resize(rows, column_vector);
 }
 
 Matrix::Matrix(const Matrix &other) noexcept {
@@ -50,8 +40,8 @@ void Matrix::vector_fill(std::vector<double> vector) {
         std::vector <double> column_vector;
         for (unsigned int column = 0; column < columns; ++column) {
             column_vector.push_back(vector[row * columns + column]);
-        }
-        cells.push_back(column_vector);
+                    }
+        cells[row] = column_vector;
     }
 }
 
@@ -96,7 +86,7 @@ double Matrix::get_cell(int row, int column) const {
 }
 
 
-void Matrix::output() const {
+void Matrix::print() const {
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < columns; col++)
             std::cout << std::scientific << std::setw(13) << cells[row][col] << "  ";
@@ -174,11 +164,11 @@ Matrix Matrix::operator* (Matrix const &matrix) const {
         throw MatrixException ("wrong matrix sizes for multiplication");
     }
     Matrix multiplied_matrix(columns, matrix.rows);
-    for(int row = 0; row < multiplied_matrix.rows; row++)
-        for(int column = 0; column < multiplied_matrix.columns; column++) {
-            multiplied_matrix.cells[row][column] = 0;
-            for (int counter = 0; counter < column; counter++)
-                multiplied_matrix.cells[row][column] += cells[row][counter] * matrix.cells[counter][column];
+    for (int row = 0; row < multiplied_matrix.rows; row++)
+        for (int column = 0; column < multiplied_matrix.columns; column++) {
+            for (int counter = 0; counter < columns; counter++)
+               multiplied_matrix.cells[row][column] += cells[row][counter] * matrix.cells[counter][column];
+
         }
     return multiplied_matrix;
 }
@@ -240,10 +230,10 @@ double Matrix::determinant() const{
 
 
 Matrix Matrix::transposition() const {
-    Matrix transposed_matrix(columns, rows);
+    Matrix transposed_matrix = *this;
     for(int row = 0; row < transposed_matrix.rows; row++)
         for(int column = 0; column < transposed_matrix.columns; column++)
-            transposed_matrix.cells[row][columns] = cells[columns][row];
+            transposed_matrix.cells[row][column] = cells[column][row];
     return transposed_matrix;
 }
 
