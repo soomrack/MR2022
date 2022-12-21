@@ -77,8 +77,8 @@ void simulate(struct Client* data, struct Client* client_array, int client_num, 
         }
 
         for (int month = 1; month <= 12; month++) {
-            for (int i = 0; i < client_num; i++){
-                monthly_payment(&client_array[i]);
+            for (int idx = 0; idx < client_num; idx++){
+                monthly_payment(&client_array[idx]);
             }
         }
 
