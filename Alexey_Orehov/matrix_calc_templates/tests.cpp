@@ -7,7 +7,7 @@
 
 HANDLE  hConsole;
 
-/*
+
 void test_equal(){
     double val1[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     double val2[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -127,12 +127,17 @@ void test_inv_mul(int num = 100, int size = 5) {
     printf("Inverse matrix multiplication test passed\n");
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
-*/
+
 
 int main(){
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    Matrix<double> matrix(3, 3);
-
+    test_equal();
+    test_add();
+    test_sub();
+    test_mul();
+    test_inv();
+    test_inv_mul();
 
     return 0;
 }
