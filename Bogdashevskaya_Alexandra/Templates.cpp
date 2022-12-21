@@ -359,11 +359,9 @@ Matrix<T> Matrix<T>::expm(unsigned int accuracy) {
 template <typename T>
 class Matrix_with_memory : public Matrix<T> {
 protected:
-	static unsigned int quantity;
 	unsigned int memory_size{ 0 };
 	static unsigned int total_memory;
-	static unsigned int created;
-	static unsigned int destroyed;
+
 
 public:
 	Matrix_with_memory();
@@ -381,21 +379,11 @@ public:
 template <typename T>
 unsigned int Matrix_with_memory<T>::total_memory = 0;
 
-template <typename T>
-unsigned int Matrix_with_memory<T>::quantity = 0;
-
-template <typename T>
-unsigned int Matrix_with_memory<T>::created = 0;
-
-template <typename T>
-unsigned int Matrix_with_memory<T>::destroyed = 0;
 
 template <typename T>
 Matrix_with_memory<T>::Matrix_with_memory() : Matrix<T>() {
 	this->memory_size = 0;
 	this->total_memory += this->memory_size;
-	this->quantity++;
-	this->created++;
 }
 
 
@@ -403,8 +391,6 @@ template <typename T>
 Matrix_with_memory<T>::Matrix_with_memory(unsigned int cols, unsigned int rows, T value) : Matrix<T> (cols, rows, value) {
 	this->memory_size = cols * rows * sizeof(T);
 	this->total_memory += this->memory_size;
-	this->quantity++;
-	this->created++;
 }
 
 
@@ -412,8 +398,6 @@ template <typename T>
 Matrix_with_memory<T>::Matrix_with_memory(const Matrix_with_memory& matrix) : Matrix(matrix) {
 	this->memory_size = matrix.memory_size;
 	this->total_memory += this->memory_size;
-	this->quantity++;
-	this->created++;
 }
 
 
@@ -432,8 +416,6 @@ Matrix_with_memory<T>::~Matrix_with_memory() {
 	print_report();
 
 	this->total_memory -= this->memory_size;
-	this->quantity--;
-	this->destroyed++;
 	this->memory_size = 0;
 
 
@@ -455,8 +437,6 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(const Matrix_with_memory
 	if (this != &matrix) {
 		this->memory_size = matrix.memory_size;
 		this->total_memory += this->memory_size;
-		this->quantity++;
-		this->created++;
 	}
 }
 
@@ -465,9 +445,7 @@ template <typename T>
 void Matrix_with_memory<T>::print_report() {
 	std::cout << "Memory size: " << this->memory_size << "\n";
 	std::cout << "Total memory size: " << this->total_memory << "\n";
-	std::cout << "Quantity: " << this->quantity << "\n";
-	std::cout << "Created: " << this->created << "\n";
-	std::cout << "Destroyed: " << this->destroyed << "\n\n";
+	std::cout << "\n";
 }
 
 
