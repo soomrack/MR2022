@@ -493,8 +493,8 @@ class Matrix_memory : public Matrix
 {
 protected:
 
-    static unsigned int mem_size;
-    static unsigned int quantity;
+    static unsigned int mem_size; //создается-выделяется память, удаляется память уменьшается
+    static unsigned int quantity; //количество объектов
 
 public:
 
@@ -506,91 +506,62 @@ public:
     ~Matrix_memory();
 
     Matrix_memory& operator=(const Matrix_memory &x);
+    Matrix_memory& operator=(Matrix_memory &&x);
 
     void output(bool f = false);
 };
 
 
 
-Matrix_memory::Matrix_memory() {
-    rows = 0;
-    cols = 0;
-    data = nullptr;
-    mem_size = 0;
-    quantity = ++MATRIX_MEMORY_QUANTITY;
+Matrix_memory::Matrix_memory() : Matrix(row, col) {
+    quantity++;
+    mem_size= mem_size+sizeof(double)*rows*cols;
 }
 
 
-Matrix_memory::Matrix_memory(const unsigned int n) {
-    rows = n;
-    cols = n;
-    mem_size = n * n;
-    data = new double[mem_size];
-    quantity = ++MATRIX_MEMORY_QUANTITY;
+Matrix_memory::Matrix_memory(const unsigned int n) : Matrix(row, col){
+    quantity++;
+    mem_size= mem_size+sizeof(double)*rows*cols;
 }
 
 
-Matrix_memory::Matrix_memory(const unsigned int row, const unsigned int col) {
-    rows = row;
-    cols = col;
-    mem_size = row * col;
-    data = new double[mem_size];
-
-    quantity = ++MATRIX_MEMORY_QUANTITY;
+Matrix_memory::Matrix_memory(const unsigned int row, const unsigned int col): Matrix(row, col) {
+    quantity++;
+    mem_size= mem_size+sizeof(double)*rows*cols;
 }
 
 
-Matrix_memory::Matrix_memory(const Matrix_memory &x) {
-    rows = x.rows;
-    cols = x.cols;
-    mem_size = x.mem_size;
+Matrix_memory::Matrix_memory(const Matrix_memory &x): Matrix(x) {
     quantity = x.quantity;
-    //delete[] data;
-    data = new double[mem_size];
-
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        data[idx] = x.data[idx];
-    }
+    mem_size = x.mem_size+sizeof(double)*rows*cols;
 }
 
 
-Matrix_memory::Matrix_memory(Matrix_memory&& x){
-    rows = x.rows;
-    cols = x.cols;
-    data = x.data;
-    mem_size = x.mem_size;
+Matrix_memory::Matrix_memory(Matrix_memory&& x): Matrix(x){
     quantity = x.quantity;
-
-    x.rows = 0;
-    x.cols = 0;
-    x.mem_size = 0;
-    x.quantity = 0;
-    x.data = nullptr;
+    mem_size += x.mem_size;
 }
 
 
 Matrix_memory::~Matrix_memory() {
     //delete[] data;
-    MATRIX_MEMORY_QUANTITY--;
+    quantity--;
+    mem_size = mem_size-sizeof(double)*rows*cols;
 }
 
 
 Matrix_memory& Matrix_memory::operator=(const Matrix_memory &x) {
-    if (this != &x){
-        if (!data)
-            delete[] data;
+    mem_size = mem_size-sizeof(double)*x.rows*x.cols;
+    Matrix::operator=(x);
+    mem_size+=x.mem_size; 
+    return *this;
+} 
 
-        rows = x.rows;
-        cols = x.cols;
-        mem_size = x.mem_size;
-        quantity = x.quantity;
 
-        this->data = new double[rows * cols];
-        for (unsigned int idx = 0; idx < rows * cols; idx++){
-            data[idx] = x.data[idx];
-        }
-    }
-
+Matrix_memory& Matrix_memory::operator=(Matrix_memory &&x) {
+    mem_size = mem_size-sizeof(double)*x.rows*x.cols;
+    Matrix::operator=(x);
+    mem_size+=2*x.mem_size; //деструктор вычитает 2 раза
     return *this;
 }
 
@@ -598,7 +569,7 @@ Matrix_memory& Matrix_memory::operator=(const Matrix_memory &x) {
 void Matrix_memory::output(bool f) {
     Matrix::output(f);
     std::cout << "This variable hold " << mem_size * sizeof(double) << " bytes in memory\n";
-    std::cout << "There was defended " << MATRIX_MEMORY_QUANTITY << " variables of the Matrix_memory type\n\n";
+    std::cout << "There was defended " <<  quantity << " variables of the Matrix_memory type\n\n";
 }
 
 
@@ -763,3 +734,4 @@ int main() {
     return 0;
 
 }
+

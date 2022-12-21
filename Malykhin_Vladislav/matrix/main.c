@@ -65,6 +65,7 @@ void matrix_multiply_matrix(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix
         printf("Number of columns of the first matrix isn't equal number of the rows of the second matrix.\n");
         error(matrix_out);
     }
+
     else{
         for(int rows = 0; rows < matrix_in1.rows; rows++)
             for(int columns = 0; columns < matrix_in2.columns; columns++)
