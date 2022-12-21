@@ -4,10 +4,9 @@ inline void print_message(const std::string& text, const MatrixException& Except
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
 
-
-void MatrixTest::using_unused() {
-    Matrix matrix(2, 2);
-    matrix.vector_fill(vector1);
+template<typename T>
+void MatrixTest<T>::using_unused() {
+    Matrix<T> matrix(2, 2, vector1);
     matrix.get_rows();
     matrix.get_columns();
     matrix.get_size();
@@ -15,8 +14,8 @@ void MatrixTest::using_unused() {
     MatrixException TEST("TEST");
 }
 
-
-void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const std::string& text) {
+template<typename T>
+void MatrixTest<T>::calculation_check(T true_array[], Matrix<T> *matrix, const std::string& text) {
     int error_flag = 0;
     std::cout << text << " test:\n";
     for (int row = 0; row < matrix->get_rows(); row++)
@@ -33,21 +32,19 @@ void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const st
     std::cout << "\n";
 }
 
-
-void MatrixTest::output_test() {
+template<typename T>
+void MatrixTest<T>::output_test() {
     std::cout << "print test:" << std::endl;
-    Matrix matrix1(2, 2);
-    matrix1.vector_fill(vector1);
+    Matrix<T> matrix1(2, 2, vector1);
     matrix1.print();
 }
 
-
-void MatrixTest::overload_test() {
+template<typename T>
+void MatrixTest<T>::overload_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix res_matrix = matrix1;
-        double eq_true_array[] = {2, 8, 1, 3};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> res_matrix = matrix1;
+        T eq_true_array[] = {2, 8, 1, 3};
         calculation_check(eq_true_array, &res_matrix, "= overload");
     }
     catch(MatrixException &Exception_object) {
@@ -55,15 +52,13 @@ void MatrixTest::overload_test() {
     }
 }
 
-
-void MatrixTest::addition_test() {
+template<typename T>
+void MatrixTest<T>::addition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.vector_fill(vector2);
-        Matrix res_matrix = matrix1 + matrix2;
-        double sum_true_array[] = {6, 17, 22, 16};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> matrix2(2, 2, vector2);
+        Matrix<T> res_matrix = matrix1 + matrix2;
+        T sum_true_array[] = {6, 17, 22, 16};
         calculation_check(sum_true_array, &res_matrix, "addition (matrix)");
     }
     catch(MatrixException &Exception_object) {
@@ -71,13 +66,12 @@ void MatrixTest::addition_test() {
     }
 }
 
-
-void MatrixTest::number_addition_test() {
+template<typename T>
+void MatrixTest<T>::number_addition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix res_matrix = matrix1 + 2;
-        double snum_true_array[] = {4, 10, 3, 5};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> res_matrix = matrix1 + 2;
+        T snum_true_array[] = {4, 10, 3, 5};
         calculation_check(snum_true_array, &res_matrix, "addition (number)");
     }
     catch(MatrixException &Exception_object) {
@@ -85,15 +79,13 @@ void MatrixTest::number_addition_test() {
     }
 }
 
-
-void MatrixTest::subtraction_test() {
+template<typename T>
+void MatrixTest<T>::subtraction_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.vector_fill(vector2);
-        Matrix res_matrix = matrix1 - matrix2;
-        double sub_true_array[] = {-2, -1, -20, -10};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> matrix2(2, 2, vector2);
+        Matrix<T> res_matrix = matrix1 - matrix2;
+        T sub_true_array[] = {-2, -1, -20, -10};
         calculation_check(sub_true_array, &res_matrix, "subtraction");
     }
     catch(MatrixException &Exception_object) {
@@ -101,15 +93,13 @@ void MatrixTest::subtraction_test() {
     }
 }
 
-
-void MatrixTest::multiplication_test() {
+template<typename T>
+void MatrixTest<T>::multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.vector_fill(vector2);
-        Matrix res_matrix = matrix1 * matrix2;
-        double multi_true_array[] = {176, 122, 67, 48};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> matrix2(2, 2, vector2);
+        Matrix<T> res_matrix = matrix1 * matrix2;
+        T multi_true_array[] = {176, 122, 67, 48};
         calculation_check(multi_true_array, &res_matrix, "multiplication (matrix)");
     }
     catch(MatrixException &Exception_object) {
@@ -117,13 +107,12 @@ void MatrixTest::multiplication_test() {
     }
 }
 
-
-void MatrixTest::number_multiplication_test() {
+template<typename T>
+void MatrixTest<T>::number_multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix res_matrix = matrix1 * 2;
-        double mnum_true_array[] = {4, 16, 2, 6};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> res_matrix = matrix1 * 2;
+        T mnum_true_array[] = {4, 16, 2, 6};
         calculation_check(mnum_true_array, &res_matrix, "multiplication (number)");
     }
     catch(MatrixException &Exception_object) {
@@ -131,13 +120,12 @@ void MatrixTest::number_multiplication_test() {
     }
 }
 
-
-void MatrixTest::determinant_test() {
+template<typename T>
+void MatrixTest<T>::determinant_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        double determinant_true_array[] = {-2};
-        Matrix det_matrix(1, 1, matrix1.determinant());
+        Matrix<T> matrix1(2, 2, vector1);
+        T determinant_true_array[] = {-2};
+        Matrix<T> det_matrix(1, 1, matrix1.determinant());
         calculation_check(determinant_true_array, &det_matrix, "determinant");
     }
     catch(MatrixException &Exception_object) {
@@ -145,12 +133,11 @@ void MatrixTest::determinant_test() {
     }
 }
 
-
-void MatrixTest::transposition_test() {
+template<typename T>
+void MatrixTest<T>::transposition_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        double transp_true_array[] = {2, 1, 8, 3};
+        Matrix<T> matrix1(2, 2, vector1);
+        T transp_true_array[] = {2, 1, 8, 3};
         Matrix res_matrix = matrix1.transposition();
         calculation_check(transp_true_array, &res_matrix, "transposition");
     }
@@ -159,12 +146,11 @@ void MatrixTest::transposition_test() {
     }
 }
 
-
-void MatrixTest::inversion_test() {
+template<typename T>
+void MatrixTest<T>::inversion_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        double inv_true_array[] = {-1.5, 4, 0.5, -1};
+        Matrix<T> matrix1(2, 2, vector1);
+        T inv_true_array[] = {-1.5, 4, 0.5, -1};
         Matrix res_matrix = matrix1.inversion();
         calculation_check(inv_true_array, &res_matrix, "inversion");
     }
@@ -173,14 +159,12 @@ void MatrixTest::inversion_test() {
     }
 }
 
-
-void MatrixTest::inverse_multiplication_test() {
+template<typename T>
+void MatrixTest<T>::inverse_multiplication_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix matrix2(2, 2);
-        matrix2.vector_fill(vector2);
-        double inv_multi_true_array[] = {1.036496, -0.102189, 0.364963, -0.021897};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> matrix2(2, 2, vector2);
+        T inv_multi_true_array[] = {1.036496, -0.102189, 0.364963, -0.021897};
         Matrix res_matrix = matrix1 / matrix2;
         calculation_check(inv_multi_true_array, &res_matrix, "inverse multiplication");
     }
@@ -189,13 +173,12 @@ void MatrixTest::inverse_multiplication_test() {
     }
 }
 
-
-void MatrixTest::number_division_test() {
+template<typename T>
+void MatrixTest<T>::number_division_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix res_matrix = matrix1 / 2;
-        double snum_true_array[] = {1, 4, 0.5, 1.5};
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> res_matrix = matrix1 / 2;
+        T snum_true_array[] = {1, 4, 0.5, 1.5};
         calculation_check(snum_true_array, &res_matrix, "division (number)");
     }
     catch(MatrixException &Exception_object) {
@@ -203,12 +186,11 @@ void MatrixTest::number_division_test() {
     }
 }
 
-
-void MatrixTest::power_test() {
+template<typename T>
+void MatrixTest<T>::power_test() {
     try {
-        Matrix matrix1(2, 2);
-        matrix1.vector_fill(vector1);
-        Matrix res_matrix = matrix1.power(power);
+        Matrix<T> matrix1(2, 2, vector1);
+        Matrix<T> res_matrix = matrix1.power(power);
         calculation_check(power_array, &res_matrix, "power");
     }
     catch(MatrixException &Exception_object) {
@@ -216,13 +198,12 @@ void MatrixTest::power_test() {
     }
 }
 
-
-void MatrixTest::exp_test() {
+template<typename T>
+void MatrixTest<T>::exp_test() {
     try {
-        Matrix matrix3(2, 2);
-        matrix3.vector_fill(vector3);
-        double exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
-        Matrix res_matrix = Matrix::exp(matrix3);
+        Matrix<T> matrix3(2, 2, vector3);
+        T exp_true_array[] = {27.799075, 26.799075, 26.799075, 27.799075};
+        Matrix<T> res_matrix = Matrix<T>::exp(matrix3);
         calculation_check(exp_true_array, &res_matrix, "Matrix exp");
     }
     catch(MatrixException &Exception_object) {
@@ -230,21 +211,103 @@ void MatrixTest::exp_test() {
     }
 }
 
+/*template<typename T>
+void MatrixTest<T>::equalTest() {
+    try {
+        std::vector<T> eq_vector1 = {2.951365, 3.4599872, 3.4599872, 2.951365};
+        std::vector<T> eq_vector2 = {2.951365, 3.4599873, 3.4599879, 2.951386};
+        Matrix<T> matrix1 = createMatrix(eq_vector1);
+        Matrix<T> matrix2 = createMatrix(eq_vector2);
+        T eq_true_array[] = {1};
+        Matrix<T> res_matrix(1, 1);
+        int res = Matrix<T>::isEqual(matrix1, matrix2);
+        res_matrix.setValue(0, res);
+        calculationCheck(eq_true_array, &res_matrix, "Matrix equality");
+    }
+    catch(MatrixException &Exception_object) {
+        printMessage("equalTest", Exception_object);
+    }
+}*/
 
-void MatrixTest::full_test(){
-    MatrixTest::using_unused();
-    MatrixTest::output_test();
-    MatrixTest::overload_test();
-    MatrixTest::addition_test();
-    MatrixTest::number_addition_test();
-    MatrixTest::subtraction_test();
-    MatrixTest::multiplication_test();
-    MatrixTest::number_multiplication_test();
-    MatrixTest::determinant_test();
-    MatrixTest::transposition_test();
-    MatrixTest::inversion_test();
-    MatrixTest::inverse_multiplication_test();
-    MatrixTest::number_division_test();
-    MatrixTest::power_test();
-    MatrixTest::exp_test();
+
+template<typename T>
+void MatrixTest<T>::counter_test() {
+    std::cout << "CMatrix counter:" << std::endl << "Errors: ";
+    try {
+        short flag = 0;
+        if (CMatrix<T>::get_counter() != 0) {
+            flag = 1;
+        }
+        CMatrix<T> matrix1;
+        if (CMatrix<T>::get_counter() != 1) {
+            flag = 1;
+        }
+        CMatrix<T> matrix2;
+        if (CMatrix<T>::get_counter() != 2) {
+            flag = 1;
+        }
+        std::cout << flag << std::endl << std::endl;
+    }
+    catch(MatrixException &Exception_object) {
+        print_message("eounter_test", Exception_object);
+    }
 }
+
+
+template<typename T>
+void MatrixTest<T>::matrix_mem_test() {
+    std::cout << "CMatrix matrix memory size:" << std::endl << "Errors: ";
+    try {
+        short flag = 0;
+        CMatrix<T> matrix1(4, 5, 6.2);
+        if (matrix1.get_mem_size() != 192 && matrix1.get_mem_size() != 112) {
+            flag = 1;
+        }
+        std::cout << flag << std::endl << std::endl;
+    }
+    catch(MatrixException &Exception_object) {
+        print_message("matrix_mem_test", Exception_object);
+    }
+}
+
+
+template<typename T>
+void MatrixTest<T>::gen_mem_test() {
+    std::cout << "CMatrix general memory size:" << std::endl << "Errors: ";
+    try {
+        short flag = 0;
+        CMatrix<T> matrix1(4, 5, 6.2);
+        if (matrix1.get_mem_size() != 192 && matrix1.get_mem_size() != 112) {
+            flag = 1;
+        }
+        std::cout << flag << std::endl << std::endl;
+    }
+    catch(MatrixException &Exception_object) {
+        print_message("matrix_gen_test", Exception_object);
+    }
+}
+
+template<typename T>
+void MatrixTest<T>::full_test(){
+    MatrixTest<T>::using_unused();
+    MatrixTest<T>::output_test();
+    MatrixTest<T>::overload_test();
+    MatrixTest<T>::addition_test();
+    MatrixTest<T>::number_addition_test();
+    MatrixTest<T>::subtraction_test();
+    MatrixTest<T>::multiplication_test();
+    MatrixTest<T>::number_multiplication_test();
+    MatrixTest<T>::determinant_test();
+    MatrixTest<T>::transposition_test();
+    MatrixTest<T>::inversion_test();
+    MatrixTest<T>::inverse_multiplication_test();
+    MatrixTest<T>::number_division_test();
+    MatrixTest<T>::power_test();
+    MatrixTest<T>::exp_test();
+    MatrixTest<T>::counter_test();
+    MatrixTest<T>::matrix_mem_test();
+    MatrixTest<T>::gen_mem_test();
+}
+
+template class MatrixTest<double>;
+template class MatrixTest<float>;
