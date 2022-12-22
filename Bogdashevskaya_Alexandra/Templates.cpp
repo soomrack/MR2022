@@ -436,13 +436,6 @@ Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(Matrix_with_memory&& mat
 	matrix.values = nullptr;
 	return *this;
 
-	if (this != &matrix) {
-		this->memory_size = matrix.memory_size;
-
-		matrix.memory_size = 0;
-		
-	}
-
 }
 
 
