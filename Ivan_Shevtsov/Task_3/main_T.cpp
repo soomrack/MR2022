@@ -13,9 +13,9 @@ public:
 };
 
 
-Matrix_Exception MULTIPLYERROR("ERROR: first matrix cols is not equal with second matrix row\n");
-Matrix_Exception NOTSQUARE("ERROR:the matrix is not square(should have nxn size)\n");
-Matrix_Exception NOTEQUAL("ERROR: the matrix should have a same size\n");
+Matrix_Exception MULTIPLYERROR("ERROR: first matrix cols must have equal with second matrix row\n");
+Matrix_Exception NOTSQUARE("ERROR:the matrix should have nxn size\n");
+Matrix_Exception NOTEQUAL("ERROR: the matrix should have the same size\n");
 Matrix_Exception ZERODIVISION("ERROR: divide by zero\n");
 Matrix_Exception MEM_ERROR("ERROR: memory are not allocated\n");
 Matrix_Exception DEGENERACY("ERROR: matrix is degeneracy\n");
@@ -92,15 +92,19 @@ Matrix<T>::Matrix(int rows, int cols){
 	this->rows = rows;
 	this->cols = cols;
 	values = new double[rows * cols];
+
 	if (!values) throw MEM_ERROR;
 }
 
 
 template <typename T>
-Matrix<T>::Matrix(const Matrix& other_matrix){
+Matrix<T>::Matrix(const Matrix& other_matrix) {
 	cols = matrix.cols;
 	rows = matrix.rows;
 	values = new T[rows * cols];
+
+	if (!values) throw MEM_ERROR;
+
 	memcpy(values, matrix.values, rows * cols * sizeof(T));
 }
 
@@ -133,7 +137,9 @@ Matrix<T>& Matrix<T>::operator=(const Matrix& other){
 	rows = other.rows;
 	cols = other.cols;
 	this->values = new double[rows * cols];
+
 	if (!values) throw MEM_ERROR;
+
 	memcpy(this->values, other.values, rows * cols * sizeof(double));
 	return *this;
 }
@@ -191,6 +197,8 @@ Matrix<T>& Matrix<T>::operator*=(const double scalar) {
 	
 template <typename T>
 Matrix<T>& Matrix<T>::operator/=(const double scalar) {
+	if (scalar == 0) throw ZERODIVISION;
+	
 	for (int idx = 0; idx < rows * cols; idx++) {
 		this->values[idx] /= scalar;
 	}
@@ -215,6 +223,8 @@ Matrix<T> Matrix<T>::operator*(const Matrix& matrix){
 
 template <typename T>
 Matrix<T> Matrix<T>::operator/(const double scalar){
+	if (scalar == 0) throw ZERODIVISION; 
+
 	Matrix dev(*this);
 	dev /= scalar;
 	return dev;
