@@ -269,6 +269,7 @@ void MatrixTest<T>::gen_mem_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::full_test(){
     MatrixTest<T>::using_unused();
