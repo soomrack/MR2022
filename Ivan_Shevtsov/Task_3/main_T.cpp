@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <windows.h>
 #include <cmath>
 #include<math.h>
@@ -13,12 +13,12 @@ public:
 };
 
 
-Matrix_Exception MULTIPLYERROR("Error: first matrix cols is not equal with second matrix row\n");
-Matrix_Exception NOTSQUARE("Error:the matrix is not square(should have nxn size)\n");
-Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
-Matrix_Exception ZERODIVISION("Error: divide by zero\n");
-Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
-Matrix_Exception DEGENERACY("Error: matrix is degeneracy\n");
+Matrix_Exception MULTIPLYERROR("ERROR: first matrix cols is not equal with second matrix row\n");
+Matrix_Exception NOTSQUARE("ERROR:the matrix is not square(should have nxn size)\n");
+Matrix_Exception NOTEQUAL("ERROR: the matrix should have a same size\n");
+Matrix_Exception ZERODIVISION("ERROR: divide by zero\n");
+Matrix_Exception MEM_ERROR("ERROR: memory are not allocated\n");
+Matrix_Exception DEGENERACY("ERROR: matrix is degeneracy\n");
 
 
 template<typename T>
@@ -97,18 +97,20 @@ Matrix<T>::Matrix(int rows, int cols){
 
 
 template <typename T>
-Matrix<T>::Matrix(const Matrix& other_matrix):rows(other_matrix.rows), cols(other_matrix.cols) {
-	values = new double[rows * cols];
-	if (!values) throw MEM_ERROR;
-	memcpy(values, other_matrix.values, rows * cols * sizeof(double));
+Matrix<T>::Matrix(const Matrix& other_matrix){
+	cols = matrix.cols;
+	rows = matrix.rows;
+	values = new T[rows * cols];
+	memcpy(values, matrix.values, rows * cols * sizeof(T));
 }
 
 
 template <typename T>
-Matrix<T>::Matrix(Matrix&& other_matrix) noexcept : values(other_matrix.values), rows(other_matrix.rows), cols(other_matrix.cols){
-	other_matrix.values = nullptr;
-	other_matrix.rows = 0;
-	other_matrix.cols = 0;
+Matrix<T>::Matrix(Matrix<T>&& matrix) {
+	cols = matrix.cols;
+	rows = matrix.rows;
+	values = matrix.values;
+	matrix.values = nullptr;
 }
 
 
@@ -403,40 +405,31 @@ void test_add(){
 		std::cerr << "Addition test failed\n";
 	}
 	else {
-		std::cerr << "Addition test passed\n";
+		std::cerr << "Addition test PASSED\n";
 	}
 }
 
 
 void test_sub(){
-	double test_matrix1[6] = { 3, 1, 2,
-					   4, 5, 7 };
-	double test_matrix2[6] = { 8, 2, 1,
-					   -2, 2, 4 };
-	double answer[6] = { -5, -1, 1,
-					   6, 3, 3 };
-	Matrix<double> matrix1 = Matrix<double>(2, 3).fill_from_array(test_matrix1);
-	Matrix<double> matrix2 = Matrix<double>(2, 3).fill_from_array(test_matrix2);
-	Matrix<double> test_add = Matrix<double>(2, 3).fill_from_array(answer);
+	double test_matrix1[8] = { 4, 7, 8, 12, 27, 3, 22,13 };
+	double test_matrix2[8] = { 1, 3, 1, 3, 20, 3, 15,12 };
+	double answer[8] = { 3, 4, 7, 9, 7, 0, 7,1 };
+	Matrix<double> matrix1 = Matrix<double>(1, 8).fill_from_array(test_matrix1);
+	Matrix<double> matrix2 = Matrix<double>(1, 8).fill_from_array(test_matrix2);
+	Matrix<double> test_add = Matrix<double>(1, 8).fill_from_array(answer);
 	if (test_add != matrix1 - matrix2) {
 		std::cerr << "Substraction test failed\n";
 	}
 	else {
-		std::cerr << "Substruction test passed\n";
+		std::cerr << "Substruction test PASSED\n";
 	}
 }
 
 
 void test_mult(){
-	double test_matrix1[9] = { 1, 7, 4,
-						0, 9, 4,
-						8, 8, 2 };
-	double test_matrix2[9] = { 4, 5, 5,
-						1, 7, 1,
-						1, 5, 2 };
-	double answer[9] = { 15, 74, 20,
-						13, 83, 17,
-						42, 106, 52 };
+	double test_matrix1[6] = { 1, 2,3,4,5,6 };
+	double test_matrix2[6] = { 7,8,9,1,2,3 };
+	double answer[4] = { 31,19,85,55 };
 	Matrix<double> matrix1 = Matrix<double>(3, 3).fill_from_array(test_matrix1);
 	Matrix<double> matrix2 = Matrix<double>(3, 3).fill_from_array(test_matrix2);
 	Matrix<double> test_add = Matrix<double>(3, 3).fill_from_array(answer);
@@ -444,7 +437,7 @@ void test_mult(){
 		std::cerr << "Multiplication test failed\n";
 	}
 	else {
-		std::cerr << "Multiplication test passed\n";
+		std::cerr << "Multiplication test PASSED\n";
 	}
 }
 
@@ -458,7 +451,7 @@ void test_mult_scalar(){
 		std::cerr << "Multiplication test failed\n";
 	}
 	else {
-		std::cerr << "Multiplication test passed\n";
+		std::cerr << "Multiplication test PASSED\n";
 	}
 }
 
@@ -473,7 +466,7 @@ void test_det(){
 		std::cerr << "Determinant test failed\n";
 	}
 	else {
-		std::cerr << "Determinant test passed\n";
+		std::cerr << "Determinant test PASSED\n";
 	}
 }
 
@@ -489,7 +482,7 @@ void test_rev() {
 	Matrix<double> test_rev = Matrix<double>(3, 3).fill_from_array(ans);
 	Matrix<double> rev = matrix1.reverse(matrix1);
 	if (rev == test_rev) {
-		std::cerr << "Reverse test passed\n";
+		std::cerr << "Reverse test PASSED\n";
 	}
 	else {
 		std::cerr << "Reverse test failed\n";
@@ -498,12 +491,12 @@ void test_rev() {
 
 
 void test_transpose(){
-	double test_matrix1[3] = { 1, 7, 4 };
-	double ans[3] = { 1,7,4 };
-	Matrix<double> matrix1 = Matrix<double>(3, 1).fill_from_array(test_matrix1);
-	Matrix<double> test_trans = Matrix<double>(1, 3).fill_from_array(ans);
+	double test_matrix1[6] = { 1,2,3,4,5,6 };
+	double ans[6] = { 1,4,2,5,4,6 };
+	Matrix<double> matrix1 = Matrix<double>(2, 3).fill_from_array(test_matrix1);
+	Matrix<double> test_trans = Matrix<double>(3, 2).fill_from_array(ans);
 	if (matrix1.transpose() == test_trans) {
-		std::cerr << "Trasposition test passed\n";
+		std::cerr << "Trasposition test PASSED\n";
 	}
 	else {
 		std::cerr << "Transposition test failed\n";
