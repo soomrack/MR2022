@@ -10,29 +10,17 @@ public:
     {}
 };
 
-Matrix_Exception NOTSQUARE("Make matrix square\n");
-Matrix_Exception ERRORSIZE("Change matrix size\n");
-#include <iostream>
-#include <cstdlib>
-#include <cmath>
-#include <cstring>
-
-class Matrix_Exception : public std::domain_error
-{
-public:
-    Matrix_Exception(const char* const message) : std::domain_error(message)
-    {}
-};
 
 Matrix_Exception NOTSQUARE("Make matrix square\n");
 Matrix_Exception ERRORSIZE("Change matrix size\n");
+
 
 template<typename T>
 class Matrix {
 protected:
     unsigned int cols;
     unsigned int rows;
-    T *values;
+    T *value;
 
 public:
     Matrix();
@@ -43,8 +31,9 @@ public:
     ~Matrix();
 
 
-    virtual void report();
-    void set_values(const unsigned int);
+    void info();
+    void set_random(const unsigned int);
+    void set_values(const unsigned int l, const T* array);
 
     Matrix<T> operator+(const Matrix<T>&);
     Matrix<T> operator-(const Matrix<T>&);
@@ -64,7 +53,7 @@ public:
             {
                 for(unsigned int col = 0; col <matrix.cols; col++)
                 {
-                    out << matrix.values[row*matrix.cols +col] << "\t";
+                    out << matrix.value[row*matrix.cols +col] << "\t";
                 }
                 out << std::endl;
             }
@@ -79,14 +68,14 @@ template <typename T>
 Matrix<T>::Matrix() {
     cols = 0;
     rows = 0;
-    values = nullptr;
+    value = nullptr;
 }
 
 template <typename T>
 Matrix<T>:: ~Matrix()
 {
-    if (values != nullptr)
-        delete [] values;
+    if (value != nullptr)
+        delete [] value;
 }
 
 template <typename T>
@@ -94,9 +83,9 @@ Matrix<T>::Matrix(unsigned int col, unsigned int row) {
     cols = col;
     rows = row;
     unsigned int n_values = cols * rows;
-    values = new T[cols*rows];
+    value = new T[cols*rows];
     for (unsigned int idx = 0; idx < n_values; ++idx) {
-        values[idx] = 0.0;
+        value[idx] = 0.0;
     }
 }
 
@@ -104,8 +93,8 @@ template <typename T>
 Matrix<T>::Matrix(const Matrix<T>& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new T[rows * cols];
-    memcpy(values,matrix.values,rows * cols * sizeof(T));
+    value = new T[rows * cols];
+    memcpy(value,matrix.value,rows * cols * sizeof(T));
 }
 
 
@@ -113,17 +102,17 @@ template <typename T>
 Matrix<T>::Matrix(Matrix<T>&& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = matrix.values;
-    matrix.values = nullptr;
+    value = matrix.value;
+    matrix.value = nullptr;
     matrix.rows = 0;
     matrix.cols = 0;
 }
 
 template <typename T>
-void Matrix<T>::report() {
+void Matrix<T>::info() {
     for (unsigned int row = 0; row < rows; ++row) {
         for (unsigned int col = 0; col < cols; ++col) {
-            std::cout << values[row * cols + col] << " ";
+            std::cout << value[row * cols + col] << " ";
         }
         std::cout << "\n";
     }
@@ -131,20 +120,29 @@ void Matrix<T>::report() {
 }
 
 template <typename T>
-void Matrix<T>::set_values(const unsigned int n) {
+void Matrix<T>::set_random(const unsigned int n) {
     for (unsigned int index = 0; index < rows * cols; ++index) {
-        values[index] = rand() % n;
+        value[index] = rand() % n;
     }
 }
+
+
+template <typename T>
+void Matrix<T>::set_values(const unsigned int l, const T *array) {
+    for (unsigned int number = 0; number < rows * cols; number++) {
+        value[number] = array[number];
+    }
+}
+
 
 template <typename T>
 Matrix<T>::Matrix(unsigned int col) {
     cols = col;
     rows = col;
-    values = new T[cols * rows];
+    value = new T[cols * rows];
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < cols; col++) {
-            values[row * cols + col] = (row == col) ? 1 : 0;
+            value[row * cols + col] = (row == col) ? 1 : 0;
 
         }
     }
@@ -155,7 +153,7 @@ Matrix<T> Matrix<T>::operator+ (const Matrix<T>& matrix) {
     if (rows != matrix.rows) throw ERRORSIZE;
     Matrix result(matrix);
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++) {
-        result.values[idx] += values[idx];
+        result.value[idx] += value[idx];
     }
     return result;
 }
@@ -165,7 +163,7 @@ Matrix<T> Matrix<T>::operator- (const Matrix<T>& matrix)  {
     if (rows != matrix.rows) throw ERRORSIZE;
     Matrix result(matrix);
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++) {
-        result.values[idx] -= values[idx];
+        result.value[idx] -= value[idx];
     }
     return result;
 }
@@ -176,9 +174,9 @@ Matrix<T> Matrix<T>::operator* (const Matrix<T>& matrix)  {
     Matrix result(matrix);
     for (unsigned int row = 0; row < result.rows; row++) {
         for (unsigned int col = 0; col < result.cols; col++) {
-            result.values[row* result.rows + col] = 0.00;
+            result.value[row* result.rows + col] = 0.00;
             for (unsigned int k = 0; k < result.cols; k++) {
-                result.values[row * result.cols + col] += values[row * cols + k] * matrix.values[k * result.cols + col];
+                result.value[row * result.cols + col] += value[row * cols + k] * matrix.value[k * result.cols + col];
             }
         }
     }
@@ -186,10 +184,10 @@ Matrix<T> Matrix<T>::operator* (const Matrix<T>& matrix)  {
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::operator* (const T number) {
+Matrix<T> Matrix<T>::operator* (const T num) {
     Matrix result(cols, rows);
-    for (unsigned int idx = 0; idx < rows * cols; idx++) {
-        result.values[idx] = values[idx] * number;
+    for (unsigned int number = 0; number< rows * cols; number++) {
+        result.value[number] = value[number] * num;
     }
     return result;
 }
@@ -202,61 +200,61 @@ Matrix<T>& Matrix<T>::operator= (const Matrix<T>& matrix)  {
     }
     rows = matrix.rows;
     cols = matrix.cols;
-    delete[]values;
-    values = new T[cols * rows];
-    memcpy(values, matrix.values, rows * cols * sizeof(T));
+    delete[]value;
+    value = new T[cols * rows];
+    memcpy(value, matrix.value, rows * cols * sizeof(T));
     return *this;
 }
 
 
 
 template <typename T>
-Matrix<T> Matrix<T>::operator/(const T number) const {
+Matrix<T> Matrix<T>::operator/(const T num) const {
     Matrix result(cols, rows);
-    for(unsigned int idx = 0; idx < rows * cols; ++idx) {
-        result.values[idx] = values[idx]/number;
+    for(unsigned int number = 0; number < rows * cols; ++number) {
+        result.value[number] = value[number]/num;
     }
     return result;
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::exponent(const Matrix<T>& A, const unsigned int accuracy){
-    if (A.rows != A.cols) throw NOTSQUARE;
-    Matrix result(A.cols);
-    Matrix temp(A.cols);
+Matrix<T> Matrix<T>::exponent(const Matrix<T>& M, const unsigned int acc){
+    if (M.rows != M.cols) throw NOTSQUARE;
+    Matrix itog(M.cols);
+    Matrix temp(M.cols);
     double factorial = 1.0;
-    for (int step = 1; step < accuracy; step++) {
-        factorial *= step;
-        temp = temp * A;
-        result = result + temp / factorial;
+    for (int number = 1; number < acc; number++) {
+        factorial *= number;
+        temp = temp * M;
+        itog = itog + temp / factorial;
     }
-    return result;
+    return itog;
 }
 
 
 template <typename T>
-Matrix<T> Matrix<T>::minor(Matrix<T>& A, unsigned int row, unsigned int col) {
-    int new_row = A.rows -1;
-    int new_col = A.cols - 1;
-    if (row >= A.rows) new_row++;
-    if (col >= A.cols) new_col++;
+Matrix<T> Matrix<T>::minor(Matrix<T>& M, unsigned int row, unsigned int col) {
+    int new_row = M.rows -1;
+    int new_col = M.cols - 1;
+    if (row >= M.rows) new_row++;
+    if (col >= M.cols) new_col++;
 
-    Matrix result = Matrix(new_row, new_col);
+    Matrix itog = Matrix(new_row, new_col);
     unsigned int k = 0;
 
-    for (unsigned int idx = 0; idx < rows * cols; idx++){
-        if ((idx % cols == col) or (idx / cols == row)) continue;
-        result.values[k++] = A.values[idx];
+    for (unsigned int number = 0; number < rows * cols; number++){
+        if ((number % cols == col) or (number / cols == row)) continue;
+        itog.values[k++] = M.values[number];
     }
 
-    return result;
+    return itog;
 }
 template <typename T>
 Matrix<T> Matrix<T>::transpose() {
     Matrix result = {cols, rows};
     for (unsigned int row = 0; row < result.rows; row++) {
         for (unsigned int col = 0; col < result.cols; col++) {
-            result.values[row * result.cols + col] = values[col * result.cols + row];
+            result.values[row * result.cols + col] = value[col * result.cols + row];
         }
     }
     return result;
@@ -294,7 +292,7 @@ public:
     Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
     ~Matrix_Memory();
     Matrix_Memory<T1>&  operator= (const  Matrix_Memory<T1>& );
-    void report() override;
+    void info();
 };
 
 template <typename T>
@@ -326,7 +324,7 @@ Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
 {
     this->rows = row;
     this->cols = col;
-    this->values = new T[this->rows * this->cols];
+    this->value = new T[this->rows * this->cols];
     memory_size = row * col * sizeof(T);
     total_memory += memory_size;
 }
@@ -361,7 +359,7 @@ matrix.memory_size = 0;
 
 
 template <typename T>
-void Matrix_Memory<T>::report()
+void Matrix_Memory<T>::info()
 {
     std::cout << "Total memory " << this->total_memory << " byte" << std::endl;
 }
@@ -372,18 +370,18 @@ template <typename T>
 unsigned long int Matrix_Memory<T>::memory_size = 0;
 
 int main() {
-    Matrix_Memory<float> mat1(3,3);
-    mat1.set_values(10);
-    std:: cout << mat1;
-    Matrix_Memory<float> mat2(3, 3);
-    mat2.set_values(10);
-    std:: cout << mat2;
-    std::cout << mat1 + mat2;
-    std::cout << mat1 - mat2;
-    std::cout << mat1 * mat2;
-    std::cout << mat1 * 3;
-    std::cout << mat1 / 3;
-    std::cout << mat1.exponent(mat1,30);
-    mat1.report();
+    Matrix_Memory<float> m1(3,3);
+    m1.set_random(10);
+    std:: cout << m1;
+    Matrix_Memory<float> m2(3, 3);
+    m2.set_random(10);
+    std:: cout << m2;
+    std::cout << m1 + m2;
+    std::cout << m1 - m2;
+    std::cout << m1 * m2;
+    std::cout << m1 * 3;
+    std::cout << m1 / 3;
+    std::cout << m1.exponent(m1,5);
+    m1.info();
     return 0;
 }

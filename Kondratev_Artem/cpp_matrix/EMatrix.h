@@ -16,7 +16,7 @@ private:
     static inline unsigned int general_size = 0;
     static unsigned int calcMemory(int c_rows, int c_cols);
 private:
-    unsigned int memory_size;
+    unsigned int memory_size{};
 public:
     EMatrix();
     EMatrix(int input_rows, int input_cols);

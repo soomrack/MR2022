@@ -1,25 +1,20 @@
-//
-// Created by user on 28.11.22.
-//
-
-#include "EMatrix.h"
-
+#include "CMatrix.h"
 
 template<typename T>
-unsigned int EMatrix<T>::calcMemory(int c_rows, int c_cols) {
+unsigned int CMatrix<T>::calcMemory(int c_rows, int c_cols) { // ничего лучше для вычисления размера vector я не придумал
     return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
 
 
 template<typename T>
-EMatrix<T>::EMatrix(): Matrix<T>() {
+CMatrix<T>::CMatrix(): Matrix<T>() {
     counter++;
     memory_size = 0;
 }
 
 
 template<typename T>
-EMatrix<T>::EMatrix(int input_rows, int input_cols): Matrix<T>(input_rows, input_cols) {
+[[maybe_unused]] CMatrix<T>::CMatrix(int input_rows, int input_cols): Matrix<T>(input_rows, input_cols) {
     counter++;
     memory_size = calcMemory(input_rows, input_cols);
     general_size += memory_size;
@@ -27,7 +22,7 @@ EMatrix<T>::EMatrix(int input_rows, int input_cols): Matrix<T>(input_rows, input
 
 
 template<typename T>
-EMatrix<T>::EMatrix(int input_rows, int input_cols, T number): Matrix<T>(input_rows, input_cols, number) {
+CMatrix<T>::CMatrix(int input_rows, int input_cols, T number): Matrix<T>(input_rows, input_cols, number) {
     counter++;
     memory_size = calcMemory(input_rows, input_cols);
     general_size += memory_size;
@@ -35,36 +30,36 @@ EMatrix<T>::EMatrix(int input_rows, int input_cols, T number): Matrix<T>(input_r
 
 
 template<typename T>
-EMatrix<T>::EMatrix(int input_rows, int input_cols, const std::vector<T> &v):Matrix<T>(input_rows, input_cols, v) {
+CMatrix<T>::CMatrix(int input_rows, int input_cols, const std::vector<T> &v):Matrix<T>(input_rows, input_cols, v) {
     counter++;
     memory_size = calcMemory(input_rows, input_cols);
     general_size += memory_size;
 }
 
 
-template<typename T>
-EMatrix<T>::EMatrix(int identity_size): Matrix<T>(identity_size) {
+/*template<typename T>
+CMatrix<T>::CMatrix(int identity_size): Matrix<T>(identity_size) {
     counter++;
     memory_size = calcMemory(identity_size, identity_size);
     general_size += memory_size;
-}
+}*/
 
 
 template<typename T>
-EMatrix<T>::EMatrix(const EMatrix<T> &other): Matrix<T>(other) {
+CMatrix<T>::CMatrix(const CMatrix<T> &other): Matrix<T>(other) {
     memory_size = other.memory_size;
 }
 
 
 template<typename T>
-EMatrix<T>::EMatrix(EMatrix<T> &&other) noexcept: Matrix<T>(other) {
+CMatrix<T>::CMatrix(CMatrix<T> &&other) noexcept: Matrix<T>(other) {
     memory_size = other.memory_size;
     other.memory_size = 0;
 }
 
 
 template<typename T>
-EMatrix<T>::~EMatrix() {
+CMatrix<T>::~CMatrix() {
     counter--;
     general_size -= memory_size;
     memory_size = 0;
@@ -72,7 +67,7 @@ EMatrix<T>::~EMatrix() {
 
 
 template<typename T>
-EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &other) {
+CMatrix<T>& CMatrix<T>::operator=(const CMatrix<T> &other) {
     Matrix<T>::operator=(other);
     general_size += other.memory_size - memory_size;
     memory_size = other.memory_size;
@@ -81,7 +76,7 @@ EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &other) {
 
 
 template<typename T>
-EMatrix<T>& EMatrix<T>::operator=(EMatrix<T> &&other) noexcept {
+CMatrix<T>& CMatrix<T>::operator=(CMatrix<T> &&other) noexcept {
     Matrix<T>::operator=(other);
     general_size += other.memory_size - memory_size;
     memory_size = other.memory_size;
@@ -91,25 +86,26 @@ EMatrix<T>& EMatrix<T>::operator=(EMatrix<T> &&other) noexcept {
 
 
 template<typename T>
-unsigned int EMatrix<T>::getCounter() {
+unsigned int CMatrix<T>::get_counter() {
     return counter;
 }
 
 
 template<typename T>
-unsigned int EMatrix<T>::getGenSize() {
+unsigned int CMatrix<T>::get_gen_size() {
     return general_size;
 }
 
 
 template<typename T>
-unsigned int EMatrix<T>::getMemSize() {
+unsigned int CMatrix<T>::get_mem_size() {
     return memory_size;
 }
 
 
 template
-class EMatrix<double>;
+class CMatrix<double>;
 
 template
-class EMatrix<float>;
+class CMatrix<float>;
+
