@@ -44,8 +44,8 @@ public:
     Matrix<T> minor(Matrix<T>&, const unsigned int row, const unsigned int col);
     Matrix<T> transpose();
     double determinant(const Matrix<T>&);
-
     Matrix<T>& operator=(const Matrix<T>&);
+
     friend std::ostream& operator<<(std::ostream& out, Matrix<T> matrix)
     {
         {
@@ -361,7 +361,7 @@ matrix.memory_size = 0;
 template <typename T>
 void Matrix_Memory<T>::info()
 {
-    std::cout << "Total memory " << this->total_memory << " byte" << std::endl;
+    std::cout << "Used " << this->total_memory << " bytes" << std::endl;
 }
 
 template <typename T>
@@ -370,10 +370,10 @@ template <typename T>
 unsigned long int Matrix_Memory<T>::memory_size = 0;
 
 int main() {
-    Matrix_Memory<float> m1(3,3);
+    Matrix_Memory<double> m1(3,3);
     m1.set_random(10);
     std:: cout << m1;
-    Matrix_Memory<float> m2(3, 3);
+    Matrix_Memory<double> m2(3, 3);
     m2.set_random(10);
     std:: cout << m2;
     std::cout << m1 + m2;
