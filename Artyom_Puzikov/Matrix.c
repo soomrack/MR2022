@@ -4,9 +4,19 @@
 
 struct Matrix
 {
-  unsigned int columns, rows;
+  unsigned int columns;
+  unsigned int rows;
   double *values;
 };
+
+
+struct Matrix emptyMatrix()
+{
+  struct Matrix empty;
+  empty.values = NULL;
+  return empty;
+}
+
 
 struct Matrix minor(const struct Matrix *matrix, const unsigned int minor_row, const unsigned int minor_column)
 {
@@ -28,6 +38,7 @@ struct Matrix minor(const struct Matrix *matrix, const unsigned int minor_row, c
   return answer;
 }
 
+
 double detMatrix(const struct Matrix matrix)
 {
   if (matrix.rows != matrix.columns)
@@ -48,20 +59,22 @@ double detMatrix(const struct Matrix matrix)
   return answer;
 }
 
+
 void fillMatrix(struct Matrix *matrix)
 {
   for (int i = 0; i < matrix->rows * matrix->columns; ++i)
   {
-    matrix->values[i] = i + 1;
+    matrix->values[i] = rand() % 10;
   }
 }
+
 
 struct Matrix sumMatrix(const struct Matrix *matrix1, const struct Matrix *matrix2)
 {
   if (!(matrix1->rows == matrix2->rows && matrix1->columns == matrix2->columns))
   {
     printf("These matrices cannot be folded");
-    _Exit(1);
+    return emptyMatrix();
   }
   struct Matrix result;
   result.rows = matrix1->rows;
@@ -74,12 +87,13 @@ struct Matrix sumMatrix(const struct Matrix *matrix1, const struct Matrix *matri
   return result;
 }
 
+
 struct Matrix subMatrix(const struct Matrix *matrix1, const struct Matrix *matrix2)
 {
   if (!(matrix1->rows == matrix2->rows && matrix1->columns == matrix2->columns))
   {
     printf("These matrices cannot be folded");
-    _Exit(1);
+    return emptyMatrix();
   }
   struct Matrix result;
   result.rows = matrix1->rows;
@@ -97,7 +111,7 @@ struct Matrix multMatrix(const struct Matrix *matrix1, const struct Matrix *matr
   if (matrix1->columns != matrix2->rows)
   {
     printf("These matrices cannot be multiplied");
-    _Exit(1);
+    return emptyMatrix();
   }
   struct Matrix result;
   result.rows = matrix1->rows;
@@ -137,8 +151,8 @@ struct Matrix multScalar(const struct Matrix *matrix1, const double scalar)
 struct Matrix transposeMatrix(const struct Matrix *matrix)
 {
   struct Matrix result;
-  result.rows = matrix->rows;
-  result.columns = matrix->columns;
+  result.rows = matrix->columns;
+  result.columns = matrix->rows;
   result.values = calloc(matrix->columns * matrix->rows, sizeof(double));
   for (int i = 0; i < result.rows; ++i)
   {
@@ -150,8 +164,9 @@ struct Matrix transposeMatrix(const struct Matrix *matrix)
   return result;
 }
 
-void printMatrix(const struct Matrix *matrix)
+void printMatrix(const char* name, const struct Matrix *matrix)
 {
+  printf("%s\n", name);
   for (int i = 0; i < matrix->rows; ++i)
   {
     for (int j = 0; j < matrix->columns; ++j)
@@ -161,6 +176,7 @@ void printMatrix(const struct Matrix *matrix)
     printf("\n");
   }
   printf("\n");
+  free(matrix->values);
 }
 
 int main()
@@ -177,19 +193,19 @@ int main()
   fillMatrix(&matrix2);
 
   struct Matrix matrix3 = sumMatrix(&matrix1, &matrix2);
-  printMatrix(&matrix3);
+  printMatrix("Sum", &matrix3);
 
   matrix3 = subMatrix(&matrix1, &matrix2);
-  printMatrix(&matrix3);
-
-  matrix3 = multMatrix(&matrix1, &matrix2);
-  printMatrix(&matrix3);
-
-  matrix3 = multScalar(&matrix1, 5.0);
-  printMatrix(&matrix3);
+  printMatrix("Subtraction", &matrix3);
 
   matrix3 = transposeMatrix(&matrix1);
-  printMatrix(&matrix3);
+  printMatrix("Transpose", &matrix3);
+
+  matrix3 = multScalar(&matrix1, 5.0);
+  printMatrix("Scalar multiplication", &matrix3);
+
+  matrix3 = multMatrix(&matrix1, &matrix2);
+  printMatrix("Multiplication", &matrix3);
 
   printf("%f", detMatrix(matrix1));
 
