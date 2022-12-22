@@ -211,24 +211,6 @@ void MatrixTest<T>::exp_test() {
     }
 }
 
-/*template<typename T>
-void MatrixTest<T>::equalTest() {
-    try {
-        std::vector<T> eq_vector1 = {2.951365, 3.4599872, 3.4599872, 2.951365};
-        std::vector<T> eq_vector2 = {2.951365, 3.4599873, 3.4599879, 2.951386};
-        Matrix<T> matrix1 = createMatrix(eq_vector1);
-        Matrix<T> matrix2 = createMatrix(eq_vector2);
-        T eq_true_array[] = {1};
-        Matrix<T> res_matrix(1, 1);
-        int res = Matrix<T>::isEqual(matrix1, matrix2);
-        res_matrix.setValue(0, res);
-        calculationCheck(eq_true_array, &res_matrix, "Matrix equality");
-    }
-    catch(MatrixException &Exception_object) {
-        printMessage("equalTest", Exception_object);
-    }
-}*/
-
 
 template<typename T>
 void MatrixTest<T>::counter_test() {
