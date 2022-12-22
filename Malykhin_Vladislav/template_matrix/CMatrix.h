@@ -19,7 +19,6 @@ public:
     [[maybe_unused]] CMatrix(int input_rows, int input_cols);
     CMatrix(int input_rows, int input_cols, T number);
     CMatrix(int input_rows, int input_cols, const std::vector<T>& v);
-    //explicit CMatrix(int identity_size);
     CMatrix(const CMatrix<T> &other);
     CMatrix(CMatrix<T> &&other) noexcept;
     ~CMatrix();

@@ -37,13 +37,6 @@ CMatrix<T>::CMatrix(int input_rows, int input_cols, const std::vector<T> &v):Mat
 }
 
 
-/*template<typename T>
-CMatrix<T>::CMatrix(int identity_size): Matrix<T>(identity_size) {
-    counter++;
-    memory_size = calcMemory(identity_size, identity_size);
-    general_size += memory_size;
-}*/
-
 
 template<typename T>
 CMatrix<T>::CMatrix(const CMatrix<T> &other): Matrix<T>(other) {
