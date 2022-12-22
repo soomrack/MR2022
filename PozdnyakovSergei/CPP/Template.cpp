@@ -11,8 +11,8 @@ public:
 };
 
 
-Matrix_Exception NOTSQUARE("Make matrix square\n");
-Matrix_Exception ERRORSIZE("Change matrix size\n");
+Matrix_Exception NOTSQUAREMATRIX("Matrix must be square\n");
+Matrix_Exception ERRORSIZE("Matrix have not equal size\n");
 
 
 template<typename T>
@@ -31,7 +31,7 @@ public:
     ~Matrix();
 
 
-    void info();
+    virtual void print();
     void set_random(const unsigned int);
     void set_values(const unsigned int l, const T* array);
 
@@ -44,8 +44,9 @@ public:
     Matrix<T> minor(Matrix<T>&, const unsigned int row, const unsigned int col);
     Matrix<T> transpose();
     double determinant(const Matrix<T>&);
-
     Matrix<T>& operator=(const Matrix<T>&);
+    Matrix<T> power (const Matrix<T>&, const unsigned int);
+
     friend std::ostream& operator<<(std::ostream& out, Matrix<T> matrix)
     {
         {
@@ -109,7 +110,7 @@ Matrix<T>::Matrix(Matrix<T>&& matrix) {
 }
 
 template <typename T>
-void Matrix<T>::info() {
+void Matrix<T>::print() {
     for (unsigned int row = 0; row < rows; ++row) {
         for (unsigned int col = 0; col < cols; ++col) {
             std::cout << value[row * cols + col] << " ";
@@ -151,45 +152,45 @@ Matrix<T>::Matrix(unsigned int col) {
 template <typename T>
 Matrix<T> Matrix<T>::operator+ (const Matrix<T>& matrix) {
     if (rows != matrix.rows) throw ERRORSIZE;
-    Matrix result(matrix);
+    Matrix itog(matrix);
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++) {
-        result.value[idx] += value[idx];
+        itog.value[idx] += value[idx];
     }
-    return result;
+    return itog;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator- (const Matrix<T>& matrix)  {
     if (rows != matrix.rows) throw ERRORSIZE;
-    Matrix result(matrix);
+    Matrix itog(matrix);
     for (unsigned int idx = 0; idx < matrix.cols * matrix.rows; idx++) {
-        result.value[idx] -= value[idx];
+        itog.value[idx] -= value[idx];
     }
-    return result;
+    return itog;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator* (const Matrix<T>& matrix)  {
     if (rows != matrix.rows) throw ERRORSIZE;
-    Matrix result(matrix);
-    for (unsigned int row = 0; row < result.rows; row++) {
-        for (unsigned int col = 0; col < result.cols; col++) {
-            result.value[row* result.rows + col] = 0.00;
-            for (unsigned int k = 0; k < result.cols; k++) {
-                result.value[row * result.cols + col] += value[row * cols + k] * matrix.value[k * result.cols + col];
+    Matrix itog(matrix);
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row* itog.rows + col] = 0.00;
+            for (unsigned int k = 0; k < itog.cols; k++) {
+                itog.value[row * itog.cols + col] += value[row * cols + k] * matrix.value[k * itog.cols + col];
             }
         }
     }
-    return result;
+    return itog;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator* (const T num) {
-    Matrix result(cols, rows);
+    Matrix itog(cols, rows);
     for (unsigned int number = 0; number< rows * cols; number++) {
-        result.value[number] = value[number] * num;
+        itog.value[number] = value[number] * num;
     }
-    return result;
+    return itog;
 }
 
 
@@ -210,16 +211,16 @@ Matrix<T>& Matrix<T>::operator= (const Matrix<T>& matrix)  {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator/(const T num) const {
-    Matrix result(cols, rows);
+    Matrix itog(cols, rows);
     for(unsigned int number = 0; number < rows * cols; ++number) {
-        result.value[number] = value[number]/num;
+        itog.value[number] = value[number]/num;
     }
-    return result;
+    return itog;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::exponent(const Matrix<T>& M, const unsigned int acc){
-    if (M.rows != M.cols) throw NOTSQUARE;
+    if (M.rows != M.cols) throw NOTSQUAREMATRIX;
     Matrix itog(M.cols);
     Matrix temp(M.cols);
     double factorial = 1.0;
@@ -229,6 +230,18 @@ Matrix<T> Matrix<T>::exponent(const Matrix<T>& M, const unsigned int acc){
         itog = itog + temp / factorial;
     }
     return itog;
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::power (const Matrix<T>& M, const unsigned int n) {
+    if (M.rows != M.cols) throw NOTSQUAREMATRIX;
+    Matrix<T> itog (rows, cols);
+    itog.unit_matrix();
+    for (unsigned int number = 1; number <= n; number++) {
+        itog *= *this;
+    }
+    *this = itog;
 }
 
 
@@ -251,19 +264,19 @@ Matrix<T> Matrix<T>::minor(Matrix<T>& M, unsigned int row, unsigned int col) {
 }
 template <typename T>
 Matrix<T> Matrix<T>::transpose() {
-    Matrix result = {cols, rows};
-    for (unsigned int row = 0; row < result.rows; row++) {
-        for (unsigned int col = 0; col < result.cols; col++) {
-            result.values[row * result.cols + col] = value[col * result.cols + row];
+    Matrix itog = {cols, rows};
+    for (unsigned int row = 0; row < itog.rows; row++) {
+        for (unsigned int col = 0; col < itog.cols; col++) {
+            itog.value[row * itog.cols + col] = value[col * itog.cols + row];
         }
     }
-    return result;
+    return itog;
 }
 
 template <typename T>
 double Matrix<T>::determinant(const Matrix<T>& matrix)
 {
-    if(cols != rows) throw NOTSQUARE;
+    if(cols != rows) throw NOTSQUAREMATRIX;
     double det = 0;
     int sign = 1;
     if (rows == 0 and cols == 0)
@@ -283,8 +296,9 @@ double Matrix<T>::determinant(const Matrix<T>& matrix)
 template <typename T1>
 class Matrix_Memory : public Matrix<T1> {
 private:
-    static unsigned long memory_size;
-    static unsigned long total_memory;
+    static unsigned long int memory_size;
+    static unsigned long int total_memory;
+    static unsigned int quantity;
 public:
     Matrix_Memory<T1>();
     Matrix_Memory<T1>(unsigned int, unsigned int);
@@ -292,7 +306,7 @@ public:
     Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
     ~Matrix_Memory();
     Matrix_Memory<T1>&  operator= (const  Matrix_Memory<T1>& );
-    void info();
+    virtual void print();
 };
 
 template <typename T>
@@ -308,15 +322,10 @@ Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
     memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
     memory_size += matrix.memory_size;
     total_memory += memory_size;
+    quantity++;
     return *this;
 }
 
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory()
-{
-    this->memory_size += 0;
-    this->total_memory += 0;
-}
 
 
 template <typename T>
@@ -327,6 +336,7 @@ Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
     this->value = new T[this->rows * this->cols];
     memory_size = row * col * sizeof(T);
     total_memory += memory_size;
+
 }
 
 
@@ -336,32 +346,32 @@ Matrix_Memory<T>::~Matrix_Memory()
     total_memory -= memory_size;
 }
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
+Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& m)
 {
     this->values = new T[this->rows * this->cols];
-    memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
-    memory_size = matrix.memory_size;
+    memcpy(this->value, m.value, sizeof(T) * this->rows * this->cols);
+    memory_size = m.memory_size;
     total_memory += memory_size;
 }
 
 
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
+Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& m) noexcept
 {
 
-memory_size = matrix.memory_size;
+memory_size = m.memory_size;
 
-matrix.rows = 0;
-matrix.cols = 0;
-matrix.values = nullptr;
-matrix.memory_size = 0;
+m.rows = 0;
+m.cols = 0;
+m.values = nullptr;
+m.memory_size = 0;
 }
 
 
 template <typename T>
-void Matrix_Memory<T>::info()
+void Matrix_Memory<T>::print()
 {
-    std::cout << "Total memory " << this->total_memory << " byte" << std::endl;
+    std::cout << "Used " << this->total_memory << " bytes" << std::endl;
 }
 
 template <typename T>
@@ -370,10 +380,10 @@ template <typename T>
 unsigned long int Matrix_Memory<T>::memory_size = 0;
 
 int main() {
-    Matrix_Memory<float> m1(3,3);
+    Matrix_Memory<double> m1(3,3);
     m1.set_random(10);
     std:: cout << m1;
-    Matrix_Memory<float> m2(3, 3);
+    Matrix_Memory<double> m2(3, 3);
     m2.set_random(10);
     std:: cout << m2;
     std::cout << m1 + m2;
@@ -382,6 +392,6 @@ int main() {
     std::cout << m1 * 3;
     std::cout << m1 / 3;
     std::cout << m1.exponent(m1,5);
-    m1.info();
+    m1.print();
     return 0;
 }

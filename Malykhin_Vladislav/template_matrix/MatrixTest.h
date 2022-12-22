@@ -19,10 +19,10 @@ private:
     inline static T power_array[] = {64, 216, 27, 91};
     inline static int power = 3;
 
+
 public:
     static void using_unused();
     static void calculation_check(T true_array[], Matrix<T> *matrix, const std::string& text);
-    //static Matrix<T> create_matrix(const std::vector<T>& vector);
     static void output_test();
     static void overload_test();
     static void addition_test();

@@ -423,21 +423,39 @@ Matrix_with_memory<T>::~Matrix_with_memory() {
 
 template <typename T>
 Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(Matrix_with_memory&& matrix) noexcept {
-	if (this != &matrix) {
-		this->memory_size = matrix.memory_size;
+	if (this == &matrix) return *this;
+	this->rows = matrix.rows;
+	this->cols = matrix.cols;
+	this->values = matrix.values;
 
-		matrix.memory_size = 0;
-	}
+	this->total_memory = - this->memory_size + matrix.memory_size;
+
+	this->memory_size = matrix.memory_size;
+
+	matrix.memory_size = 0;
+	matrix.values = nullptr;
+	return *this;
 
 }
 
 
 template <typename T>
 Matrix_with_memory<T>& Matrix_with_memory<T>::operator=(const Matrix_with_memory& matrix) {
-	if (this != &matrix) {
-		this->memory_size = matrix.memory_size;
-		this->total_memory += this->memory_size;
+	if (this == &matrix) {
+		return *this;
 	}
+	delete[] this->values;
+
+	this->rows = matrix.rows;
+	this->cols = matrix.cols;
+
+	this->values = new T[this->rows * this->cols];
+	memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
+
+	this->total_memory -= this->memory_size;
+	this->memory_size = matrix.memory_size;
+
+	return *this;
 }
 
 
@@ -534,7 +552,6 @@ int main() {
 	Matrix_with_memory<int> D(3, 3);
 	D.set_random_values();
 	D.print_matrix();
-
 
 	return 0;
 }
