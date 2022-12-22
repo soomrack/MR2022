@@ -1,20 +1,27 @@
 #include "MatrixTest.h"
 
+
 int main() {
-    MatrixTest::using_unused();
-    MatrixTest::output_test();
-    MatrixTest::overload_test();
-    MatrixTest::addition_test();
-    MatrixTest::number_addition_test();
-    MatrixTest::subtraction_test();
-    MatrixTest::multiplication_test();
-    MatrixTest::number_multiplication_test();
-    MatrixTest::determinant_test();
-    MatrixTest::transposition_test();
-    MatrixTest::inversion_test();
-    MatrixTest::inverse_multiplication_test();
-    MatrixTest::number_division_test();
-    MatrixTest::power_test();
-    MatrixTest::exp_test();
+    MatrixTest<float>::usingUnused();
+    MatrixTest<float>::outputTest();
+    MatrixTest<double>::overloadTest();
+    MatrixTest<float>::additionTest();
+    MatrixTest<float>::numberAdditionTest();
+    MatrixTest<float>::subtractionTest();
+    MatrixTest<double>::multiplicationTest();
+    MatrixTest<float>::numberMultiplicationTest();
+    MatrixTest<float>::determinantTest();
+    MatrixTest<float>::transpositionTest();
+    MatrixTest<float>::inversionTest();
+    MatrixTest<float>::inverseMultiplicationTest();
+    MatrixTest<float>::numberDivisionTest();
+    MatrixTest<float>::powerTest();
+    MatrixTest<double>::expTest();
+    MatrixTest<float>::equalTest();
+    MatrixTest<float>::counterTest();
+    MatrixTest<double>::matrixMemTest();
+    MatrixTest<float>::matrixMemTest();
+    MatrixTest<double>::genMemTest();
+    MatrixTest<float>::genMemTest();
     return 0;
 }
