@@ -1,11 +1,30 @@
 #include <stdio.h>
 #include <malloc.h>
 
-typedef struct Matrix{
+typedef struct Matrix{ // утечки обратная матрица определитель степень матрицы (в copy), стилистика кода; на вход подавать const, columns переделать в cols
     unsigned int rows;
     unsigned int columns;
     double  **cells;
 } Matrix;
+void error_messege(int error_code){
+    switch(error_code) {
+        case 1:
+            printf("Error: size of matrix_out is wrong.\n");
+            break;
+        case 2 :
+            printf("Error: number of columns of the first matrix isn't equal number of the rows of the second matrix.\n");
+            break;
+        case 3:
+            printf("Error: the sizes of the matrices are different.\n\n");
+            break;
+        case 4 :
+            printf("Error: the matrix isn't square.\n");
+            break;
+        case 5:
+            printf("Error: determinant of the matrix equals zero.\n");
+            break;
+    }
+}
 
 void matrix_zero(Matrix *matrix){
     for(int rows = 0; rows < matrix->rows; rows++)
@@ -18,17 +37,17 @@ void error(Matrix *matrix){
     matrix->columns = 0;
 }
 
-void matrix_make(unsigned int rows, unsigned int columns, Matrix *matrix_in){ //выделяет память под нулевую матрицу размера rows*columns
-    matrix_in->rows = rows;
-    matrix_in->columns = columns;
+void matrix_make(const unsigned int rows_in, const unsigned int columns_in, Matrix *matrix_in){ //выделяет память под нулевую матрицу размера rows*columns
+    matrix_in->rows = rows_in;
+    matrix_in->columns = columns_in;
     matrix_in->cells = (double **)malloc(sizeof(double *) * matrix_in->rows + sizeof(double) * matrix_in->rows * matrix_in->columns);
     double* start = (double*)((char*)matrix_in->cells + matrix_in->rows * sizeof(double*));
-    for(rows = 0; rows < matrix_in->rows; rows++)
+    for(int rows = 0; rows < matrix_in->rows; rows++)
         matrix_in->cells[rows] = start + rows * matrix_in->columns;
     matrix_zero(matrix_in);
 }
 
-void matrix_copy(Matrix matrix_in, Matrix *matrix_out){
+void matrix_copy(Matrix matrix_in, Matrix *matrix_out){// добавить очищение
     matrix_out->rows = matrix_in.rows;
     matrix_out->columns = matrix_in.columns;
     for(int rows = 0; rows < matrix_out->rows; rows++)
@@ -60,12 +79,16 @@ void matrix_multiply_number(Matrix matrix_in, double coefficient, Matrix *matrix
             matrix_out->cells[rows][columns] = coefficient * matrix_in.cells[rows][columns];
 }
 
-void matrix_multiply_matrix(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix_out){ // double free
-    if(matrix_in1.columns != matrix_in2.rows){
-        printf("Number of columns of the first matrix isn't equal number of the rows of the second matrix.\n");
+void matrix_multiply_matrix(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix_out){
+    if(matrix_out->rows != matrix_in2.rows || matrix_in2.columns != matrix_in1.columns){
+        error_messege(1);
         error(matrix_out);
     }
-
+    else
+    if(matrix_in1.columns != matrix_in2.rows){
+        error_messege(2);
+        error(matrix_out);
+    }
     else{
         for(int rows = 0; rows < matrix_in1.rows; rows++)
             for(int columns = 0; columns < matrix_in2.columns; columns++)
@@ -111,7 +134,7 @@ void matrix_addition_subtraction_test(Matrix matrix_in1, Matrix matrix_in2){
         matrix_subtraction(matrix_in1, matrix_in2, &matrix3);
         printf("The result of subtraction:\n");
         matrix_print(matrix3);
-    } else printf("Error: the sizes of the matrices are different.\n\n");
+    } else error_messege(3);
     free(matrix3.cells);
 }
 
@@ -130,7 +153,7 @@ void transposition_test(Matrix matrix_in){
     free(matrix3.cells);
 }
 
-Matrix matrix_of_minor(Matrix matrix_in, unsigned int row, unsigned int column){
+Matrix matrix_of_minor(Matrix matrix_in, unsigned int row, unsigned int column){ //Возможна утечка памяти
     Matrix matrix_out;
     matrix_make(matrix_in.rows - 1, matrix_in.columns - 1, &matrix_out);
     unsigned int i = 0; // индексы элементов новой матрицы размера (n-1)*(n-1)
@@ -153,30 +176,30 @@ double matrix_determinant(Matrix matrix_in){
         double determinant = 0;
         int k = 1;
         for(int columns = 0; columns < matrix_in.columns; columns++){
-            Matrix matrix3;
-            matrix3 = matrix_of_minor(matrix_in, 0, columns); // создаём матрицу размера (n-1)*(n-1) для нахождения минора
-            determinant += matrix_in.cells[0][columns] * k * matrix_determinant(matrix3);
+            Matrix matrix_minor;
+            matrix_minor = matrix_of_minor(matrix_in, 0, columns); // создаём матрицу размера (n-1)*(n-1) для нахождения минора
+            determinant += matrix_in.cells[0][columns] * k * matrix_determinant(matrix_minor);
             k = -k;
-            free(matrix3.cells);
+            free(matrix_minor.cells);
         }
         return determinant;
-    } else
-        switch(matrix_in.rows) {
-            case 2:
-                return matrix_in.cells[0][0] * matrix_in.cells[1][1] - matrix_in.cells[1][0] * matrix_in.cells[0][1];
-            case 1:
-                return matrix_in.cells[0][0];
+    }
+    switch(matrix_in.rows) {
+        case 2:
+            return matrix_in.cells[0][0] * matrix_in.cells[1][1] - matrix_in.cells[1][0] * matrix_in.cells[0][1];
+        case 1:
+            return matrix_in.cells[0][0];
         }
 }
 
 void matrix_determinant_test(Matrix matrix_in){
     if(matrix_in.rows == matrix_in.columns) printf("Matrix determinant = %lf\n\n", matrix_determinant(matrix_in));
-    else printf("Matrix determinant error:the matrix isn't square.\n\n");
+    else error_messege(4);
 }
 
 void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
     if(matrix_in.rows != matrix_in.columns){
-        printf("Error: the matrix isn't square.\n");
+        error_messege(4);
         error(matrix_out);
     }
     else{
@@ -184,9 +207,9 @@ void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
     double det = matrix_determinant(matrix_in);
     Matrix matrix_buffer;
     matrix_make(matrix_out->rows, matrix_out->columns, &matrix_buffer);
-    if (det < 0.0001 && det > -0.0001)
+    if (det < 0.0001 && det > -0.0001)//вынести в константы
     {
-        printf("Determinant of the matrix equals zero.\n");
+        error_messege(5);
         error(matrix_out);
     }
     else {
@@ -229,11 +252,11 @@ void matrix_power(Matrix matrix_in, int power, Matrix *matrix_out){
             else{
                 power = -power;
                 invert_matrix(matrix_in, matrix_out);
-                Matrix matrix4;
-                matrix_make(matrix_out->rows, matrix_out->columns, &matrix4);
-                matrix_copy(*matrix_out, &matrix4);
-                matrix_power(matrix4, power, matrix_out);
-                free(matrix4.cells);
+                Matrix matrix_buff;
+                matrix_make(matrix_out->rows, matrix_out->columns, &matrix_buff);
+                matrix_copy(*matrix_out, &matrix_buff);
+                matrix_power(matrix_buff, power, matrix_out);
+                free(matrix_buff.cells);
             }
             break;
     }
@@ -241,23 +264,23 @@ void matrix_power(Matrix matrix_in, int power, Matrix *matrix_out){
 
 void matrix_exp(Matrix matrix_in, Matrix *matrix_out) {
     if (matrix_in.rows != matrix_in.columns) {
-        printf("Error: the matrix isn't square.\n");
+        error_messege(4);
         error(matrix_out);
     }
     else {
-        Matrix matrix1;
-        matrix_make(matrix_in.rows, matrix_in.columns, &matrix1);
-        matrix_copy(matrix_in, &matrix1);
+        Matrix matrix_buffer;
+        matrix_make(matrix_in.rows, matrix_in.columns, &matrix_buffer);
+        matrix_copy(matrix_in, &matrix_buffer);
         int factorial = 1;
         double k;
         for (int count = 0; count < 17; count++) {
             if (count > 1) factorial *= count;
             k = 1.0 / factorial;
-            matrix_power(matrix1, count, &matrix1);
-            matrix_multiply_number(matrix1, k, &matrix1);
+            matrix_power(matrix_buffer, count, &matrix_buffer);
+            matrix_multiply_number(matrix_buffer, k, &matrix_buffer);
             matrix_addition(*matrix_out, matrix_in, matrix_out);
         }
-        free(matrix1.cells);
+        free(matrix_buffer.cells);
     }
 }
 
