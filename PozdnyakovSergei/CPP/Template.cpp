@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdlib>
+/*
 #include <cmath>
+*/
 #include <cstring>
 
 class Matrix_Exception : public std::domain_error
