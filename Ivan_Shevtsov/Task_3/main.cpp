@@ -371,6 +371,8 @@ Memory<T>::Memory(Memory&& matrix) noexcept : Matrix<T>(matrix) {
 template <typename T>
 Memory<T>::~Memory() {
 	print_memory();
+	this->total_memory -= this->memory_size;
+	this->memory_size = 0;
 }
 
 template <typename T>
@@ -413,7 +415,7 @@ Memory<T>& Memory<T>::operator=(const Memory& matrix) {
 
 template <typename T>
 void Memory<T>::print_memory() {
-	std::cerr << id << " matrix deconstucted" << std::endl;
+	std::cerr << id << "'th matrix deconstucted" << std::endl;
 	std::cerr << "Memory size(bytes): " << this->memory_size << std::endl;
 	std::cerr << "Total memory(bytes): " << Memory::total_memory << std::endl;
 }
