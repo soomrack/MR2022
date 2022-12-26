@@ -318,7 +318,7 @@ class Matrix_Memory : public Matrix<T1> {
 private:
     static unsigned long int memory_size;
     static unsigned long int total_memory;
-    static unsigned int quantity;
+    static unsigned long int quantity;
 public:
     Matrix_Memory<T1>();
     Matrix_Memory<T1>(unsigned int, unsigned int);
@@ -326,9 +326,7 @@ public:
     Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
     ~Matrix_Memory();
     Matrix_Memory<T1>&  operator= (const  Matrix_Memory<T1>& );
-/*
     Matrix_Memory<T1>&  operator= (Matrix_Memory<T1>&& ) noexcept ;
-*/
     virtual void print();
 };
 
@@ -347,8 +345,7 @@ Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
     return *this;
 }
 
-
-/*template <typename T>
+template <typename T>
 Matrix_Memory<T>& Matrix_Memory<T>::operator= (Matrix_Memory<T>&& matrix) noexcept {
     if (this == &matrix) return *this;
     rows = matrix.rows;
@@ -361,7 +358,7 @@ Matrix_Memory<T>& Matrix_Memory<T>::operator= (Matrix_Memory<T>&& matrix) noexce
     total_memory += memory_size;
     quantity++;
     return *this;
-}*/
+}
 
 
 template <typename T>
