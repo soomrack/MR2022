@@ -543,9 +543,9 @@ void ALL_TESTS() {
 	test_sub();
 	test_mult_scalar();
 	test_mult();
-//	test_det();
-//	test_rev();
-//	test_transpose();
+	test_det();
+	test_rev();
+	test_transpose();
 }
 
 
@@ -566,6 +566,10 @@ void test_memory() {
 	Memory<double> D = Memory<double>(2, 2);
 	D.fill_from_array(test_matrix4);
 
+
+	D = A;
+
+	D.print_value("hello");
 
 }
 
