@@ -348,10 +348,10 @@ Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
 template <typename T>
 Matrix_Memory<T>& Matrix_Memory<T>::operator= (Matrix_Memory<T>&& matrix) noexcept {
     if (this == &matrix) return *this;
-    rows = matrix.rows;
-    cols = matrix.cols;
-    delete[]value;
-    value = matrix.value;
+    this->rows = matrix.rows;
+    this->cols = matrix.cols;
+    delete[]this->value;
+    this->value = matrix.value;
     //value = new T[cols * rows];
     //memcpy(value, matrix.value, rows * cols * sizeof(T));
     memory_size += matrix.memory_size;
