@@ -378,7 +378,7 @@ Memory<T>::~Memory() {
 template <typename T>
 Memory<T>& Memory<T>::operator=(Memory&& other) noexcept {
 	if (this == &other) return *this;
-	
+	delete[] this->values;
 	this->rows = other.rows;
 	this->cols = other.cols;
 	this->values = other.values;
