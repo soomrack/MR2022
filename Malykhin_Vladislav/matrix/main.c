@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <malloc.h>
 
-typedef struct Matrix{ // утечки обратная матрица определитель степень матрицы (в copy), стилистика кода; на вход подавать const, columns переделать в cols
+typedef struct Matrix{ // стилистика кода; на вход подавать const, columns переделать в cols
     unsigned int rows;
     unsigned int columns;
     double  **cells;
 } Matrix;
-void error_messege(int error_code){
+void error_message(int error_code){
     switch(error_code) {
         case 1:
             printf("Error: size of matrix_out is wrong.\n");
@@ -40,14 +40,15 @@ void error(Matrix *matrix){
 void matrix_make(const unsigned int rows_in, const unsigned int columns_in, Matrix *matrix_in){ //выделяет память под нулевую матрицу размера rows*columns
     matrix_in->rows = rows_in;
     matrix_in->columns = columns_in;
-    matrix_in->cells = (double **)malloc(sizeof(double *) * matrix_in->rows + sizeof(double) * matrix_in->rows * matrix_in->columns);
+    matrix_in->cells = (double **)malloc(sizeof(double *)
+            * matrix_in->rows + sizeof(double) * matrix_in->rows * matrix_in->columns);
     double* start = (double*)((char*)matrix_in->cells + matrix_in->rows * sizeof(double*));
     for(int rows = 0; rows < matrix_in->rows; rows++)
         matrix_in->cells[rows] = start + rows * matrix_in->columns;
     matrix_zero(matrix_in);
 }
 
-void matrix_copy(Matrix matrix_in, Matrix *matrix_out){// добавить очищение
+void matrix_copy(const Matrix matrix_in, Matrix *matrix_out){// добавить очищение
     matrix_out->rows = matrix_in.rows;
     matrix_out->columns = matrix_in.columns;
     for(int rows = 0; rows < matrix_out->rows; rows++)
@@ -61,7 +62,7 @@ void matrix_fill_0123(Matrix *matrix_in){
             matrix_in->cells[rows][columns] = rows * matrix_in->columns + columns;
 }
 
-void matrix_print(Matrix matrix_in){
+void matrix_print(const Matrix matrix_in){
     if(matrix_in.cells == NULL || matrix_in.rows == 0 || matrix_in.columns == 0)  printf("Error occurred.\n\n");
     else {
         for (int rows = 0; rows < matrix_in.rows; ++rows) {
@@ -73,31 +74,32 @@ void matrix_print(Matrix matrix_in){
     }
 }
 
-void matrix_multiply_number(Matrix matrix_in, double coefficient, Matrix *matrix_out){
+void matrix_multiply_number(const Matrix matrix_in, const double coefficient, Matrix *matrix_out){
     for(int rows = 0; rows < matrix_in.rows; rows++)
         for (int columns = 0; columns < matrix_in.columns; columns++)
             matrix_out->cells[rows][columns] = coefficient * matrix_in.cells[rows][columns];
 }
 
-void matrix_multiply_matrix(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix_out){
+void matrix_multiply_matrix(const Matrix matrix_in1, const Matrix matrix_in2, Matrix *matrix_out){
     if(matrix_out->rows != matrix_in2.rows || matrix_in2.columns != matrix_in1.columns){
-        error_messege(1);
+        error_message(1);
         error(matrix_out);
     }
     else
     if(matrix_in1.columns != matrix_in2.rows){
-        error_messege(2);
+        error_message(2);
         error(matrix_out);
     }
     else{
         for(int rows = 0; rows < matrix_in1.rows; rows++)
             for(int columns = 0; columns < matrix_in2.columns; columns++)
                 for(int counter = 0; counter < matrix_in1.columns; counter++)
-                    matrix_out->cells[rows][columns] += matrix_in1.cells[rows][counter] * matrix_in2.cells[counter][columns];
+                    matrix_out->cells[rows][columns] +=
+                            matrix_in1.cells[rows][counter] * matrix_in2.cells[counter][columns];
     }
 }
 
-void matrix_multiply_test(Matrix matrix_in1, Matrix matrix_in2, double coefficient){
+void matrix_multiply_test(const Matrix matrix_in1, const Matrix matrix_in2, const double coefficient){
     Matrix matrix_multiplied;
     matrix_make(matrix_in1.rows, matrix_in1.columns, &matrix_multiplied);
     printf("Matrix multiplied by number %lf:\n", coefficient);
@@ -111,19 +113,19 @@ void matrix_multiply_test(Matrix matrix_in1, Matrix matrix_in2, double coefficie
     free(matrix_multiplied.cells);
 }
 
-void matrix_addition(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix_out){
+void matrix_addition(const Matrix matrix_in1, const Matrix matrix_in2, Matrix *matrix_out){
         for(int rows = 0; rows < matrix_in1.rows; rows++)
          for (int columns = 0; columns < matrix_in1.columns; columns++)
              matrix_out->cells[rows][columns] = matrix_in1.cells[rows][columns] + matrix_in2.cells[rows][columns];
 }
 
-void matrix_subtraction(Matrix matrix_in1, Matrix matrix_in2, Matrix *matrix_out){
+void matrix_subtraction(const Matrix matrix_in1, const Matrix matrix_in2, Matrix *matrix_out){
     for(int rows = 0; rows < matrix_in1.rows; rows++)
         for (int columns = 0; columns < matrix_in1.columns; columns++)
             matrix_out->cells[rows][columns] = matrix_in1.cells[rows][columns] - matrix_in2.cells[rows][columns];
 }
 
-void matrix_addition_subtraction_test(Matrix matrix_in1, Matrix matrix_in2){
+void matrix_addition_subtraction_test(const Matrix matrix_in1, const Matrix matrix_in2){
     Matrix matrix3;
     matrix_make(matrix_in1.rows, matrix_in1.columns, &matrix3);
     printf("Addition and subtraction test:\n");
@@ -134,26 +136,26 @@ void matrix_addition_subtraction_test(Matrix matrix_in1, Matrix matrix_in2){
         matrix_subtraction(matrix_in1, matrix_in2, &matrix3);
         printf("The result of subtraction:\n");
         matrix_print(matrix3);
-    } else error_messege(3);
+    } else error_message(3);
     free(matrix3.cells);
 }
 
-void matrix_transposition(Matrix matrix_in, Matrix *matrix_out) {
+void matrix_transposition(const Matrix matrix_in, Matrix *matrix_out) {
     for(int rows = 0; rows < matrix_in.rows; rows++)
         for(int columns = 0; columns < matrix_in.columns; columns++)
             matrix_out->cells[rows][columns] = matrix_in.cells[columns][rows];
 }
 
-void transposition_test(Matrix matrix_in){
-    Matrix matrix3;
-    matrix_make(matrix_in.rows, matrix_in.columns, &matrix3);
-    matrix_transposition(matrix_in, &matrix3);
+void transposition_test(const Matrix matrix_in){
+    Matrix matrix_test;
+    matrix_make(matrix_in.rows, matrix_in.columns, &matrix_test);
+    matrix_transposition(matrix_in, &matrix_test);
     printf("The result of transposition:\n");
-    matrix_print(matrix3);
-    free(matrix3.cells);
+    matrix_print(matrix_test);
+    free(matrix_test.cells);
 }
 
-Matrix matrix_of_minor(Matrix matrix_in, unsigned int row, unsigned int column){ //Возможна утечка памяти
+Matrix matrix_of_minor(const Matrix matrix_in,const unsigned int row,const unsigned int column){
     Matrix matrix_out;
     matrix_make(matrix_in.rows - 1, matrix_in.columns - 1, &matrix_out);
     unsigned int i = 0; // индексы элементов новой матрицы размера (n-1)*(n-1)
@@ -171,7 +173,7 @@ Matrix matrix_of_minor(Matrix matrix_in, unsigned int row, unsigned int column){
     return matrix_out;
 }
 
-double matrix_determinant(Matrix matrix_in){
+double matrix_determinant(const Matrix matrix_in){
     if(matrix_in.rows > 2){ // если матрица по размеру больше, чем > 2*2, то находим миноры и алгебраические дополнения
         double determinant = 0;
         int k = 1;
@@ -183,23 +185,22 @@ double matrix_determinant(Matrix matrix_in){
             free(matrix_minor.cells);
         }
         return determinant;
-    }
-    switch(matrix_in.rows) {
-        case 2:
+    } else
+        if(matrix_in.rows == 2)
             return matrix_in.cells[0][0] * matrix_in.cells[1][1] - matrix_in.cells[1][0] * matrix_in.cells[0][1];
-        case 1:
-            return matrix_in.cells[0][0];
-        }
+        else
+            if(matrix_in.rows == 1)
+                return matrix_in.cells[0][0];
 }
 
-void matrix_determinant_test(Matrix matrix_in){
+void matrix_determinant_test(const Matrix matrix_in){
     if(matrix_in.rows == matrix_in.columns) printf("Matrix determinant = %lf\n\n", matrix_determinant(matrix_in));
-    else error_messege(4);
+    else error_message(4);
 }
 
-void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
+void invert_matrix(const Matrix matrix_in, Matrix *matrix_out){
     if(matrix_in.rows != matrix_in.columns){
-        error_messege(4);
+        error_message(4);
         error(matrix_out);
     }
     else{
@@ -209,14 +210,16 @@ void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
     matrix_make(matrix_out->rows, matrix_out->columns, &matrix_buffer);
     if (det < 0.0001 && det > -0.0001)//вынести в константы
     {
-        error_messege(5);
+        error_message(5);
         error(matrix_out);
     }
     else {
         for (int rows = 0; rows < matrix_in.rows; ++rows)
             for (int columns = 0; columns < matrix_in.columns; ++columns) {
-                matrix_out->cells[rows][columns] = matrix_determinant(matrix_of_minor(matrix_in, rows, columns)) * k / det;
+                Matrix matrix_minor = matrix_of_minor(matrix_in, rows, columns);
+                matrix_out->cells[rows][columns] = matrix_determinant(matrix_minor) * k / det;
                 k = -k;
+                free(matrix_minor.cells);
             }
             matrix_transposition(*matrix_out, &matrix_buffer);
             matrix_copy(matrix_buffer, matrix_out);
@@ -225,7 +228,7 @@ void invert_matrix(Matrix matrix_in, Matrix *matrix_out){
     }
 }
 
-void invert_test(Matrix matrix_in){
+void invert_test(const Matrix matrix_in){
     Matrix matrix_out;
     matrix_make(matrix_in.rows, matrix_in.columns, &matrix_out);
     printf("Invertible matrix:\n");
@@ -234,7 +237,7 @@ void invert_test(Matrix matrix_in){
     free(matrix_out.cells);
 }
 
-void matrix_power(Matrix matrix_in, int power, Matrix *matrix_out){
+void matrix_power(const Matrix matrix_in,int power, Matrix *matrix_out){
     switch (power) {
         case 0:
             for (int rows = 0; rows < matrix_in.rows; rows++)
@@ -262,9 +265,9 @@ void matrix_power(Matrix matrix_in, int power, Matrix *matrix_out){
     }
 }
 
-void matrix_exp(Matrix matrix_in, Matrix *matrix_out) {
+void matrix_exp(const Matrix matrix_in, Matrix *matrix_out) {
     if (matrix_in.rows != matrix_in.columns) {
-        error_messege(4);
+        error_message(4);
         error(matrix_out);
     }
     else {
@@ -284,7 +287,7 @@ void matrix_exp(Matrix matrix_in, Matrix *matrix_out) {
     }
 }
 
-void exp_test(Matrix matrix_in){
+void exp_test(const Matrix matrix_in){
     printf("Matrix exponential test:\n");
     Matrix exp_matrix;
     matrix_make(matrix_in.rows, matrix_in.columns, &exp_matrix);
