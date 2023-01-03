@@ -20,19 +20,32 @@ void message(int ind) {
     std::cout << MESSAGES[ind];
 }
 
-typedef
 class Matrix{
+private:
+	unsigned int cols;
+	unsigned int rows;
+	double* values;
+	double** item;
 public:
     Matrix();
     Matrix(const Matrix& orig);
+    Matrix(Matrix&& orig) noexcept;
     ~Matrix();
     void reset_mem(unsigned int set_rows, unsigned int set_cols);
-    Matrix& operator=(const Matrix &orig);
 
-    unsigned int cols;
-    unsigned int rows;
-    double* values;
-    double** item;
+	unsigned int get_rows() const;
+
+	unsigned int get_cols() const;
+
+	double get_values(unsigned int ind);
+
+	void set_values(unsigned int ind, double val);
+
+	double get_item(unsigned int row, unsigned int col);
+
+	void set_item(unsigned int row, unsigned int col, double val);
+
+	Matrix& operator=(const Matrix& orig);
 
     void fill_sum(unsigned int set_rows,unsigned int set_cols);
 
@@ -47,28 +60,37 @@ public:
     void change_rows(int fst_row, int snd_row) const;
 
     void print_values() const;
-} Matrix;
+
+	Matrix operator + (Matrix snd_matx);
+
+	Matrix operator - (Matrix snd_matx);
+
+	Matrix operator * (Matrix snd_matx);
+
+	Matrix operator * (double a)  const;
+
+	Matrix operator / (double a)  const;
+
+	Matrix& operator += (Matrix& snd_matx);
+
+	Matrix& operator -= (Matrix& snd_matx);
+
+	bool operator == (Matrix B);
+
+	bool operator != (Matrix B);
+
+};
 
 const double DETERMINANT_ACCURACY = 0.000001;
 const double EXPONENT_ACCURACY = 0.001;
 const int EXPONENT_STEPS = 100;
 double EQUAL_ACCURACY = 0.001;
 
-Matrix operator + (Matrix fst_matx, Matrix snd_matx);
 
-Matrix operator - (Matrix fst_matx, Matrix snd_matx);
-
-Matrix operator * (Matrix fst_matx, Matrix snd_matx);
-
-Matrix operator * (Matrix matrix, double a);
-
-bool operator == (Matrix A, Matrix B);
-
-bool operator != (Matrix A, Matrix B);
 
 double matx_det(Matrix matrix);
 
-double check_max_dif(Matrix fst_mat, Matrix snd_mat);
+double check_max_dif(Matrix* fst_mat, Matrix* snd_mat);
 
 Matrix matrix_exp(Matrix matrix);
 

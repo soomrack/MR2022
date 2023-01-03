@@ -72,7 +72,8 @@ void check_mult() {
 
     Matrix res;
     res = A * B;
-    if (res != MAT_MUL) {
+
+	if (res != MAT_MUL) {
         std::cout << "ERROR: MULTIPLICATION INCORRECT\n";
         return;
     }
@@ -82,7 +83,7 @@ void check_mult() {
 void check_det() {
 	Matrix A;
 	A.fill_val(3,3, MAT_VAL);
-	
+
 	double det_a = matx_det(A);
 	if (det_a != DET_VAL) {
 		printf("ERROR: DETERMINANT INCORRECT\n");
@@ -98,7 +99,7 @@ void check_exp() {
 	Matrix A;
 	A.fill_sum(3, 3);
 	
-	Matrix res = matrix_exp(A);
+	Matrix res = matrix_exp(&A);
 	if (res != MAT_EXP) {
 		std::cout << "ERROR: EXPONENT INCORRECT\n";
 		return;
