@@ -40,15 +40,15 @@ void error(Matrix *matrix){
 void matrix_make(const unsigned int rows_in, const unsigned int columns_in, Matrix *matrix_in){ //выделяет память под нулевую матрицу размера rows*columns
     matrix_in->rows = rows_in;
     matrix_in->columns = columns_in;
-    matrix_in->cells = (double **)malloc(sizeof(double *)
-            * matrix_in->rows + sizeof(double) * matrix_in->rows * matrix_in->columns);
+    matrix_in->cells
+    = (double **)malloc(sizeof(double *) * matrix_in->rows + sizeof(double) * matrix_in->rows * matrix_in->columns);
     double* start = (double*)((char*)matrix_in->cells + matrix_in->rows * sizeof(double*));
     for(int rows = 0; rows < matrix_in->rows; rows++)
         matrix_in->cells[rows] = start + rows * matrix_in->columns;
     matrix_zero(matrix_in);
 }
 
-void matrix_copy(const Matrix matrix_in, Matrix *matrix_out){// добавить очищение
+void matrix_copy(const Matrix matrix_in, Matrix *matrix_out){
     matrix_out->rows = matrix_in.rows;
     matrix_out->columns = matrix_in.columns;
     for(int rows = 0; rows < matrix_out->rows; rows++)

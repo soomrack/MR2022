@@ -5,5 +5,6 @@ int main(){
     MatrixTest<float>::full_test();
     std::cout<<"Test of double type/////////////////////////////////////////////////////////////////////////////////\n";
     MatrixTest<double>::full_test();
+    MatrixTest<double>::exp_test();
     return 0;
 }

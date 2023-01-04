@@ -18,7 +18,7 @@ protected:
     T **data;
     T *values;
 public:
-    inline static const double EPSILON = 0.000001;
+    inline static const T EPSILON = 0.000001;
 
     Matrix() noexcept;  //  empty matrix
     Matrix(int input_rows, int input_cols);

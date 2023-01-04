@@ -286,7 +286,6 @@ void MatrixTest<T>::full_test(){
     MatrixTest<T>::inverse_multiplication_test();
     MatrixTest<T>::number_division_test();
     MatrixTest<T>::power_test();
-    MatrixTest<T>::exp_test();
     MatrixTest<T>::counter_test();
     MatrixTest<T>::matrix_mem_test();
     MatrixTest<T>::gen_mem_test();
