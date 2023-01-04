@@ -1,5 +1,10 @@
 #include "matrix_cpp.cpp"
 
+#define __CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NE
+
 double ADD_VAL[9] = { 0.0,1.0, 2.0,
                      1.0,3.0,5.0,
                      2.0,5.0,8.0 };
@@ -61,16 +66,16 @@ void check_sub() {
 }
 
 void check_mult() {
-    Matrix MAT_MUL;
+	Matrix MAT_MUL;
     MAT_MUL.fill_val(3,3, MUL_VAL);
-	
-    Matrix A;
+
+	Matrix A;
     A.fill_sum(3, 4);
-    
-    Matrix B;
+
+	Matrix B;
     B.fill_mult(4, 3);
 
-    Matrix res;
+	Matrix res;
     res = A * B;
 
 	if (res != MAT_MUL) {
@@ -115,5 +120,6 @@ int main() {
 		check_det();
 		check_exp();
     }
+	_CrtDumpMemoryLeaks();
     return 0;
 }

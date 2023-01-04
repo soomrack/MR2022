@@ -45,8 +45,6 @@ public:
 
 	void set_item(unsigned int row, unsigned int col, double val);
 
-	Matrix& operator=(const Matrix& orig);
-
     void fill_sum(unsigned int set_rows,unsigned int set_cols);
 
     void fill_mult(unsigned int set_rows,unsigned int set_cols);
@@ -60,6 +58,10 @@ public:
     void change_rows(int fst_row, int snd_row) const;
 
     void print_values() const;
+
+	Matrix& operator=(const Matrix& orig);
+
+	Matrix& operator=(Matrix&& orig) noexcept;
 
 	Matrix operator + (Matrix snd_matx);
 

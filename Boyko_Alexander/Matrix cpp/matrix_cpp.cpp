@@ -1,7 +1,5 @@
 #include "matrix_cpp.h"
 
-#include <iostream>
-
 
 Matrix::Matrix() {
     //std::cout << "Constructor\n";
@@ -30,6 +28,7 @@ Matrix::Matrix(const Matrix &orig) {
 
 Matrix::Matrix(Matrix &&orig) noexcept{
 	//std::cout << "Move constructor\n";
+
 	rows = orig.rows;
 	cols = orig.cols;
 	values = orig.values;
@@ -42,7 +41,7 @@ Matrix::Matrix(Matrix &&orig) noexcept{
 
 Matrix::~Matrix() {
     //std::cout << "Deconstructor\n";
-    free(values);
+	free(values);
     free(item);
 }
 
@@ -56,14 +55,6 @@ void Matrix::reset_mem(unsigned int set_rows, unsigned int set_cols) {
     for(int j = 0; j < rows; j++){
         item[j] = values + j * cols;
     }
-}
-
-Matrix &Matrix::operator=(const Matrix& orig) {
-    reset_mem(orig.rows,orig.cols);
-    for(int k = 0; k < rows * cols; k++){
-        values[k] = orig.values[k];
-    }
-    return *this;
 }
 
 void Matrix::fill_sum(unsigned int set_rows, unsigned int set_cols) {
@@ -126,6 +117,32 @@ void Matrix::print_values() const {
     }
 }
 
+Matrix &Matrix::operator=(const Matrix& orig) {
+	//std::cout << "Equal operator copy\n";
+	if (this == &orig) return *this;
+	reset_mem(orig.rows,orig.cols);
+	for(int k = 0; k < rows * cols; k++){
+		values[k] = orig.values[k];
+	}
+	return *this;
+}
+
+Matrix &Matrix::operator=(Matrix&& orig) noexcept{
+	//std::cout << "Equal operator move\n";
+	if (this == &orig) return *this;
+	free(values);
+	free(item);
+	cols = orig.cols;
+	rows = orig.rows;
+	values = orig.values;
+	item = orig.item;
+	orig.cols = 0;
+	orig.rows = 0;
+	orig.values = nullptr;
+	orig.item = nullptr;
+	return *this;
+}
+
 Matrix Matrix::operator+(Matrix const snd_matx) {
 	if (rows != snd_matx.rows || cols != snd_matx.cols){
         message(ADD);
@@ -157,7 +174,7 @@ Matrix Matrix::operator-(const Matrix snd_matx) {
 }
 
 Matrix Matrix::operator*(const Matrix snd_matx) {
-    if (cols != snd_matx.rows){
+	if (cols != snd_matx.rows){
         message(MUL);
         message(ERR);
         Matrix EMPTY;
@@ -166,13 +183,13 @@ Matrix Matrix::operator*(const Matrix snd_matx) {
     Matrix res_matx;
     res_matx.make_zero(rows, snd_matx.cols);
     for(int k = 0; k < rows; k++) {
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < snd_matx.get_cols(); j++) {
             for (int n = 0; n < cols; n++) {
                 res_matx.item[k][j] += item[k][n] * snd_matx.item[n][j];
-            }
+			}
         }
     }
-    return res_matx;
+	return res_matx;
 }
 
 Matrix Matrix::operator*(double const a) const {
