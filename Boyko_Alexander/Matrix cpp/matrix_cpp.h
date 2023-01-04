@@ -3,8 +3,7 @@
 #include "cmath"
 #include <string>
 #include <iostream>
-#include <array>
-
+#include <exception>
 
 enum Message {ERR = 0, ADD = 1, SUB = 2, MUL = 3, DET = 4, EXP = 5};
 
@@ -20,12 +19,21 @@ void message(int ind) {
     std::cout << MESSAGES[ind];
 }
 
+class Exceptions: public std::exception{
+public:
+	Exceptions(const char* const& msg) : exception(msg){}
+};
+
+Exceptions NOT_SQUARE("Matrix must be square!\n");
+Exceptions WRONG_SIZE("Incompatible matrix sizes!\n");
+Exceptions DIV_BY_ZERO("Division by zero!\n");
+
+
 class Matrix{
 private:
 	unsigned int cols;
 	unsigned int rows;
 	double* values;
-	double** item;
 public:
     Matrix();
     Matrix(const Matrix& orig);

@@ -5,10 +5,8 @@ Matrix::Matrix() {
     //std::cout << "Constructor\n";
     cols = 1;
     rows = 1;
-    values = (double*) malloc(sizeof(double));
-    item = (double**) malloc(sizeof(double*));
+    values = new double[cols * rows];
     values[0] = NAN;
-    item[0] = values;
 }
 
 Matrix::Matrix(const Matrix &orig) {
@@ -16,11 +14,8 @@ Matrix::Matrix(const Matrix &orig) {
 
     rows = orig.rows;
     cols = orig.cols;
-    values = (double*) malloc(rows * cols * sizeof(double));
-    item = (double**) malloc(rows * sizeof(double*));
-    for(int j = 0; j < rows; j++){
-        item[j] = values + j * cols;
-    }
+    values = new double[rows * cols];
+
     for(int k = 0; k < rows * cols; k++){
         values[k] = orig.values[k];
     }
@@ -32,29 +27,21 @@ Matrix::Matrix(Matrix &&orig) noexcept{
 	rows = orig.rows;
 	cols = orig.cols;
 	values = orig.values;
-	item = orig.item;
 	orig.rows = 0;
 	orig.cols = 0;
 	orig.values = nullptr;
-	orig.item = nullptr;
 }
 
 Matrix::~Matrix() {
     //std::cout << "Deconstructor\n";
-	free(values);
-    free(item);
+	delete[] values;
 }
 
 void Matrix::reset_mem(unsigned int set_rows, unsigned int set_cols) {
-    free(values);
-    free(item);
+    delete[] values;
     rows = set_rows;
     cols = set_cols;
-    values = (double*) malloc(rows * cols * sizeof(double));
-    item = (double**) malloc(rows * sizeof(double*));
-    for(int j = 0; j < rows; j++){
-        item[j] = values + j * cols;
-    }
+    values = new double[rows * cols];
 }
 
 void Matrix::fill_sum(unsigned int set_rows, unsigned int set_cols) {
@@ -99,10 +86,10 @@ void Matrix::make_zero(unsigned int set_rows, unsigned int set_cols) {
 
 void Matrix::change_rows(const int fst_row, const int snd_row) const {
     double item_buff;
-    for (int k = 0; k < cols; k++) {
-        item_buff = item[snd_row][k];
-        item[snd_row][k] = item[fst_row][k];
-        item[fst_row][k] = item_buff;
+    for (int col = 0; col < cols; col++) {
+        item_buff = values[snd_row * cols + col];
+        values[snd_row * cols + col] = values[fst_row * cols + col];
+		values[fst_row * cols + col] = item_buff;
     }
 }
 
@@ -130,25 +117,20 @@ Matrix &Matrix::operator=(const Matrix& orig) {
 Matrix &Matrix::operator=(Matrix&& orig) noexcept{
 	//std::cout << "Equal operator move\n";
 	if (this == &orig) return *this;
-	free(values);
-	free(item);
+	delete[] values;
 	cols = orig.cols;
 	rows = orig.rows;
 	values = orig.values;
-	item = orig.item;
 	orig.cols = 0;
 	orig.rows = 0;
 	orig.values = nullptr;
-	orig.item = nullptr;
 	return *this;
 }
 
 Matrix Matrix::operator+(Matrix const snd_matx) {
 	if (rows != snd_matx.rows || cols != snd_matx.cols){
         message(ADD);
-        message(ERR);
-        Matrix EMPTY;
-        return EMPTY;
+		throw WRONG_SIZE;
     }
     Matrix res_matx;
     res_matx.make_zero(rows,cols);
@@ -161,9 +143,7 @@ Matrix Matrix::operator+(Matrix const snd_matx) {
 Matrix Matrix::operator-(const Matrix snd_matx) {
     if (rows != snd_matx.rows || cols != snd_matx.cols){
         message(SUB);
-        message(ERR);
-        Matrix EMPTY;
-        return EMPTY;
+        throw WRONG_SIZE;
     }
     Matrix res_matx;
     res_matx.make_zero(rows,cols);
@@ -176,16 +156,14 @@ Matrix Matrix::operator-(const Matrix snd_matx) {
 Matrix Matrix::operator*(const Matrix snd_matx) {
 	if (cols != snd_matx.rows){
         message(MUL);
-        message(ERR);
-        Matrix EMPTY;
-        return EMPTY;
+		throw WRONG_SIZE;
     }
     Matrix res_matx;
     res_matx.make_zero(rows, snd_matx.cols);
     for(int k = 0; k < rows; k++) {
         for (int j = 0; j < snd_matx.get_cols(); j++) {
             for (int n = 0; n < cols; n++) {
-                res_matx.item[k][j] += item[k][n] * snd_matx.item[n][j];
+                res_matx.values[k * snd_matx.cols + j] += values[k * cols + n] * snd_matx.values[n * snd_matx.cols + j];
 			}
         }
     }
@@ -202,6 +180,7 @@ Matrix Matrix::operator*(double const a) const {
 }
 
 Matrix Matrix::operator / (double a)  const{
+	if (a == 0) throw DIV_BY_ZERO;
 	Matrix res_matx;
 	res_matx.make_zero(rows,cols);
 	for(int k = 0; k < rows * cols; k++) {
@@ -267,18 +246,17 @@ void Matrix::set_values(unsigned int ind, double val){
 }
 
 double Matrix::get_item(unsigned int row, unsigned int col) {
-	return item[row][col];
+	return values[row * cols + col];
 }
 
 void Matrix::set_item(unsigned int row, unsigned int col, double val){
-	item[row][col] = val;
+	values[row * cols + col] = val;
 }
 
 double matx_det(const Matrix matrix) {
     if(matrix.get_rows() != matrix.get_cols()){
         message(DET);
-        message(ERR);
-        return NAN;
+		throw NOT_SQUARE;
     }
     double det = 1;
     Matrix trian_mat;
@@ -313,9 +291,7 @@ double check_max_dif(Matrix* fst_mat, Matrix* snd_mat) {
 Matrix matrix_exp(const Matrix* matrix) {
 	if(matrix->get_rows() != matrix->get_cols()){
 		message(EXP);
-		message(ERR);
-		Matrix EMPTY;
-		return EMPTY;
+		throw NOT_SQUARE;
 	}
 	Matrix res_mat;
 	res_mat.make_one(matrix->get_rows(),matrix->get_cols());

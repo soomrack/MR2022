@@ -113,13 +113,34 @@ void check_exp() {
 }
 
 int main() {
-    {
-        check_add();
-        check_sub();
-		check_mult();
-		check_det();
-		check_exp();
-    }
+	try {check_add();}
+	catch (Exceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_sub();}
+	catch (Exceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_mult();}
+	catch (Exceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_det();}
+	catch (Exceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_exp();}
+	catch(Exceptions& except){
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+
+
+
 	_CrtDumpMemoryLeaks();
     return 0;
 }
