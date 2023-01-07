@@ -4,7 +4,7 @@
 
 
 
-void Matrix_test::summ_test() {
+void Matrix_test::sum_test() {
     try {
         Matrix A(3, 3);
         A.fill_with(2);

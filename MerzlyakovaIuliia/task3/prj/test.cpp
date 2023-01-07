@@ -13,18 +13,18 @@ private:
     double* values;
 
 public:
-    Matrix();  // Конструктор пустой матрицы
-    Matrix(unsigned int col, unsigned int row);  // Конструктор прямоугольной матрицы
-    Matrix(unsigned int col);  // Конструктор единичной матрицы
-    Matrix(const Matrix& matrix);  // Конструктор копирования матрицы
-    Matrix(Matrix&& matrix);  // Конструктор переноса матрицы
-    ~Matrix();  // Деструктор
+    Matrix();                                       // Конструктор пустой матрицы
+    Matrix(unsigned int col, unsigned int row);     // Конструктор прямоугольной матрицы
+    Matrix(unsigned int col);                       // Конструктор единичной матрицы
+    Matrix(const Matrix& matrix);                   // Конструктор копирования матрицы
+    Matrix(Matrix&& matrix);                        // Конструктор переноса матрицы
+    ~Matrix();                                      // Деструктор
 
 
     void print_matrix();
     void set_values(int max_value);
 
-    Matrix operator+(const Matrix& one) const; //все функции с маленькой буквы
+    Matrix operator+(const Matrix& one) const;
     Matrix operator-(const Matrix& one) const;
     Matrix operator*(const Matrix& one) const;
     Matrix operator*(double coefficient) const;
@@ -50,10 +50,19 @@ public:
 
 Matrix_Exception NotSquare("The matrix should be square\n");
 Matrix_Exception WrongSize("The matrix should have another size\n");
+Matrix_Exception MemoryError("Memory has not been allocated\n");
+Matrix_Exception DivisionError ("Can't divide by zero\n");
 
-Matrix::Matrix() { // посмореть функцию которая как мемкопи
+Matrix::Matrix() {
     cols = 0;
     rows = 0;
+    values = nullptr;
+}
+
+
+Matrix::~Matrix() 
+{
+    if (values != nullptr) delete[] values;
 }
 
 
@@ -71,7 +80,8 @@ Matrix::Matrix(unsigned int col, unsigned int row) {
 Matrix::Matrix(const Matrix& matrix) {
     cols = matrix.cols;
     rows = matrix.rows;
-    values = new double[rows * cols]; // добавить исключение про невыделение памяти
+    values = new double[rows * cols];
+    if (!values) throw MemoryError;
     memcpy(values,matrix.values,rows * cols * sizeof(double));
 }
 
@@ -160,7 +170,7 @@ Matrix Matrix::operator* (const double coefficient) const {
 
 
 
-Matrix Matrix::operator= (Matrix& one)  { // Перегрузка оператора присваивания
+Matrix Matrix::operator= (Matrix& one)  { 
     if (this == &one) {
         return *this;
     }
@@ -173,7 +183,7 @@ Matrix Matrix::operator= (Matrix& one)  { // Перегрузка операто
 }
 
 
-Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка оператора присваивания
+Matrix Matrix::operator= (Matrix&& one)  {
     if (this == &one) {
         return *this;
     }
@@ -186,7 +196,7 @@ Matrix Matrix::operator= (Matrix&& one)  { // Перегрузка операт�
 }
 
 
-Matrix Matrix::operator^(int coefficient) const { // Возведение матрицы в степень убрать елсе
+Matrix Matrix::operator^(int coefficient) const { 
     if(cols != rows) throw NotSquare;
     Matrix Res(*this);
     if (coefficient == 0) {
@@ -196,17 +206,16 @@ Matrix Matrix::operator^(int coefficient) const { // Возведение мат
     if (coefficient == 1) {
         return Res;
     }
-    else {
         const Matrix &start(Res);
         for (unsigned int idx = 0; idx < coefficient; idx++){
             Res = Res * start;
         }
         return Res;
-    }
 }
 
 
-Matrix Matrix::operator/(const double coefficient) const { // добавить исключение - деление на 0 (можно через класс)
+Matrix Matrix::operator/(const double coefficient) const {
+    if (coefficient == 0) throw DivisionError;
     Matrix Res(cols, rows);
     for(unsigned int idx = 0; idx < rows * cols; ++idx) {
         Res.values[idx] = values[idx]/coefficient;
@@ -215,13 +224,15 @@ Matrix Matrix::operator/(const double coefficient) const { // добавить �
 }
 
 
-Matrix Matrix::Exp(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
+Matrix Matrix::exp_m(const Matrix& A, const unsigned int accuracy = 10){ // Матричная экспонента
     if (A.rows != A.cols) throw NotSquare;
     Matrix one(A.cols);
+    Matrix tmp(A.cols);
     Matrix Res = one + A;
     double factorial = 1;
     for (int step = 1; step < accuracy; step++) {
         factorial *= step;
+        tmp = tmp * A;
         Res = Res + (A ^ step) / factorial;
     }
     return Res;
@@ -275,22 +286,30 @@ double Matrix::determinant(const Matrix matrix)
 
 
 int main() {
-    Matrix A(5,5);
-    A.set_values();
-    A.print_matrix();
-    Matrix B(5, 5);
-    B.set_values();
-    B.print_matrix();
-    Matrix Sum = A + B;
+
+    Matrix M1(3,3);
+    M1.set_values();
+    M1.print_matrix();
+
+    Matrix M2(3, 3);
+    M2.set_values();
+    M2.print_matrix();
+    Matrix Sum = M1 + M2;
     Sum.print_matrix();
-    Matrix Sub = A - B;
+
+    Matrix Sub = M1 - M2;
     Sub.print_matrix();
-    Matrix Mult = A * B;
+
+    Matrix Mult = M1 * M2;
     Mult.print_matrix();
-    Matrix Mult_double = A * 4;
+
+    Matrix Mult_double = M1 * 4;
     Mult_double.print_matrix();
-    Matrix Power = A^2;
+
+    Matrix Power = M1^2;
     Power.print_matrix();
-    Matrix Exponent = Matrix::Exp(A);
+
+    Matrix Exponent = Matrix::Exp(M1);
     return 0;
 }
+

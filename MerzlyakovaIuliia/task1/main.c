@@ -40,8 +40,8 @@ int main()
     else 
         printf("\nBob has more money\n");
 
-    printf("Alice's money: %f\n", Alice.bank);
-    printf("Bob's money: %f\n", Bob.bank);
+ //   printf("Alice's money: %f\n", Alice.bank);
+ //   printf("Bob's money: %f\n", Bob.bank);
     return 0;
 
 }

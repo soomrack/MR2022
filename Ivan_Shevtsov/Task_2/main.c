@@ -16,15 +16,14 @@ Matrix allocate_memory(const int row, const int col){
     empty.values = (double*) malloc(row * col * sizeof(double));
     return (empty);}
 
-void output_Matrix(const char* massage, Matrix A){
+void output_matrix(const char* massage, Matrix A){
     printf("%s\n", massage);
     for (int row = 0; row < A.rows; row++){
         for (int col = 0; col < A.cols; col++){
             printf("%lf ", A.values[row * A.cols + col]);}
         printf("\n");}
     printf("\n");
-}
-
+} 
 //errors codes in swich oprator
 void error(int code){
     switch (code) {
@@ -73,12 +72,12 @@ double determinant(Matrix A){
         return A.values[0];
     else if (A.rows == 2)  // second order matrix determinant
         return (A.values[0] * A.values[3] - A.values[1] * A.values[2]);
-    else {
-        for (int col = 0; col < A.cols; col++){
+
+    for (int col = 0; col < A.cols; col++){
             Matrix trun = truncated(0, col, A);
             det += (A.values[col] * pow(-1, col) * determinant(trun));
             free(trun.values);}
-    }
+
     return det;}
 
 double  trace (Matrix A){
@@ -136,30 +135,38 @@ Matrix E(int row){
             E.values[idx] = 0;}
     return E;}
 
-Matrix power (const Matrix A, const int n) { 
-    Matrix M = allocate_memory(A.rows, A.cols);
-    M.values = A.values;
-    for (int count = 1; count < n; count++) {
-        M = multiplication(M,A);
+Matrix copy(Matrix From, const Matrix To){  // transport values from A to B
+    if (From.rows != To.rows || From.cols != To.cols) error(1);
+    for (int idx = 0; idx < From.rows * From.cols; idx++){
+        To.values[idx] = From.values[idx];
     }
-    return M;
+
+    return To;
 }
+
 
 Matrix exponent(Matrix A){
     if (A.cols != A.rows) {
         error(1);}
-    Matrix expon = E(A.rows);
-    Matrix sum = allocate_memory(A.rows, A.cols);
+    Matrix Ed = E(A.rows);
     Matrix mul = allocate_memory(A.rows, A.cols);
-    mul.values = A.values;
-    expon = addition(expon, A);
+    mul = copy(A, mul);
+    Matrix expon = addition(Ed, A);
+    free(Ed.values);
     double factorial = 1;
     double itc = 10;  //iteration count
     for (int idx = 2; idx < itc; idx++) {
         factorial *= idx;
-        mul = multiplication(mul, A);
-        sum = multiplication_scalar(mul, (1.0 / factorial));
-        expon = addition(expon, sum);
+        Matrix mult = multiplication(mul, A);
+        copy(mult, mul);
+        free(mult.values);
+        Matrix sumt = multiplication_scalar(mul, (1.0 / factorial));
+        Matrix sum = allocate_memory(A.rows, A.cols);
+        copy(sumt, sum);
+        free(sumt.values);
+        Matrix sumtt = addition(expon, sum);
+        copy(sumtt, expon);
+        free(sumtt.values);
         free(sum.values);
     }
     free(mul.values);
@@ -221,15 +228,15 @@ void menu(Matrix A,  Matrix B){
         switch (num) {
             case 1:
                 addiction = addition(A,B);
-                output_Matrix("addiction", addiction);
+                output_matrix("addiction", addiction);
                 free(addiction.values); break;
             case 2:
                 sub = subtraction(A,B);
-                output_Matrix("subtraction",sub);
+                output_matrix("subtraction",sub);
                 free(sub.values); break;
             case 3:
                 multi = multiplication(A,B);
-                output_Matrix("multiplication", multi);
+                output_matrix("multiplication", multi);
                 free(multi.values); break;
             default:
                 error(2);
@@ -252,24 +259,24 @@ void menu(Matrix A,  Matrix B){
                 double scl;
                 scanf("%lf", &scl);
                 Matrix mul = multiplication_scalar(A, scl);
-                output_Matrix("resolut: \n",mul);
+                output_matrix("resolut: \n",mul);
                 free(mul.values); break;
             case 3:
                 mul = exponent(A);
-                output_Matrix("exponent", mul);
+                output_matrix("exponent", mul);
                 free(mul.values); break;
             case 4:
                 printf("print scalar: \n");
                 double div;
                 scanf("%lf", &div);
                 Matrix di = multiplication_scalar(A, 1 / div);
-                output_Matrix("resolut: \n",di);
+                output_matrix("resolut: \n",di);
                 free(di.values); break;
             case 5:
                 printf("resolut: %lf\n",trace(A)); break;
             case 6:
                 sub = inverse(A);
-                output_Matrix("resolut: ",sub);
+                output_matrix("resolut: ",sub);
                 free(sub.values); break;
             default:
                 error(2);}}}
@@ -293,11 +300,10 @@ int main() {
     input_Matrix(A);
     input_Matrix(B);
 #endif
-    output_Matrix("First Matrix", A);
-    output_Matrix("Second Matrix", B);
+    output_matrix("First Matrix", A);
+    output_matrix("Second Matrix", B);
 
     menu(A, B);
-
 
 #ifdef MANUAL_INPUT
     free(A.values);

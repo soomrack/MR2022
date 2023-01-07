@@ -83,6 +83,9 @@ EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &other) {
 template<typename T>
 EMatrix<T>& EMatrix<T>::operator=(EMatrix<T> &&other) noexcept {
     Matrix<T>::operator=(other);
+    general_size += other.memory_size - memory_size;
+    memory_size = other.memory_size;
+    other.memory_size = 0;
     return *this;
 }
 

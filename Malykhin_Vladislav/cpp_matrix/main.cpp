@@ -1,9 +1,6 @@
-//
-// Created by User on 05.12.2022.
-//
-#include"Matrix.h"
+#include"MatrixTest.h"
 
 int main(){
-    Matrix(1,1,1);
+    MatrixTest::full_test();
     return 0;
 }

@@ -49,6 +49,10 @@ public:
 
 };
 
+Matrix::~Matrix() {
+    if (values!=nullptr)
+    delete[] values;
+}
 
 
 Matrix::Matrix() {
@@ -215,17 +219,19 @@ Matrix Matrix::operator/(const double number) const {
 }
 
 
-Matrix Matrix::exp(const Matrix& A, const unsigned int accuracy = 10){
+Matrix Matrix::exp(const Matrix& A, const unsigned int accuracy = 30){
     if (A.rows != A.cols) throw NOTSQUARE;
-    Matrix one(A.cols);
-    Matrix result = one + A;
-    double factorial = 1;
+    Matrix result(A.cols);
+    Matrix temp(A.cols);
+    double factorial = 1.0;
     for (int step = 1; step < accuracy; step++) {
         factorial *= step;
-        result = result + (A ^ step) / factorial;
+        temp = temp * A;
+        result = result + temp / factorial;
     }
     return result;
 }
+
 
 
 Matrix Matrix::minor(Matrix& A, unsigned int row, unsigned int col) {

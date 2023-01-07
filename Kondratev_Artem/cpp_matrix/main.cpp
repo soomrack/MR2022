@@ -23,29 +23,5 @@ int main() {
     MatrixTest<float>::matrixMemTest();
     MatrixTest<double>::genMemTest();
     MatrixTest<float>::genMemTest();
-
-    int a;
-    EMatrix<double> A(2,2);
-    std::cout << A.getMemSize() << std::endl;
-    std::cout << EMatrix<double>::getGenSize() << std::endl;
-    std::cout << EMatrix<double>::getCounter() << std::endl;
-    EMatrix<double> B(2,2);
-    std::cout << A.getMemSize() << std::endl;
-    std::cout << A.getMemSize() << std::endl;
-    std::cout << EMatrix<double>::getGenSize() << std::endl;
-    std::cout << EMatrix<double>::getCounter() << std::endl;
-    A.~EMatrix();
-    std::cout << EMatrix<double>::getGenSize() << std::endl;
-    std::cout << EMatrix<double>::getCounter() << std::endl;
-    B.~EMatrix();
-    std::cout << EMatrix<double>::getGenSize() << std::endl;
-    std::cout << EMatrix<double>::getCounter() << std::endl;
-    std::cin >> a;
-
-    EMatrix<double> C(2,2,4);
-    EMatrix<double> D(3,3,5);
-    C = D;
-    C.output();
-
     return 0;
 }
