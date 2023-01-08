@@ -276,12 +276,20 @@ public:
 		return cols;
 	}
 
-	double get_values(unsigned int ind) {
+	Type get_value(unsigned int ind) {
 		return values[ind];
 	}
 
-	void set_values(unsigned int ind, double val) {
+	void set_value(unsigned int ind, double val) {
 		values[ind] = val;
+	}
+
+	Type* get_values() {
+		return values;
+	}
+
+	void set_value(double* val) {
+		values = val;
 	}
 
 	double get_item(unsigned int row, unsigned int col) {
@@ -292,23 +300,23 @@ public:
 		values[row * cols + col] = val;
 	}
 
-	double matx_det() {
+	Type matx_det() {
 		if (get_rows() != get_cols()) {
 			message(DET);
 			throw NOT_SQUARE;
 		}
-		double det = 1;
+		Type det = 1;
 		Matrix trian_mat;
 		trian_mat = *this;
-		for (int row_fix = 1; row_fix < trian_mat.get_rows(); row_fix++) { // row that will be subtracted
-			for (int row_c = row_fix; row_c < trian_mat.get_rows(); row_c++) { // start from the next row
+		for (int row_fix = 1; row_fix < trian_mat.get_rows(); row_fix++) { // row next to one that will be subtracted
+			for (int row_c = row_fix; row_c < trian_mat.get_rows(); row_c++) { // start from the this row
 				if (fabs(trian_mat.get_item(row_fix - 1, row_fix - 1)) < DETERMINANT_ACCURACY) { // division by zero check
 					trian_mat.change_rows(row_fix - 1, row_fix);
 					det = -det;
 				}
-				double koef = trian_mat.get_item(row_c, row_fix - 1) / trian_mat.get_item(row_fix - 1, row_fix - 1);
+				Type koef = trian_mat.get_item(row_c, row_fix - 1) / trian_mat.get_item(row_fix - 1, row_fix - 1);
 				for (int col_c = 0; col_c < trian_mat.get_cols(); col_c++) {
-					double item_val = trian_mat.get_item(row_c, col_c) - trian_mat.get_item(row_fix - 1, col_c) * koef;
+					Type item_val = trian_mat.get_item(row_c, col_c) - trian_mat.get_item(row_fix - 1, col_c) * koef;
 					trian_mat.set_item(row_c, col_c, item_val);
 				}
 			}
@@ -317,11 +325,11 @@ public:
 		return det;
 	}
 
-	double check_max_dif(Matrix* snd_mat) {
-		double dif = 0.0;
+	Type check_max_dif(Matrix* snd_mat) {
+		Type dif = 0.0;
 		for (int k = 0; k < cols * rows; k++) {
-			if (fabs(get_values(k) - snd_mat->get_values(k)) > dif) {
-				dif = get_values(k) - snd_mat->get_values(k);
+			if (fabs(get_value(k) - snd_mat->get_value(k)) > dif) {
+				dif = get_value(k) - snd_mat->get_value(k);
 			}
 		}
 		return dif;
