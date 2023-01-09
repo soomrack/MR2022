@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
 
 class Matrix {
 private:
@@ -14,7 +15,7 @@ private:
 public:
     Matrix() = default;
     Matrix(unsigned int input_rows, unsigned int input_cols);
-    Matrix(const Matrix& X); //copy
+    Matrix(const Matrix& X);
     Matrix(unsigned int input_rows, unsigned int input_cols, double x);
     ~Matrix();
 
@@ -143,17 +144,28 @@ void Matrix::print() {
 }
 
 
+class Square_Matrix: public Matrix {
+private:
+    unsigned int dimension = 0;
+    unsigned int rows = dimension;
+    unsigned int cols = dimension;
+    unsigned int matrix_size = pow(dimension, 2);
+    unsigned int memory_size = matrix_size + dimension;
+    double** values = nullptr;
+    double* data = nullptr;
+public:
+    Square_Matrix() = default;
+    Square_Matrix(unsigned int input_dimension);
+    Square_Matrix(const Square_Matrix& X);
+    Square_Matrix(unsigned int input_dimension, double x);
+    ~Square_Matrix();
+};
+
+
 int main() {
     short n = 2;
     short m = 2;
     Matrix A(n, m);
-
-    A.print();
-//    try {
-//        A / 0;
-//    } catch (std::string) {
-//        std::cout << "Error!";
-//    }
 
     return 0;
 }
