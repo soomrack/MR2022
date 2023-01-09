@@ -46,7 +46,7 @@ public:
     Matrix<T> operator-(const Matrix& X);
     Matrix<T>& operator*=(const Matrix& X);
     Matrix<T> operator*(const Matrix& X);
-    Matrix<T> operator^(unsigned b);
+    Matrix<T> operator^(unsigned int b);
     Matrix<T> operator/(T b);
 
     void print();
@@ -76,7 +76,7 @@ Matrix<T>::Matrix(const Matrix& X) {
         matrix_size = X.matrix_size;
         data = new T [matrix_size];
         values = new T *[rows];
-        memcpy(data, X.data,  matrix_size * sizeof(double));
+        memcpy(data, X.data,  matrix_size * sizeof(T));
         for (int row = 0; row < rows; ++row)
             values[row] = data + row * cols;
 
@@ -191,14 +191,14 @@ class EMatrix: public Matrix<T> {
 private:
     unsigned int k = 0;
     unsigned int final_size = 0;
-    static unsigned int calcMemory(int c_rows, int c_cols);
+    static unsigned int calcMemory(unsigned int c_rows, unsigned int c_cols);
 private:
     unsigned int mem_size{};
 public:
     EMatrix();
     EMatrix(unsigned int input_rows, unsigned int input_cols);
     EMatrix(const EMatrix<T>& X);
-    EMatrix(int input_rows, int input_cols, T x);
+    EMatrix(unsigned int input_rows, unsigned int input_cols, T x);
     ~EMatrix();
 
     EMatrix<T>& operator=(const EMatrix& X);
@@ -209,7 +209,7 @@ public:
 };
 
 template<typename T>
-unsigned int EMatrix<T>::calcMemory(int c_rows, int c_cols) {
+unsigned int EMatrix<T>::calcMemory(unsigned int c_rows, unsigned int c_cols) {
     return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
 
@@ -276,9 +276,9 @@ int main() {
     short n = 2;
     short m = 2;
 
-    Matrix A(n, m, 1);
+    Matrix<double> A(n, m, 6);
     A.print();
-    Matrix B(n, m, 3);
+    Matrix<double> B(n, m, 3);
     B += A;
     B.print();
     B = A / 2;
