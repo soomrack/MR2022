@@ -6,8 +6,7 @@ class Matrix {
 private:
     unsigned int rows = 0;
     unsigned int cols = 0;
-    unsigned int matrix_size;
-    unsigned int memory_size;
+    unsigned int matrix_size = rows * cols;
     double** values = nullptr;
     double* data = nullptr;
 
@@ -37,17 +36,21 @@ public:
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     rows = input_rows;
     cols = input_cols;
-    matrix_size = rows * cols;
-    memory_size = matrix_size + rows;
-    data = new double[memory_size];
+    data = new double[matrix_size];
+    values = new double *[rows];
     for (int row = 0; row < rows; ++row)
         values[row] = data + row * cols;
 }
 
 Matrix::Matrix(const Matrix& X) {
+    delete[] data;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
     matrix_size = X.matrix_size;
-    data = new double[memory_size];
-    memcpy(data, X.data, memory_size * sizeof(double));
+    data = new double[matrix_size];
+    values = new double *[rows];
+    memcpy(data, X.data, sizeof(double) * matrix_size);
 }
 
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
@@ -122,8 +125,8 @@ Matrix Matrix::operator/(double b) {
 }
 
 Matrix Matrix::T() {
-    for (int row = 0; row < rows; ++row) {
-        for (int col = 0; col < cols; ++col) {
+    for (int row = 0; rows < rows; ++row) {
+        for (int col = 0; cols < cols; ++col) {
             values[rows][cols] = values[cols][rows];
         }
     }
@@ -132,7 +135,7 @@ Matrix Matrix::T() {
 
 
 void Matrix::swap(Matrix& X) {
-    std::swap(memory_size, X.memory_size);
+    std::swap(matrix_size, X.matrix_size);
     std::swap(data, X.data);
 }
 
