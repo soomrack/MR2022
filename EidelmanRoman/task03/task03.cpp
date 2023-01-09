@@ -120,8 +120,8 @@ Matrix Matrix::operator/(double b) {
 }
 
 Matrix Matrix::T() {
-    for (int row = 0; rows < rows; ++row) {
-        for (int col = 0; cols < cols; ++col) {
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
             values[rows][cols] = values[cols][rows];
         }
     }
