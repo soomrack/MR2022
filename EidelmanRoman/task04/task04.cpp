@@ -8,8 +8,7 @@ private:
     std::string message;
 public:
     explicit MatrixException(std::string input_message);
-    MatrixException(const MatrixException &other) = default;
-    MatrixException(MatrixException &&other) = default;
+    MatrixException(const MatrixException &X) = default;
     ~MatrixException() override = default;
 
     std::string getMessage() const;
@@ -62,7 +61,7 @@ Matrix<T>::Matrix(unsigned int input_rows, unsigned int input_cols) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw MatrixException("Memory error!");
+        throw MatrixException("Memory error!\n");
     }
     for (int row = 0; row < rows; ++row)
         values[row] = data + row * cols;
@@ -79,7 +78,6 @@ Matrix<T>::Matrix(const Matrix& X) {
         memcpy(data, X.data,  matrix_size * sizeof(T));
         for (int row = 0; row < rows; ++row)
             values[row] = data + row * cols;
-
     }
 }
 
@@ -170,6 +168,8 @@ Matrix<T> Matrix<T>::operator^(unsigned int b) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator/(T b) {
+    if (b == 0)
+        throw MatrixException("Division by zero!\n");
     for (int i = 0; i < matrix_size; ++i)
         data[i] /= b;
     return *this;
@@ -276,21 +276,25 @@ int main() {
     short n = 2;
     short m = 2;
 
-    Matrix<double> A(n, m, 6);
-    A.print();
-    Matrix<double> B(n, m, 3);
-    B += A;
-    B.print();
+    try {
+        Matrix<double> A(n, m);
+    }
+    catch(MatrixException &Exception_object) {
+        std::cout << Exception_object.getMessage();
+    }
+
+    Matrix<double> A(n, m, 1);
+    Matrix<double> B(n, m);
+
+    try {
+        B = A / 0;
+    }
+    catch(MatrixException &Exception_object) {
+        std::cout << Exception_object.getMessage();
+    }
+
     B = A / 2;
     B.print();
-
-
-//    try {
-//        Matrix T(n, m);
-//    }
-//    catch(MatrixException &Exception_object) {
-//        std::cout << Exception_object.getMessage();
-//    }
 
     return 0;
 }
