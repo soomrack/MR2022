@@ -1,118 +1,83 @@
 #include <stdio.h>
 
-
-int main()
+int main() 
 {
-	int price;
-	double rate = 5;
-	double rate_ip = 8;
-	int term = 239;
-	
-	printf("Price of house : ");
-	scanf_s("%d", &price);
-	printf("\n \n");
+    unsigned long long int bank_a = 100000000, bank_b = 100000000, rubles_a, cents_a,       // Стартовый капитал
+        rubles_b, cents_b;
 
-	int first_pay_Bob = 300000;
-	int pay_from_month_Bob = ((price - first_pay_Bob) * ((rate_ip / 100) + 1)/240) * 1.0007;
-	printf("Pay from mouth : %d \n \n", pay_from_month_Bob);
-	
-	int BREAK = 1;
-	int BREAK_1 = 1;
-	int BREAK_2 = 1;
-	int start_capital_Bob = 1000000;
-	int start_capital_Alice = 1000000;
-	int rent_Bob = 10000;
-	int rent_Alice = 40000;
-	int salary_Bob = 150000;
-	int salary_Alice = 150000;
+    int first_cont = 70000000;                                  // Первоначальный взнос
+    int a_utilities = 4000000;                                  // Коммунальные услуги Alice
+    int b_utilities = 1000000;                                  // Коммунальные услуги Bob
+    long long int room = 6000000;                               // Стоимость квартиры в рублях
+    int month_cont = 5000000;                                   // Ежемесячный платеж
+    double rate = 0.07;                                         // Ставка банка первые три года
+    int revenue_a = 15000000, revenue_b = 15000000;             
+    double tax = 0.001;
 
-	if (pay_from_month_Bob > rent_Bob + salary_Bob)
-	{
-		printf("Bob must choose a cheaper house \n");
-		BREAK = 1;
-	
-	}
-	else
-	{
-		BREAK = 0;
-	}
+    bank_b -= first_cont;                                       // Остаток на вкладе Боба
+    for (unsigned int year = 1; year <= 20; year++) 
+    {
+        if (year % 5 == 0) 
+        {
+            room = (long long int) (room * 1.5);
+            if (room < 50000000 & room > 20000000)
+                tax = 0.0015;
+        }
+        if (year == 10)                                         // Новая зарплата для Alice
+        { 
+            printf("\n\nPrint new revenue for Alice");
+            scanf_s("%d%", &revenue_a);
+            revenue_a = revenue_a * 100;
+        }
+        if (year == 14)                                         // Новая зарплата для Bob
+        { 
+            printf("\n\nPrint new revenue for Bob");
+            scanf_s("%d", &revenue_b);
+            revenue_b = revenue_b * 100;
+        }
+        for (unsigned int month = 1; month <= 12; month++) 
+        {
+            if (year == 4) 
+            {
+                rate = 0.1;                                     // Ставка банка через три года
+            }
+            bank_a = (unsigned long long int) ((bank_a + revenue_a - a_utilities) * (1.f + rate / 12));
+            bank_b = (unsigned long long int) ((bank_b + revenue_b - b_utilities - month_cont - room * tax) *
+                (1.f + rate / 12));
+        }
+        rubles_a = bank_a / 100;
+        cents_a = bank_a % 100;
+        rubles_b = bank_b / 100;
+        cents_b = bank_b % 100;
 
-	int save_Bob = start_capital_Bob;
-	int save_Alice = start_capital_Alice;
-	int remain_Bob = price * ((rate_ip / 100) + 1) - first_pay_Bob;
-	int remain_Alice = price;
+        printf("\nroom - %llu rubles\n", room);
+        printf("tax - %.1f%\n", tax * 100);
+        printf("current year - %d\n", year);
+        printf("current rate - %.2f\n", rate);
+        printf("Alice actives at the end of year - %llu.%llu%llu rubles\n", rubles_a, cents_a / 10, cents_a % 10);
+        printf("Bob actives at the end of year - %llu.%llu%llu rubles\n", rubles_b + room, cents_b / 10,
+            cents_b % 10);
 
-	printf("Remain %d from Bob \n", remain_Bob);
-
-	if (BREAK != 1)
-	{
-		for (int i = 0; i <= term; i++)
-		{
-			if (i == 35)
-			{
-				rate = 6;
-			}
-			
-			int Interest_Bob = ((save_Bob * ((rate / 100) + 1)) - save_Bob) / 12;
-			save_Bob = save_Bob + ((save_Bob * ((rate / 100) + 1)) - save_Bob) / 12;
-			save_Bob = save_Bob + salary_Bob;
-			remain_Bob = remain_Bob - pay_from_month_Bob;
-			save_Bob = save_Bob - pay_from_month_Bob - rent_Bob;
-			
-
-			printf("After %d month left %d from Bob \n", i + 1, save_Bob);
-			printf("Remain %d from Bob \n", remain_Bob);
-			printf("Interest from the deposit Bob: %d \n \n", Interest_Bob);
-
-			int Interest_Alice;
-
-			if (save_Alice < price && BREAK_2 == 1)
-			{
-				Interest_Alice = ((save_Alice * ((rate / 100) + 1)) - save_Alice) / 12;
-				save_Alice = save_Alice + Interest_Alice + salary_Alice - rent_Alice;
-
-
-				printf("After %d month left %d from Alice \n", i + 1, save_Alice);
-				printf("Interest from the deposit Alice: %d \n \n \n", Interest_Alice);
-			}
-			else if (save_Alice >= price && BREAK_2 == 1 )
-			{
-				printf("Alice buy a house \n");
-				save_Alice = save_Alice - price;
-				BREAK_1 = 0;
-				BREAK_2 = 0;
-			}
-
-			if (BREAK_1 == 0)
-			{
-				Interest_Alice = ((save_Alice * ((rate / 100) + 1)) - save_Alice) / 12;
-				save_Alice = save_Alice + Interest_Alice + salary_Alice - rent_Alice;
-				printf("Alice has already bought a house \n");
-			}
-		}
-
-		if (remain_Bob < 0)
-		{
-			remain_Bob = remain_Bob * -1;
-			save_Bob = save_Bob + remain_Bob;
-		}
-		else
-		{
-			save_Bob = save_Bob - remain_Bob;
-		}
-
-
-		printf("Save Alice == %d \n", save_Alice);
-		printf("Save Bob == %d \n \n", save_Bob);
-
-		if (save_Alice > save_Bob)
-		{
-			printf("Alice saved up %d rubles more than a bean in 20 years \n", save_Alice - save_Bob);
-
-		}
-		else
-		{
-			printf("Bob saved up %d rubles more than a bean in 20 years \n", save_Bob - save_Alice);
-		}
-	}
+        if (rubles_b + room > rubles_a) 
+        {
+            if (cents_b < cents_a) 
+            {
+                rubles_b -= 1;
+                cents_b += 100;
+            }
+            printf("Bob more profitable than Alice on %llu.%llu rubles!\n", ((rubles_b + room) - rubles_a),
+                cents_b - cents_a);
+        }
+        else
+        {
+            if (cents_a < cents_b) 
+            {
+                rubles_a -= 1;
+                cents_a += 100;
+            }
+            printf("Alice more profitable than Bob on %llu.%llu rubles!\n", (rubles_a - (rubles_b + room)),
+                cents_a - cents_b);
+        }
+    }
+    return 0;
 }

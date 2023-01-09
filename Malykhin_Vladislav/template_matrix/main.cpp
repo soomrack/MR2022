@@ -1,6 +1,9 @@
 #include"MatrixTest.h"
 
 int main(){
-    MatrixTest::full_test();
+    std::cout<<"Test of float type//////////////////////////////////////////////////////////////////////////////////\n";
+    MatrixTest<float>::full_test();
+    std::cout<<"Test of double type/////////////////////////////////////////////////////////////////////////////////\n";
+    MatrixTest<double>::full_test();
     return 0;
 }
