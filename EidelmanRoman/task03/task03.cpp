@@ -6,8 +6,8 @@ class Matrix {
 private:
     unsigned int rows = 0;
     unsigned int cols = 0;
-    unsigned int matrix_size = rows * cols;
-    unsigned int memory_size = matrix_size + rows;
+    unsigned int matrix_size;
+    unsigned int memory_size;
     double** values = nullptr;
     double* data = nullptr;
 
@@ -37,6 +37,8 @@ public:
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     rows = input_rows;
     cols = input_cols;
+    matrix_size = rows * cols;
+    memory_size = matrix_size + rows;
     data = new double[memory_size];
     for (int row = 0; row < rows; ++row)
         values[row] = data + row * cols;
