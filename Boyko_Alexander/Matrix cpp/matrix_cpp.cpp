@@ -38,7 +38,8 @@ Matrix::~Matrix() {
 }
 
 void Matrix::reset_mem(unsigned int set_rows, unsigned int set_cols) {
-    delete[] values;
+	//std::cout << "Reset mem\n";
+	delete[] values;
     rows = set_rows;
     cols = set_cols;
     values = new double[rows * cols];
@@ -132,6 +133,7 @@ Matrix Matrix::operator+(Matrix const snd_matx) {
         message(ADD);
 		throw WRONG_SIZE;
     }
+	//std::cout << "Add operator\n";
     Matrix res_matx;
     res_matx.make_zero(rows,cols);
     for(int k = 0; k < rows * cols; k++){
@@ -237,13 +239,22 @@ unsigned int Matrix::get_cols() const{
 	return cols;
 }
 
-double Matrix::get_values(unsigned int ind){
+double Matrix::get_value(unsigned int ind){
 	return values[ind];
 }
 
-void Matrix::set_values(unsigned int ind, double val){
+void Matrix::set_value(unsigned int ind, double val){
 	values[ind] = val;
 }
+
+double* Matrix::get_values() {
+	return values;
+}
+
+void Matrix::set_values(double* val) {
+	values = val;
+}
+
 
 double Matrix::get_item(unsigned int row, unsigned int col) {
 	return values[row * cols + col];
@@ -251,6 +262,61 @@ double Matrix::get_item(unsigned int row, unsigned int col) {
 
 void Matrix::set_item(unsigned int row, unsigned int col, double val){
 	values[row * cols + col] = val;
+}
+
+MemMatrix::MemMatrix(): Matrix(){
+	//std::cout << "Mem Constructor\n";
+	mat_mem = rows * cols * sizeof(double);
+	FULL_MEM += mat_mem;
+	OBJ_COUNT += 1;
+	//print_mem();
+}
+
+MemMatrix::MemMatrix(const Matrix& orig): Matrix(orig){
+	//std::cout << "Mem Copy constructor\n";
+	mat_mem = rows * cols * sizeof(double);
+	FULL_MEM += mat_mem;
+	OBJ_COUNT += 1;
+	//print_mem();
+}
+MemMatrix::MemMatrix(Matrix&& orig): Matrix(orig){
+	//std::cout << "Mem Move constructor\n";
+	mat_mem = rows * cols * sizeof(double);
+	FULL_MEM += mat_mem;
+	OBJ_COUNT += 1;
+	//print_mem();
+}
+MemMatrix::~MemMatrix(){
+	//std::cout << "Mem Deconstructor\n";
+	FULL_MEM -= mat_mem;
+	mat_mem = 0;
+	OBJ_COUNT -= 1;
+	//print_mem();
+}
+
+MemMatrix& MemMatrix::operator=(Matrix&& orig) noexcept {
+	//std::cout << "Mem Equal operator move\n";
+	if (this == &orig) return *this;
+	delete[] values;
+	cols = orig.get_cols();
+	rows = orig.get_rows();
+	values = orig.get_values();
+	FULL_MEM -= mat_mem;
+	mat_mem = rows * cols * sizeof(double);
+	FULL_MEM += mat_mem;
+	orig.set_values(nullptr);
+	return *this;
+}
+
+void MemMatrix::reset_mem(unsigned int set_rows, unsigned int set_cols){
+	std::cout << "Mem reset_mem\n";
+	delete[] values;
+	rows = set_rows;
+	cols = set_cols;
+	values = new double[rows * cols];
+	FULL_MEM -= mat_mem;
+	mat_mem = rows * cols * sizeof(double);
+	FULL_MEM += mat_mem;
 }
 
 double matx_det(const Matrix matrix) {
@@ -281,8 +347,8 @@ double matx_det(const Matrix matrix) {
 double check_max_dif(Matrix* fst_mat, Matrix* snd_mat) {
     double dif = 0.0;
     for(int k = 0; k < fst_mat->get_cols() * fst_mat->get_rows(); k++){
-        if(fabs(fst_mat->get_values(k) - snd_mat->get_values(k)) > dif){
-            dif = fst_mat->get_values(k) - snd_mat->get_values(k);
+        if(fabs(fst_mat->get_value(k) - snd_mat->get_value(k)) > dif){
+            dif = fst_mat->get_value(k) - snd_mat->get_value(k);
         }
     }
     return dif;

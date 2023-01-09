@@ -2,14 +2,14 @@
 #include <cstring>
 #include <cmath>
 
+
 class Matrix {
 private:
     unsigned int rows = 0;
     unsigned int cols = 0;
     unsigned int matrix_size;
-    unsigned int memory_size;
-    double** values = nullptr;
-    double* data = nullptr;
+    double** data = nullptr;
+    double* values = nullptr;
 
     void swap(Matrix& X);
 public:
@@ -38,39 +38,53 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     rows = input_rows;
     cols = input_cols;
     matrix_size = rows * cols;
-    memory_size = matrix_size + rows;
-    data = new double[memory_size];
+    values = new double [matrix_size];
+    data = new double *[rows];
     for (int row = 0; row < rows; ++row)
-        values[row] = data + row * cols;
+        data[row] = values + row * cols;
 }
+
 
 Matrix::Matrix(const Matrix& X) {
-    matrix_size = X.matrix_size;
-    data = new double[memory_size];
-    memcpy(data, X.data, memory_size * sizeof(double));
-}
-
-Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
-    for (int i = 0; i < matrix_size; ++i) {
-        data[i] = x;
+    if (this != &X) {
+        delete[] values;
+        delete[] data;
+        rows = X.rows;
+        cols = X.cols;
+        matrix_size = X.matrix_size;
+        values = new double [matrix_size];
+        data = new double *[rows];
+        memcpy(values, X.values, matrix_size * sizeof(double));
     }
 }
 
-Matrix::~Matrix() {
-    delete[] data;
+/*
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
+    for (int i = 0; i < matrix_size; ++i) {
+        values[i] = x;
+    }
 }
 
+*/
+Matrix::~Matrix() {
+    delete[] values;
+    delete[] data;
+}
+/*
 
 Matrix& Matrix::operator=(const Matrix& X) {
     Matrix copy = X;
     swap(copy);
+    return *copy;
 }
+
 
 Matrix& Matrix::operator+=(const Matrix& X) {
     for (int i = 0; i < matrix_size; ++i)
-        data[i] += X.data[i];
+        values[i] += X.values[i];
     return *this;
 }
+
 
 Matrix Matrix::operator+(const Matrix& X) {
     Matrix copy = *this;
@@ -78,9 +92,10 @@ Matrix Matrix::operator+(const Matrix& X) {
     return copy;
 }
 
+
 Matrix& Matrix::operator-=(const Matrix& X) {
     for (int i = 0; i < matrix_size; ++i)
-        data[i] -= X.data[i];
+        values[i] -= X.values[i];
     return *this;
 }
 
@@ -90,12 +105,13 @@ Matrix Matrix::operator-(const Matrix& X) {
     return copy;
 }
 
+
 Matrix& Matrix::operator*=(const Matrix& X) {
     Matrix zero(rows, cols, 0);
     for (int row = 0; row < zero.rows; ++row) {
         for (int col = 0; col < zero.cols; ++col) {
             for (int k = 0; k < zero.rows; ++k) {
-                zero.values[rows][cols] += values[rows][k] * X.values[k][cols];
+                zero.data[rows][cols] += data[rows][k] * X.data[k][cols];
             }
         }
     }
@@ -103,11 +119,13 @@ Matrix& Matrix::operator*=(const Matrix& X) {
     return *this;
 }
 
+
 Matrix Matrix::operator*(const Matrix& X) {
     Matrix copy = *this;
     copy *= X;
     return copy;
 }
+
 
 Matrix Matrix::operator^(unsigned int b) {
     for (int i = 1; i < b; ++i)
@@ -115,16 +133,18 @@ Matrix Matrix::operator^(unsigned int b) {
     return *this;
 }
 
+
 Matrix Matrix::operator/(double b) {
     for (int i = 0; i < matrix_size; ++i)
-        data[i] /= b;
+        values[i] /= b;
     return *this;
 }
+
 
 Matrix Matrix::T() {
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < cols; ++col) {
-            values[rows][cols] = values[cols][rows];
+            data[rows][cols] = data[cols][rows];
         }
     }
     return *this;
@@ -133,19 +153,20 @@ Matrix Matrix::T() {
 
 void Matrix::swap(Matrix& X) {
     std::swap(memory_size, X.memory_size);
-    std::swap(data, X.data);
+    std::swap(values, X.values);
 }
+
 
 void Matrix::print() {
     for (int row = 0; row < rows; row++) {
         for (int col = 0; col < cols; col++)
-            std::cout << values[row][col] << " ";
+            std::cout << data[row][col] << " ";
         std::cout << "\n";
     }
     std::cout << "\n";
 }
-
-
+*/
+/*
 class Square_Matrix: public Matrix {
 private:
     unsigned int dimension = 0;
@@ -162,7 +183,7 @@ public:
     Square_Matrix(unsigned int input_dimension, double x);
     ~Square_Matrix();
 };
-
+*/
 
 int main() {
     short n = 2;
