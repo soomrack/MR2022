@@ -10,6 +10,7 @@ private:
     double** values = nullptr;
     double* data = nullptr;
 
+    void swap(Matrix& X);
 public:
     Matrix() = default;
     Matrix(unsigned int input_rows, unsigned int input_cols);
@@ -17,15 +18,20 @@ public:
     Matrix(unsigned int input_rows, unsigned int input_cols, double x);
     ~Matrix();
 
-    Matrix operator+(Matrix second_matrix);
-    Matrix operator-(Matrix second_matrix);
-    Matrix operator*(Matrix second_matrix);
-    Matrix operator^(unsigned x);
-    Matrix operator/(double x);
+    Matrix& operator=(const Matrix& X);
+    Matrix& operator+=(const Matrix& X);
+    Matrix operator+(const Matrix& X);
+    Matrix& operator-=(const Matrix& X);
+    Matrix operator-(const Matrix& X);
+    Matrix& operator*=(const Matrix& X);
+    Matrix operator*(const Matrix& X);
+    Matrix operator^(unsigned b);
+    Matrix operator/(double b);
 
     Matrix T();
     void print();
 };
+
 
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     rows = input_rows;
@@ -51,83 +57,80 @@ Matrix::~Matrix() {
     delete[] data;
 }
 
-Matrix Matrix::operator+(Matrix second_matrix) {
-    Matrix addition_matrix(rows, cols);
 
-    for (int row = 0; row < addition_matrix.rows; row++) {
-        for (int col = 0; col < addition_matrix.cols; col++) {
-            addition_matrix.values[row][col] = values[row][col] + second_matrix.values[row][col];
-        }
-    }
-
-    return addition_matrix;  // одним циклом
+Matrix& Matrix::operator=(const Matrix& X) {
+    Matrix copy = X;
+    swap(copy);
 }
 
-Matrix Matrix::operator-(Matrix second_matrix) {
-    Matrix subtraction_matrix(rows, cols);
-
-    for (int row = 0; row < subtraction_matrix.rows; row++) {
-        for (int col = 0; col < subtraction_matrix.cols; col++) {
-            subtraction_matrix.values[row][col] = values[row][col] - second_matrix.values[row][col];
-        }
-    }
-
-    return subtraction_matrix;
+Matrix& Matrix::operator+=(const Matrix& X) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] += X.data[i];
+    return *this;
 }
 
-Matrix Matrix::operator*(Matrix second_matrix) {
-    Matrix multiplication_matrix(rows, cols);
+Matrix Matrix::operator+(const Matrix& X) {
+    Matrix copy = *this;
+    copy += X;
+    return copy;
+}
 
-    for (int row = 0; row < multiplication_matrix.rows; row++) {
-        for (int col = 0; col < multiplication_matrix.cols; col++) {
-            for (int k = 0; k < multiplication_matrix.rows; k++) {
-                multiplication_matrix.values[rows][cols] += values[rows][k] * second_matrix.values[k][cols];
+Matrix& Matrix::operator-=(const Matrix& X) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] -= X.data[i];
+    return *this;
+}
+
+Matrix Matrix::operator-(const Matrix& X) {
+    Matrix copy = *this;
+    copy -= X;
+    return copy;
+}
+
+Matrix& Matrix::operator*=(const Matrix& X) {
+    Matrix zero(rows, cols, 0);
+    for (int row = 0; row < zero.rows; ++row) {
+        for (int col = 0; col < zero.cols; ++col) {
+            for (int k = 0; k < zero.rows; ++k) {
+                zero.values[rows][cols] += values[rows][k] * X.values[k][cols];
             }
         }
     }
-
-    return multiplication_matrix; // заполнить нулями
+    *this = zero;
+    return *this;
 }
 
-Matrix Matrix::operator^(unsigned int x) {
-    Matrix result_matrix(rows, cols);
-    Matrix const_matrix(rows, cols);
-    const_matrix.values = values;// конструктор копий
-
-    for (int i = 1; i < x; x++) {
-        result_matrix = result_matrix * const_matrix; // единичная матрица
-    }
-
-    return result_matrix;
+Matrix Matrix::operator*(const Matrix& X) {
+    Matrix copy = *this;
+    copy *= X;
+    return copy;
 }
 
-Matrix Matrix::operator/(double x) {
+Matrix Matrix::operator^(unsigned int b) {
+    for (int i = 1; i < b; ++i)
+        *this *= *this;
+    return *this;
+}
 
-//    if (x == 0)
-//        throw "Error founded: Division by zero";
-
-    Matrix result_matrix(rows, cols);
-
-    for (int row = 0; row < result_matrix.rows; row++) {
-        for (int col = 0; col < result_matrix.cols; col++) {
-            result_matrix.values[row][col] = values[row][col] / x;
-        }
-    }
-
-    return result_matrix; // один цикл
+Matrix Matrix::operator/(double b) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] /= b;
+    return *this;
 }
 
 Matrix Matrix::T() {
-
-    Matrix copy_matrix(rows, cols);
-
-    for (int rows = 0; rows < copy_matrix.rows; rows++) {
-        for (int cols = 0; cols < copy_matrix.cols; cols++) {
-            copy_matrix.values[rows][cols] = values[cols][rows];
+    for (int row = 0; rows < rows; ++row) {
+        for (int col = 0; cols < cols; ++col) {
+            values[rows][cols] = values[cols][rows];
         }
     }
+    return *this;
+}
 
-    return copy_matrix;
+
+void Matrix::swap(Matrix& X) {
+    std::swap(memory_size, X.memory_size);
+    std::swap(data, X.data);
 }
 
 void Matrix::print() {
@@ -138,6 +141,7 @@ void Matrix::print() {
     }
     std::cout << "\n";
 }
+
 
 int main() {
     short n = 2;
