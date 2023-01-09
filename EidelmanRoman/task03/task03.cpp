@@ -1,33 +1,55 @@
-short n = 2;
-short m = 2;
-
+#include <iostream>
+#include <cstring>
 
 class Matrix {
 private:
-    unsigned int rows;
-    unsigned int cols;
-    double** values;
-    double* data;
-public:
-    Matrix(unsigned int input_rows, unsigned int input_cols) {
-        unsigned rows = input_rows;
-        unsigned cols = input_cols;
-        data = new double[rows * cols + rows];
-        for (int row = 0; row < rows; ++row)
-            values[row] = data + row * cols;
-    };
+    unsigned int rows = 0;
+    unsigned int cols = 0;
+    unsigned int matrix_size = rows * cols;
+    unsigned int memory_size = matrix_size + rows;
+    double** values = nullptr;
+    double* data = nullptr;
 
-    ~Matrix() {
-        delete[] data;
-    }
+public:
+    Matrix() = default;
+    Matrix(unsigned int input_rows, unsigned int input_cols);
+    Matrix(const Matrix& X); //copy
+    Matrix(unsigned int input_rows, unsigned int input_cols, double x);
+    ~Matrix();
 
     Matrix operator+(Matrix second_matrix);
     Matrix operator-(Matrix second_matrix);
     Matrix operator*(Matrix second_matrix);
     Matrix operator^(unsigned x);
     Matrix operator/(double x);
-    Matrix T(); // выносить за класс большие конструкции
+
+    Matrix T();
+    void print();
 };
+
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
+    rows = input_rows;
+    cols = input_cols;
+    data = new double[memory_size];
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
+}
+
+Matrix::Matrix(const Matrix& X) {
+    matrix_size = X.matrix_size;
+    data = new double[memory_size];
+    memcpy(data, X.data, memory_size * sizeof(double));
+}
+
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
+    for (int i = 0; i < matrix_size; ++i) {
+        data[i] = x;
+    }
+}
+
+Matrix::~Matrix() {
+    delete[] data;
+}
 
 Matrix Matrix::operator+(Matrix second_matrix) {
     Matrix addition_matrix(rows, cols);
@@ -81,6 +103,9 @@ Matrix Matrix::operator^(unsigned int x) {
 
 Matrix Matrix::operator/(double x) {
 
+//    if (x == 0)
+//        throw "Error founded: Division by zero";
+
     Matrix result_matrix(rows, cols);
 
     for (int row = 0; row < result_matrix.rows; row++) {
@@ -105,11 +130,26 @@ Matrix Matrix::T() {
     return copy_matrix;
 }
 
-
-Matrix A(n, m);
-Matrix B(n, m);
+void Matrix::print() {
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++)
+            std::cout << values[row][col] << " ";
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}
 
 int main() {
+    short n = 2;
+    short m = 2;
+    Matrix A(n, m);
+
+    A.print();
+//    try {
+//        A / 0;
+//    } catch (std::string) {
+//        std::cout << "Error!";
+//    }
 
     return 0;
 }
