@@ -115,7 +115,7 @@ int is_identity(const Matrix matrix){             // проверка матри
 
 
 // Сложение двух матриц
-Matrix add(Matrix m1, const Matrix m2){                  // время 22,20 почему так
+Matrix add(Matrix m1, const Matrix m2){                  // время 22,20 почему так // создание функции
     if (m1.cols != m2.cols || m1.rows != m2.rows){   // || - обозанчает или
         return create_null(); // возврат 0 если они не размерны
     }
