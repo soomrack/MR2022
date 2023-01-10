@@ -45,10 +45,11 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
 }
 
 Matrix::Matrix(const Matrix& X) {
-    matrix_size = X.matrix_size;
+    memory_size = X.memory_size;
     data = new double[memory_size];
     memcpy(data, X.data, memory_size * sizeof(double));
 }
+// all copy
 
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
     for (int i = 0; i < matrix_size; ++i) {
