@@ -27,5 +27,7 @@ int main(int argc, char const *argv[])
   std::cout << "Exception exponentiation degree test: " <<
   (test_exception_too_high_pow_degree() ? "Success\n" : "Fault\n");
 
+  Matrix matrix (3, 3);
+  std::cout << matrix << std::endl;
   return 0;
 }
