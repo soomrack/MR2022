@@ -63,11 +63,6 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     matrix_size = rows * cols;
     data = new double[matrix_size];
     values = new double *[rows];
-    if (data == nullptr || values == nullptr) {
-        delete[] data;
-        delete[] values;
-        throw MatrixException("Memory error!"); // useless
-    }
     for (int row = 0; row < rows; ++row)
         values[row] = data + row * cols;
 }
@@ -178,14 +173,11 @@ Matrix Matrix::operator-(const Matrix& X) {
 }
 
 Matrix& Matrix::operator*=(const Matrix& X) {
-    if (rows != X.cols && cols != X.rows) {
-        throw MatrixException("Sizes don't match!");
-    }
     Matrix zero(rows, cols, 0);
     for (int row = 0; row < zero.rows; ++row) {
         for (int col = 0; col < zero.cols; ++col) {
             for (int k = 0; k < zero.rows; ++k) {
-                zero.values[rows][cols] += values[rows][k] * X.values[k][cols];
+                zero.values[row][col] += values[row][k] * X.values[k][col];
             }
         }
     }
@@ -207,6 +199,8 @@ Matrix Matrix::operator^(unsigned int b) {
 }
 
 Matrix Matrix::operator/(double b) {
+    if (b == 0)
+        throw MatrixException("Division by zero!");
     for (int i = 0; i < matrix_size; ++i)
         data[i] /= b;
     return *this;
@@ -224,15 +218,21 @@ void Matrix::print() {
 
 int main() {
     short n = 2;
-    short m = 3;
+    short m = 2;
 
     Matrix A(n, n, 2);
-    A.print();
     Matrix B(m, m, 3);
-    B.print();
+
 
     try {
         B += A;
+    }
+    catch(MatrixException &Exception_object) {
+        std::cout << Exception_object.getMessage();
+    }
+
+    try {
+        A / 0;
     }
     catch(MatrixException &Exception_object) {
         std::cout << Exception_object.getMessage();
