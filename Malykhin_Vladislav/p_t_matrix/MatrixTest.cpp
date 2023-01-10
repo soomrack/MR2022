@@ -26,7 +26,8 @@ void MatrixTest<T>::calculation_check(T true_array[], Matrix<T> *matrix, const s
             error_flag += 1;
         }
         std::cout << "true: " << std::scientific << std::setw(13) << true_array[row * matrix->get_cols() + column];
-        std::cout << " res: " << std::scientific << std::setw(13) << matrix->get_cell(row,column) << " | " << cell_flag << "\n";
+        std::cout << " res: " << std::scientific << std::setw(13)
+        << matrix->get_cell(row,column) << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
