@@ -88,7 +88,26 @@ public:
         memory_size = rows * cols * sizeof(double);
         total_memory += memory_size;
     }
-    MatrixMemory(MatrixMemory&& mat) { memory_size = mat.memory_size; }
+
+    MatrixMemory(const MatrixMemory& mat)  : Matrix(mat) {
+        memory_size = mat.memory_size;
+        total_memory += memory_size;
+    }
+
+    MatrixMemory(MatrixMemory&& mat) noexcept {
+        memory_size = mat.memory_size;
+    }
+
+    MatrixMemory& operator=(const MatrixMemory& mat) noexcept {
+        memory_size = mat.memory_size;
+        total_memory += memory_size;
+        return *this;
+    }
+
+    MatrixMemory& operator=(MatrixMemory&& mat) noexcept {
+        memory_size = mat.memory_size;
+        return *this;
+    }
 
     unsigned long int get_total_memory() { return total_memory; }
 
