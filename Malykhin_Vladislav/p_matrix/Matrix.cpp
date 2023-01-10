@@ -91,7 +91,6 @@ Matrix::~Matrix() noexcept{
 
 
 
-
 int Matrix::get_rows() const {
     return rows;
 }
@@ -132,7 +131,7 @@ void Matrix::print() const {
 }
 
 
- //rebuild
+
 Matrix& Matrix::operator= (Matrix const& other) {
     if (this == &other) return *this;
     delete[] data;
@@ -153,7 +152,7 @@ Matrix& Matrix::operator= (Matrix const& other) {
 }
 
 
- //rebuild
+
 Matrix& Matrix::operator= (Matrix&& other) noexcept{
     if (this == &other) return *this;
     delete[] data;
@@ -170,7 +169,7 @@ Matrix& Matrix::operator= (Matrix&& other) noexcept{
 }
 
 
- //rebuild
+
 Matrix Matrix::operator+ (Matrix const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw MatrixException ("sizes of the matrix are not equal");
@@ -182,7 +181,7 @@ Matrix Matrix::operator+ (Matrix const &matrix) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::operator+ (double number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -194,7 +193,7 @@ Matrix Matrix::operator+ (double number) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::operator- (Matrix const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw MatrixException ("sizes of the matrix are not equal");
@@ -206,7 +205,7 @@ Matrix Matrix::operator- (Matrix const &matrix) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::operator- (double number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -218,7 +217,7 @@ Matrix Matrix::operator- (double number) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::operator* (Matrix const &matrix) const {
     if (cols != matrix.rows) {
         throw MatrixException ("wrong matrix sizes for multiplication");
@@ -234,7 +233,7 @@ Matrix Matrix::operator* (Matrix const &matrix) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::operator* (double number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -246,7 +245,7 @@ Matrix Matrix::operator* (double number) const {
 }
 
 
- //rebuild
+
 Matrix Matrix::minor_matrix(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
         throw MatrixException("matrix parameters are less than zero");

@@ -134,7 +134,7 @@ void Matrix<T>::print() const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T>& Matrix<T>::operator= (Matrix<T> const& other) {
     if (this == &other) return *this;
     delete[] data;
@@ -155,7 +155,7 @@ Matrix<T>& Matrix<T>::operator= (Matrix<T> const& other) {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T>& Matrix<T>::operator= (Matrix<T>&& other) noexcept{
     if (this == &other) return *this;
     delete[] data;
@@ -172,7 +172,7 @@ Matrix<T>& Matrix<T>::operator= (Matrix<T>&& other) noexcept{
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator+ (Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw MatrixException ("sizes of the matrix are not equal");
@@ -184,7 +184,7 @@ Matrix<T> Matrix<T>::operator+ (Matrix<T> const &matrix) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator+ (T number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -196,7 +196,7 @@ Matrix<T> Matrix<T>::operator+ (T number) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator- (Matrix<T> const &matrix) const {
     if (rows != matrix.rows || cols != matrix.cols) {
         throw MatrixException ("sizes of the matrix are not equal");
@@ -208,7 +208,7 @@ Matrix<T> Matrix<T>::operator- (Matrix<T> const &matrix) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator- (T number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -220,7 +220,7 @@ Matrix<T> Matrix<T>::operator- (T number) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator* (Matrix<T> const &matrix) const {
     if (cols != matrix.rows) {
         throw MatrixException ("wrong matrix sizes for multiplication");
@@ -236,7 +236,7 @@ Matrix<T> Matrix<T>::operator* (Matrix<T> const &matrix) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::operator* (T number) const {
     if (std::isnan(number)) {
         throw MatrixException ("input value is not a number");
@@ -248,7 +248,7 @@ Matrix<T> Matrix<T>::operator* (T number) const {
 }
 
 
-template <typename T> //rebuild
+template <typename T>
 Matrix<T> Matrix<T>::minor_matrix(int excluded_row, int excluded_col) const {
     if (excluded_row < 0 || excluded_col < 0) {
         throw MatrixException("matrix parameters are less than zero");
@@ -405,9 +405,5 @@ Matrix<T> Matrix<T>::exp(const Matrix<T> &matrix, int STEPS) {
 }
 
 
-template
-class Matrix<double>;
-
-
-template
-class Matrix<float>;
+template class Matrix<double>;
+template class Matrix<float>;

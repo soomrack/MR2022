@@ -4,6 +4,7 @@ inline void print_message(const std::string& text, const MatrixException& Except
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
 
+
 void MatrixTest::using_unused() {
     Matrix matrix(2, 2, vector1);
     matrix.get_rows();
@@ -12,6 +13,7 @@ void MatrixTest::using_unused() {
     matrix.get_cell(0, 0);
     MatrixException TEST("TEST");
 }
+
 
 void MatrixTest::calculation_check(double true_array[], Matrix *matrix, const std::string& text) {
     int error_flag = 0;
@@ -211,7 +213,6 @@ void MatrixTest::exp_test() {
 }
 
 
-
 void MatrixTest::counter_test() {
     std::cout << "CMatrix counter:" << std::endl << "Errors: ";
     try {
@@ -235,7 +236,6 @@ void MatrixTest::counter_test() {
 }
 
 
-
 void MatrixTest::matrix_mem_test() {
     std::cout << "CMatrix matrix memory size:" << std::endl << "Errors: ";
     try {
@@ -252,7 +252,6 @@ void MatrixTest::matrix_mem_test() {
 }
 
 
-
 void MatrixTest::gen_mem_test() {
     std::cout << "CMatrix general memory size:" << std::endl << "Errors: ";
     try {
@@ -267,7 +266,6 @@ void MatrixTest::gen_mem_test() {
         print_message("matrix_gen_test", Exception_object);
     }
 }
-
 
 
 void MatrixTest::full_test(){
