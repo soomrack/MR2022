@@ -425,16 +425,6 @@ Matrix Matrix::operator / (Matrix second_matrix)
 
 
 
-Matrix& Matrix::operator=(Matrix const& X) 
-{
-	if (this == &X) return *this;
-	delete[] values;
-	rows = X.rows;
-	cols = X.cols;
-	values = new double [rows];
-	memcpy(values, X.values, cols * rows * sizeof(double));
-	return *this;
-}
 
 
 Matrix& Matrix::operator=(Matrix&& X) noexcept 
