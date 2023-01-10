@@ -2,90 +2,89 @@
 #ifndef MATRIX_CAL_MATRIX_H
 #define MATRIX_CAL_MATRIX_H
 
-#include <iostream>
-#include <cmath>
+#include <iostream>  // подключение библиотеки ВЫВОД-ВХОД
+#include <cmath>     // подключение библиотеки Математики для использования модуля fabs
 
 
 const double EPS = 10e-6;  // Точность при сравнении величин с плавающей точкой
 
 
-class MatrixException: public std::exception { // способ показать что произошло чтото не то // созд класса Исключения и наследование от стдЭксепшен
+class MatrixException: public std::exception {             // способ показать что произошло что-то не то // создание класса Исключения и наследование от стдЭксепшен
 public:
-    MatrixException(const char* msg): std::exception() {}  // созд метод (с вход значением const char* - указатель на строку данных :: - метод наследуется из стдЭксепшен
+    MatrixException(const char* msg): std::exception() {}  // создание метод (с вход значением const char* - указатель на строку данных :: - метод наследуется из стдЭксепшен
 };
 
 
 
-class Matrix {
+class Matrix {          // создание класса Матрица с 3 атрибутами и методами описанными ниже
 private:
-    unsigned int rows;
-    unsigned int cols;
-    double* values; // указатель на массив
+    unsigned int rows;  // атрибут - строки
+    unsigned int cols;  // атрибут - столбцы
+    double* values;     // атрибут - указатель на массив
 
 
 public:
-    Matrix(); // конструктор создающий нуль(ПУСТУЮ) матрицу
-    Matrix(unsigned int rows, unsigned int cols); // конструктор создающий матрицу с выделением памяти
-    Matrix(const Matrix &); // конструктор копирования матрицы matrix A=B
-    Matrix(Matrix &&mat) noexcept; // конструктор перемещения матрицы matrix A=B+C
+    Matrix();                                      // Создание конструктора создающий нуль(ПУСТУЮ) матрицу
+    Matrix(unsigned int rows, unsigned int cols);  // Создание конструктора создающий матрицу с выделением памяти
+    Matrix(const Matrix &);                        // Создание конструктора копирования матрицы matrix A=B (& - ссылка)
+    Matrix(Matrix &&mat) noexcept;                 // Создание конструктора перемещения матрицы matrix A=B+C (&& - Rvalue то что сохраняется справа от операции)
 
-    Matrix set_value(double value);                                 // Заполнение созданной матрицы одним числом
-    Matrix set_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
-    Matrix set_identity();                                          // Преобразование матрицы в единичную
-    Matrix fill_from_array(double* array);                           // Заполнение матрицы значениями из массива
+    Matrix set_value(double value);                   // Создание функции заполнения созданной матрицы одним числом
+    Matrix set_random(int min_value, int max_value);  // Создание функции заполнения созданной матрицы случайно
+    Matrix set_identity();                            // Создание функции преобразования матрицы в единичную
+    Matrix fill_from_array(double* array);            // Создание функции заполнения матрицы значениями из массива
 
-    double get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы
-    void set(unsigned int row, unsigned int col, double val);        // Изменение произвольного элемента матрицы
+    double get(unsigned int row, unsigned int col);            // Создание функции получения произвольного элемента матрицы
+    void set(unsigned int row, unsigned int col, double val);  // Создание функции изменения произвольного элемента матрицы
 
-    Matrix& operator=(const Matrix& mat);    // оператор копирующего присваивания A=B (нет matrix) существующая матрица А = сущ матрице Б, матрицы заранее введены
-    Matrix& operator=(Matrix&& mat) noexcept;  // оператор перемещающего присваивания A=B+C (нет matrix) существующая матрица А = сущ матрице Б и С, матрицы заранее введены
+    Matrix& operator=(const Matrix& mat);      // Создание оператора копирующего присваивания A=B (нет matrix) существующая матрица А = сущ матрице Б, матрицы заранее введены
+    Matrix& operator=(Matrix&& mat) noexcept;  // Создание оператора перемещающего присваивания A=B+C (нет matrix) существующая матрица А = сущ матрице Б и С, матрицы заранее введены
 
 // && - Rvalue
 // & - ссылка
 
-    bool operator==(const Matrix& mat);
-    bool operator!=(const Matrix& mat) { return !(*this == mat); }
-    double* operator[](unsigned int row);                            // Доступ к заданной строке матрицы через [номер строки]
-    bool is_identity(); // единичная
-    bool is_diagonal(); // диагональная
+    bool operator==(const Matrix& mat);                             // Создание логического оператора РАВНО ЛИ
+    bool operator!=(const Matrix& mat) { return !(*this == mat); }  // Создание логического оператора НЕ РАВНО
+    double* operator[](unsigned int row);                           // Создание оператора доступа к заданной строке матрицы через [номер строки]
 
-    Matrix operator+(const Matrix& mat) const;
-    Matrix operator-(const Matrix& mat) const;
-    Matrix operator*(double scalar) const;
-    Matrix operator*(const Matrix& mat2) const;
-    Matrix operator/(double scalar) const;
+    bool is_identity(); // Создание логической функции проверки на единичную матрицу
+    bool is_diagonal(); // Создание логической функции проверки на диагональную матрицу
 
-    void operator+=(const Matrix& mat) { *this = *this + mat; }
-    void operator-=(const Matrix& mat) { *this = *this - mat; }
-    void operator*=(const Matrix& mat) { *this = *this * mat; }
+    Matrix operator+(const Matrix& mat) const;   // Создание оператора сложения матриц
+    Matrix operator-(const Matrix& mat) const;   // Создание оператора вычитания матриц
 
-    Matrix transpose(); // транспонирование
-    void swap_rows(unsigned int row1, unsigned int row2); // свойства матрицы на замену 2 строк местами НУЖНО для нахождения определителя и верхней треугольной матрицы
-    unsigned int upper_triangle(); // приводим матрицу к верхней треугольной чтобы ПОТОМ посчитать определитель как перемножение эл по диагонали
-    double det(); // определить
-    double trace(); // след матрицы
+    Matrix operator*(const Matrix& mat2) const;  // Создание оператора перемножение матриц
 
-    Matrix minor(unsigned int minor_row, unsigned int minor_col); // минор
-    Matrix inv(); // обратная
-    Matrix exp(); // матричная экспонента
+    Matrix operator*(double scalar) const;       // Создание оператора умножения на скаляр матриц
+    Matrix operator/(double scalar) const;       // Создание оператора деления на скаляр матриц
+
+    void operator+=(const Matrix& mat) { *this = *this + mat; }  // Создание оператора прибавить к этой (this) матрице матрицу
+    void operator-=(const Matrix& mat) { *this = *this - mat; }  // Создание оператора вычитания от этой (this) матрице матрицу
+    void operator*=(const Matrix& mat) { *this = *this * mat; }  // Создание оператора умножения эту (this) матрицу на матрицу
+
+    Matrix transpose();                                    // Создание функции транспонирования матрицы (замена строк на столбцы)
+    void swap_rows(unsigned int row1, unsigned int row2);  // Создания функции свойства матрицы на замену 2 строк местами НУЖНО для нахождения определителя и верхней треугольной матрицы
+    unsigned int upper_triangle();                         // Создания функции приводящую матрицу к верхней треугольной чтобы ПОТОМ посчитать определитель как перемножение эл по диагонали
+    double det();                                          // Создания функции для подсчета определителя матрицы
+    double trace();                                        // Создания функции для нахождения следа матрицы (сложение всех элементов на главной диагонали)
+
+    Matrix minor(unsigned int minor_row, unsigned int minor_col); // Создания функции для подсчета минора у матрицы указанной строки и столбца
+    Matrix inv();                                                 // Создание функции для нахождения обратной матрицы
+    Matrix exp();                                                 // Создание функции для нахождения матричной экспоненты
+
+    // Ниже строчки для создания операторов который будут выводить матрицу
 
     friend std::ostream& operator<<(std::ostream &os, Matrix &mat);  // friend ключевое слово показывающее что оператор << определенный в библиотеке стд является дружественным и мы можем добавить к нему определение
     friend std::ostream& operator<<(std::ostream &os, Matrix &&mat);
-    friend std::istream& operator>>(std::istream &is, Matrix &mat);
 
-//    explicit operator bool() {   // оператор для проверки наличия данных в матрице если начнется логическая с ним операция типа If // explicit оператор явного приведения типов данных - из типа матрицы в тип бул (логический bool)
-//        for (unsigned int idx = 0; idx < rows * cols; idx++) {
-//            if (!(bool) values[idx]) return false;
-//        }
-//        return true;
-//    }
+    friend std::istream& operator>>(std::istream &is, Matrix &mat);  // оператор ввода матрицы
 
-    void print() { std::cout << *this << std::endl; } // чтобы не вводить так много БУКОВ а быстро выводить
+    void print() { std::cout << *this << std::endl; } // чтобы не вводить так много БУКОВ, а быстро выводить все что по центру
 
-    ~Matrix() { delete[] this->values; } // диструктор (очистка памяти от обьекта памяти выход из зоны видимости)
+    ~Matrix() { delete[] this->values; } // деструктор (очистка памяти от объекта памяти выход из зоны видимости)
 };
 
-
+// ПОДРОБНОЕ ОПИСАНИЕ ВСЕХ ВЫШЕ РАЗОБРАННЫХ СТРУКТУР, ФУНКЦИЙ, ОПЕРАТОРОВ И ТД
 
 Matrix::Matrix() : rows(0), cols(0), values(nullptr) {} // nullptr - нулевой указатель и забит в саму система как NULL
 

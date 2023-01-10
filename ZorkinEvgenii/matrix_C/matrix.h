@@ -1,27 +1,28 @@
 
-#ifndef MATRIX_CAL_MATRIX_H // для того чтобы не было залипания библиотек на бесконечность их подключения
-#define MATRIX_CAL_MATRIX_H // для того чтобы не было залипания библиотек на бесконечность их подключения
-#include <math.h> // подключение математики
-#include <stdio.h> // подключение стандартной библиотеки ввода и вывода
-#include <stdlib.h> // подключение ради ф малок
+#ifndef MATRIX_CAL_MATRIX_H  // для того чтобы не было залипания библиотек на бесконечность их подключения
+#define MATRIX_CAL_MATRIX_H  // для того чтобы не было залипания библиотек на бесконечность их подключения
+#include <math.h>            // подключение математики
+#include <stdio.h>           // подключение стандартной библиотеки ввода и вывода
+#include <stdlib.h>          // подключение ради ф малок
 
 
-const double EPS = 10e-6; // епселанд для сравнения чисел с плав точкой
+const double EPS = 10e-6;    // епселанд для сравнения чисел с плав точкой
 
-typedef struct Matrix{  // объявление структуры и ниже создание ее 3 аргументов
-    unsigned int rows;  // только положительные строки
-    unsigned int cols;  // столбцы
-    double* values;     // дабл+звездочка - это указатель на дабл (указатель велью, то есть где он находится в ЭВМ)
-} Matrix;  //
+typedef struct Matrix{       // объявление структуры и ниже создание ее 3 аргументов
+    unsigned int rows;       // только положительные - строки
+    unsigned int cols;       // столбцы
+    double* values;          // дабл+звездочка - это указатель на дабл (указатель велью, то есть где он находится в ЭВМ)
+
+} Matrix;                    // чтобы не прописывать везде struct, а просто сразу писать имя структуры = Matrix
 
 
 void printm(struct Matrix mat){  // Создание функции вывода матрицы в консоль 1) тип данных - void(пустота)=без возврата(без return) 2) название функции(тип данных аргумента(struct Matrix) и аргумент(mat) и 3) тело функции в фигурных скобках
-    printf("\n");  // переход на новую строчку
-    for (unsigned int row = 0; row < mat.rows; row++){  // пробежка по элементам строки
-        for (unsigned int col = 0; col < mat.cols; col++){ // пробежка по элементам столбца
-            printf(" %f", mat.values[row * mat.cols + col]); // вывод каждого элемента матрицы
+    printf("\n");                                            // переход на новую строчку
+    for (unsigned int row = 0; row < mat.rows; row++){              // пробежка по элементам строки
+        for (unsigned int col = 0; col < mat.cols; col++){          // пробежка по элементам столбца
+            printf(" %f", mat.values[row * mat.cols + col]);  // вывод каждого элемента матрицы
         }
-        printf("\n"); // перевод на новую строку
+        printf("\n");                                         // перевод на новую строку
     }
 }
 
@@ -32,33 +33,36 @@ Matrix create_null(){ // создание функции которую вызы
 }
 
 
-Matrix create_empty(const unsigned int rows, const unsigned int cols){ // создание пустой не заполненной матрицы где не изменяем столбцы и строки
-    double* data_ptr = malloc(sizeof(double) * rows * cols); // data_ptr - дата поинтер (указатель и сущ только в этой функции) хранит адрес первого элемента массива который выделяет ОС в оперативной памяти + выделение памяти функцией malloc на кол-во элементов матрицы = строки*столбцы
-    if (data_ptr == NULL) return create_null(); // если дата поинтер = 0 то возвращаемся к create_null, нужна если ОС не выделит память
-    Matrix mat = {rows, cols, data_ptr}; // если все ОК то создаем матрицу из столбцы, строки, указатель на 1 элемент массива (сам массив)
+Matrix create_empty(const unsigned int rows, const unsigned int cols){  // Создание функции пустой не заполненной матрицы где не изменяем столбцы и строки
+
+    double* data_ptr = malloc(sizeof(double) * rows * cols);        // data_ptr - дата поинтер (указатель и сущ только в этой функции) хранит адрес первого элемента массива который выделяет ОС
+                                                                         // в оперативной памяти + выделение памяти функцией malloc на кол-во элементов матрицы = строки*столбцы
+
+    if (data_ptr == NULL) return create_null();                          // если дата поинтер = 0 то возвращаемся к create_null, нужна если ОС не выделит память
+    Matrix mat = {rows, cols, data_ptr};                           // если все ОК то создаем матрицу из столбцы, строки, указатель на 1 элемент массива (сам массив)
     return mat; // возврат матрицы
 }
 
 
-Matrix create_zero(const unsigned int rows, const unsigned int cols){  // создание НУЛЕВОЙ матрицы для последующей математич работы
+Matrix create_zero(const unsigned int rows, const unsigned int cols){  // Создание функции НУЛЕВОЙ матрицы для последующей математической работы
     Matrix mat = create_empty(rows, cols); // создаем матрицу мат - новой пустой патрицы предыдущей функции create_empty с выделением памяти и ее контролированием
     for (unsigned int idx = 0; idx < rows * cols; idx++) mat.values[idx] = 0.0; // Эта строчка делает все эл матрицы 0 // цикл индекс (idx) = номер элемента в массиве если индекс меньше количества эл в матрице то прибавляем 1 ПОСЛЕ матрица которую создали обращаемся к ее велью (указателю) и приравниваем к 0.
     return mat;
 }
 
 
-// Создание единичной матрицы размера n*n
-Matrix create_identity(const unsigned int size){       // ед матрицы на главной диагонали 1 а в других 0, сайз потому что она квадратная и строки=стобцы
+
+Matrix create_identity(const unsigned int size){    // Создание функции единичной матрицы (на главной диагонали 1 а в других 0), сайз потому что она квадратная и строки=стобцы
     Matrix mat = create_zero(size, size);
-    for (unsigned int idx = 0; idx < size * size; idx += size + 1){
-        mat.values[idx] = 1.0;
+    for (unsigned int idx = 0; idx < size * size; idx += size + 1){  // пробежка по элементам матрицы
+        mat.values[idx] = 1.0;                                       // подставляем 1 в диагональные элементы
     }
     return mat;
 }
 
 
-// Создание матрицы со случайными значениями от 0 до max_value
-Matrix create_random(const unsigned int rows, const unsigned int cols, const double max_value){
+
+Matrix create_random(const unsigned int rows, const unsigned int cols, const double max_value){ // Создание функции для матрицы со случайными значениями
     Matrix mat = create_empty(rows, cols);
     for (unsigned int idx = 0; idx < rows * cols; idx++){
         mat.values[idx] = ((double)rand() / (double)(RAND_MAX)) * max_value;
@@ -67,22 +71,22 @@ Matrix create_random(const unsigned int rows, const unsigned int cols, const dou
 }
 
 
-// Делает заданную матрицу единичной
-void set_to_identity(Matrix* mat){ // передача указателя на матрицу
-    if (mat->cols != mat->rows) { // проверка на квдартаную матрицу
+
+void set_to_identity(Matrix* mat){ // Функция создания ед матрицы
+    if (mat->cols != mat->rows) { // проверка на квадратную матрицу
         mat->rows = 0;
         mat->cols = 0;
         mat->values = 0;
     }
     unsigned int size = mat->cols;
     for (unsigned int idx = 0; idx < size * size; idx++){
-        mat->values[idx] = idx % (size + 1) == 0 ? 1.0 : 0.0; // тернанрый оператор чтобы записать по условию или 0 или 1 // указатель процент от деления если остаток от деления равен 0 то пишем 1 если нет то пишем 0
+        mat->values[idx] = idx % (size + 1) == 0 ? 1.0 : 0.0; // тернарный оператор чтобы записать по условию или 0 или 1 // указатель процент от деления если остаток от деления равен 0 то пишем 1 если нет то пишем 0
     }
 }
 
 
-// Создает копию матрицы
-Matrix copy(const Matrix mat){
+
+Matrix copy(const Matrix mat){  // Функция создания копии матрицы
     Matrix copy = create_empty(mat.rows, mat.cols);
     for (unsigned int idx = 0; idx < mat.rows * mat.cols; idx++) copy.values[idx] = mat.values[idx];
     return copy;
