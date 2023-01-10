@@ -2,7 +2,7 @@
 #include <iomanip>
 
 
-static unsigned int memory = 0;  // отслеживает выделенную память для ВСЕХ экземпляров Matrix_memory
+static unsigned int memory = 0;
 
 
 class Matrix_Exception : public std::domain_error
@@ -531,71 +531,21 @@ class Matrix_memory : public Matrix_T<T>
 
 protected:
     unsigned int mem_size;
-    static unsigned int quantity; // рудимент, отсчитывающий количество созданных экземпляров класса Matrix_memory
+    static unsigned int quantity;
 
     static unsigned int total_memory;
 
 
 public:
-    Matrix_memory(){
-        this->rows = 0;
-        this->cols = 0;
-        this->data = nullptr;
-        mem_size = 0;
-        quantity++;
-
-        memory += mem_size;  total_memory += mem_size;
-    }
-    Matrix_memory(const unsigned int n){
-        this->rows = n;
-        this->cols = n;
-        this->data = new T [n * n];
-        mem_size = n * n * sizeof (T);
-        quantity++;
-
-        memory += mem_size;  total_memory += mem_size;
-    }
-    Matrix_memory(const unsigned int row, unsigned int col){
-        this->rows = row;
-        this->cols = col;
-        this->data = new T [row * col];
-        mem_size = row * col * sizeof (T);
-        quantity++;
-
-        memory += mem_size;  total_memory += mem_size;
-    }
-    Matrix_memory(const Matrix_memory<T> &x){
-        this->rows = x.rows;
-        this->cols = x.cols;
-        this->data = new T [x.rows * x.cols];
-
-        for (unsigned int idx = 0; idx < x.rows * x.cols; idx++){
-            this->data[idx] = x.data[idx];
-        }
-
-        mem_size = x.mem_size;
-        quantity++;
-        memory += mem_size;  total_memory += mem_size;
-    }
-    Matrix_memory(Matrix_memory<T> &&x){
-
-        this->rows = x.rows;
-        this->cols = x.cols;
-        this->data = x.data;
-        mem_size = x.mem_size;
-
-
-        x.rows = 0;
-        x.cols = 0;
-        x.data = nullptr;
-        x.mem_size = 0;
-    }
-    ~Matrix_memory() {
-        quantity--;
-        memory -= mem_size;  total_memory -= mem_size;
-    };
+    Matrix_memory();
+    Matrix_memory(const unsigned int n);
+    Matrix_memory(const unsigned int row, unsigned int col);
+    Matrix_memory(const Matrix_memory<T> &x);
+    Matrix_memory(Matrix_memory<T> &&x);
+    ~Matrix_memory();
 
     Matrix_memory<T>& operator=(const Matrix_memory<T> &x);
+    Matrix_memory<T>& operator=(Matrix_memory<T> &&x);
     Matrix_memory<T>& operator*=(const Matrix_memory<T> &x);
 
     void output(const bool mem_flg = true, const bool extra_flag = false);
@@ -605,6 +555,7 @@ public:
 
     char * getName() { return "Matrix_memory"; };
 };
+
 template <typename T>
 unsigned int Matrix_memory<T>::total_memory = 0;
 template <typename T>
@@ -612,10 +563,82 @@ unsigned int Matrix_memory<T>::quantity = 0;
 
 
 template <typename T>
+Matrix_memory<T>::Matrix_memory():Matrix_T<T>(){
+    mem_size = 0;
+    quantity++;
+
+    memory += mem_size;  total_memory += mem_size;
+}
+
+template <typename T>
+Matrix_memory<T>::Matrix_memory(const unsigned int n):Matrix_T<T>(n){
+    mem_size = n * n * sizeof (T);
+    quantity++;
+
+    memory += mem_size;  total_memory += mem_size;
+}
+
+
+template <typename T>
+Matrix_memory<T>::Matrix_memory(const unsigned int row, unsigned int col):Matrix_T<T>(row, col){
+    mem_size = row * col * sizeof (T);
+    quantity++;
+
+    memory += mem_size;  total_memory += mem_size;
+}
+
+template <typename T>
+Matrix_memory<T>::Matrix_memory(const Matrix_memory<T> &x):Matrix_T<T>(x){
+    mem_size = x.mem_size;
+    quantity++;
+    memory += mem_size;  total_memory += mem_size;
+}
+
+
+template <typename T>
+Matrix_memory<T>::Matrix_memory(Matrix_memory<T> &&x):Matrix_T<T>(x){
+    memory -= mem_size;
+    total_memory -= mem_size;
+
+    mem_size = x.mem_size;
+    x.mem_size = 0;
+
+    memory += mem_size;
+    total_memory += mem_size;
+}
+
+
+template <typename T>
+Matrix_memory<T>::~Matrix_memory() {
+    quantity--;
+    memory -= mem_size;  total_memory -= mem_size;
+}
+
+template<typename T>
+Matrix_memory<T>& Matrix_memory<T>::operator=(Matrix_memory<T> &&x) {
+    if (this != &x){
+
+        memory -= mem_size;  total_memory -= mem_size;
+
+        this->rows = x.rows;
+        this->cols = x.cols;
+        this->data = x.data;
+
+        mem_size = x.mem_size;
+        memory += mem_size;  total_memory += mem_size;
+
+        x.rows = 0;
+        x.cols = 0;
+        x.data = nullptr;
+
+        x.mem_size = 0;
+    }
+    return *this;
+}
+
+template <typename T>
 Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
     if (this != &x){
-        if (!this->data)
-            delete[] this->data;
 
         memory -= mem_size;  total_memory -= mem_size;
 
@@ -627,7 +650,6 @@ Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory<T> &x) {
         for (unsigned int idx = 0; idx < this->rows * this->cols; idx++){
             this->data[idx] = x.data[idx];
         }
-
         memory += mem_size;  total_memory += mem_size;
     }
     return *this;
