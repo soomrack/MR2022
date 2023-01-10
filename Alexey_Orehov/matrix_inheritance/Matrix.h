@@ -13,7 +13,7 @@ public:
 
 
 class Matrix {
-private:
+protected:
     unsigned int rows;
     unsigned int cols;
     double* values;
@@ -75,6 +75,24 @@ public:
     void print() { std::cout << *this << std::endl; }
 
     ~Matrix() { delete[] this->values; }
+};
+
+
+class MatrixMemory : public Matrix {
+private:
+    unsigned long int memory_size = 0;
+    static unsigned long int total_memory;
+public:
+    MatrixMemory() { memory_size = 0; }
+    MatrixMemory(unsigned int rows, unsigned int cols) {
+        memory_size = rows * cols * sizeof(double);
+        total_memory += memory_size;
+    }
+    MatrixMemory(MatrixMemory&& mat) { memory_size = mat.memory_size; }
+
+    unsigned long int get_total_memory() { return total_memory; }
+
+    ~MatrixMemory() { total_memory -= memory_size; };
 };
 
 

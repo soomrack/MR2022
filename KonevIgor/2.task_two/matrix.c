@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <process.h>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
 // Ввод начальных данных для вычисления матричной экспоненты
 const double EPS = 0.001;
 const unsigned int MIN_NUM_CYCLES = 100;
@@ -12,7 +14,7 @@ const unsigned int MIN_NUM_CYCLES = 100;
  и их элементов */
 // Ввод граничных условий для генерации случайных значений
 const double RAND_MAX_F = RAND_MAX;
-const unsigned int MIN_NUMBER_COLS_ROWS = 1;
+const unsigned int MIN_NUMBER_COLS_ROWS = 2;
 const unsigned int MAX_NUMBER_COLS_ROWS = 7;
 const double MIN_ELEMENT_VALUE = 0;
 const double MAX_ELEMENT_VALUE = 50;
@@ -143,10 +145,11 @@ Matrix matrix_for_minor(const Matrix one, unsigned int rowNumber,
         min.values[f] = one.values[k];
         f++;
     }
-    return min;
     free_memory(min);
+    return min;
 }
-// Исправить на деление каждый раз числа
+
+// Исправить на деление на число каждый раз
 // Вычисление факториала числа
 double factorial(const unsigned int b) {
     double fact = 1;
@@ -154,6 +157,17 @@ double factorial(const unsigned int b) {
         fact *= k;
     }
     return fact;
+}
+
+void change_rows(Matrix *res, unsigned int m, unsigned int n) {
+    m--;
+    n--;
+    for (unsigned int k = 0; k < res->cols; k++) {
+        double change = 0;
+        change = res->values[n * res->cols + k];
+        res->values[n * res->cols + k] = res->values[m * res->cols + k];
+        res->values[m * res->cols + k] = change;
+    }
 }
 
 // Вывод сообщения об ошибке (сложение, вычитание)
@@ -184,19 +198,16 @@ Matrix matrix_add(Matrix *res, const Matrix one, const Matrix two) {
 }
 
 // Функция для проверки корректности выполнения операции сложения.
-// Выполнить проверку с точностью до EPS, переделать функцию в инт или бул и
-// возвращать значение для вывода
-void is_ans_correct_add(const Matrix res, const Matrix one, const Matrix two) {
+bool is_ans_correct_add(const Matrix res, const Matrix one, const Matrix two) {
     printf("\n");
     for (unsigned int k = 0; k < res.cols * res.rows; k++) {
-        if ((res.values[k] - (one.values[k] + two.values[k])) < EPS) {
+        if (fabs(res.values[k] - (one.values[k] + two.values[k])) < EPS) {
             continue;
         } else {
-            printf("The answer is incorrect.\n");
-            return;
+            return false;
         }
     }
-    printf("The answer is correct.\n");
+    return true;
 }
 
 // Функция вычитания двух матриц
@@ -213,17 +224,17 @@ Matrix matrix_sub(Matrix *res, const Matrix one, const Matrix two) {
 }
 
 // Функция для проверки корректности выполнения операции вычитания
-void is_ans_correct_sub(const Matrix res, const Matrix one, const Matrix two) {
+bool is_ans_correct_sub(const Matrix res, const Matrix one, const Matrix
+two) {
     printf("\n");
     for (unsigned int k = 0; k < res.cols * res.rows; k++) {
-        if ((res.values[k] - (one.values[k] - two.values[k])) < EPS) {
+        if (fabs(res.values[k] - (one.values[k] - two.values[k])) < EPS) {
             continue;
         } else {
-            printf("The answer is incorrect.\n");
-            return;
+            return false;
         }
     }
-    printf("The answer is correct.\n");
+    return true;
 }
 
 // Вывод сообщения об ошибке (умножение)
@@ -259,7 +270,7 @@ Matrix matrix_mult(Matrix *res, const Matrix one, const Matrix two) {
 /* Функция для проверки корректности выполнения операции умножения путем
 умножения полученной матрицы на единичную, в результате чего должна быть
 получена идентичная результирующей матрице матрица. */
-void is_ans_correct_mult(const Matrix res, const Matrix one, const Matrix two) {
+bool is_ans_correct_mult(const Matrix res, const Matrix one, const Matrix two) {
     printf("\n");
     Matrix ident;
     Matrix check;
@@ -267,51 +278,64 @@ void is_ans_correct_mult(const Matrix res, const Matrix one, const Matrix two) {
     create_zero_matrix(&check, one, two);
     check = matrix_mult(&check, res, ident);
     for (unsigned int k = 0; k < res.cols * res.rows; k++) {
-        if (res.values[k] == check.values[k]) {
+        if (fabs(res.values[k] - check.values[k]) < EPS) {
             continue;
-        } else {
-            printf("The answer is incorrect.\n");
-            return;
-        }
-    }
-    printf("The answer is correct.\n");
-    free_memory(ident);
-    free_memory(check);
-}
-
-// Вывод сообщения об ошибке (вычисление определителя методом Гаусса)
-// Переделать насчет нулевых элементов на главной диагонали (перестановка строк)
-bool error_det_gauss(const Matrix one) {
-    bool flag = false;
-    /* Из-за особенностей метода нахождения определителя для матриц с нулевым
-    элементом на главной диагонали невозможно */
-    for (unsigned int k = 0; k < one.cols * one.rows; k++) {
-        if ((!flag) && (one.values[k] == 0)) {
-            flag = true;
-        }
-    }
-    if (flag) {
-        printf("The main diagonal has zero elements.\n");
-        return true;
-    } else {
-        if (one.cols != one.rows) {
-            printf("The number of columns and the number of rows are different.\n");
-            return true;
         } else {
             return false;
         }
     }
+    free_memory(ident);
+    free_memory(check);
+    return true;
+}
+
+// Проверка матрицы на равенство количества строк и столбцов
+bool matrix_is_not_square(const Matrix one) {
+    if (one.cols != one.rows) {
+        printf("The number of columns and the number of rows are different.\n");
+        return true;
+    } else {
+        return false;
+    }
+}
+
+double alter_matrix(Matrix one, double det) {
+    bool flag_one = false;
+    bool flag_two = false;
+    unsigned int elem = 0;
+    unsigned int row = 1;
+    for (unsigned int k = 0; k < one.cols * one.rows; k += (one.cols + 1)) {
+        if (one.values[k] == 0) {
+            flag_one = true;
+            elem = k;
+            break;
+        }
+        row++;
+    }
+    for (unsigned int k = 0; k < one.rows + 1; k++) {
+        if ((flag_one)
+        && (one.values[(elem - (row - 1) * one.cols) + one.cols * k] != 0)) {
+                change_rows(&one, row, (k + 1));
+            printf("Altered matrix:\n");
+            print_matrix(one);
+            printf("\n");
+            det *= -1;
+            break;
+        }  else det = 1;
+    }
+    return det;
 }
 
 /* Функция вычисления определителя матрицы с использованием модификации
 метода Гаусса */
 double matrix_det_gauss(Matrix *res, const Matrix  one) {
     double det = 1;
-    if (error_det_gauss(one)) {
+    if (matrix_is_not_square(one)) {
         res = create_null_matrix(res);
         det = 0;
         return det;
     }
+    det = alter_matrix(one, det);
     create_zero_matrix(res, one, one);
     for (unsigned int k = 0; k < one.cols * one.rows; k++) {
         res->values[k] = one.values[k];
@@ -333,50 +357,9 @@ double matrix_det_gauss(Matrix *res, const Matrix  one) {
     for (unsigned int k = 0; k < one.rows; k++) {
         det *= res->values[k + k * one.cols];
     }
+    free(m);
     return det;
 }
-
-/*
-// Вывод сообщения об ошибке (вычисление определителя с помощью доп. миноров)
-// (Заготовка)
-bool error_det_minor (const Matrix one) {
-    if (one.cols != one.rows) {
-        printf("The number of columns and the number of rows are different.\n");
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Функция нахождения определителя обеих матриц через дополнительные миноры
-// (Заготовка)
-double det_matrix_minor (Matrix *min, const Matrix one) {
-    double det = 0;
-    return det;
-}
-
-// Проверка корректности вычисления определителя матрицы путем сравнения
-// результата двух способов (через дополнительные миноры и метод Гаусса).
-// (Заготовка)
-void is_ans_correct_det (const double det, const Matrix one, unsigned int
-method) {
-    printf("\n");
-    bool flag = true;
-    Matrix res;
-    create_zero_matrix(&res, one, one);
-    if (method == 4) {
-            if (det != det_matrix_minor(&res, one)) flag = false;
-        } else {
-        if (method == 5) {
-            if (det != matrix_det_gauss(&res, one)) flag = false;
-        }
-    }
-    if (flag == true) {
-        printf("The answer is correct.");
-    } else {
-        printf("The answer is incorrect.");
-    }
-} */
 
 // Вывод сообщения об ошибке (обратная матрица)
 bool error_inv(const Matrix one) {
@@ -423,14 +406,16 @@ Matrix matrix_inv(Matrix *res, const Matrix one) {
                                                       pow((-1), k + 2);
     }
     div_matrix_by_number(*res, adj, matrix_det_gauss(res, one));
+    free_memory(adj);
+    free_memory(det);
+    free_memory(mult);
     return *res;
 }
 
 /* Проверка корректности вычисления обратной матрицы путем умножения ее на
 входную матрицу. Результатом должна быть единичная матрица. */
-void is_ans_correct_inv(const Matrix res, const Matrix one) {
+bool is_ans_correct_inv(const Matrix res, const Matrix one) {
     printf("\n");
-    bool flag = true;
     Matrix ident;
     Matrix check;
     create_identity_matrix(&ident, one);
@@ -440,23 +425,12 @@ void is_ans_correct_inv(const Matrix res, const Matrix one) {
         if (((fabs(check.values[k])) - ident.values[k]) < EPS) {
             continue;
         } else {
-            printf("The answer is incorrect.\n");
-            return;
+            return false;
         }
     }
-    printf("The answer is correct.\n");
     free_memory(ident);
     free_memory(check);
-}
-
-// Вывод сообщения об ошибке (вычисление матричной экспоненты)
-bool error_exp(const Matrix one) {
-    if (one.cols != one.rows) {
-        printf("The number of columns and the number of rows are different.\n");
-        return true;
-    } else {
-        return false;
-    }
+    return true;
 }
 
 // Вычисление разности значений матрицы между предыдущей и последующей
@@ -472,9 +446,8 @@ bool accuracy_exp(const Matrix res, const Matrix last) {
 }
 
 // Функция для вычисления матричной экспоненты.
-// Ввести free для всех матриц, где выделяется память
 Matrix matrix_exp(Matrix *res, const Matrix one) {
-    if (error_exp(one)) {
+    if (matrix_is_not_square(one)) {
         res = create_null_matrix(res);
         return *res;
     }
@@ -494,18 +467,17 @@ Matrix matrix_exp(Matrix *res, const Matrix one) {
         k++;
         free_memory(division);
     }
-    return *res;
     free_memory(power);
     free_memory(last);
+    return *res;
 }
 
 /* Проверка корректности выполнения операции взятия матричной экспоненты
 путем умножения матричной экспоненты от матрицы с инвертированными элементами
 на полученную в результате выполнения программы. Результатом должна быть
 единичная матрица. Выполняется с заданной точностью. */
-void is_ans_correct_exp(const Matrix res, const Matrix one) {
+bool is_ans_correct_exp(const Matrix res, const Matrix one) {
     printf("\n");
-    bool flag = true;
     Matrix ident;
     Matrix check;
     create_identity_matrix(&ident, one);
@@ -516,11 +488,12 @@ void is_ans_correct_exp(const Matrix res, const Matrix one) {
         if ((fabs(check.values[k] - ident.values[k])) < EPS * 2) {
             continue;
         } else {
-            printf("The answer is incorrect.\n");
-            return;
+            return false;
         }
     }
-    printf("The answer is correct.\n");
     free_memory(ident);
     free_memory(check);
+    return true;
 }
+
+#pragma clang diagnostic pop

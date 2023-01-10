@@ -1,6 +1,20 @@
 #include <iostream>
 
-using namespace std;
+
+
+class Matrix_Exception : public std::domain_error
+{
+public:
+	Matrix_Exception(const char* const message) : std::domain_error(message)
+	{}
+};
+
+
+Matrix_Exception NotSquare("The matrix should be square\n");
+Matrix_Exception WrongSize("The matrix should have another size\n");
+Matrix_Exception MemoryError("Memory has not been allocated\n");
+Matrix_Exception DivisionError("Can't divide by zero\n");
+
 
 class Matrix
 {
@@ -9,6 +23,7 @@ class Matrix
 	friend Matrix multiplication(Matrix A, Matrix B);
 	friend Matrix multiplication(Matrix A, Matrix B);
 	friend Matrix transposition(Matrix A);
+	friend Matrix invertible(Matrix A);
 
 private:
 	int cols{ 0 }, rows{ 0 };
@@ -26,15 +41,25 @@ public:
 	void output();
 	unsigned int get_cols();
 	unsigned int get_rows();
+	double* get_values();
 	double determinant();
+	Matrix multiplication_by_num(double num);
+	Matrix division_by_num(double num);
 
 	Matrix fill_from_array(double*);
 
 	Matrix operator + (Matrix second_matrix);
 	Matrix operator - (Matrix second_matrix);
 	Matrix operator * (Matrix second_matrix);
+	Matrix operator / (Matrix second_matrix);
+
+	Matrix& operator=(const Matrix& A);
+
+	Matrix& operator+=(const Matrix& second_matrix);
+	Matrix& operator-=(const Matrix& second_matrix);
+	Matrix& operator*=(const double num);
+
 	Matrix operator ^ (unsigned int x);
-	//Matrix operator / (Matrix second_matrix);
 };
 
 
@@ -44,16 +69,15 @@ Matrix::Matrix(int C, int R, int number)
 
 	values = new double[rows * cols];
 
-	for (int i = 0; i < cols; i++)
+	for (int i = 0; i < cols; ++i)
 	{
-		for (int j = 0; j < rows; j++)
+		for (int j = 0; j < rows; ++j)
 		{
 			*(values + i * rows + j) = number;
+			//values[i] = number;
 		}
 	}
 }
-
-
 
 Matrix::Matrix(int cols, int rows)
 {
@@ -61,8 +85,9 @@ Matrix::Matrix(int cols, int rows)
 	this->rows = rows;
 
 	values = new double[cols * rows];
-	for (unsigned int i = 0; i < cols * rows; i++)
+	for (unsigned int i = 0; i < cols * rows; ++i)
 	{
+		//*(values + i) = rand() % 9;
 		values[i] = rand() % 9;
 	}
 }
@@ -71,9 +96,10 @@ Matrix::Matrix(const Matrix& matrix)
 {
 	cols = matrix.cols;
 	rows = matrix.rows;
-	unsigned int n_values = cols * rows;
-	values = new double[n_values];
-	memcpy(values, matrix.values, n_values * sizeof(double));
+
+	values = new double[cols * rows];
+	if (!values) throw MemoryError;
+	memcpy(values, matrix.values, cols * rows * sizeof(double));
 }
 
 Matrix::Matrix(Matrix&& matrix) noexcept
@@ -90,6 +116,7 @@ Matrix::Matrix(Matrix&& matrix) noexcept
 Matrix::~Matrix()
 {
 	delete[] values;
+	//std::cout << "Call destrustructor" << "\n";
 }
 
 
@@ -110,30 +137,36 @@ unsigned int Matrix::get_rows()
 	return rows;
 }
 
+double* Matrix::get_values() 
+{
+	return values;
+}
+
 void Matrix::output()
 {
-	for (int i = 0; i < cols; i++)
+	for (int i = 0; i < cols; ++i)
 	{
-		for (int j = 0; j < rows; j++)
+		for (int j = 0; j < rows; ++j)
 		{
-			cout << "\t" << *(values + i * rows + j) << "\t";
+			std::cout << "\t" << *(values + i * rows + j) << "\t";
 		}
-		cout << endl;
+		std::cout << "\n";
 	}
-	cout << endl;
+	std::cout << "\n";
 }
 
 
 
 Matrix addition(Matrix A, Matrix B)
 {
-	Matrix maxtix_tmp = Matrix(A.cols, A.rows, 0);
+	if (A.rows != B.rows) throw WrongSize;
+	Matrix maxtix_tmp (A.cols, A.rows, 0);
 
-	cout << "\tResult of addition A from B:" << endl;
+	std::cout << "\tResult of addition A from B:" << "\n";
 
-	for (int i = 0; i < A.cols; i++)
+	for (int i = 0; i < A.cols; ++i)
 	{
-		for (int j = 0; j < A.rows; j++)
+		for (int j = 0; j < A.rows; ++j)
 		{
 			*(maxtix_tmp.values + i * A.rows + j) = *(A.values + i * A.rows + j) + *(B.values + i * A.rows + j);
 		}
@@ -144,13 +177,14 @@ Matrix addition(Matrix A, Matrix B)
 
 Matrix subtraction(Matrix A, Matrix B)
 {
+	if (A.rows != B.rows) throw WrongSize;
 	Matrix maxtix_tmp = Matrix(A.cols, A.rows, 0);
 
-	cout << "\t  Result of subtraction A from B:" << endl;
+	std::cout << "\t  Result of subtraction A from B:" << "\n";
 
-	for (int i = 0; i < A.cols; i++)
+	for (int i = 0; i < A.cols; ++i)
 	{
-		for (int j = 0; j < A.rows; j++)
+		for (int j = 0; j < A.rows; ++j)
 		{
 			*(maxtix_tmp.values + i * A.rows + j) = *(A.values + i * A.rows + j) - *(B.values + i * A.rows + j);
 		}
@@ -161,13 +195,14 @@ Matrix subtraction(Matrix A, Matrix B)
 
 Matrix multiplication(Matrix A, Matrix B)
 {
+	if (A.rows != B.rows) throw WrongSize;
 	Matrix maxtix_tmp = Matrix(A.cols, A.rows, 0);
 
-	cout << "\t  Result of multiplication A from B:" << endl;
+	std::cout << "\t  Result of multiplication A from B:" << "\n";
 
-	for (int i = 0; i < A.cols; i++)
+	for (int i = 0; i < A.cols; ++i)
 	{
-		for (int j = 0; j < A.rows; j++)
+		for (int j = 0; j < A.rows; ++j)
 		{
 			for (int k = 0; k < A.cols; k++)
 			{
@@ -183,11 +218,11 @@ Matrix transposition(Matrix A)
 {
 	Matrix maxtix_tmp = Matrix(A.cols, A.rows, 0);
 
-	cout << "\t  Result of transposition A:" << endl;
+	std::cout << "\t  Result of transposition A:" << "\n";
 
-	for (int i = 0; i < A.cols; i++)
+	for (int i = 0; i < A.cols; ++i)
 	{
-		for (int j = 0; j < A.rows; j++)
+		for (int j = 0; j < A.rows; ++j)
 		{
 			*(maxtix_tmp.values + i * maxtix_tmp.rows + j) = *(A.values + j * A.rows + i);
 		}
@@ -196,12 +231,35 @@ Matrix transposition(Matrix A)
 	return maxtix_tmp;
 }
 
+Matrix Matrix::multiplication_by_num(double num)
+{
+	Matrix result(cols, rows);
+	for (unsigned int index = 0; index < cols * rows; ++index) 
+	{
+		result.values[index] = values[index] * num;
+	}
+	return result;
+}
+
+Matrix Matrix::division_by_num(double num)
+{
+	if (num == 0) throw DivisionError;
+	Matrix result(cols, rows);
+	for (unsigned int i = 0; i < cols * rows; ++i)
+	{
+		result.values[i] = values[i] / num;
+	}
+	return result;
+}
+
 double Matrix::determinant()
 {
+	if (rows != cols) throw NotSquare;
 	double result = 0;
 	unsigned int n = cols;
 
-	if (n == 1) {
+	if (n == 1) 
+	{
 		result = values[0];
 
 		return result;
@@ -214,8 +272,10 @@ double Matrix::determinant()
 		unsigned int row_offset = 0;
 		unsigned int col_offset = 0;
 
-		for (unsigned int sub_row = 0; sub_row < n - 1; ++sub_row) {
-			for (unsigned int sub_col = 0; sub_col < n - 1; ++sub_col) {
+		for (unsigned int sub_row = 0; sub_row < n - 1; ++sub_row) 
+		{
+			for (unsigned int sub_col = 0; sub_col < n - 1; ++sub_col) 
+			{
 				if (sub_row == row) { row_offset = 1; }
 				if (sub_col == col) { col_offset = 1; }
 				submatrix.values[sub_row * (n - 1) + sub_col] =
@@ -227,17 +287,48 @@ double Matrix::determinant()
 	return result;
 }
 
+Matrix invertible(Matrix A)
+{
+	if (A.rows != A.cols) throw NotSquare;
+	Matrix transponent = transposition(A);
+	Matrix result(A.cols, A.rows);
+	for (unsigned int row = 0; row < transponent.rows; ++row) 
+	{
+		for (unsigned int col = 0; col < transponent.cols; ++col)
+		{
+			Matrix submatrix(transponent.cols - 1, transponent.rows - 1);
+			unsigned int row_offset = 0;
+			unsigned int col_offset = 0;
+			for (unsigned int sub_row = 0; sub_row < submatrix.get_rows(); ++sub_row) 
+			{
+				if (row == sub_row) { row_offset = 1; }
+				for (unsigned int sub_col = 0; sub_col < submatrix.get_cols(); ++sub_col) 
+				{
+					if (col == sub_col) { col_offset = 1; }
+					submatrix.values[sub_row * (transponent.cols - 1) + sub_col] =
+						transponent.values[(sub_row + row_offset) * transponent.cols + (sub_col + col_offset)];
+				}
+			}
+			result.values[row * A.cols + col] = pow(-1, row + col) * submatrix.determinant();
+		}
+	}
+	std::cout << "\tResult of invertible Matrix A:" << "\n";
+	result.multiplication_by_num(1 / result.determinant()).output();;
+	return result.multiplication_by_num(1 / result.determinant());
+}
+
 
 
 Matrix Matrix::operator + (Matrix second_matrix)
 {
-	Matrix maxtix_tmp = Matrix(cols, rows, 0);
+	if (rows != second_matrix.rows) throw WrongSize;
+	Matrix maxtix_tmp (cols, rows, 0);
 
-	cout << "\tResult of addition A from B through operator \'+\'" << endl;
+	std::cout << "\tResult of addition A from B through operator \'+\'" << "\n";
 
-	for (int i = 0; i < maxtix_tmp.rows; i++)
+	for (int i = 0; i < maxtix_tmp.rows; ++i)
 	{
-		for (int j = 0; j < maxtix_tmp.cols; j++)
+		for (int j = 0; j < maxtix_tmp.cols; ++j)
 		{
 			*(maxtix_tmp.values + i * maxtix_tmp.rows + j) = *(values + i * rows + j) + *(second_matrix.values + i * second_matrix.rows + j);
 		}
@@ -248,13 +339,14 @@ Matrix Matrix::operator + (Matrix second_matrix)
 
 Matrix Matrix::operator - (Matrix second_matrix)
 {
-	Matrix maxtix_tmp = Matrix(cols, rows, 0);
+	if (rows != second_matrix.rows) throw WrongSize;
+	Matrix maxtix_tmp (cols, rows, 0);
 
-	cout << "\t  Result of subtraction A from B through operator \'-\'" << endl;
+	std::cout << "\t  Result of subtraction A from B through operator \'-\'" << "\n";
 
-	for (int i = 0; i < maxtix_tmp.rows; i++)
+	for (int i = 0; i < maxtix_tmp.rows; ++i)
 	{
-		for (int j = 0; j < maxtix_tmp.cols; j++)
+		for (int j = 0; j < maxtix_tmp.cols; ++j)
 		{
 			*(maxtix_tmp.values + i * maxtix_tmp.rows + j) = *(values + i * rows + j) - *(second_matrix.values + i * second_matrix.rows + j);
 		}
@@ -265,35 +357,38 @@ Matrix Matrix::operator - (Matrix second_matrix)
 
 Matrix Matrix::operator * (Matrix second_matrix)
 {
-	Matrix maxtix_tmp(cols, rows, 1);
+	if (rows != second_matrix.rows) throw WrongSize;
+	Matrix maxtix_tmp(cols, rows, 0);
 
-	cout << "\t  Result of multiplication A to B through operator \'*\'" << endl;
+	std::cout << "\t  Result of multiplication A to B through operator \'*\'" << "\n";
 
-	for (int i = 0; i < maxtix_tmp.rows; i++)
+	for (int i = 0; i < maxtix_tmp.rows; ++i)
 	{
-		for (int j = 0; j < maxtix_tmp.cols; j++)
+		for (int j = 0; j < maxtix_tmp.cols; ++j)
 		{
 			for (int k = 0; k < maxtix_tmp.rows; k++)
 			{
-				*(maxtix_tmp.values + i * maxtix_tmp.rows + j) += *(values + i * rows + k) * *(second_matrix.values + k * second_matrix.rows + j);
+				*(maxtix_tmp.values + i * rows + j) += *(values + i * rows + k) * *(second_matrix.values + k * rows + j);
 			}
 		}
 	}
 	maxtix_tmp.output();
 	return maxtix_tmp;
+
 }
 
 Matrix Matrix::operator ^ (unsigned int x)
 {
+	if (rows != cols) throw NotSquare;
 	Matrix maxtix_tmp(cols, rows, 1);
 
-	cout << "\t  Result of exponentiation Matrix A " << x << " through operator \'*\'" << endl;
+	std::cout << "\t  Result of exponentiation Matrix A " << x << " through operator \'^\'" << "\n";
 
 	for (int degree = 0; degree < x; degree++)
 	{
-		for (int i = 0; i < maxtix_tmp.rows; i++)
+		for (int i = 0; i < maxtix_tmp.rows; ++i)
 		{
-			for (int j = 0; j < maxtix_tmp.cols; j++)
+			for (int j = 0; j < maxtix_tmp.cols; ++j)
 			{
 				for (int k = 0; k < maxtix_tmp.rows; k++)
 				{
@@ -304,9 +399,76 @@ Matrix Matrix::operator ^ (unsigned int x)
 	}
 	maxtix_tmp.output();
 	return maxtix_tmp;
+	
+}
+
+Matrix Matrix::operator / (Matrix second_matrix)
+{
+	std::cout << "Result of division A to B through operator \'/\':" << "\n";
+	second_matrix = invertible(second_matrix);
+
+	Matrix result(cols, rows, 0);
+	Matrix temp(cols, rows);
+	
+	for (unsigned int i = 0; i < cols * rows; ++i)
+	{
+		temp.values[i] = values[i]; 
+	}
+	result = temp * second_matrix;
+	return result;
 }
 
 
+
+
+//////////////////////////////////////////////////////////////////////////
+
+
+Matrix& Matrix::operator=(const Matrix& A)
+{
+	if (this == &A) return *this;
+	delete[] values;
+	rows = A.rows;
+	cols = A.cols;
+	this->values = new double[rows * cols];
+	if (!values) throw MemoryError;
+	memcpy(this->values, A.values, rows * cols * sizeof(double));
+	return *this;
+}
+
+Matrix& Matrix::operator+=(const Matrix& second_matrix)
+{
+	if (rows != second_matrix.rows || cols != second_matrix.cols) throw WrongSize;
+	for (unsigned int i = 0; i < rows * cols; ++i) 
+	{
+		this->values[i] += second_matrix.values[i];
+	}
+	return *this;
+}
+
+
+Matrix& Matrix::operator-=(const Matrix& second_matrix)
+{
+	if (rows != second_matrix.rows || cols != second_matrix.cols) throw WrongSize;
+	for (unsigned int i = 0; i < rows * cols; ++i) 
+	{
+		this->values[i] -= second_matrix.values[i];
+	}
+	return *this;
+}
+
+Matrix& Matrix::operator*=(const double num)
+{
+	for (unsigned int i = 0; i < rows * cols; i++) 
+	{
+		this->values[i] *= num;
+	}
+	return *this;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////
 
 int main()
 {
@@ -314,17 +476,24 @@ int main()
 
 	Matrix A = Matrix(3, 3);
 	Matrix B = Matrix(3, 3);
+	Matrix D = Matrix(2, 2);
 
 	double arr [] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	Matrix C = Matrix(3, 3).fill_from_array(arr);
 	
-	cout << " " << endl << endl;
+	std::cout << " " << "\n" << "\n";
 
-	cout << "\t\t    Matrix A:" << endl;
+	D = A;
+	std::cout << "\tUqality of matrix of different size" << "\n";
+	D.output();
+
+	std::cout << " " << "\n" << "\n";
+
+	std::cout << "\t\t    Matrix A:" << "\n";
 	A.output();
-	cout << "\t\t    Matrix B: " << endl;
+	std::cout << "\t\t    Matrix B: " << "\n";
 	B.output();
-	cout << "\t\t    Matrix C: " << endl;
+	std::cout << "\t\t    Matrix C: " << "\n";
 	C.output();
 
 	addition(A, B);
@@ -332,11 +501,17 @@ int main()
 	multiplication(A, B);
 	transposition(A);
 
-	cout << "\t Determinant of Matrix A:" << endl;
-	cout << "\t\t\t" << A.determinant() << "\n\n";
+	std::cout << "\t Determinant of Matrix A:" << "\n";
+	std::cout << "\t\t\t" << A.determinant() << "\n\n";
+
+	invertible(A);
 
 	A + B;
 	A - B;
 	A * B;
 	A ^ 3;
+	A / B;
+	A += B;
+	A -= B;
+	A *= 7;
 }

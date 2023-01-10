@@ -4,10 +4,10 @@
 #include <stdexcept>
 #include <string>
 
-class MatrixException: public std::logic_error
+class Matrix_exception: public std::logic_error
 {
 public:
-  MatrixException(const std::string& message);
+  Matrix_exception(const std::string& message);
 
 };
 

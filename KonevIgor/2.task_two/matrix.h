@@ -21,22 +21,23 @@ Matrix div_matrix_by_number(Matrix res, const Matrix one, const double a);
 Matrix matrix_for_minor(const Matrix one, unsigned int rowNumber,
                         unsigned int colNumber);
 double factorial(const unsigned int b);
+void change_rows(Matrix *res, const unsigned int m, const unsigned int n);
 bool is_not_equal_size(const Matrix one, const Matrix two);
 Matrix matrix_add(Matrix *res, const Matrix one, const Matrix two);
-void is_ans_correct_add(const Matrix res, const Matrix one, const Matrix two);
+bool is_ans_correct_add(const Matrix res, const Matrix one, const Matrix two);
 Matrix matrix_sub(Matrix *res, const Matrix one, const Matrix two);
-void is_ans_correct_sub(const Matrix res, const Matrix one, const Matrix two);
+bool is_ans_correct_sub(const Matrix res, const Matrix one, const Matrix two);
 bool is_not_numbers_match(const Matrix one, const Matrix two);
 Matrix matrix_mult(Matrix *res, const Matrix one, const Matrix two);
-void is_ans_correct_mult(const Matrix res, const Matrix one, const Matrix two);
-bool error_det_gauss(const Matrix one);
+bool is_ans_correct_mult(const Matrix res, const Matrix one, const Matrix two);
+bool matrix_is_not_square(const Matrix one);
 double matrix_det_gauss(Matrix *res, const Matrix  one);
 bool error_inv(const Matrix one);
 Matrix matrix_inv(Matrix *res, const Matrix one);
-void is_ans_correct_inv(const Matrix res, const Matrix one);
-bool error_exp(const Matrix one);
+bool is_ans_correct_inv(const Matrix res, const Matrix one);
 bool accuracy_exp(const Matrix res, const Matrix last);
 Matrix matrix_exp(Matrix *res, const Matrix one);
-void is_ans_correct_exp(const Matrix res, const Matrix one);
+bool is_ans_correct_exp(const Matrix res, const Matrix one);
+double alter_matrix(Matrix one, double det);
 
 #endif

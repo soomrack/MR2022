@@ -14,10 +14,10 @@ public:
   Matrix& operator=(Matrix&&) noexcept;
   ~Matrix();
 
-  unsigned int getRowsCount() const;
-  unsigned int getColumnsCount() const;
-  double getValue(unsigned int, unsigned int) const;
-  void setValue(double, unsigned int, unsigned int);
+  unsigned int get_rows_count() const;
+  unsigned int get_cols_count() const;
+  double get_value(unsigned int, unsigned int) const;
+  void set_value(double, unsigned int, unsigned int);
 
   Matrix add(const Matrix&);
   Matrix add(double);
@@ -37,46 +37,47 @@ public:
   Matrix operator*(double);
   void operator*=(const Matrix&);
   void operator*=(double);
-  Matrix divideByScalar(double);
+  Matrix divide_by_scalar(double);
   Matrix operator/(double);
   void operator/=(double);
   bool operator==(const Matrix&) const;
-  int getTriangleMatrix(Matrix& destinationMatrix);
-  double getDeterminant();
-  Matrix getTransposed();
-  double getMinor(unsigned int, unsigned int);
-  Matrix getCofactor();
-  Matrix getInverted();
+  int get_triangle_matrix(Matrix& destinationMatrix);
+  double get_determinant();
+  Matrix get_transposed();
+  double get_minor(unsigned int, unsigned int);
+  Matrix get_cofactor();
+  Matrix get_inverted();
   Matrix pow(unsigned int);
-  Matrix getMatrixExponent(double);
+  Matrix get_identity_matrix(unsigned int size);
+  Matrix get_matrix_exponent(double);
 
-  class RowProxy {
+
+  class Row_proxy {
   public:
-    RowProxy(double*, size_t);
-    double& operator[](size_t j);
+    Row_proxy(double*, size_t);
+    double& operator[](size_t idx);
   private:
-    double* values_;
-    size_t size_;
+    double* values;
+    size_t size;
   };
-  RowProxy operator[](size_t i);
-  RowProxy operator[](size_t i) const;
+  Row_proxy operator[](size_t idx);
+  Row_proxy operator[](size_t idx) const;
 
   friend std::ostream& operator<<(std::ostream&, Matrix&);
   friend std::ostream& operator<<(std::ostream&, Matrix&&);
 
 private:
-  unsigned int rowsCount_;
-  unsigned int columnsCount_;
-  double* values_;
+  unsigned int rows;
+  unsigned int cols;
+  double* values;
 
   void swap(Matrix&);
-  double getDeterminantFromTriangleMatrix(int swapCount);
-  static bool isEqualSize(const Matrix&, const Matrix&);
-  unsigned int getIndexMaxColValue(unsigned int, unsigned int);
-  void swapRow(unsigned int, unsigned int);
-  bool isMatrixDiagonalHasZero();
-  unsigned int calculateFactorial(unsigned int);
-  static bool checkAccuracy(const Matrix&, const Matrix&, double);
+  void swap_rows(unsigned int, unsigned int);
+  unsigned int get_index_max_col_value(unsigned int, unsigned int);
+  double get_determinant_from_triangle_matrix(int swap_count);
+  static bool is_equal_size(const Matrix&, const Matrix&);
+  static bool check_accuracy(const Matrix&, const Matrix&, double);
+  bool is_main_diagonal_has_zero();
 
 };
 

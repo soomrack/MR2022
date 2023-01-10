@@ -1,18 +1,98 @@
-//
-// Created by user on 24.10.2022.
-//
+#ifndef PROGRAMMING_MATRIX_H
+#define PROGRAMMING_MATRIX_H
 
-#include "Matrix.h"
+#include <iostream>
 #include <cmath>
+
+
+class MatrixException: public std::exception {
+public:
+    MatrixException(const char* msg): std::exception() {}
+};
+
+
+template<class T> // где Т - тип данных
+class Matrix {
+private:
+    unsigned int rows;
+    unsigned int cols;
+    T * values; // чтобы подставлять любые типы данных
+
+    const T EPS = 10e-6;  // Точность при сравнении величин с плавающей точкой
+
+public:
+    static_assert(                                  // проверка типа данных которые подставили в Т, так как часть функций не будет работать
+            std::is_same<double, T>::value ||
+            std::is_same<float, T>::value ||
+            std::is_same<long double, T>::value,
+            "T must be int, double or float"); // иначе вывод ошибки с текстом
+
+    Matrix();
+
+    Matrix(unsigned int rows, unsigned int cols);
+
+    Matrix(const Matrix &);
+    Matrix(Matrix &&mat) noexcept;
+
+    Matrix set_value(T value);                                 // Заполнение созданной матрицы одним числом
+    Matrix set_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
+    Matrix set_identity();                                          // Преобразование матрицы в единичную
+    Matrix fill_from_array(T * array);                           // Заполнение матрицы значениями из массива
+
+    T get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы
+    void set(unsigned int row, unsigned int col, T val);        // Изменение произвольного элемента матрицы
+
+    Matrix& operator=(const Matrix& mat);
+    Matrix& operator=(Matrix&& mat) noexcept;
+    bool operator==(const Matrix& mat);
+    bool operator!=(const Matrix& mat) { return !(*this == mat); }
+    T * operator[](unsigned int row);                            // Доступ к заданной строке матрицы
+    bool is_identity();
+    bool is_diagonal();
+
+    Matrix operator+(const Matrix& mat) const;
+    Matrix operator-(const Matrix& mat) const;
+    Matrix operator*(T scalar) const;
+    Matrix operator*(const Matrix& mat2) const;
+    Matrix operator/(T scalar) const;
+
+    void operator+=(const Matrix& mat) { *this = *this + mat; }
+    void operator-=(const Matrix& mat) { *this = *this - mat; }
+    void operator*=(const Matrix& mat) { *this = *this * mat; }
+
+    Matrix transpose();
+    void swap_rows(unsigned int row1, unsigned int row2);
+    unsigned int upper_triangle();
+    T det();
+    T trace();
+
+    Matrix minor(unsigned int minor_row, unsigned int minor_col);
+    Matrix inv();
+    Matrix exp();
+
+//    friend std::ostream& operator<<(std::ostream &os, Matrix &mat);          НЕ РАБОТАЕТ ИЗ ЗА ШАБЛОНОВ
+//    friend std::ostream& operator<<(std::ostream &os, Matrix &&mat);
+//    friend std::istream& operator>>(std::istream &is, Matrix &mat);
+
+    explicit operator bool() {
+        for (unsigned int idx = 0; idx < rows * cols; idx++) {
+            if (!(bool) values[idx]) return false;
+        }
+        return true;
+    }
+
+    void print() { std::cout << *this << std::endl; }
+
+    ~Matrix() { delete[] this->values; }
+};
 
 template <typename T>
 Matrix<T>::Matrix() : rows(0), cols(0), values(nullptr) {}
 
 
 template <typename T>
-Matrix<T>::Matrix(unsigned int r_num, unsigned int c_num) {
-    rows = r_num;
-    cols = c_num;
+Matrix<T>::Matrix(unsigned int rows, unsigned int cols)
+        : rows(rows), cols(cols) {
     values = new T[rows * cols];
     if (!values) throw MatrixException("Error: unable to allocate memory");
 }
@@ -64,7 +144,7 @@ Matrix<T>& Matrix<T>::operator=(Matrix&& mat) noexcept {  // Оператор п
 template <typename T>
 T Matrix<T>::get(unsigned int row, unsigned int col) {
     if (row > rows || col > cols) throw
-    MatrixException("Index error: one of the indexes is bigger than matrix size");
+                MatrixException("Index error: one of the indexes is bigger than matrix size");
     return values[col + row * cols];
 }
 
@@ -153,7 +233,7 @@ bool Matrix<T>::is_diagonal() {
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix& mat) const {
     if (this->rows != mat.rows || this->cols != mat.cols) throw
-    MatrixException("Matrices must be the same size");
+                MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] + mat.values[idx];
@@ -165,7 +245,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix& mat) const {
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix& mat2) const {
     if (this->rows != mat2.rows || this->cols != mat2.cols) throw
-    MatrixException("Matrices must be the same size");
+                MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         res.values[idx] = this->values[idx] - mat2.values[idx];
@@ -303,7 +383,7 @@ Matrix<T> Matrix<T>::inv() {
     for (unsigned int row = 0; row < mat.rows; row++){
         for (unsigned int col = 0; col < mat.cols; col++){
             ans.values[col * ans.rows + row] = pow(-1, row + col) *
-                    mat.minor(row, col).det() / determinant;
+                                               mat.minor(row, col).det() / determinant;
         }
     }
     return ans;
@@ -368,3 +448,5 @@ std::istream &operator>>(std::istream &is, Matrix<T>& mat) {
     }
     return is;
 }
+
+#endif //PROGRAMMING_MATRIX_H

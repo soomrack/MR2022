@@ -12,9 +12,9 @@ void test_equal(){
     double val1[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     double val2[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     double val3[9] = {1, 2, 3, 4, 5, 6, 9, 8, 9};
-    Matrix mat1 = Matrix<double>(3, 3).fill_from_array(val1);
-    Matrix mat2 = Matrix<double>(3, 3).fill_from_array(val2);
-    Matrix mat3 = Matrix<double>(3, 3).fill_from_array(val3);
+    Matrix mat1 = Matrix(3, 3).fill_from_array(val1);
+    Matrix mat2 = Matrix(3, 3).fill_from_array(val2);
+    Matrix mat3 = Matrix(3, 3).fill_from_array(val3);
     if (mat1 == mat2 && mat1 != mat3 && mat2 != mat3){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Equal check test passed\n");
@@ -34,9 +34,9 @@ void test_add(){
                        -2, 2, 4};
     double ans_d[6] = {9, 1, 4,
                        2, 7, 10};
-    Matrix matrix1 = Matrix<double>(3, 2).fill_from_array(data1);
-    Matrix matrix2 = Matrix<double>(3, 2).fill_from_array(data2);
-    Matrix ans = Matrix<double>(3, 2).fill_from_array(ans_d);
+    Matrix matrix1 = Matrix(3, 2).fill_from_array(data1);
+    Matrix matrix2 = Matrix(3, 2).fill_from_array(data2);
+    Matrix ans = Matrix(3, 2).fill_from_array(ans_d);
     if (ans == matrix1 + matrix2){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Addition test passed\n");
@@ -56,9 +56,9 @@ void test_sub(){
                        -2, 2, 4};
     double ans_d[6] = {-7, 3, 2,
                        6, 3, 2};
-    Matrix matrix1 = Matrix<double>(3, 2).fill_from_array(data1);
-    Matrix matrix2 = Matrix<double>(3, 2).fill_from_array(data2);
-    Matrix ans = Matrix<double>(3, 2).fill_from_array(ans_d);
+    Matrix matrix1 = Matrix(3, 2).fill_from_array(data1);
+    Matrix matrix2 = Matrix(3, 2).fill_from_array(data2);
+    Matrix ans = Matrix(3, 2).fill_from_array(ans_d);
     if (matrix1 - matrix2 == ans){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Subtraction test passed\n");
@@ -79,9 +79,9 @@ void test_mul(){
                        7, 3, 0};
     double ans_data[6] = {25, 12, 9,
                           64, 24, 24};
-    Matrix matrix1 = Matrix<double>(2, 3).fill_from_array(data1);
-    Matrix matrix2 = Matrix<double>(3, 3).fill_from_array(data2);
-    Matrix ans = Matrix<double>(2, 3).fill_from_array(ans_data);
+    Matrix matrix1 = Matrix(2, 3).fill_from_array(data1);
+    Matrix matrix2 = Matrix(3, 3).fill_from_array(data2);
+    Matrix ans = Matrix(2, 3).fill_from_array(ans_data);
     if (matrix1 * matrix2 == ans){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Multiplication test passed\n");
@@ -93,7 +93,6 @@ void test_mul(){
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
 
-
 void test_inv(){
     double data[9] = {1, -2, 1,
                       2, 1, -1,
@@ -101,8 +100,8 @@ void test_inv(){
     double ans_data[9] = {0, 2, -1,
                           -1, 5, -3,
                           -1, 8, -5};
-    Matrix matrix = Matrix<double>(3, 3).fill_from_array(data);
-    Matrix ans = Matrix<double>(3, 3).fill_from_array(ans_data);
+    Matrix matrix = Matrix(3, 3).fill_from_array(data);
+    Matrix ans = Matrix(3, 3).fill_from_array(ans_data);
     if (matrix.inv() == ans){
         SetConsoleTextAttribute(hConsole, TEST_PASSED);
         printf("Inverse matrix test passed\n");
@@ -117,7 +116,7 @@ void test_inv(){
 
 void test_inv_mul(int num = 100, int size = 5) {
     for (int iteration = 0; iteration < num; iteration++){
-        Matrix A = Matrix<double>(size, size).set_random(-10, 10);
+        Matrix A = Matrix(size, size).set_random(-10, 10);
         if (!(A * A.inv()).is_identity()) {
             SetConsoleTextAttribute(hConsole, TEST_FAILED);
             printf("Inverse matrix multiplication test hasn't been passed\n");
@@ -129,16 +128,35 @@ void test_inv_mul(int num = 100, int size = 5) {
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
 
+unsigned long int MatrixMemory::total_memory = 0;
+
 
 int main(){
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//    test_equal();
+//    test_add();
+//    test_sub();
+//    test_mul();
+//    test_inv();
+//    test_inv_mul();
+//    double values[9] = {1, 0, 0,
+//                        0, 2, 0,
+//                        0 ,0, 3};
+//    Matrix A = Matrix(3, 3).fill_from_array(values);
+//    std::cout << A.exp();
 
-    test_equal();
-    test_add();
-    test_sub();
-    test_mul();
-    test_inv();
-    test_inv_mul();
+//    double values[9] = {1, 0, 0,
+//                        0, 2, 0,
+//                        0 ,0, 3};
+//
+//
+//    Matrix A = Matrix(3, 3).fill_from_array(values);
+//    Matrix B = A * 5;
+//    Matrix C = A * B;
+//
+//    MatrixMemory A_mem = {5, 5};
+    MatrixMemory A = {4, 4};
+    std::cout << A.get_total_memory() << std::endl;
 
     return 0;
 }
