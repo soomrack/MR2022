@@ -462,7 +462,6 @@ Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size)
     return reverse;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 Matrix<T> Matrix<T>::exponent(unsigned int n) //Количество членов разложения
@@ -482,6 +481,7 @@ Matrix<T> Matrix<T>::exponent(unsigned int n) //Количество члено�
     return ex;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T1>
 class Matrix_Memory : public Matrix<T1> {
@@ -527,9 +527,44 @@ public:
     {
         total_mem -= memory;
     }
+
+    Matrix_Memory& operator=(const Matrix_Memory&);
+    Matrix_Memory& operator=(const Matrix_Memory&&);
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T1>
+Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory&& A) noexcept
+{
+    if (this == &X) return *this;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
+    values = X.values;
+    X.values = nullptr;
+    return *this;
+}
+
+template <typename T1>
+Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory& A)
+{
+    if (this == &A) return *this;
+    delete[] values;
+    rows = A.rows;
+    cols = A.cols;
+    this->values = new T[rows * cols];
+    if (!values) throw Mem_Error;
+    memcpy(this->values, A.values, rows * cols * sizeof(T));
+    return *this;
+}
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void test_add()
 {
