@@ -40,10 +40,6 @@ public:
         mat.memory_size = 0;
     }
 
-    MatrixMemory& operator=(MatrixMemory&& mat) {
-        std::cout << "123" << std::endl;
-    }
-
     unsigned long int get_memory_size() { return memory_size; }
     unsigned long int get_total_memory() { return total_memory; }
     unsigned long int get_total_quantity() { return quantity; }
