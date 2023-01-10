@@ -7,7 +7,7 @@
 
 using namespace std;
 
-long int total_memory = 0;
+long int total_mem = 0;
 
 class Matrix_Exception : public  domain_error
 {
@@ -17,11 +17,11 @@ public:
     }
 };
 
-Matrix_Exception NOTSQUARE("Error:the matrix must be square(should have nxn size)\n");
-Matrix_Exception NOTEQUAL("Error: the matrix should have a same size\n");
-Matrix_Exception MULTIPLYERROR("Error: first matrix cols not equal to second matrix row.\n");
-Matrix_Exception ZERODIVISION("Error: divide by zero\n");
-Matrix_Exception MEM_ERROR("Error: memory are not allocated\n");
+Matrix_Exception Not_Square("Error:the matrix must be square(should have nxn size)\n");
+Matrix_Exception Not_Equal("Error: the matrix should have a same size\n");
+Matrix_Exception Multiply_Error("Error: first matrix cols not equal to second matrix row.\n");
+Matrix_Exception Zero_division("Error: divide by zero\n");
+Matrix_Exception Mem_Error("Error: memory are not allocated\n");
 
 template<typename T>
 class Matrix 
@@ -35,12 +35,8 @@ protected:
 public:
 
     static_assert
-        (
-         is_same<double, T>::value ||
-         is_same<float, T>::value ||
-         is_same<long double, T>::value,
-        "T must be int, double or float"
-        );
+        (is_same<double, T>::value || is_same<float, T>::value || is_same<long double, T>::value,
+        "T must be int, double or float");
 
     const double EPS = 0.000001;
 
@@ -102,24 +98,24 @@ public:
 
 
 template <typename T>
-Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col, T* value)
+Matrix<T>::Matrix(unsigned int R, unsigned int C, T* value)
 {
-    rows = num_row;
-    cols = num_col;
+    rows = R;
+    cols = C;
     values = new T[rows * cols];
-    if (!values) throw MEM_ERROR;
+    if (!values) throw Mem_Error;
     memcpy(values, value, sizeof(T) * rows * cols);
-    total_memory = sizeof(T) * rows * cols;
+    total_mem = sizeof(T) * rows * cols;
 }
 
 template <typename T>
-Matrix<T>::Matrix(unsigned int num_row, unsigned int num_col)
+Matrix<T>::Matrix(unsigned int R, unsigned int C)
 {
-    rows = num_row;
-    cols = num_col;
+    rows = R;
+    cols = C;
     values = new T[rows * cols];
-    if (!values) throw MEM_ERROR;
-    total_memory = sizeof(T) * rows * cols;
+    if (!values) throw Mem_Error;
+    total_mem = sizeof(T) * rows * cols;
 }
 
 template <class T>
@@ -140,7 +136,7 @@ template <class T>
 Matrix<T>::Matrix(const Matrix& mat) : rows(mat.rows), cols(mat.cols)
 {
     values = new T[rows * cols];
-    if (!values) throw MEM_ERROR;
+    if (!values) throw Mem_Error;
     memcpy(values, mat.values, rows * cols * sizeof(T));
 }
 
@@ -242,7 +238,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix& A)
     rows = A.rows;
     cols = A.cols;
     this->values = new T[rows * cols];
-    if (!values) throw MEM_ERROR;
+    if (!values) throw Mem_Error;
     memcpy(this->values, A.values, rows * cols * sizeof(T));
     return *this;
 }
@@ -251,7 +247,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix& A)
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& matrix)
 {
-    if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
+    if (rows != matrix.rows || cols != matrix.cols) throw Not_Equal;
     for (unsigned int index = 0; index < rows * cols; ++index) 
     {
         this->values[index] += matrix.values[index];
@@ -263,7 +259,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& matrix)
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& matrix)
 {
-    if (rows != matrix.rows || cols != matrix.cols) throw NOTEQUAL;
+    if (rows != matrix.rows || cols != matrix.cols) throw Not_Equal;
     for (unsigned int index = 0; index < rows * cols; ++index) 
     {
         this->values[index] -= matrix.values[index];
@@ -275,7 +271,7 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& matrix)
 template <typename T>
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& matrix)
 {
-    if (cols != matrix.rows) throw MULTIPLYERROR;
+    if (cols != matrix.rows) throw Multiply_Error;
     Matrix multiplication(rows, matrix.cols);
     for (unsigned int row = 0; row < multiplication.rows; row++) 
     {
@@ -426,7 +422,7 @@ Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const u
 template <typename T>
 double Matrix<T>::determinant(const Matrix matrix, const unsigned int size)
 {
-    if (matrix.rows != matrix.cols) throw NOTSQUARE;
+    if (matrix.rows != matrix.cols) throw Not_Square;
     double det = 0;
     int k = 1;
     if (size == 0)
@@ -449,7 +445,7 @@ template <typename T>
 Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size)
 {
     double d = determinant(matrix, size);
-    if (matrix.rows != matrix.cols) throw NOTSQUARE;
+    if (matrix.rows != matrix.cols) throw Not_Square;
     Matrix reverse(matrix.rows, matrix.cols);
     int k = 1;
     for (unsigned int row = 0; row < reverse.rows; row++) 
@@ -461,7 +457,7 @@ Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size)
         }
     }
     reverse.set_transpose();
-    if (fabs(d) < EPS) throw ZERODIVISION;
+    if (fabs(d) < EPS) throw Zero_division;
     reverse /= d;
     return reverse;
 }
@@ -470,7 +466,7 @@ Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size)
 template <typename T>
 Matrix<T> Matrix<T>::exponent(unsigned int n ) //Количество членов разложения
 {
-    if (rows != cols) throw NOTSQUARE;
+    if (rows != cols) throw Not_Square;
     Matrix ex(rows, cols);
     Matrix temp(rows, cols);
     temp.set_identity();
@@ -493,7 +489,7 @@ private:
 public:
     Matrix_Memory<T1>() 
     {
-        memory += total_memory;
+        memory += total_mem;
     }
 
     void output() override 
@@ -503,7 +499,7 @@ public:
 
     ~Matrix_Memory()
     {
-        memory -= total_memory;
+        memory -= total_mem;
     }
 };
 
