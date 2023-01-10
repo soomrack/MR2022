@@ -5,10 +5,10 @@
 #include "Matrix.h"
 #include <cmath>
 
-Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
+Matrix::Matrix() : rows(0), cols(0), values(nullptr) { std::cout << "Matrix base constructor has been called\n"; }
 
 
-Matrix::Matrix(unsigned int r_num, unsigned int c_num) {
+Matrix::Matrix(unsigned int r_num, unsigned int c_num) : MatrixMemory(r_num, c_num) {
     rows = r_num;
     cols = c_num;
     values = new double[rows * cols];
@@ -16,7 +16,7 @@ Matrix::Matrix(unsigned int r_num, unsigned int c_num) {
 }
 
 
-Matrix::Matrix(const Matrix& mat) {
+Matrix::Matrix(const Matrix& mat) : MatrixMemory(mat){
     rows = mat.rows;
     cols = mat.cols;
     values = new double[rows * cols];
@@ -25,7 +25,7 @@ Matrix::Matrix(const Matrix& mat) {
 }
 
 
-Matrix::Matrix(Matrix&& mat) noexcept {
+Matrix::Matrix(Matrix&& mat) noexcept : MatrixMemory(std::move(mat)) {
     values = mat.values;
     rows = mat.rows;
     cols = mat.cols;
@@ -38,9 +38,13 @@ Matrix::Matrix(Matrix&& mat) noexcept {
 Matrix& Matrix::operator=(const Matrix& mat) {
     if (this == &mat) return *this;
     delete[] values;
+    total_memory -= memory_size;
     rows = mat.rows;
     cols = mat.cols;
+    values = new double[rows * cols];
+    memory_size = rows * cols * sizeof(double);
     memcpy(values, mat.values, rows * cols * sizeof(double));
+    total_memory += memory_size;
     return *this;
 }
 
@@ -51,13 +55,17 @@ Matrix& Matrix::operator=(Matrix&& mat) noexcept {  // Оператор пере
     rows = mat.rows;
     cols = mat.cols;
     values = mat.values;
+
+    total_memory -= memory_size;
+    memory_size = mat.memory_size;
+
     mat.values = nullptr;
+    mat.rows = mat.cols = mat.memory_size = 0;
     return *this;
 }
 
 
 double Matrix::get(unsigned int row, unsigned int col) {
-
     if (row > rows || col > cols) throw
     MatrixException("Index error: one of the indexes is bigger than matrix size");
     return values[col + row * cols];
