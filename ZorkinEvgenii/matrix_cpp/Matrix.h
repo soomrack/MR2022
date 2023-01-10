@@ -24,10 +24,10 @@ private:
 
 
 public:
-    Matrix();                                      // Создание конструктора создающий нуль(ПУСТУЮ) матрицу
-    Matrix(unsigned int rows, unsigned int cols);  // Создание конструктора создающий матрицу с выделением памяти
-    Matrix(const Matrix &);                        // Создание конструктора копирования матрицы matrix A=B (& - ссылка)
-    Matrix(Matrix &&mat) noexcept;                 // Создание конструктора перемещения матрицы matrix A=B+C (&& - Rvalue то что сохраняется справа от операции)
+    Matrix();                                         // Создание конструктора создающий нуль(ПУСТУЮ) матрицу
+    Matrix(unsigned int rows, unsigned int cols);     // Создание конструктора создающий матрицу с выделением памяти
+    Matrix(const Matrix &mat);                        // Создание конструктора копирования матрицы matrix A(B) (& - ссылка)
+    Matrix(Matrix &&mat) noexcept;                    // Создание конструктора перемещения матрицы matrix A(B+C) (&& - Rvalue то что сохраняется справа от операции)
 
     Matrix set_value(double value);                   // Создание функции заполнения созданной матрицы одним числом
     Matrix set_random(int min_value, int max_value);  // Создание функции заполнения созданной матрицы случайно
@@ -121,7 +121,8 @@ Matrix& Matrix::operator=(const Matrix& mat) {
     delete[] values;
     rows = mat.rows;
     cols = mat.cols;
-    memcpy(values, mat.values, rows * cols * sizeof(double));
+    values = new double[rows * cols];  // выделение памяти
+    memcpy(values, mat.values, rows * cols * sizeof(double)); // необходимо выделить память
     return *this;
 }
 
