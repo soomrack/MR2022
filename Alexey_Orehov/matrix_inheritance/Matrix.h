@@ -80,21 +80,20 @@ public:
 
 class MatrixMemory : public Matrix {
 private:
-    static unsigned long int memory_size;
+    unsigned long int memory_size = 0;
     static unsigned long int total_memory;
 public:
-    MatrixMemory(unsigned int r_num, unsigned int c_num);
-    MatrixMemory(const MatrixMemory&);
-    MatrixMemory(MatrixMemory &&) noexcept;
+    MatrixMemory() { memory_size = 0; }
+    MatrixMemory(unsigned int rows, unsigned int cols) {
+        memory_size = rows * cols * sizeof(double);
+        total_memory += memory_size;
+    }
+    MatrixMemory(MatrixMemory&& mat) { memory_size = mat.memory_size; }
 
-    unsigned long int get_total_mem() { return total_memory; }
-    friend std::ostream& operator<<(std::ostream&, MatrixMemory&);
+    unsigned long int get_total_memory() { return total_memory; }
 
-    ~MatrixMemory();
+    ~MatrixMemory() { total_memory -= memory_size; };
 };
-
-unsigned long int MatrixMemory::total_memory = 0;
-unsigned long int MatrixMemory::memory_size = 0;
 
 
 #endif //PROGRAMMING_MATRIX_H

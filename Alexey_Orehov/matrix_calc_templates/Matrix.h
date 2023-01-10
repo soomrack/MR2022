@@ -415,38 +415,38 @@ Matrix<T> Matrix<T>::exp() {
 }
 
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, Matrix<T>& mat) {
-    os << "\n";
-    for (unsigned int row = 0; row < mat.rows; row++) {
-        for (unsigned int col = 0; col < mat.cols; col++) {
-            os << mat.values[col + row * mat.cols] << " ";
-        }
-        if (row != mat.rows - 1) os << "\n";
-    }
-    return os;
-}
-
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, Matrix<T>&& mat) {
-    os << "\n";
-    for (unsigned int row = 0; row < mat.rows; row++) {
-        for (unsigned int col = 0; col < mat.cols; col++) {
-            os << mat.values[col + row * mat.cols] << " ";
-        }
-        if (row != mat.rows - 1) os << "\n";
-    }
-    return os;
-}
-
-
-template <typename T>
-std::istream &operator>>(std::istream &is, Matrix<T>& mat) {
-    for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
-        is >> mat.values[idx];
-    }
-    return is;
-}
+//template <typename T>
+//std::ostream& operator<<(std::ostream& os, Matrix<T>& mat) {
+//    os << "\n";
+//    for (unsigned int row = 0; row < mat.rows; row++) {
+//        for (unsigned int col = 0; col < mat.cols; col++) {
+//            os << mat.values[col + row * mat.cols] << " ";
+//        }
+//        if (row != mat.rows - 1) os << "\n";
+//    }
+//    return os;
+//}
+//
+//
+//template <typename T>
+//std::ostream& operator<<(std::ostream& os, Matrix<T>&& mat) {
+//    os << "\n";
+//    for (unsigned int row = 0; row < mat.rows; row++) {
+//        for (unsigned int col = 0; col < mat.cols; col++) {
+//            os << mat.values[col + row * mat.cols] << " ";
+//        }
+//        if (row != mat.rows - 1) os << "\n";
+//    }
+//    return os;
+//}
+//
+//
+//template <typename T>
+//std::istream &operator>>(std::istream &is, Matrix<T>& mat) {
+//    for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
+//        is >> mat.values[idx];
+//    }
+//    return is;
+//}
 
 #endif //PROGRAMMING_MATRIX_H
