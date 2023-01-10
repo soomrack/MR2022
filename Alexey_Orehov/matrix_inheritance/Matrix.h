@@ -13,7 +13,7 @@ public:
 
 
 class Matrix {
-private:
+protected:
     unsigned int rows;
     unsigned int cols;
     double* values;
@@ -76,6 +76,25 @@ public:
 
     ~Matrix() { delete[] this->values; }
 };
+
+
+class MatrixMemory : public Matrix {
+private:
+    static unsigned long int memory_size;
+    static unsigned long int total_memory;
+public:
+    MatrixMemory(unsigned int r_num, unsigned int c_num);
+    MatrixMemory(const MatrixMemory&);
+    MatrixMemory(MatrixMemory &&) noexcept;
+
+    unsigned long int get_total_mem() { return total_memory; }
+    friend std::ostream& operator<<(std::ostream&, MatrixMemory&);
+
+    ~MatrixMemory();
+};
+
+unsigned long int MatrixMemory::total_memory = 0;
+unsigned long int MatrixMemory::memory_size = 0;
 
 
 #endif //PROGRAMMING_MATRIX_H
