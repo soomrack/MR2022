@@ -5,31 +5,27 @@
 #include "Matrix.h"
 #include <cmath>
 
-template <typename T>
-Matrix<T>::Matrix() : rows(0), cols(0), values(nullptr) {}
+Matrix::Matrix() : rows(0), cols(0), values(nullptr) {}
 
 
-template <typename T>
-Matrix<T>::Matrix(unsigned int r_num, unsigned int c_num) {
+Matrix::Matrix(unsigned int r_num, unsigned int c_num) {
     rows = r_num;
     cols = c_num;
-    values = new T[rows * cols];
+    values = new double[rows * cols];
     if (!values) throw MatrixException("Error: unable to allocate memory");
 }
 
 
-template <typename T>
-Matrix<T>::Matrix(const Matrix& mat) {
+Matrix::Matrix(const Matrix& mat) {
     rows = mat.rows;
     cols = mat.cols;
-    values = new T[rows * cols];
+    values = new double[rows * cols];
     if (!values) throw MatrixException("Error: unable to allocate memory");
-    memcpy(values, mat.values, sizeof(T) * rows * cols);
+    memcpy(values, mat.values, sizeof(double) * rows * cols);
 }
 
 
-template <typename T>
-Matrix<T>::Matrix(Matrix&& mat) noexcept {
+Matrix::Matrix(Matrix&& mat) noexcept {
     values = mat.values;
     rows = mat.rows;
     cols = mat.cols;
@@ -38,19 +34,18 @@ Matrix<T>::Matrix(Matrix&& mat) noexcept {
     mat.cols = 0;
 }
 
-template <typename T>
-Matrix<T>& Matrix<T>::operator=(const Matrix& mat) {
+
+Matrix& Matrix::operator=(const Matrix& mat) {
     if (this == &mat) return *this;
     delete[] values;
     rows = mat.rows;
     cols = mat.cols;
-    memcpy(values, mat.values, rows * cols * sizeof(T));
+    memcpy(values, mat.values, rows * cols * sizeof(double));
     return *this;
 }
 
 
-template <typename T>
-Matrix<T>& Matrix<T>::operator=(Matrix&& mat) noexcept {  // Оператор перемещающего присваивания
+Matrix& Matrix::operator=(Matrix&& mat) noexcept {  // Оператор перемещающего присваивания
     if (this == &mat) return *this;
     delete[] values;
     rows = mat.rows;
@@ -61,30 +56,27 @@ Matrix<T>& Matrix<T>::operator=(Matrix&& mat) noexcept {  // Оператор п
 }
 
 
-template <typename T>
-T Matrix<T>::get(unsigned int row, unsigned int col) {
+double Matrix::get(unsigned int row, unsigned int col) {
+
     if (row > rows || col > cols) throw
     MatrixException("Index error: one of the indexes is bigger than matrix size");
     return values[col + row * cols];
 }
 
 
-template <typename T>
-void Matrix<T>::set(unsigned int row, unsigned int col, T value) {
+void Matrix::set(unsigned int row, unsigned int col, double value) {
     if (row > rows || col > cols) return;
     values[col + row * cols] = value;
 }
 
 
-template <typename T>
-T* Matrix<T>::operator[](unsigned int idx) {
+double* Matrix::operator[](unsigned int idx) {
     if (idx > rows) return nullptr;
     return values + idx * cols;
 }
 
 
-template <typename T>
-bool Matrix<T>::operator==(const Matrix& mat) {
+bool Matrix::operator==(const Matrix& mat) {
     if (this->cols != mat.cols || this->rows != mat.rows) return false;
     for (unsigned int idx = 0; idx < this->cols * this->rows; idx++) {
         if (fabs(this->values[idx] - mat.values[idx]) > EPS) return false;
@@ -92,24 +84,22 @@ bool Matrix<T>::operator==(const Matrix& mat) {
     return true;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::set_value(T value) {
+
+Matrix Matrix::set_value(double value) {
     for (unsigned int idx = 0; idx < rows * cols; idx++) values[idx] = value;
     return *this;
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::set_random(int min_value, int max_value) {
+Matrix Matrix::set_random(int min_value, int max_value) {
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
-        values[idx] = min_value + (T) rand() / (T) RAND_MAX * (max_value - min_value);
+        values[idx] = min_value + (double) rand() / (double) RAND_MAX * (max_value - min_value);
     }
     return *this;
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::set_identity() {
+Matrix Matrix::set_identity() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
     this->set_value(0.0);
     for (unsigned int idx = 0; idx < rows * cols; idx += cols + 1) {
@@ -119,15 +109,13 @@ Matrix<T> Matrix<T>::set_identity() {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::fill_from_array(T* array) {
-    memcpy(values, array, rows * cols * sizeof(T));
+Matrix Matrix::fill_from_array(double* array) {
+    memcpy(values, array, rows * cols * sizeof(double));
     return *this;
 }
 
 
-template <typename T>
-bool Matrix<T>::is_identity() {
+bool Matrix::is_identity() {
     if (cols != rows) return false;
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         if (idx % (rows + 1) == 0) {
@@ -140,8 +128,7 @@ bool Matrix<T>::is_identity() {
 }
 
 
-template <typename T>
-bool Matrix<T>::is_diagonal() {
+bool Matrix::is_diagonal() {
     if (cols != rows) return false;
     for (unsigned int idx = 0; idx < rows * cols; idx++) {
         if (idx % (rows + 1) != 0 && fabs(values[idx]) > EPS) return false;
@@ -150,8 +137,7 @@ bool Matrix<T>::is_diagonal() {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::operator+(const Matrix& mat) const {
+Matrix Matrix::operator+(const Matrix& mat) const {
     if (this->rows != mat.rows || this->cols != mat.cols) throw
     MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
@@ -162,8 +148,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix& mat) const {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::operator-(const Matrix& mat2) const {
+Matrix Matrix::operator-(const Matrix& mat2) const {
     if (this->rows != mat2.rows || this->cols != mat2.cols) throw
     MatrixException("Matrices must be the same size");
     Matrix res = {rows, cols};
@@ -174,29 +159,26 @@ Matrix<T> Matrix<T>::operator-(const Matrix& mat2) const {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::operator*(const T scalar) const {
+Matrix Matrix::operator*(const double scalar) const {
     Matrix res = *this;
     for (unsigned int idx = 0; idx < rows * cols; idx++) res.values[idx] *= scalar;
     return res;
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::operator/(const T scalar) const {
+Matrix Matrix::operator/(const double scalar) const {
     Matrix res = *this;
     for (unsigned int idx = 0; idx < rows * cols; idx++) res.values[idx] /= scalar;
     return res;
 }
 
-template <typename T>
-Matrix<T> Matrix<T>::operator*(const Matrix& mat2) const {
-    if (this->cols != mat2.rows)
-        throw MatrixException("Error: First matrix cals must be equal to second matrix rows");
+Matrix Matrix::operator*(const Matrix& mat2) const {
+    if (this->cols != mat2.rows) throw
+    MatrixException("Error: First matrix cals must be equal to second matrix rows");
     Matrix res = {this->rows, this->cols};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
-            T summa = 0.0;
+            double summa = 0.0;
             for (unsigned int idx = 0; idx < this->cols; idx++) {
                 summa += this->values[row * this->cols + idx] * mat2.values[idx * mat2.cols + col];
             }
@@ -207,10 +189,7 @@ Matrix<T> Matrix<T>::operator*(const Matrix& mat2) const {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::transpose() {
-    if (this->cols != this->rows)
-        throw MatrixException("Error: Matrix must be square");
+Matrix Matrix::transpose() {
     Matrix res = {this->cols, this->rows};
     for (unsigned int row = 0; row < res.rows; row++) {
         for (unsigned int col = 0; col < res.cols; col++) {
@@ -221,17 +200,15 @@ Matrix<T> Matrix<T>::transpose() {
 }
 
 
-template <typename T>
-void Matrix<T>::swap_rows(unsigned int row1, unsigned int row2){
-    auto temp = new T[cols];
-    memcpy(temp, this->operator[](row1), cols * sizeof(T));
-    memcpy(this->operator[](row1), this->operator[](row2), cols * sizeof(T));
-    memcpy(this->operator[](row2), temp, cols * sizeof(T));
+void Matrix::swap_rows(unsigned int row1, unsigned int row2){
+    auto temp = new double[cols];
+    memcpy(temp, this->operator[](row1), cols * sizeof(double));
+    memcpy(this->operator[](row1), this->operator[](row2), cols * sizeof(double));
+    memcpy(this->operator[](row2), temp, cols * sizeof(double));
 }
 
 
-template <typename T>
-unsigned int Matrix<T>::upper_triangle() {
+unsigned int Matrix::upper_triangle() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
     unsigned int swap_num = 0;
     for (unsigned int step = 0; step < this->cols; step++) {
@@ -245,7 +222,7 @@ unsigned int Matrix<T>::upper_triangle() {
     for (unsigned int col = 0; col < this->cols - 1; col++) {
         if (this->values[col + this->cols * col] == 0) continue;
         for (unsigned int row = col + 1; row < this->rows; row++) {
-            T factor = this->values[col + this->cols * row] / this->values[col + this->cols * col];
+            double factor = this->values[col + this->cols * row] / this->values[col + this->cols * col];
             for (unsigned int idx = col; idx < this->cols; idx++) {
                 this->values[idx + this->cols * row] -= this->values[idx + this->cols * col] * factor;
             }
@@ -255,12 +232,11 @@ unsigned int Matrix<T>::upper_triangle() {
 }
 
 
-template <typename T>
-T Matrix<T>::det() {
+double Matrix::det() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix temp = *this;
     unsigned int swap_num = temp.upper_triangle();
-    T res = 1;
+    double res = 1;
     for (unsigned int idx = 0; idx < temp.rows * temp.cols; idx += temp.cols + 1) {
         res *= temp.values[idx];
     }
@@ -268,19 +244,16 @@ T Matrix<T>::det() {
 }
 
 
-template <typename T>
-T Matrix<T>::trace() {
+double Matrix::trace() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
-    T res = 0.0;
+    double res = 0.0;
     for (unsigned int idx = 0; idx < this->rows * this->cols; idx += this->cols + 1) res += this->values[idx];
     return res;
 }
 
 
 // Минор матрицы по строке minor_row и столбцу minor_col
-
-template <typename T>
-Matrix<T> Matrix<T>::minor(const unsigned int minor_row, const unsigned int minor_col){
+Matrix Matrix::minor(const unsigned int minor_row, const unsigned int minor_col){
     Matrix mat = *this;
     Matrix temp = Matrix(mat.rows - 1, mat.cols - 1);
     int minor_index = 0;
@@ -294,12 +267,11 @@ Matrix<T> Matrix<T>::minor(const unsigned int minor_row, const unsigned int mino
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::inv() {
+Matrix Matrix::inv() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix mat = *this;
     Matrix ans = {mat.rows, mat.cols};
-    T determinant = mat.det();
+    double determinant = mat.det();
     for (unsigned int row = 0; row < mat.rows; row++){
         for (unsigned int col = 0; col < mat.cols; col++){
             ans.values[col * ans.rows + row] = pow(-1, row + col) *
@@ -310,8 +282,7 @@ Matrix<T> Matrix<T>::inv() {
 }
 
 
-template <typename T>
-Matrix<T> Matrix<T>::exp() {
+Matrix Matrix::exp() {
     if (rows != cols) throw MatrixException("Error: Matrix must be square");
     Matrix ans = *this;
     if (this->is_diagonal()) {
@@ -335,8 +306,7 @@ Matrix<T> Matrix<T>::exp() {
 }
 
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, Matrix<T>& mat) {
+std::ostream& operator<<(std::ostream& os, Matrix& mat) {
     os << "\n";
     for (unsigned int row = 0; row < mat.rows; row++) {
         for (unsigned int col = 0; col < mat.cols; col++) {
@@ -348,8 +318,7 @@ std::ostream& operator<<(std::ostream& os, Matrix<T>& mat) {
 }
 
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, Matrix<T>&& mat) {
+std::ostream& operator<<(std::ostream& os, Matrix&& mat) {
     os << "\n";
     for (unsigned int row = 0; row < mat.rows; row++) {
         for (unsigned int col = 0; col < mat.cols; col++) {
@@ -361,8 +330,7 @@ std::ostream& operator<<(std::ostream& os, Matrix<T>&& mat) {
 }
 
 
-template <typename T>
-std::istream &operator>>(std::istream &is, Matrix<T>& mat) {
+std::istream &operator>>(std::istream &is, Matrix &mat) {
     for (int idx = 0; idx < mat.rows * mat.cols; idx++) {
         is >> mat.values[idx];
     }

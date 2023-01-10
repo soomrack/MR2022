@@ -37,10 +37,12 @@ public:
     Matrix() = default;
     Matrix(unsigned int input_rows, unsigned int input_cols);
     Matrix(const Matrix& X);
+    Matrix(Matrix&& X) noexcept;
     Matrix(unsigned int input_rows, unsigned int input_cols, double x);
     ~Matrix();
 
     Matrix& operator=(const Matrix& X);
+    Matrix& operator=(Matrix&& X) noexcept;
     Matrix& operator+=(const Matrix& X);
     Matrix operator+(const Matrix& X);
     Matrix& operator-=(const Matrix& X);
@@ -64,58 +66,91 @@ Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
     if (data == nullptr || values == nullptr) {
         delete[] data;
         delete[] values;
-        throw MatrixException("Memory error!");
+        throw MatrixException("Memory error!"); // useless
     }
     for (int row = 0; row < rows; ++row)
         values[row] = data + row * cols;
 }
 
-Matrix::Matrix(const Matrix& X) {
-    if (this != &X) {
-        rows = X.rows;
-        cols = X.cols;
-        matrix_size = X.matrix_size;
-        data = new double[matrix_size];
-        values = new double *[rows];
-        memcpy(data, X.data,  matrix_size * sizeof(double));
-        for (int row = 0; row < rows; ++row)
-            values[row] = data + row * cols;
 
-    }
+Matrix::Matrix(const Matrix& X) {
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = new double[matrix_size];
+    values = new double *[rows];
+    memcpy(data, X.data,  matrix_size * sizeof(double));
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
 }
+
+
+Matrix::Matrix(Matrix&& X) noexcept {
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = X.data;
+    values = X.values;
+    X.data = nullptr;
+    X.values = nullptr;
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
+}
+
 
 Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
-    for (int i = 0; i < matrix_size; ++i) {
+    for (int i = 0; i < matrix_size; ++i)
         data[i] = x;
-    }
 }
+
 
 Matrix::~Matrix() {
     delete[] data;
     delete[] values;
 }
 
-//void Matrix::swap(Matrix& X) {
-//    std::swap(matrix_size, X.matrix_size);
-//    std::swap(data, X.data);
-//    std::swap(values, X.values);
-//}
 
-Matrix& Matrix::operator=(const Matrix& X) {
-    if (this != &X) {
-        rows = X.rows;
-        cols = X.cols;
-        matrix_size = X.matrix_size;
-        data = new double[matrix_size];
-        values = new double *[rows];
-        memcpy(data, X.data,  matrix_size * sizeof(double));
-        for (int row = 0; row < rows; ++row)
-            values[row] = data + row * cols;
+Matrix& Matrix::operator=(Matrix const &X) {
+    if (this == &X) {
+        return *this;
     }
+    delete[] data;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = new double[matrix_size];
+    values = new double *[rows];
+    memcpy(data, X.data,  matrix_size * sizeof(double));
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
     return *this;
 }
 
+
+Matrix &Matrix::operator=(Matrix&& X) noexcept {
+    if (this == &X) {
+        return *this;
+    }
+    delete[] data;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = X.data;
+    values = X.values;
+    X.data = nullptr;
+    X.values = nullptr;
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
+    return *this;
+}
+
+
 Matrix& Matrix::operator+=(const Matrix& X) {
+    if (rows != X.rows || cols != X.cols) {
+        throw MatrixException("Sizes don't match!");
+    }
     for (int i = 0; i < matrix_size; ++i)
         data[i] += X.data[i];
     return *this;
@@ -128,6 +163,9 @@ Matrix Matrix::operator+(const Matrix& X) {
 }
 
 Matrix& Matrix::operator-=(const Matrix& X) {
+    if (rows != X.rows || cols != X.cols) {
+        throw MatrixException("Sizes don't match!");
+    }
     for (int i = 0; i < matrix_size; ++i)
         data[i] -= X.data[i];
     return *this;
@@ -140,6 +178,9 @@ Matrix Matrix::operator-(const Matrix& X) {
 }
 
 Matrix& Matrix::operator*=(const Matrix& X) {
+    if (rows != X.cols && cols != X.rows) {
+        throw MatrixException("Sizes don't match!");
+    }
     Matrix zero(rows, cols, 0);
     for (int row = 0; row < zero.rows; ++row) {
         for (int col = 0; col < zero.cols; ++col) {
@@ -159,9 +200,9 @@ Matrix Matrix::operator*(const Matrix& X) {
 }
 
 Matrix Matrix::operator^(unsigned int b) {
-    Matrix copy = *this;
+    Matrix copy(rows, cols, 1);
     for (int i = 1; i < b; ++i)
-        *this = *this * copy;
+        copy = copy * *this;
     return *this;
 }
 
@@ -170,15 +211,6 @@ Matrix Matrix::operator/(double b) {
         data[i] /= b;
     return *this;
 }
-
-//Matrix Matrix::T() {
-//    for (int row = 0; rows < rows; ++row) {
-//        for (int col = 0; cols < cols; ++col) {
-//            values[rows][cols] = values[cols][rows];
-//        }
-//    }
-//    return *this;
-//}
 
 
 void Matrix::print() {
@@ -192,23 +224,19 @@ void Matrix::print() {
 
 int main() {
     short n = 2;
-    short m = 2;
+    short m = 3;
 
-    Matrix A(n, m, 1);
+    Matrix A(n, n, 1);
     A.print();
-    Matrix B(n, m, 3);
-    B += A;
-    B.print();
-    B = A / 2;
+    Matrix B(m, m, 3);
     B.print();
 
-
-//    try {
-//        Matrix T(n, m);
-//    }
-//    catch(MatrixException &Exception_object) {
-//        std::cout << Exception_object.getMessage();
-//    }
+    try {
+        B = B + A;
+    }
+    catch(MatrixException &Exception_object) {
+        std::cout << Exception_object.getMessage();
+    }
 
 
 
