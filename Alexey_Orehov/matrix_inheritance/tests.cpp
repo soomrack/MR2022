@@ -153,6 +153,12 @@ int main(){
     Matrix B = A * 5;
     Matrix C = A * B;
 
+    MatrixMemory A_mem = {5, 5};
+    MatrixMemory B_mem = A_mem;
+    MatrixMemory* mem_array = (MatrixMemory*) malloc(100 * sizeof(MatrixMemory));
+
+    std::cout << A_mem;
+
 
     return 0;
 }

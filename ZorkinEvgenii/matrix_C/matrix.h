@@ -100,17 +100,17 @@ int is_equal(const Matrix mat1, const Matrix mat2){
 
 
 int is_identity(const Matrix matrix){             // проверка матрицы на то явл ли она еденичной
-    if (matrix.cols != matrix.rows) return 0;
+    if (matrix.cols != matrix.rows) return 0; // ведь ед матрица всегда квадратная
     unsigned int size = matrix.rows;
     for (unsigned int idx = 0; idx < size * size; idx++){
         if (idx % (size + 1) == 0){
-            if (fabs(matrix.values[idx] - 1) > EPS)  return 0; // сравнение на главное диаганали с 1
+            if (fabs(matrix.values[idx] - 1) > EPS)  return 0; // сравнение на главное диаганали с 1 // СПОСОБ для сравнения чисел с плав точкой
         }
         else{
-            if (fabs(matrix.values[idx]) > EPS) return 0; // сравнение с остальными на 0 (явля ли они 0)
+            if (fabs(matrix.values[idx] - 0) > EPS) return 0; // сравнение с остальными на 0 (явля ли они 0)
         }
     }
-    return 1;
+    return 1; // - вывод тру
 }
 
 
