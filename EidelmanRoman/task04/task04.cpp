@@ -3,6 +3,7 @@
 #include <cmath>
 
 
+
 class MatrixException: public std::exception {
 private:
     std::string message;
@@ -23,6 +24,7 @@ MatrixException::MatrixException(std::string input_message) {
 std::string MatrixException::getMessage() const {
     return message;
 }
+
 
 
 template <typename T>
@@ -55,6 +57,7 @@ public:
 
     void print();
 };
+
 
 
 template <typename T>
@@ -242,6 +245,7 @@ void Matrix<T>::print() {
 }
 
 
+
 template<typename T>
 class EMatrix: public Matrix<T> {
 private:
@@ -259,11 +263,13 @@ public:
     ~EMatrix();
 
     EMatrix<T>& operator=(const EMatrix& X);
+    EMatrix<T>& operator=(EMatrix<T>&& X) noexcept;
 
     unsigned int get_k();
     unsigned int get_final_size();
     unsigned int get_mem_size();
 };
+
 
 
 template<typename T>
@@ -299,7 +305,7 @@ template<typename T>
 EMatrix<T>::EMatrix(EMatrix<T>&& X) noexcept: Matrix<T>(X) {
     k++;
     mem_size = X.mem_size;
-    final_size += mem_size;
+    X.mem_size = 0;
 }
 
 template<typename T>
@@ -328,6 +334,16 @@ EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &X) {
 
 
 template<typename T>
+EMatrix<T>& EMatrix<T>::operator=(EMatrix<T>&& X) noexcept {
+    Matrix<T>::operator=(X);
+    final_size += X.mem_size - mem_size;
+    mem_size = X.memory_size;
+    X.mem_size = 0;
+    return *this;
+}
+
+
+template<typename T>
 unsigned int EMatrix<T>::get_k() {
     return k;
 }
@@ -348,9 +364,10 @@ unsigned int EMatrix<T>::get_mem_size() {
 int main() {
     short n = 2;
     short m = 2;
-
-
     EMatrix<double> B;
+    EMatrix<double> A(n, m, 3);
+
+    B = A;
 
 
     try {
@@ -360,7 +377,8 @@ int main() {
         std::cout << Exception_object.getMessage();
     }
 
-    std::cout << B.get_final_size();
+    std::cout << B.get_final_size() << "\n";
+    std::cout << B.get_k() << "\n";
 
     return 0;
 }
