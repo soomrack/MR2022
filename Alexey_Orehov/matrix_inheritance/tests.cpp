@@ -128,10 +128,11 @@ void test_inv_mul(int num = 100, int size = 5) {
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
 
+unsigned long int MatrixMemory::total_memory = 0;
+
 
 int main(){
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
+//    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 //    test_equal();
 //    test_add();
 //    test_sub();
@@ -144,21 +145,22 @@ int main(){
 //    Matrix A = Matrix(3, 3).fill_from_array(values);
 //    std::cout << A.exp();
 
-    double values[9] = {1, 0, 0,
-                        0, 2, 0,
-                        0 ,0, 3};
+//    double values[9] = {1, 0, 0,
+//                        0, 2, 0,
+//                        0 ,0, 3};
+//
+//
+//    Matrix A = Matrix(3, 3).fill_from_array(values);
+//    Matrix B = A * 5;
+//    Matrix C = A * B;
+//
+//    MatrixMemory A_mem = {5, 5};
+    MatrixMemory A = {4, 4};
+    std::cout << A.get_total_memory() << std::endl;
 
-
-    Matrix A = Matrix(3, 3).fill_from_array(values);
-    Matrix B = A * 5;
-    Matrix C = A * B;
-
-    MatrixMemory A_mem = {5, 5};
-    MatrixMemory B_mem = A_mem;
-    MatrixMemory* mem_array = (MatrixMemory*) malloc(100 * sizeof(MatrixMemory));
-
-    std::cout << A_mem;
-
-
+    MatrixMemory B = A;
+    MatrixMemory C;
+    std::cout << A.get_total_memory() << std::endl;
+    Matrix D = A + B;
     return 0;
 }

@@ -1,7 +1,7 @@
 #include "CMatrix.h"
 
 template<typename T>
-unsigned int CMatrix<T>::calcMemory(int c_rows, int c_cols) { // ничего лучше для вычисления размера vector я не придумал
+unsigned int CMatrix<T>::calcMemory(int c_rows, int c_cols) {
     return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
 
