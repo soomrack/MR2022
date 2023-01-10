@@ -76,7 +76,7 @@ void set_to_identity(Matrix* mat){ // Функция создания ед ма�
     if (mat->cols != mat->rows) { // проверка на квадратную матрицу
         mat->rows = 0;
         mat->cols = 0;
-        mat->values = 0;
+        mat->values = NULL;
     }
     unsigned int size = mat->cols;
     for (unsigned int idx = 0; idx < size * size; idx++){
