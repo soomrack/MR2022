@@ -34,13 +34,13 @@ public:
     Matrix(const Matrix &);
     Matrix(Matrix &&mat) noexcept;
 
-    Matrix set_value(T value);                                 // Заполнение созданной матрицы одним числом
-    Matrix set_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
-    Matrix set_identity();                                          // Преобразование матрицы в единичную
+    Matrix set_value(T value);                                   // Заполнение созданной матрицы одним числом
+    Matrix set_random(int min_value, int max_value);             // Заполнение созданной матрицы случайно
+    Matrix set_identity();                                       // Преобразование матрицы в единичную
     Matrix fill_from_array(T * array);                           // Заполнение матрицы значениями из массива
 
-    T get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы
-    void set(unsigned int row, unsigned int col, T val);        // Изменение произвольного элемента матрицы
+    T get(unsigned int row, unsigned int col);                   // Получение произвольного элемента матрицы
+    void set(unsigned int row, unsigned int col, T val);         // Изменение произвольного элемента матрицы
 
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;

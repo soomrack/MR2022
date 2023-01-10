@@ -3,6 +3,7 @@
 #include <cmath>
 
 
+
 class MatrixException: public std::exception {
 private:
     std::string message;
@@ -14,13 +15,17 @@ public:
     std::string getMessage() const;
 };
 
+
 MatrixException::MatrixException(std::string input_message) {
     message = std::move(input_message);
 }
 
+
 std::string MatrixException::getMessage() const {
     return message;
 }
+
+
 
 template <typename T>
 class Matrix {
@@ -35,10 +40,12 @@ public:
     Matrix() = default;
     Matrix(unsigned int input_rows, unsigned int input_cols);
     Matrix(const Matrix<T>& X);
+    Matrix(Matrix&& X) noexcept;
     Matrix(unsigned int input_rows, unsigned int input_cols, T x);
     ~Matrix();
 
     Matrix<T>& operator=(const Matrix& X);
+    Matrix<T>& operator=(Matrix&& X) noexcept;
     Matrix<T>& operator+=(const Matrix& X);
     Matrix<T> operator+(const Matrix& X);
     Matrix<T>& operator-=(const Matrix& X);
@@ -50,6 +57,8 @@ public:
 
     void print();
 };
+
+
 
 template <typename T>
 Matrix<T>::Matrix(unsigned int input_rows, unsigned int input_cols) {
@@ -67,6 +76,7 @@ Matrix<T>::Matrix(unsigned int input_rows, unsigned int input_cols) {
         values[row] = data + row * cols;
 }
 
+
 template <typename T>
 Matrix<T>::Matrix(const Matrix& X) {
     if (this != &X) {
@@ -81,6 +91,21 @@ Matrix<T>::Matrix(const Matrix& X) {
     }
 }
 
+
+template <typename T>
+Matrix<T>::Matrix(Matrix&& X) noexcept {
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = X.data;
+    values = X.values;
+    X.data = nullptr;
+    X.values = nullptr;
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
+}
+
+
 template <typename T>
 Matrix<T>::Matrix(unsigned int input_rows, unsigned int input_cols, T x): Matrix(input_rows, input_cols) {
     for (int i = 0; i < matrix_size; ++i) {
@@ -94,23 +119,51 @@ Matrix<T>::~Matrix() {
     delete[] values;
 }
 
+
 template <typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T>& X) {
-    if (this != &X) {
-        rows = X.rows;
-        cols = X.cols;
-        matrix_size = X.matrix_size;
-        data = new T [matrix_size];
-        values = new T *[rows];
-        memcpy(data, X.data,  matrix_size * sizeof(T));
-        for (int row = 0; row < rows; ++row)
-            values[row] = data + row * cols;
+    if (this == &X) {
+        return *this;
     }
+    delete[] data;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = new T [matrix_size];
+    values = new T *[rows];
+    memcpy(data, X.data,  matrix_size * sizeof(T));
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
     return *this;
 }
 
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator=(Matrix<T>&& X) noexcept {
+    if (this == &X) {
+        return *this;
+    }
+    delete[] data;
+    delete[] values;
+    rows = X.rows;
+    cols = X.cols;
+    matrix_size = X.matrix_size;
+    data = X.data;
+    values = X.values;
+    X.data = nullptr;
+    X.values = nullptr;
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
+    return *this;
+}
+
+
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& X) {
+    if (rows != X.rows || cols != X.cols) {
+        throw MatrixException("Sizes don't match!\n");
+    }
     for (int i = 0; i < matrix_size; ++i)
         data[i] += X.data[i];
     return *this;
@@ -125,6 +178,9 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& X) {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& X) {
+    if (rows != X.rows || cols != X.cols) {
+        throw MatrixException("Sizes don't match!\n");
+    }
     for (int i = 0; i < matrix_size; ++i)
         data[i] -= X.data[i];
     return *this;
@@ -139,11 +195,14 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& X) {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& X) {
+    if (cols != X.rows) {
+        throw MatrixException("Wrong size for multiplication!\n");
+    }
     Matrix<T> zero(rows, cols, 0);
     for (int row = 0; row < zero.rows; ++row) {
         for (int col = 0; col < zero.cols; ++col) {
             for (int k = 0; k < zero.rows; ++k) {
-                zero.values[rows][cols] += values[rows][k] * X.values[k][cols];
+                zero.values[row][col] += values[row][k] * X.values[k][col];
             }
         }
     }
@@ -186,11 +245,12 @@ void Matrix<T>::print() {
 }
 
 
+
 template<typename T>
 class EMatrix: public Matrix<T> {
 private:
-    unsigned int k = 0; // static
-    unsigned int final_size = 0;
+    static inline unsigned int k = 0; // static
+    static inline unsigned int final_size = 0;
     static unsigned int calcMemory(unsigned int c_rows, unsigned int c_cols);
 private:
     unsigned int mem_size{};
@@ -198,15 +258,18 @@ public:
     EMatrix();
     EMatrix(unsigned int input_rows, unsigned int input_cols);
     EMatrix(const EMatrix<T>& X);
+    EMatrix(EMatrix<T>&& X) noexcept;
     EMatrix(unsigned int input_rows, unsigned int input_cols, T x);
     ~EMatrix();
 
     EMatrix<T>& operator=(const EMatrix& X);
+    EMatrix<T>& operator=(EMatrix<T>&& X) noexcept;
 
     unsigned int get_k();
     unsigned int get_final_size();
     unsigned int get_mem_size();
 };
+
 
 
 template<typename T>
@@ -229,10 +292,21 @@ EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols): Matrix<T>
     final_size += mem_size;
 }
 
+
 template<typename T>
 EMatrix<T>::EMatrix(const EMatrix<T> &X): Matrix<T>(X) {
+    k++;
     mem_size = X.mem_size;
-} // добавить счетчики
+    final_size += mem_size;
+}
+
+
+template<typename T>
+EMatrix<T>::EMatrix(EMatrix<T>&& X) noexcept: Matrix<T>(X) {
+    k++;
+    mem_size = X.mem_size;
+    X.mem_size = 0;
+}
 
 template<typename T>
 EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols, T x): Matrix<T>(input_rows, input_cols, x) {
@@ -241,12 +315,14 @@ EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols, T x): Matr
     final_size += mem_size;
 }
 
+
 template<typename T>
 EMatrix<T>::~EMatrix() {
     k--;
     final_size -= mem_size;
     mem_size = 0;
 }
+
 
 template<typename T>
 EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &X) {
@@ -256,15 +332,28 @@ EMatrix<T>& EMatrix<T>::operator=(const EMatrix<T> &X) {
     return *this;
 }
 
+
+template<typename T>
+EMatrix<T>& EMatrix<T>::operator=(EMatrix<T>&& X) noexcept {
+    Matrix<T>::operator=(X);
+    final_size += X.mem_size - mem_size;
+    mem_size = X.memory_size;
+    X.mem_size = 0;
+    return *this;
+}
+
+
 template<typename T>
 unsigned int EMatrix<T>::get_k() {
     return k;
 }
 
+
 template<typename T>
 unsigned int EMatrix<T>::get_final_size() {
     return final_size;
 }
+
 
 template<typename T>
 unsigned int EMatrix<T>::get_mem_size() {
@@ -275,26 +364,21 @@ unsigned int EMatrix<T>::get_mem_size() {
 int main() {
     short n = 2;
     short m = 2;
+    EMatrix<double> B;
+    EMatrix<double> A(n, m, 3);
+
+    B = A;
+
 
     try {
-        Matrix<double> A(n, m);
+        B / 0;
     }
     catch(MatrixException &Exception_object) {
         std::cout << Exception_object.getMessage();
     }
 
-    Matrix<double> A(n, m, 1.);
-    Matrix<double> B(n, m);
-
-    try {
-        B = A / 0;
-    }
-    catch(MatrixException &Exception_object) {
-        std::cout << Exception_object.getMessage();
-    }
-
-    B = A / 2;
-    B.print();
+    std::cout << B.get_final_size() << "\n";
+    std::cout << B.get_k() << "\n";
 
     return 0;
 }

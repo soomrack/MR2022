@@ -2,32 +2,32 @@
 #ifndef MATRIX_CAL_MATRIX_H
 #define MATRIX_CAL_MATRIX_H
 
-#include <iostream>  // подключение библиотеки ВЫВОД-ВХОД
-#include <cmath>     // подключение библиотеки Математики для использования модуля fabs
+#include <iostream>
+#include <cmath>
 
 
-const double EPS = 10e-6;  // Точность при сравнении величин с плавающей точкой
+const double EPS = 10e-6;  // Создание глобальной переменной для точности при сравнении величин с плавающей точкой
 
 
-class MatrixException: public std::exception {             // способ показать что произошло что-то не то // создание класса Исключения и наследование от стдЭксепшен
+class MatrixException: public std::exception { // способ показать что произошло что-то не то // создание класса Исключения и наследование от стдЭксепшен
 public:
-    MatrixException(const char* msg): std::exception() {}  // создание метод (с вход значением const char* - указатель на строку данных :: - метод наследуется из стдЭксепшен
+    MatrixException(const char* msg): std::exception() {}  // создание метода (с вход значением const char* - указатель на строку данных :: - метод наследуется из стдЭксепшен
 };
 
 
 
-class Matrix {          // создание класса Матрица с 3 атрибутами и методами описанными ниже
-private:
+class Matrix {
+protected:              // меняем private на protected чтобы произошло наследование 3 атрибутов ниже тк приватные бы не наследовались
     unsigned int rows;  // атрибут - строки
     unsigned int cols;  // атрибут - столбцы
     double* values;     // атрибут - указатель на массив
 
 
 public:
-    Matrix();                                         // Создание конструктора создающий нуль(ПУСТУЮ) матрицу
-    Matrix(unsigned int rows, unsigned int cols);     // Создание конструктора создающий матрицу с выделением памяти
-    Matrix(const Matrix &mat);                        // Создание конструктора копирования матрицы matrix A(B) (& - ссылка)
-    Matrix(Matrix &&mat) noexcept;                    // Создание конструктора перемещения матрицы matrix A(B+C) (&& - Rvalue то что сохраняется справа от операции)
+    Matrix();                                      // Создание конструктора создающий нуль(ПУСТУЮ) матрицу
+    Matrix(unsigned int rows, unsigned int cols);  // Создание конструктора создающий матрицу с выделением памяти
+    Matrix(const Matrix &);                        // Создание конструктора копирования матрицы matrix A=B (& - ссылка)
+    Matrix(Matrix &&mat) noexcept;                 // Создание конструктора перемещения матрицы matrix A=B+C (&& - Rvalue то что сохраняется справа от операции)
 
     Matrix set_value(double value);                   // Создание функции заполнения созданной матрицы одним числом
     Matrix set_random(int min_value, int max_value);  // Создание функции заполнения созданной матрицы случайно
@@ -58,9 +58,12 @@ public:
     Matrix operator*(double scalar) const;       // Создание оператора умножения на скаляр матриц
     Matrix operator/(double scalar) const;       // Создание оператора деления на скаляр матриц
 
+
+
     void operator+=(const Matrix& mat) { *this = *this + mat; }  // Создание оператора прибавить к этой (this) матрице матрицу
     void operator-=(const Matrix& mat) { *this = *this - mat; }  // Создание оператора вычитания от этой (this) матрице матрицу
     void operator*=(const Matrix& mat) { *this = *this * mat; }  // Создание оператора умножения эту (this) матрицу на матрицу
+
 
     Matrix transpose();                                    // Создание функции транспонирования матрицы (замена строк на столбцы)
     void swap_rows(unsigned int row1, unsigned int row2);  // Создания функции свойства матрицы на замену 2 строк местами НУЖНО для нахождения определителя и верхней треугольной матрицы
@@ -72,8 +75,8 @@ public:
     Matrix inv();                                                 // Создание функции для нахождения обратной матрицы
     Matrix exp();                                                 // Создание функции для нахождения матричной экспоненты
 
-    // Ниже строчки для создания операторов который будут выводить матрицу
 
+    // Ниже строчки для создания операторов который будут выводить матрицу
     friend std::ostream& operator<<(std::ostream &os, Matrix &mat);  // friend ключевое слово показывающее что оператор << определенный в библиотеке стд является дружественным и мы можем добавить к нему определение
     friend std::ostream& operator<<(std::ostream &os, Matrix &&mat);
 
@@ -81,8 +84,15 @@ public:
 
     void print() { std::cout << *this << std::endl; } // чтобы не вводить так много БУКОВ, а быстро выводить все что по центру
 
-    ~Matrix() { delete[] this->values; } // деструктор (очистка памяти от объекта памяти выход из зоны видимости)
+    ~Matrix() { delete[] this->values; } // деструктор (очистка памяти от объекта который уже не нужен и находится "ВНЕ зоны видимости")
 };
+
+
+
+
+
+
+
 
 // ПОДРОБНОЕ ОПИСАНИЕ ВСЕХ ВЫШЕ РАЗОБРАННЫХ СТРУКТУР, ФУНКЦИЙ, ОПЕРАТОРОВ И ТД
 
@@ -121,8 +131,7 @@ Matrix& Matrix::operator=(const Matrix& mat) {
     delete[] values;
     rows = mat.rows;
     cols = mat.cols;
-    values = new double[rows * cols];  // выделение памяти
-    memcpy(values, mat.values, rows * cols * sizeof(double)); // необходимо выделить память
+    memcpy(values, mat.values, rows * cols * sizeof(double));
     return *this;
 }
 
@@ -203,7 +212,7 @@ bool Matrix::is_identity() {
         if (idx % (rows + 1) == 0) {
             if (fabs(values[idx] - 1) > EPS) return false;
         } else {
-            if (fabs(values[idx]) > EPS) return false;
+            if (fabs(values[idx] - 0) > EPS) return false;
         }
     }
     return true;
@@ -418,5 +427,49 @@ std::istream &operator>>(std::istream &is, Matrix &mat) { // ввод матри
     }
     return is;
 }
+
+
+// СОЗДАНИЕ НАСЛЕДОВАНИЯ
+
+// наследуется все кроме атрибутов и методов в приватных полях + конструкторы и деструкторы
+
+class MatrixMemory : public Matrix {        // создание нового класса Матрих Мемори с наследованием его от ранее созданного класса Матрих // с индикатором доступа - (: public) что означает что все поля родителя класса копируются с теми же индикаторами доступа
+private:                                    // ниже 2 атрибута приватных от нового класса Матрих Мемори
+    unsigned long int memory_size = 0;      // размер памяти который занимает Матрица (строки*столбец)
+    static unsigned long int total_memory;  // общий размер памяти который занимают все объекты класса Матрих Мемори
+
+    // так как конструкторы и деструкторы НЕ наследуются от родителя (класс Матрих) нам нужно создавать новые конструкторы
+
+public:
+    MatrixMemory() { memory_size = 0; }  //
+    MatrixMemory(unsigned int rows, unsigned int cols) {
+        memory_size = rows * cols * sizeof(double);
+        total_memory += memory_size;
+    }
+
+    MatrixMemory(const MatrixMemory& mat)  : Matrix(mat) {
+        memory_size = mat.memory_size;
+        total_memory += memory_size;
+    }
+
+    MatrixMemory(MatrixMemory&& mat) noexcept {
+        memory_size = mat.memory_size;
+    }
+
+    MatrixMemory& operator=(const MatrixMemory& mat) noexcept {
+        memory_size = mat.memory_size;
+        total_memory += memory_size;
+        return *this;
+    }
+
+    MatrixMemory& operator=(MatrixMemory&& mat) noexcept {
+        memory_size = mat.memory_size;
+        return *this;
+    }
+
+    unsigned long int get_total_memory() { return total_memory; }
+
+    ~MatrixMemory() { total_memory -= memory_size; };
+};
 
 #endif //MATRIX_CAL_MATRIX_H

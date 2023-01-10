@@ -120,9 +120,9 @@ Matrix<T>::Matrix(Matrix&& other) noexcept {
 }
 
 template <typename T>
-Matrix<T>::Matrix(unsigned int rowsCount, unsigned int colsCount):
-    rows(rowsCount),
-    cols(colsCount)
+Matrix<T>::Matrix(unsigned int rows_count, unsigned int cols_count):
+    rows(rows_count),
+    cols(cols_count)
 {
   values = new T[rows * cols];
   for (size_t idx = 0; idx < rows * cols; idx++) {
@@ -131,13 +131,13 @@ Matrix<T>::Matrix(unsigned int rowsCount, unsigned int colsCount):
 }
 
 template <typename T>
-Matrix<T>::Matrix(unsigned int rowsCount, unsigned int colsCount, const T*
+Matrix<T>::Matrix(unsigned int rows_count, unsigned int cols_count, const T*
 value):
-    rows(rowsCount),
-    cols(colsCount)
+    rows(rows_count),
+    cols(cols_count)
 {
   values = new T[rows * cols];
-  for (size_t idx = 0; idx < rowsCount * colsCount; idx++) {
+  for (size_t idx = 0; idx < rows_count * cols_count; idx++) {
     values[idx] = value[idx];
   }
 }
@@ -629,102 +629,118 @@ Matrix<T> Matrix<T>::get_identity_matrix(const unsigned int size) {
 }
 
 template <typename T>
-class Matrix_Memory : public Matrix<T> {
+class Matrix_memory : public Matrix<T> {
 private:
-    static int memory_size;
-public:
+    unsigned long int memory_allocated;
     static int total_memory;
     static int quantity;
-    Matrix_Memory<T>();
-    Matrix_Memory<T>(unsigned int, unsigned int);
-    Matrix_Memory<T>(const Matrix_Memory<T>&);
-    Matrix_Memory<T>(Matrix_Memory<T>&&) noexcept;
-    ~Matrix_Memory();
-    Matrix_Memory<T>&  operator= (const  Matrix_Memory<T>& );
-    Matrix_Memory<T>&  operator= (Matrix_Memory<T>&& ) noexcept ;
-    virtual void print_mem();
+public:
+    Matrix_memory<T>();
+    Matrix_memory<T>(unsigned int, unsigned int);
+    Matrix_memory<T>(unsigned int, unsigned int, T*);
+    Matrix_memory<T>(const Matrix_memory&);
+    Matrix_memory<T>(Matrix_memory&&) noexcept;
+    bool is_equal_size(const Matrix_memory&, const Matrix_memory&);
+    Matrix_memory<T> add(const Matrix_memory&);
+    ~Matrix_memory();
+    Matrix_memory<T>&  operator= (const Matrix_memory&);
+    Matrix_memory<T>&  operator= (Matrix_memory&& ) noexcept ;
+    void print_mem();
+
 };
 
 template <typename T>
-int Matrix_Memory<T>::total_memory = 0;
-
-
-template <typename T>
-int Matrix_Memory<T>::quantity = 0;
-
+int Matrix_memory<T>::total_memory = 0;
 
 template <typename T>
-Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
-    if (this == &matrix) return *this;
-
-    this->rows = matrix.rows;
-    this->cols = matrix.cols;
-    delete[] this->values;
-    this->values = new T[this->cols * this->rows];
-    memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
-
-    this->total_memory -= this->memory_size;
-    this->memory_size = matrix.memory_size;
-    this->total_memory += matrix.memory_size;
-    return *this;
-}
-
+int Matrix_memory<T>::quantity = 0;
 
 template <typename T>
-Matrix_Memory<T>& Matrix_Memory<T>::operator= (Matrix_Memory<T>&& matrix) noexcept {
-    if (this == &matrix) return *this;
-    this->rows = matrix.rows;
-    this->cols = matrix.cols;
-    delete[]this->value;
-    this->value = matrix.value;
-
-    this->total_memory = -this->memory_size; // + matrix.memory_size;
-    this->memory_size = matrix.memory_size;
-    matrix.memory_size =0;
-    matrix.value = nullptr;
-
-    return *this;
-}
-
-
-template <typename T>
-Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col) : Matrix<T>(row, col) {
-
-    this->memory_size = row * col * sizeof(T);
-    this->total_memory += this->memory_size;
+Matrix_memory<T>::Matrix_memory():Matrix<T>() {
+    memory_allocated = 0;
+    total_memory += memory_allocated;
     quantity++;
 }
 
+template <typename T>
+Matrix_memory<T>::Matrix_memory(unsigned int rows, unsigned int cols):
+Matrix<T>(rows, cols) {
+    memory_allocated = sizeof(T) * rows * cols;
+    total_memory += memory_allocated;
+    quantity++;
+}
 
 template <typename T>
-Matrix_Memory<T>::~Matrix_Memory() {
-    print_mem();
-    this->total_memory -= this->memory_size;
-    this->memory_size = 0;
+Matrix_memory<T>::Matrix_memory(unsigned int rows, unsigned int cols, T* value):
+Matrix<T>(rows, cols, value) {
+    memory_allocated = sizeof(T) * rows * cols;
+    total_memory += memory_allocated;
+    quantity++;
+}
+
+template <typename T>
+Matrix_memory<T>::~Matrix_memory() {
+    total_memory -= memory_allocated;
+    memory_allocated = 0;
     quantity--;
 }
 
+template <typename T>
+Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory& other) {
+    total_memory -= memory_allocated;
+    memory_allocated = other.memory_allocated;
+    total_memory += memory_allocated;
+}
 
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& m) : Matrix<T>(m) {
-    this->memory_size = m.memory_size;
-    this->total_memory += this->memory_size;
+Matrix_memory<T>& Matrix_memory<T>::operator=(Matrix_memory&& other) noexcept {
+    total_memory -= memory_allocated;
+    memory_allocated = other.memory_allocated;
+    other.memory_allocated = 0;
+}
+
+template <typename T>
+Matrix_memory<T>::Matrix_memory(const Matrix_memory<T>& other):
+    Matrix<T>(other){
+    memory_allocated = other.memory_allocated;
+    total_memory += memory_allocated;
     quantity++;
 }
 
-
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& m) noexcept : Matrix<T>(m){
-    this->memory_size = m.memory_size;
-    m.memory_size = 0;
+Matrix_memory<T>::Matrix_memory(Matrix_memory<T>&& other) noexcept:
+    Matrix<T>(other){
+    memory_allocated = other.memory_allocated;
+    other.memory_allocated = 0;
     quantity++;
 }
 
+template <typename T>
+bool Matrix_memory<T>::is_equal_size(const Matrix_memory& first,
+                                     const Matrix_memory& second) {
+    if ((first.cols != second.cols) || (first.rows != second.rows)) {
+        return false;
+    }
+    return true;
+}
 
 template <typename T>
-void Matrix_Memory<T>::print_mem() {
+Matrix_memory<T> Matrix_memory<T>::add(const Matrix_memory& other) {
+    if (!is_equal_size(*this, other)) {
+        throw Matrix_exception("The matrices do not match in size!");
+    }
+    Matrix_memory<T> result(this->rows, this->cols);
+    for (size_t idx = 0; idx < this->rows * this->cols; idx++) {
+        result.values[idx] = this->values[idx] + other.values[idx];
+    }
+    result.memory_allocated = sizeof(T) * result.cols * result.rows;
+    return result;
+}
+
+template <typename T>
+void Matrix_memory<T>::print_mem() {
     std::cout << "Used " << this->total_memory << " bytes" << std::endl;
-    std::cout << "Made " << this->quantity << "matrices" << std::endl;
+    std::cout << "Made " << this->quantity << " matrices\n" << std::endl;
 }
 
 #endif

@@ -54,6 +54,7 @@ public:
 	Matrix operator / (Matrix second_matrix);
 
 	Matrix& operator=(const Matrix& A);
+	Matrix& operator=(Matrix&& X) noexcept;
 
 	Matrix& operator+=(const Matrix& second_matrix);
 	Matrix& operator-=(const Matrix& second_matrix);
@@ -421,7 +422,21 @@ Matrix Matrix::operator / (Matrix second_matrix)
 
 
 
-//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+Matrix& Matrix::operator=(Matrix&& X) noexcept 
+{
+	if (this == &X) return *this;
+	delete[] values;
+	rows = X.rows;
+	cols = X.cols;
+	values = X.values;
+	X.values = nullptr;
+	return *this;
+}
 
 
 Matrix& Matrix::operator=(const Matrix& A)
@@ -435,6 +450,13 @@ Matrix& Matrix::operator=(const Matrix& A)
 	memcpy(this->values, A.values, rows * cols * sizeof(double));
 	return *this;
 }
+
+
+
+
+
+
+
 
 Matrix& Matrix::operator+=(const Matrix& second_matrix)
 {

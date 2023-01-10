@@ -35,8 +35,8 @@ protected:
 public:
 
     static_assert
-        (is_same<double, T>::value || is_same<float, T>::value || is_same<long double, T>::value,
-            "T must be int, double or float");
+            (is_same<double, T>::value || is_same<float, T>::value || is_same<long double, T>::value,
+             "T must be int, double or float");
 
     const double EPS = 0.000001;
 
@@ -398,12 +398,12 @@ Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const u
     unsigned int shiftcol;                                              //Смещение индекса столбца в матрице
     for (unsigned int rows = 0; rows < size - 1; rows++)
     {
-                                                                        //Пропустить row-ую строку
+        //Пропустить row-ую строку
         if (rows == row)
         {
             shiftrow = 1;
         }                                                               //Как только встретили строку,
-                                                                        //которую надо пропустить, делаем смещение для исходной матрицы
+        //которую надо пропустить, делаем смещение для исходной матрицы
         shiftcol = 0;                                                   //Обнулить смещение столбца
         for (unsigned int cols = 0; cols < size - 1; cols++)
         {
@@ -412,7 +412,7 @@ Matrix<T> Matrix<T>::minor(const Matrix matrix, const unsigned int size, const u
                 shiftcol = 1;
             }
             minor.values[rows * (size - 1) + cols] = matrix.values[(rows + shiftrow)
-                * size + (cols + shiftcol)];
+                                                                   * size + (cols + shiftcol)];
         }
     }
     return minor;
@@ -462,7 +462,6 @@ Matrix<T> Matrix<T>::reverse(const Matrix matrix, const unsigned int size)
     return reverse;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 Matrix<T> Matrix<T>::exponent(unsigned int n) //Количество членов разложения
@@ -482,16 +481,13 @@ Matrix<T> Matrix<T>::exponent(unsigned int n) //Количество члено�
     return ex;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T1>
 class Matrix_Memory : public Matrix<T1> {
 private:
     unsigned int memory = 0;
 public:
-    Matrix_Memory<T1>() :Matrix<T1>()
-    {
-        memory += total_mem;
-    }
 
     Matrix_Memory<T1>(const Matrix_Memory& mat) : Matrix<T1>(mat) {
         memory = mat.memory;
@@ -502,7 +498,6 @@ public:
     {
         memory = mat.memory;
         total_mem += memory;
-        total_mem -= mat.memory;
         mat.memory = 0;
 
     }
@@ -527,9 +522,50 @@ public:
     {
         total_mem -= memory;
     }
+
+
+    Matrix_Memory& operator=(const Matrix_Memory& A);
+    Matrix_Memory& operator=(const Matrix_Memory&& A) noexcept;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T1>
+Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory&& A) noexcept
+{
+    if (this == &A) return *this;
+    delete[] this->values;
+    this->rows = A.rows;
+    this->cols = A.cols;
+    this->values = A.values;
+    A.values = nullptr;
+    memory = A.memory;
+    total_mem += memory;
+    total_mem -= A.memory;
+    A.memory = 0;
+    return *this;
+}
+
+
+template <typename T1>
+Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory& A)
+{
+    if (this == &A) return *this;
+    delete[] this->values;
+    this->rows = A.rows;
+    this->cols = A.cols;
+    this->values = new T1[this->rows * this->cols];
+    if (!this->values) throw Mem_Error;
+    memcpy(this->values, A.values, this->rows * this->cols * sizeof(T1));
+    memory = A.memory;
+    total_mem += memory;
+    return *this;
+}
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void test_add()
 {

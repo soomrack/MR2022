@@ -1,7 +1,10 @@
 #include <iostream>
 #include "Matrix.h"
 
+unsigned long int MatrixMemory::total_memory = 0;  // инициализация статического атрибута класса Тотал мемори которая хранится отдельно и к ней каждый Объект (матрицы) класса будет обращаться
+
 int main() {
+
     std::cout << "Hello\n Primer 1 - create matrix A" << std::endl;
 
     double ret1[4]={1,2,
@@ -29,7 +32,6 @@ int main() {
 
     std::cout << "Primer 5 - A + B =" << std::endl;
     std::cout << " " << A+B << std::endl;
-
 
 
     return 0;

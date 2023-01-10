@@ -1,7 +1,7 @@
-#include "CMatrix.h"
+#include "CMatrix.h"//добавить в конструкторы копии и переноса изменения counter и  memory и general memory
 
 template<typename T>
-unsigned int CMatrix<T>::calcMemory(int c_rows, int c_cols) { // ничего лучше для вычисления размера vector я не придумал
+unsigned int CMatrix<T>::calcMemory(int c_rows, int c_cols) {
     return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
 
@@ -39,13 +39,16 @@ CMatrix<T>::CMatrix(int input_rows, int input_cols, const std::vector<T> &v):Mat
 
 
 template<typename T>
-CMatrix<T>::CMatrix(const CMatrix<T> &other): Matrix<T>(other) {
+CMatrix<T>::CMatrix(const CMatrix<T> &other): Matrix<T>(other) { //ошибка
+    counter++;
     memory_size = other.memory_size;
+    general_size += memory_size;
 }
 
 
 template<typename T>
-CMatrix<T>::CMatrix(CMatrix<T> &&other) noexcept: Matrix<T>(other) {
+CMatrix<T>::CMatrix(CMatrix<T> &&other) noexcept: Matrix<T>(other) { // ошибка
+    counter++;
     memory_size = other.memory_size;
     other.memory_size = 0;
 }
