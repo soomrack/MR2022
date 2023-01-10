@@ -51,7 +51,6 @@ CMatrix<T>::CMatrix(CMatrix<T> &&other) noexcept: Matrix<T>(other) { // ошиб
     counter++;
     memory_size = other.memory_size;
     other.memory_size = 0;
-    general_size += memory_size;
 }
 
 
