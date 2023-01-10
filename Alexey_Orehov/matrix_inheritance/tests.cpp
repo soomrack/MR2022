@@ -158,5 +158,9 @@ int main(){
     MatrixMemory A = {4, 4};
     std::cout << A.get_total_memory() << std::endl;
 
+    MatrixMemory B = A;
+    MatrixMemory C;
+    std::cout << A.get_total_memory() << std::endl;
+    Matrix D = A + B;
     return 0;
 }
