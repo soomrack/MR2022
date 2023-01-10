@@ -123,7 +123,7 @@ Matrix& Matrix::operator=(Matrix const &X) {
 }
 
 
-Matrix &Matrix::operator=(Matrix&& X) noexcept {
+Matrix& Matrix::operator=(Matrix&& X) noexcept {
     if (this == &X) {
         return *this;
     }
@@ -228,8 +228,6 @@ void Matrix::print() {
 int main() {
     short a = 2;
     short b = 3;
-    short y = 4;
-    short z = 4;
 
     Matrix A(a, a, 2);
     A.print();
