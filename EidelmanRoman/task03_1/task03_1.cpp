@@ -226,13 +226,13 @@ int main() {
     short n = 2;
     short m = 3;
 
-    Matrix A(n, n, 1);
+    Matrix A(n, n, 2);
     A.print();
     Matrix B(m, m, 3);
     B.print();
 
     try {
-        B = B + A;
+        B += A;
     }
     catch(MatrixException &Exception_object) {
         std::cout << Exception_object.getMessage();
