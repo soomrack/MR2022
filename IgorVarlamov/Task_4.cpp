@@ -502,7 +502,6 @@ public:
     {
         memory = mat.memory;
         total_mem += memory;
-        total_mem -= mat.memory;
         mat.memory = 0;
 
     }
@@ -528,37 +527,36 @@ public:
         total_mem -= memory;
     }
 
-    Matrix_Memory& operator=(const Matrix_Memory&);
-    Matrix_Memory& operator=(const Matrix_Memory&&);
+    Matrix_Memory& operator=(const Matrix_Memory& A);
+    Matrix_Memory& operator=(const Matrix_Memory&& A) noexcept;
 };
 
 
 template <typename T1>
 Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory&& A) noexcept
 {
-    if (this == &X) return *this;
+    if (this == &A) return *this;
     delete[] values;
-    rows = X.rows;
-    cols = X.cols;
-    values = X.values;
+    this->rows = X.rows;
+    this->cols = X.cols;
+    this->values = X.values;
     X.values = nullptr;
     return *this;
 }
+
 
 template <typename T1>
 Matrix_Memory<T1>& Matrix_Memory<T1>::operator=(const Matrix_Memory& A)
 {
     if (this == &A) return *this;
     delete[] values;
-    rows = A.rows;
-    cols = A.cols;
+    this->rows = A.rows;
+    this->cols = A.cols;
     this->values = new T[rows * cols];
     if (!values) throw Mem_Error;
     memcpy(this->values, A.values, rows * cols * sizeof(T));
     return *this;
 }
-
-
 
 
 
