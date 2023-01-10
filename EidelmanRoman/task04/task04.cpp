@@ -189,7 +189,7 @@ void Matrix<T>::print() {
 template<typename T>
 class EMatrix: public Matrix<T> {
 private:
-    unsigned int k = 0;
+    unsigned int k = 0; // static
     unsigned int final_size = 0;
     static unsigned int calcMemory(unsigned int c_rows, unsigned int c_cols);
 private:
@@ -208,16 +208,19 @@ public:
     unsigned int get_mem_size();
 };
 
+
 template<typename T>
 unsigned int EMatrix<T>::calcMemory(unsigned int c_rows, unsigned int c_cols) {
     return c_rows * c_cols * sizeof(T) + c_rows * sizeof(T *);
 }
+
 
 template<typename T>
 EMatrix<T>::EMatrix(): Matrix<T>() {
     k++;
     mem_size = 0;
 }
+
 
 template<typename T>
 EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols): Matrix<T>(input_rows, input_cols) {
@@ -229,7 +232,7 @@ EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols): Matrix<T>
 template<typename T>
 EMatrix<T>::EMatrix(const EMatrix<T> &X): Matrix<T>(X) {
     mem_size = X.mem_size;
-}
+} // добавить счетчики
 
 template<typename T>
 EMatrix<T>::EMatrix(unsigned int input_rows, unsigned int input_cols, T x): Matrix<T>(input_rows, input_cols, x) {
@@ -268,9 +271,6 @@ unsigned int EMatrix<T>::get_mem_size() {
     return mem_size;
 }
 
-template
-class EMatrix<double>;
-
 
 int main() {
     short n = 2;
@@ -283,7 +283,7 @@ int main() {
         std::cout << Exception_object.getMessage();
     }
 
-    Matrix<double> A(n, m, 1);
+    Matrix<double> A(n, m, 1.);
     Matrix<double> B(n, m);
 
     try {
