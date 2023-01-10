@@ -82,7 +82,7 @@ public:
 
     friend std::istream& operator>>(std::istream &is, Matrix &mat);  // оператор ввода матрицы
 
-    void print() { std::cout << *this << std::endl; } // чтобы не вводить так много БУКОВ а быстро выводить все что по центру
+    void print() { std::cout << *this << std::endl; } // чтобы не вводить так много БУКОВ, а быстро выводить все что по центру
 
     ~Matrix() { delete[] this->values; } // деструктор (очистка памяти от объекта который уже не нужен и находится "ВНЕ зоны видимости")
 };
