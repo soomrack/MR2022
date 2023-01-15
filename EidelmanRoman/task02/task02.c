@@ -172,7 +172,7 @@ void exponent (Matrix A)  // Вынести умножение
         }
         k++;
         factorial *= k;
-    }
+    } // Метод монте карло, градиентный спуск, статохстический -..-, линейная алгебра.
 
     freeing_memory(&temporarily_matrix);
     output(&exp_matrix);

@@ -1,123 +1,174 @@
-short n = 2;
-short m = 2;
+#include <iostream>
+#include <cstring>
+#include <cmath>
 
-
-class Matrix
-{
+class Matrix {
 private:
-    unsigned int rows;
-    unsigned int cols;
-    double **values;
-    double *data;
+    unsigned int rows = 0;
+    unsigned int cols = 0;
+    unsigned int matrix_size;
+    unsigned int memory_size;
+    double** values = nullptr;
+    double* data = nullptr;
+
+    void swap(Matrix& X);
 public:
-    Matrix(unsigned int input_rows, unsigned int input_cols)
-    {
-        rows = input_rows;
-        cols = input_cols;
-        data = new double[rows * cols + rows];  // new ...[]   // delete[] data;
-        for (int row = 0; row < rows; row++)
-            values[row] = data + row * cols;
-    };
+    Matrix() = default;
+    Matrix(unsigned int input_rows, unsigned int input_cols);
+    Matrix(const Matrix& X);
+    Matrix(unsigned int input_rows, unsigned int input_cols, double x);
+    ~Matrix();
 
-    ~Matrix()
-    {
-        delete[] data;
-    }
+    Matrix& operator=(const Matrix& X);
+    Matrix& operator+=(const Matrix& X);
+    Matrix operator+(const Matrix& X);
+    Matrix& operator-=(const Matrix& X);
+    Matrix operator-(const Matrix& X);
+    Matrix& operator*=(const Matrix& X);
+    Matrix operator*(const Matrix& X);
+    Matrix operator^(unsigned b);
+    Matrix operator/(double b);
 
-    Matrix operator + (Matrix second_matrix);
-    Matrix operator - (Matrix second_matrix);
-    Matrix operator * (Matrix second_matrix);
-    Matrix operator ^ (int x);
-    Matrix operator / (double x);
-    Matrix T ();
+    Matrix T();
+    void print();
 };
 
-Matrix Matrix::operator + (Matrix second_matrix)
-{
-    Matrix addition_matrix(rows, cols);
-    for (int row = 0; row < addition_matrix.rows; row++)
-    {
-        for (int col = 0; col < addition_matrix.cols; col++)
-        {
-            addition_matrix.values[row][col] = values[row][col] + second_matrix.values[row][col];
-        }
-    }
-    return addition_matrix;
+
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols) {
+    rows = input_rows;
+    cols = input_cols;
+    matrix_size = rows * cols;
+    memory_size = matrix_size + rows;
+    data = new double[memory_size];
+    for (int row = 0; row < rows; ++row)
+        values[row] = data + row * cols;
 }
 
-Matrix Matrix::operator - (Matrix second_matrix)
-{
-    Matrix subtraction_matrix(rows, cols);
-    for (int row = 0; row < subtraction_matrix.rows; row++)
-    {
-        for (int col = 0; col < subtraction_matrix.cols; col++)
-        {
-            subtraction_matrix.values[row][col] = values[row][col] - second_matrix.values[row][col];
-        }
+Matrix::Matrix(const Matrix& X) {
+    memory_size = X.memory_size;
+    data = new double[memory_size];
+    memcpy(data, X.data, memory_size * sizeof(double));
+}
+// all copy
+
+Matrix::Matrix(unsigned int input_rows, unsigned int input_cols, double x): Matrix(input_rows, input_cols) {
+    for (int i = 0; i < matrix_size; ++i) {
+        data[i] = x;
     }
-    return subtraction_matrix;
 }
 
-Matrix Matrix::operator * (Matrix second_matrix)
-{
-    Matrix multiplication_matrix(rows, cols);
-    for (int row = 0; row < multiplication_matrix.rows; row++)
-    {
-        for (int col = 0; col < multiplication_matrix.cols; col++)
-        {
-            for (int k = 0; k < multiplication_matrix.rows; k++)
-            {
-                multiplication_matrix.values[rows][cols] = multiplication_matrix.values[rows][cols] + values[rows][k] * second_matrix.values[k][cols];
+Matrix::~Matrix() {
+    delete[] data;
+}
+
+
+Matrix& Matrix::operator=(const Matrix& X) {
+    Matrix copy = X;
+    swap(copy);
+}
+
+Matrix& Matrix::operator+=(const Matrix& X) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] += X.data[i];
+    return *this;
+}
+
+Matrix Matrix::operator+(const Matrix& X) {
+    Matrix copy = *this;
+    copy += X;
+    return copy;
+}
+
+Matrix& Matrix::operator-=(const Matrix& X) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] -= X.data[i];
+    return *this;
+}
+
+Matrix Matrix::operator-(const Matrix& X) {
+    Matrix copy = *this;
+    copy -= X;
+    return copy;
+}
+
+Matrix& Matrix::operator*=(const Matrix& X) {
+    Matrix zero(rows, cols, 0);
+    for (int row = 0; row < zero.rows; ++row) {
+        for (int col = 0; col < zero.cols; ++col) {
+            for (int k = 0; k < zero.rows; ++k) {
+                zero.values[rows][cols] += values[rows][k] * X.values[k][cols];
             }
         }
     }
-    return multiplication_matrix;
+    *this = zero;
+    return *this;
 }
 
-Matrix Matrix::operator ^ (int x)
-{
-    Matrix result_matrix(rows, cols);
-    Matrix const_matrix(rows, cols);
-    const_matrix.values = values;
-    for (int i = 1; i < x; x++)
-    {
-        result_matrix = result_matrix * const_matrix;
-    }
-    return result_matrix;
+Matrix Matrix::operator*(const Matrix& X) {
+    Matrix copy = *this;
+    copy *= X;
+    return copy;
 }
 
-Matrix Matrix::operator / (double x)
-{
-    Matrix result_matrix(rows, cols);
-    for (int row = 0; row < result_matrix.rows; row++)
-    {
-        for (int col = 0; col < result_matrix.cols; col++)
-        {
-            result_matrix.values[row][col] = values[row][col] / x;
+Matrix Matrix::operator^(unsigned int b) {
+    for (int i = 1; i < b; ++i)
+        *this *= *this;
+    return *this;
+}
+
+Matrix Matrix::operator/(double b) {
+    for (int i = 0; i < matrix_size; ++i)
+        data[i] /= b;
+    return *this;
+}
+
+Matrix Matrix::T() {
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            values[rows][cols] = values[cols][rows];
         }
     }
-    return result_matrix;
+    return *this;
 }
 
-Matrix Matrix::T ()
-{
-    Matrix copy_matrix(rows, cols);
-    for (int rows = 0; rows < copy_matrix.rows; rows++)
-    {
-        for (int cols = 0; cols < copy_matrix.cols; cols++)
-        {
-            copy_matrix.values[rows][cols] = values[cols][rows];
-        }
+
+void Matrix::swap(Matrix& X) {
+    std::swap(memory_size, X.memory_size);
+    std::swap(data, X.data);
+}
+
+void Matrix::print() {
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++)
+            std::cout << values[row][col] << " ";
+        std::cout << "\n";
     }
-    return copy_matrix;
+    std::cout << "\n";
 }
 
 
-Matrix A(n, m);
-Matrix B(n, m);
+class Square_Matrix: public Matrix {
+private:
+    unsigned int dimension = 0;
+    unsigned int rows = dimension;
+    unsigned int cols = dimension;
+    unsigned int matrix_size = pow(dimension, 2);
+    unsigned int memory_size = matrix_size + dimension;
+    double** values = nullptr;
+    double* data = nullptr;
+public:
+    Square_Matrix() = default;
+    Square_Matrix(unsigned int input_dimension);
+    Square_Matrix(const Square_Matrix& X);
+    Square_Matrix(unsigned int input_dimension, double x);
+    ~Square_Matrix();
+};
 
-int main()
-{
+
+int main() {
+    short n = 2;
+    short m = 2;
+    Matrix A(n, m);
 
     return 0;
 }

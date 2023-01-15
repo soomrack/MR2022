@@ -1,40 +1,42 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "time.h"
 
 
-typedef struct 
+
+typedef struct Matrix 
 {
     unsigned int rows;
     unsigned int cols;
-    double **values;
-    double *numeric;
+    double** values;
+    double* data;
 } Matrix;
 
 
-void memory(Matrix *hlp)
+
+void matrix_mem(Matrix* matrix)
 {
-    hlp->numeric = (double*)malloc(hlp->rows * hlp->cols * sizeof(double*) + hlp->rows * sizeof(double*));
-    hlp->values = hlp->numeric + hlp->rows * hlp->cols;
-    for (int row = 0; row < hlp->rows; row++)
-        hlp->values[row] = hlp->numeric + row * hlp->cols;
+    matrix->data = (double*)malloc(matrix->rows * matrix->cols * sizeof(double) + matrix->rows * sizeof(double*));
+    matrix->values = matrix->data + matrix->rows * matrix->cols;
+    for (int row = 0; row < matrix->rows; row++)
+        matrix->values[row] = matrix->data + row * matrix->cols;
+}
+
+void free_mem(Matrix* matrix)
+{
+    free(matrix->data);
 }
 
 
-void free_mem(Matrix* hlp)
-{
-    free(hlp->numeric);
-}
 
 
-void output(Matrix* hlp)
+void output(Matrix* matrix)
 {
-    for (int rows = 0; rows < hlp->rows; rows++)
+    for (int rows = 0; rows < matrix->rows; rows++)
     {
-        for (int cols = 0; cols < hlp->cols; cols++)
+        for (int cols = 0; cols < matrix->cols; cols++)
         {
-            printf("%lf ", hlp->values[rows][cols]);
+            printf("%lf ", matrix->values[rows][cols]);
         }
         printf("\n");
     }
@@ -42,54 +44,39 @@ void output(Matrix* hlp)
 }
 
 
-void null_array(Matrix* hlp)
-{
-    memory(hlp);
 
-    for (int rows = 0; rows < hlp->rows; rows++)
+void zero_matrix(Matrix* matrix)
+{
+    matrix_mem(matrix);
+
+    for (int rows = 0; rows < matrix->rows; rows++)
     {
-        for (int cols = 0; cols < hlp->cols; cols++)
+        for (int cols = 0; cols < matrix->cols; cols++)
         {
-            hlp->values[rows][cols] = 0;
+            matrix->values[rows][cols] = 0;
         }
     }
 }
 
-
-void random_array(Matrix* hlp)
+void random_matrix(Matrix* matrix)
 {
-    memory(hlp);
+    matrix_mem(matrix);
 
-    for (int rows = 0; rows < hlp->rows; rows++)
+    for (int rows = 0; rows < matrix->rows; rows++)
     {
-        for (int cols = 0; cols < hlp->cols; cols++)
+        for (int cols = 0; cols < matrix->cols; cols++)
         {
-            hlp->values[rows][cols] = rand() % 10;
+            matrix->values[rows][cols] = rand() % 9;
         }
     }
-
 }
 
-
-
-void pre_output (Matrix A, Matrix B, Matrix C)
+void addition(Matrix A, Matrix B)
 {
-    printf("    Generated Matrix A\n");
-    output(&A);
-    printf("    Generated Matrix B\n");
-    output(&B);
-    printf("    Generated Matrix C\n");
-    output(&C);
-}
+    printf("\tsummation:\n");
 
-
-void addition(Matrix A, Matrix B, Matrix C)
-{
-    
-    printf("    Summation A and B:\n");
-
-    Matrix addition_matrix = { 3, 3, NULL, NULL };
-    memory(&addition_matrix);
+    Matrix addition_matrix = { A.cols, A.rows, NULL, NULL };
+    matrix_mem(&addition_matrix);
 
     for (int rows = 0; rows < addition_matrix.rows; rows++)
     {
@@ -98,19 +85,19 @@ void addition(Matrix A, Matrix B, Matrix C)
             addition_matrix.values[rows][cols] = A.values[rows][cols] + B.values[rows][cols];
         }
     }
-    
-
     output(&addition_matrix);
     free_mem(&addition_matrix);
 }
 
 
+
+
 void subtraction(Matrix A, Matrix B)
 {
-    printf("    Subtraction B from A:\n");
+    printf("\tsubtraction:\n");
 
-    Matrix subtraction_matrix = { 3, 3, NULL, NULL };
-    memory(&subtraction_matrix);
+    Matrix subtraction_matrix = { A.cols, A.rows, NULL, NULL };
+    matrix_mem(&subtraction_matrix);
 
     for (int rows = 0; rows < subtraction_matrix.rows; rows++)
     {
@@ -123,13 +110,12 @@ void subtraction(Matrix A, Matrix B)
     free_mem(&subtraction_matrix);
 }
 
-
 void multiplication(Matrix A, Matrix B)
 {
-    printf("    Multiplication A by B:\n");
+    printf("\tmultiplication:\n");
 
-    Matrix multiplication_matrix = { 3, 3, NULL, NULL };
-    null_array(&multiplication_matrix);                                         
+    Matrix multiplication_matrix = { A.cols, A.rows, NULL, NULL };
+    zero_matrix(&multiplication_matrix);
 
     for (int rows = 0; rows < multiplication_matrix.rows; rows++)
     {
@@ -145,38 +131,36 @@ void multiplication(Matrix A, Matrix B)
     free_mem(&multiplication_matrix);
 }
 
-
 void transposition(Matrix A)
 {
-    printf("      Transposition A:\n");
+    printf("\ttransposition:\n");
 
-    Matrix Tr_matrix = { 3, 3, NULL, NULL };
-    memory(&Tr_matrix);
+    Matrix copy_matrix = { A.cols, A.rows, NULL, NULL };
+    matrix_mem(&copy_matrix);
 
-    for (int rows = 0; rows < Tr_matrix.rows; rows++)
+    for (int rows = 0; rows < copy_matrix.rows; rows++)
     {
-        for (int cols = 0; cols < Tr_matrix.cols; cols++)
+        for (int cols = 0; cols < copy_matrix.cols; cols++)
         {
-            Tr_matrix.values[rows][cols] = A.values[cols][rows];
+            copy_matrix.values[rows][cols] = A.values[cols][rows];
         }
     }
-    output(&Tr_matrix);
-    free_mem(&Tr_matrix);
+    output(&copy_matrix);
+    free_mem(&copy_matrix);
 }
 
-
-void exponent(Matrix C)
+void exponent(Matrix A)
 {
-    printf("        Exponent C:\n");
+    printf("\texponent matrix:\n");
 
-    Matrix exp_matrix = { 2, 2, NULL, NULL };
-    memory(&exp_matrix);
+    Matrix exp_matrix = { A.cols, A.rows, NULL, NULL };
+    matrix_mem(&exp_matrix);
     for (int rows = 0; rows < exp_matrix.rows; rows++)
         for (int cols = 0; cols < exp_matrix.cols; cols++)
-            exp_matrix.values[rows][cols] = 1 + C.values[rows][cols];
+            exp_matrix.values[rows][cols] = 1 + A.values[rows][cols];
 
-    Matrix temporarily_matrix = { 2, 2, NULL, (double*)C.values };
-    memory(&temporarily_matrix);
+    Matrix temporarily_matrix = { A.cols, A.rows, NULL, (double*)A.values };
+    matrix_mem(&temporarily_matrix);
 
     long int k = 2;
     long long int factorial = k;
@@ -188,7 +172,7 @@ void exponent(Matrix C)
             {
                 for (int i = 0; i < exp_matrix.rows; i++)
                 {
-                    temporarily_matrix.values[rows][cols] = temporarily_matrix.values[rows][i] * C.values[i][cols];
+                    temporarily_matrix.values[rows][cols] = temporarily_matrix.values[rows][i] * A.values[i][cols];
                 }
             }
         }
@@ -201,7 +185,7 @@ void exponent(Matrix C)
         }
         k++;
         factorial *= k;
-    }
+    } 
 
     free_mem(&temporarily_matrix);
     output(&exp_matrix);
@@ -209,27 +193,24 @@ void exponent(Matrix C)
 }
 
 
-int main(void)
+int main()
 {
     Matrix A = { 3, 3, NULL, NULL };
+    printf("\tMatrix A\n");
+    random_matrix(&A);
+    output(&A);
+
     Matrix B = { 3, 3, NULL, NULL };
-    Matrix C = { 2, 2, NULL, NULL };
+    printf("\tMatrix B\n");
+    random_matrix(&B);
+    output(&B);
 
-    random_array(&A);
-    random_array(&B);
-    random_array(&C);
-
-    pre_output(A, B, C);
-
-    addition(A, B, C);
+    addition(A, B);
     subtraction(A, B);
     multiplication(A, B);
     transposition(A);
-    exponent(A);
+
 
     free_mem(&A);
     free_mem(&B);
-    free_mem(&C);
-
-    return 0;
 }

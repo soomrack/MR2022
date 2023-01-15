@@ -12,7 +12,6 @@ public:
 };
 
 
-
 class Matrix {
 private:
     unsigned int rows;
@@ -22,12 +21,13 @@ private:
 public:
     Matrix();
     Matrix(unsigned int rows, unsigned int cols);
+
     Matrix(const Matrix &);
     Matrix(Matrix &&mat) noexcept;
 
-    Matrix set_value(double value);                                 // Заполнение созданной матрицы одним числом
-    Matrix set_random(int min_value, int max_value);                // Заполнение созданной матрицы случайно
-    Matrix set_identity();                                          // Преобразование матрицы в единичную
+    Matrix set_value(double value);                                  // Заполнение созданной матрицы одним числом
+    Matrix set_random(int min_value, int max_value);                 // Заполнение созданной матрицы случайно
+    Matrix set_identity();                                           // Преобразование матрицы в единичную
     Matrix fill_from_array(double* array);                           // Заполнение матрицы значениями из массива
 
     double get(unsigned int row, unsigned int col);                  // Получение произвольного элемента матрицы

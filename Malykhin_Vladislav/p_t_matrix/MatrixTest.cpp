@@ -4,6 +4,7 @@ inline void print_message(const std::string& text, const MatrixException& Except
     std::cout << text << ":" << std::endl << Exception_object.get_message() << std::endl << std::endl;
 }
 
+
 template<typename T>
 void MatrixTest<T>::using_unused() {
     Matrix<T> matrix(2, 2, vector1);
@@ -13,6 +14,7 @@ void MatrixTest<T>::using_unused() {
     matrix.get_cell(0, 0);
     MatrixException TEST("TEST");
 }
+
 
 template<typename T>
 void MatrixTest<T>::calculation_check(T true_array[], Matrix<T> *matrix, const std::string& text) {
@@ -26,11 +28,13 @@ void MatrixTest<T>::calculation_check(T true_array[], Matrix<T> *matrix, const s
             error_flag += 1;
         }
         std::cout << "true: " << std::scientific << std::setw(13) << true_array[row * matrix->get_cols() + column];
-        std::cout << " res: " << std::scientific << std::setw(13) << matrix->get_cell(row,column) << " | " << cell_flag << "\n";
+        std::cout << " res: " << std::scientific << std::setw(13)
+        << matrix->get_cell(row,column) << " | " << cell_flag << "\n";
     }
     std::cout << "Errors: " << error_flag << "\n";
     std::cout << "\n";
 }
+
 
 template<typename T>
 void MatrixTest<T>::output_test() {
@@ -38,6 +42,7 @@ void MatrixTest<T>::output_test() {
     Matrix<T> matrix1(2, 2, vector1);
     matrix1.print();
 }
+
 
 template<typename T>
 void MatrixTest<T>::overload_test() {
@@ -51,6 +56,7 @@ void MatrixTest<T>::overload_test() {
         print_message("overload_test", Exception_object);
     }
 }
+
 
 template<typename T>
 void MatrixTest<T>::addition_test() {
@@ -66,6 +72,7 @@ void MatrixTest<T>::addition_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::number_addition_test() {
     try {
@@ -78,6 +85,7 @@ void MatrixTest<T>::number_addition_test() {
         print_message("number_addition_test", Exception_object);
     }
 }
+
 
 template<typename T>
 void MatrixTest<T>::subtraction_test() {
@@ -93,6 +101,7 @@ void MatrixTest<T>::subtraction_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::multiplication_test() {
     try {
@@ -107,6 +116,7 @@ void MatrixTest<T>::multiplication_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::number_multiplication_test() {
     try {
@@ -119,6 +129,7 @@ void MatrixTest<T>::number_multiplication_test() {
         print_message("number_multiplication_test", Exception_object);
     }
 }
+
 
 template<typename T>
 void MatrixTest<T>::determinant_test() {
@@ -133,6 +144,7 @@ void MatrixTest<T>::determinant_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::transposition_test() {
     try {
@@ -146,6 +158,7 @@ void MatrixTest<T>::transposition_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::inversion_test() {
     try {
@@ -158,6 +171,7 @@ void MatrixTest<T>::inversion_test() {
         print_message("inversion_test", Exception_object);
     }
 }
+
 
 template<typename T>
 void MatrixTest<T>::inverse_multiplication_test() {
@@ -173,6 +187,7 @@ void MatrixTest<T>::inverse_multiplication_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::number_division_test() {
     try {
@@ -186,6 +201,7 @@ void MatrixTest<T>::number_division_test() {
     }
 }
 
+
 template<typename T>
 void MatrixTest<T>::power_test() {
     try {
@@ -197,6 +213,7 @@ void MatrixTest<T>::power_test() {
         print_message("power_test", Exception_object);
     }
 }
+
 
 template<typename T>
 void MatrixTest<T>::exp_test() {
