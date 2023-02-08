@@ -1,5 +1,4 @@
 #include "Array.h"
-#include <vector>
 
 
 void test() {
@@ -7,8 +6,12 @@ void test() {
 
 
 int main() {
-    Array<int> A(5,5);
+    Array<int> A(3);
+    A.setData(0, 5);
+    A.setData(1, 8);
+    A.setData(2, 3);
     A.print();
-    A.clear();
+    A.quickSort();
+    std::cout << "\n\n";
     A.print();
 }

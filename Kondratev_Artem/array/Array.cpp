@@ -23,6 +23,28 @@ Array<T>::Array(T Array[]) {
 */
 
 template<typename T>
+Array<T>::~Array() {
+    delete[] data;
+}
+
+
+template<typename T>
+Array<T>::Array(const Array<T> &other) {
+    length = other.length;
+    data = new T[length];
+    memcpy(data, other.data, sizeof(T) * length);
+}
+
+
+template<typename T>
+Array<T>::Array(Array<T> &&other) noexcept {
+    length = other.length;
+    data = other.data;
+    other.data = nullptr;
+}
+
+
+template<typename T>
 T Array<T>::operator[](uint64_t index) {
     return data[index];
 }
@@ -51,6 +73,28 @@ Array<T>& Array<T>::operator=(Array<T> &&other) noexcept {
     data = other.data;
     other.data = nullptr;
     return *this;
+}
+
+
+template<typename T>
+Array<T> Array<T>::operator+(const Array<T> &other) {
+    if (length == 0) {
+        if (other.length == 0) {
+            return Array<T>(0);
+        }
+        else {
+            return other;
+        }
+    }
+    else {
+        if (other.length == 0) {
+            return *this;
+        }
+    }
+    Array<T> result(length + other.length);
+    memcpy(result.data, data, sizeof(T) * length);
+    memcpy(result.data + length, other.data, sizeof(T) * other.length);
+    return result;
 }
 
 
@@ -124,6 +168,33 @@ void Array<T>::clear() {
     length = 0;
     delete[] data;
     data = nullptr;
+}
+
+
+template<typename T>
+void Array<T>::quickSort() {
+    if (length < 2) {
+        return;
+    }
+    T barrier = data[length / 2];
+    uint64_t equal_cnt = 0;
+    Array<T> left(0);
+    uint64_t middle_cnt = 0;
+    Array<T> right(0);
+    for (int idx = 0; idx < length; idx++) {
+        if (data[idx] < barrier) {
+            left.append(data[idx]);
+        }
+        if (data[idx] == barrier) {
+            middle_cnt++;
+        }
+        if (data[idx] > barrier) {
+            right.append(data[idx]);
+        }
+    }
+    left.quickSort();
+    right.quickSort();
+    *this = left + Array<T>(middle_cnt, barrier) + right;
 }
 
 

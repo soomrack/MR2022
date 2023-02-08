@@ -21,9 +21,15 @@ private:
 public:
     explicit Array(uint64_t length, T number = 0);
     //explicit Array(T Array[]);
+    ~Array();
+    Array(const Array<T>& other);
+    Array(Array<T>&& other) noexcept;
+
     T operator[](uint64_t index);
     Array<T>& operator=(const Array<T> &other);
-    Array<T>& operator=(Array<T> &&other) noexcept;
+    Array<T>& operator=(Array<T>&& other) noexcept;
+    Array<T> operator+(const Array<T>& other);
+
     uint64_t len();
     void print();
     void setData(uint64_t index, T object);
@@ -31,6 +37,7 @@ public:
     void pop();
     void pop(uint64_t index);
     void clear();
+    void quickSort();
 };
 
 
