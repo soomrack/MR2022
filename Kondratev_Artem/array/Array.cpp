@@ -78,19 +78,6 @@ Array<T>& Array<T>::operator=(Array<T> &&other) noexcept {
 
 template<typename T>
 Array<T> Array<T>::operator+(const Array<T> &other) {
-    if (length == 0) {
-        if (other.length == 0) {
-            return Array<T>(0);
-        }
-        else {
-            return other;
-        }
-    }
-    else {
-        if (other.length == 0) {
-            return *this;
-        }
-    }
     Array<T> result(length + other.length);
     memcpy(result.data, data, sizeof(T) * length);
     memcpy(result.data + length, other.data, sizeof(T) * other.length);
