@@ -62,6 +62,9 @@ uint64_t Array<T>::len() {
 
 template<typename T>
 void Array<T>::print() {
+    if (length == 0) {
+        return;
+    }
     std::cout << "[";
     for (int idx = 0; idx < length - 1; idx++) {
         std::cout << data[idx] << ", ";
@@ -113,6 +116,14 @@ void Array<T>::pop(uint64_t index) {
         data[idx-1] = buffer[idx];
     }
     delete[] buffer;
+}
+
+
+template<typename T>
+void Array<T>::clear() {
+    length = 0;
+    delete[] data;
+    data = nullptr;
 }
 
 

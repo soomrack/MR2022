@@ -30,6 +30,7 @@ public:
     void append(T object);
     void pop();
     void pop(uint64_t index);
+    void clear();
 };
 
 
