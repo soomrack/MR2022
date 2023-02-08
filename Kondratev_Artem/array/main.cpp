@@ -15,4 +15,7 @@ int main() {
     A.print();
     A.append(8);
     A.print();
+    A.pop();
+    A.print();
+    std::cout << A.len();
 }

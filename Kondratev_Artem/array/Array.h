@@ -25,9 +25,10 @@ public:
     Array<T>& operator=(const Array<T> &other);
     Array<T>& operator=(Array<T> &&other) noexcept;
     uint64_t len();
-    void append(T object);
     void print();
     void setData(uint64_t idx, T object);
+    void append(T object);
+    void pop();
 };
 
 

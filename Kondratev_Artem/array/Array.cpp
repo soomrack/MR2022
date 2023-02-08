@@ -61,16 +61,6 @@ uint64_t Array<T>::len() {
 
 
 template<typename T>
-void Array<T>::append(T object) {
-    length++;
-    T* buffer = data;
-    data = new T[length];
-    std::memcpy(data, buffer, sizeof(T) * (length - 1));
-    data[length-1] = object;
-}
-
-
-template<typename T>
 void Array<T>::print() {
     std::cout << "[";
     for (int idx = 0; idx < length - 1; idx++) {
@@ -86,6 +76,27 @@ void Array<T>::setData(uint64_t idx, T object) {
         throw ArrayException("error: bad index");
     }
     data[idx] = object;
+}
+
+
+template<typename T>
+void Array<T>::append(T object) {
+    length++;
+    T* buffer = data;
+    data = new T[length];
+    std::memcpy(data, buffer, sizeof(T) * (length - 1));
+    data[length-1] = object;
+    delete[] buffer;
+}
+
+
+template<typename T>
+void Array<T>::pop() {
+    length--;
+    T* buffer = data;
+    data = new T[length];
+    std::memcpy(data, buffer, sizeof(T) * length);
+    delete[] buffer;
 }
 
 
