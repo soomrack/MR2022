@@ -5,6 +5,6 @@
 int main() {
     array<int> A(3);
     std::cout << A.len();
-    A[0] = 5;
-
+    A.data[0] = 5;
+    std::cout << A;
 }

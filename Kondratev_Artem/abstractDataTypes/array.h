@@ -22,10 +22,11 @@ public:
     //explicit array(T array[]);
     T operator[](uint64_t idx);
     array<T>& operator=(const array<T> &other);
-    array<T>& operator=(array<T> &&other) noexcept ;
+    array<T>& operator=(array<T> &&other) noexcept;
     uint64_t len();
     void append(T object);
     void print();
+    void setData(uint64_t idx, T object);
 };
 
 

@@ -77,6 +77,12 @@ void array<T>::print() {
 }
 
 
+template<typename T>
+void array<T>::setData(uint64_t idx, T object) {
+    data[idx] = object;
+}
+
+
 template
 class array<double>;
 
