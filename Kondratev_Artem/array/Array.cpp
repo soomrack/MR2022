@@ -23,8 +23,8 @@ Array<T>::Array(T Array[]) {
 */
 
 template<typename T>
-T Array<T>::operator[](uint64_t idx) {
-    return data[idx];
+T Array<T>::operator[](uint64_t index) {
+    return data[index];
 }
 
 
@@ -71,11 +71,11 @@ void Array<T>::print() {
 
 
 template<typename T>
-void Array<T>::setData(uint64_t idx, T object) {
-    if (idx >= length) {
+void Array<T>::setData(uint64_t index, T object) {
+    if (index >= length) {
         throw ArrayException("error: bad index");
     }
-    data[idx] = object;
+    data[index] = object;
 }
 
 
@@ -96,6 +96,22 @@ void Array<T>::pop() {
     T* buffer = data;
     data = new T[length];
     std::memcpy(data, buffer, sizeof(T) * length);
+    delete[] buffer;
+}
+
+
+template<typename T>
+void Array<T>::pop(uint64_t index) {
+    if(index >= length) {
+        throw ArrayException("error: bad index");
+    }
+    length--;
+    T* buffer = data;
+    data = new T[length];
+    std::memcpy(data, buffer, sizeof(T) * index);
+    for (int idx = length; idx > index; idx--) {
+        data[idx-1] = buffer[idx];
+    }
     delete[] buffer;
 }
 
