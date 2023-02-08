@@ -7,6 +7,7 @@
 
 
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <iterator>
 
@@ -19,8 +20,12 @@ private:
 public:
     explicit array(uint64_t length, T number = 0);
     //explicit array(T array[]);
+    T operator[](uint64_t idx);
+    array<T>& operator=(const array<T> &other);
+    array<T>& operator=(array<T> &&other) noexcept ;
     uint64_t len();
-    //void append(T object);
+    void append(T object);
+    void print();
 };
 
 
