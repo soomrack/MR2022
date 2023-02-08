@@ -2,11 +2,11 @@
 // Created by user on 08.02.23.
 //
 
-#include "array.h"
+#include "Array.h"
 
 
 template<typename T>
-array<T>::array(uint64_t len, T number) {
+Array<T>::Array(uint64_t len, T number) {
     length = len;
     data = new T[length];
     for (int idx = 0; idx < length; idx++) {
@@ -16,20 +16,20 @@ array<T>::array(uint64_t len, T number) {
 
 /*
 template<typename T>
-array<T>::array(T array[]) {
-    T *a = array;
+Array<T>::Array(T Array[]) {
+    T *a = Array;
     length = sizeof(*a) / sizeof(a[0]);
 }
 */
 
 template<typename T>
-T array<T>::operator[](uint64_t idx) {
+T Array<T>::operator[](uint64_t idx) {
     return data[idx];
 }
 
 
 template<typename T>
-array<T>& array<T>::operator=(const array<T> &other) {
+Array<T>& Array<T>::operator=(const Array<T> &other) {
     if (this == &other) {
         return *this;
     }
@@ -42,7 +42,7 @@ array<T>& array<T>::operator=(const array<T> &other) {
 
 
 template<typename T>
-array<T>& array<T>::operator=(array<T> &&other) noexcept {
+Array<T>& Array<T>::operator=(Array<T> &&other) noexcept {
     if (this == &other) {
         return *this;
     }
@@ -55,36 +55,42 @@ array<T>& array<T>::operator=(array<T> &&other) noexcept {
 
 
 template<typename T>
-uint64_t array<T>::len() {
+uint64_t Array<T>::len() {
     return length;
 }
 
 
 template<typename T>
-void array<T>::append(T object) {
-    delete[] data;
-
+void Array<T>::append(T object) {
+    length++;
+    T* buffer = data;
+    data = new T[length];
+    std::memcpy(data, buffer, sizeof(T) * (length - 1));
+    data[length-1] = object;
 }
 
 
 template<typename T>
-void array<T>::print() {
+void Array<T>::print() {
     std::cout << "[";
     for (int idx = 0; idx < length - 1; idx++) {
         std::cout << data[idx] << ", ";
     }
-    std::cout << data[length-1] << "]";
+    std::cout << data[length-1] << "]" << std::endl;
 }
 
 
 template<typename T>
-void array<T>::setData(uint64_t idx, T object) {
+void Array<T>::setData(uint64_t idx, T object) {
+    if (idx >= length) {
+        throw ArrayException("error: bad index");
+    }
     data[idx] = object;
 }
 
 
 template
-class array<double>;
+class Array<double>;
 
 template
-class array<int>;
+class Array<int>;

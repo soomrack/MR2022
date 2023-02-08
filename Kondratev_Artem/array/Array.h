@@ -10,19 +10,20 @@
 #include <cstring>
 #include <iostream>
 #include <iterator>
+#include "ArrayException.h"
 
 
 template<typename T>
-class array {
+class Array {
 private:
     T* data;
     uint64_t length;
 public:
-    explicit array(uint64_t length, T number = 0);
-    //explicit array(T array[]);
+    explicit Array(uint64_t length, T number = 0);
+    //explicit Array(T Array[]);
     T operator[](uint64_t idx);
-    array<T>& operator=(const array<T> &other);
-    array<T>& operator=(array<T> &&other) noexcept;
+    Array<T>& operator=(const Array<T> &other);
+    Array<T>& operator=(Array<T> &&other) noexcept;
     uint64_t len();
     void append(T object);
     void print();
