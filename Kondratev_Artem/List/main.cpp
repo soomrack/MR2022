@@ -9,11 +9,10 @@ int main() {
     A.append(7);
     A.append(8);
     A.print();
-    A.append(15, 0);
+
+
+    A.pop(2);
     A.print();
-
-
-
 
 
     return 0;

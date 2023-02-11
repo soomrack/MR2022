@@ -21,6 +21,7 @@ private:
     Node<T>* next;
 public:
     explicit Node(T object);
+    ~Node() = default;
 };
 
 

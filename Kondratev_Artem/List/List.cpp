@@ -71,6 +71,45 @@ void List<T>::append(T object, uint64_t index) {
 
 
 template<typename T>
+void List<T>::pop() {
+    if (isFirstEmpty()) {
+        return;
+    }
+    if (size == 1) {
+        first = nullptr;
+        last = nullptr;
+    }
+    else {
+        Node<T>* p = first;
+        for (uint64_t idx = 0; idx < size - 1; idx++) {
+            p = p->next;
+        }
+        p->next = nullptr;
+        last = p;
+    }
+    size--;
+}
+
+
+template<typename T>
+void List<T>::pop(uint64_t index) {
+    if (index >= size) {
+        throw Exception("error: bad index");
+    }
+    if (index == size - 1) {
+        pop();
+        return;
+    }
+    Node<T>* p = first;
+    for (uint64_t idx = 0; idx < index - 1; idx++) {
+        p = p->next;
+    }
+    p->next = p->next->next;
+    size--;
+}
+
+
+template<typename T>
 uint64_t List<T>::len() {
     return size;
 }

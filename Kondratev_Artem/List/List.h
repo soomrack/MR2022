@@ -25,6 +25,7 @@ public:
     void append(T object);
     void append(T object, uint64_t index);
     void pop();
+    void pop(uint64_t index);
     uint64_t len();
     void print();
     uint64_t getSize();
