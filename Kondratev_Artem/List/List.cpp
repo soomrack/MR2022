@@ -14,6 +14,20 @@ List<T>::List() {
 
 
 template<typename T>
+List<T>::List(uint64_t _size, T array[]) {
+    size = _size;
+    auto* node = new Node<T>(array[0]);
+    first = node;
+    for (int idx = 0; idx < size - 1; idx++) {
+        node->next = new Node<T>(array[idx+1]);
+        node = node->next;
+    }
+    node->next = nullptr;
+    last = node;
+}
+
+
+template<typename T>
 List<T>::List(const List<T> &other) {
     size = other.size;
     auto* copy = new Node<T>(other.first->data);
@@ -84,14 +98,14 @@ Node<T> *List<T>::operator[](const uint64_t index) {
     if(isFirstEmpty() || index >= size) {
         return nullptr;
     }
-    Node<T>* p = first;
+    Node<T>* node = first;
     for (int idx = 0; idx < index; idx++) {
-        p = p->next;
-        if (p == nullptr) {
-            return p;
+        node = node->next;
+        if (node == nullptr) {
+            return node;
         }
     }
-    return p;
+    return node;
 }
 
 
@@ -109,14 +123,14 @@ List<T> List<T>::operator+(List<T> other) {
 template<typename T>
 void List<T>::append(T object) {
     size++;
-    auto* p = new Node<T>(object);
+    auto* node = new Node<T>(object);
     if(isFirstEmpty()) {
-        first = p;
-        last = p;
+        first = node;
+        last = node;
         return;
     }
-    last->next = p;
-    last = p;
+    last->next = node;
+    last = node;
 }
 
 
@@ -130,14 +144,14 @@ void List<T>::append(T object, uint64_t index) {
         return;
     }
     size++;
-    auto* p = new Node<T>(object);
+    auto* node = new Node<T>(object);
     if (index == 0) {
-        p->next = first;
-        first = p;
+        node->next = first;
+        first = node;
         return;
     }
-    p->next = this->operator[](index);
-    this->operator[](index - 1)->next = p;
+    node->next = this->operator[](index);
+    this->operator[](index - 1)->next = node;
 }
 
 
@@ -151,12 +165,12 @@ void List<T>::pop() {
         last = nullptr;
     }
     else {
-        Node<T>* p = first;
+        Node<T>* node = first;
         for (uint64_t idx = 0; idx < size - 2; idx++) {
-            p = p->next;
+            node = node->next;
         }
-        p->next = nullptr;
-        last = p;
+        node->next = nullptr;
+        last = node;
     }
     size--;
 }
@@ -171,11 +185,11 @@ void List<T>::pop(uint64_t index) {
         pop();
         return;
     }
-    Node<T>* p = first;
+    Node<T>* node = first;
     for (uint64_t idx = 0; idx < index - 1; idx++) {
-        p = p->next;
+        node = node->next;
     }
-    p->next = p->next->next;
+    node->next = node->next->next;
     size--;
 }
 
@@ -192,13 +206,13 @@ void List<T>::print() {
         return;
     }
     std::cout << "[";
-    Node<T>* printer = first;
-    while (printer) {
-        std::cout << printer->data;
-        if (printer != last) {
+    Node<T>* node = first;
+    while (node) {
+        std::cout << node->data;
+        if (node != last) {
             std::cout << ", ";
         }
-        printer = printer->next;
+        node = node->next;
     }
     std::cout << "]" << std::endl;
 }

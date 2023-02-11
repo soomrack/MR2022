@@ -10,8 +10,9 @@ int main() {
     A.append(8, 4);
     A.print();
 
-
-
+    int c[] = {5, 10, 8, 3};
+    List<int> B(4, c);
+    B.print();
 
     return 0;
 }

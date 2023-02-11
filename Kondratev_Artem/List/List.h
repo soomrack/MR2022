@@ -20,6 +20,7 @@ private:
     Node<T>* last;
 public:
     List();
+    List(uint64_t _size, T array[]);
     ~List() = default;
     List(const List<T>& other);
     List(List<T>&& other) noexcept ;
