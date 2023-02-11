@@ -6,11 +6,9 @@
 #define HELLO_WORLD_ARRAY_H
 
 
-#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include <iterator>
 #include "ArrayException.h"
 
 
