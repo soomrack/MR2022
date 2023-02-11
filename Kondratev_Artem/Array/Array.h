@@ -16,10 +16,10 @@ template<typename T>
 class Array {
 private:
     T* data;
-    uint64_t length;
+    uint64_t size;
 public:
     explicit Array(uint64_t length, T number = 0);
-    explicit Array(uint64_t len, T array[]);
+    explicit Array(uint64_t length, T array[]);
     ~Array();
     Array(const Array<T>& other);
     Array(Array<T>&& other) noexcept;

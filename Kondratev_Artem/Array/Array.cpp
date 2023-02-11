@@ -6,20 +6,20 @@
 
 
 template<typename T>
-Array<T>::Array(uint64_t len, T number) {
-    length = len;
-    data = new T[length];
-    for (int idx = 0; idx < length; idx++) {
+Array<T>::Array(uint64_t length, T number) {
+    size = length;
+    data = new T[size];
+    for (int idx = 0; idx < size; idx++) {
         data[idx] = number;
     }
 }
 
 
 template<typename T>
-Array<T>::Array(uint64_t len, T array[]) {
-    length = len;
-    data = new T[length];
-    for (int idx = 0; idx < length; idx++) {
+Array<T>::Array(uint64_t length, T array[]) {
+    size = length;
+    data = new T[size];
+    for (int idx = 0; idx < size; idx++) {
         data[idx] = array[idx];
     }
 }
@@ -33,15 +33,15 @@ Array<T>::~Array() {
 
 template<typename T>
 Array<T>::Array(const Array<T> &other) {
-    length = other.length;
-    data = new T[length];
-    memcpy(data, other.data, sizeof(T) * length);
+    size = other.size;
+    data = new T[size];
+    memcpy(data, other.data, sizeof(T) * size);
 }
 
 
 template<typename T>
 Array<T>::Array(Array<T> &&other) noexcept {
-    length = other.length;
+    size = other.size;
     data = other.data;
     other.data = nullptr;
 }
@@ -58,10 +58,10 @@ Array<T>& Array<T>::operator=(const Array<T> &other) {
     if (this == &other) {
         return *this;
     }
-    length = other.length;
+    size = other.size;
     delete[] data;
-    data = new T[length];
-    std::memcpy(data, other.data, sizeof(T) * length);
+    data = new T[size];
+    std::memcpy(data, other.data, sizeof(T) * size);
     return *this;
 }
 
@@ -71,7 +71,7 @@ Array<T>& Array<T>::operator=(Array<T> &&other) noexcept {
     if (this == &other) {
         return *this;
     }
-    length = other.length;
+    size = other.size;
     delete[] data;
     data = other.data;
     other.data = nullptr;
@@ -81,35 +81,35 @@ Array<T>& Array<T>::operator=(Array<T> &&other) noexcept {
 
 template<typename T>
 Array<T> Array<T>::operator+(const Array<T> &other) {
-    Array<T> result(length + other.length);
-    memcpy(result.data, data, sizeof(T) * length);
-    memcpy(result.data + length, other.data, sizeof(T) * other.length);
+    Array<T> result(size + other.size);
+    memcpy(result.data, data, sizeof(T) * size);
+    memcpy(result.data + size, other.data, sizeof(T) * other.size);
     return result;
 }
 
 
 template<typename T>
 uint64_t Array<T>::len() {
-    return length;
+    return size;
 }
 
 
 template<typename T>
 void Array<T>::print() {
-    if (length == 0) {
+    if (size == 0) {
         return;
     }
     std::cout << "[";
-    for (int idx = 0; idx < length - 1; idx++) {
+    for (int idx = 0; idx < size - 1; idx++) {
         std::cout << data[idx] << ", ";
     }
-    std::cout << data[length-1] << "]" << std::endl;
+    std::cout << data[size - 1] << "]" << std::endl;
 }
 
 
 template<typename T>
 void Array<T>::setData(T object, uint64_t index) {
-    if (index >= length) {
+    if (index >= size) {
         throw ArrayException("error: bad index");
     }
     data[index] = object;
@@ -118,50 +118,50 @@ void Array<T>::setData(T object, uint64_t index) {
 
 template<typename T>
 void Array<T>::append(T object) {
-    length++;
+    size++;
     T* buffer = data;
-    data = new T[length];
-    std::memcpy(data, buffer, sizeof(T) * (length - 1));
-    data[length-1] = object;
+    data = new T[size];
+    std::memcpy(data, buffer, sizeof(T) * (size - 1));
+    data[size - 1] = object;
     delete[] buffer;
 }
 
 
 template<typename T>
 void Array<T>::append(T object, uint64_t index) {
-    if (index > length) {
+    if (index > size) {
         throw ArrayException("error: bad index");
     }
-    length++;
+    size++;
     T* buffer = data;
-    data = new T[length];
+    data = new T[size];
     std::memcpy(data, buffer, sizeof(T) * (index));
     data[index] = object;
-    std::memcpy(data + index + 1, buffer, sizeof(T) * (length - index - 1));
+    std::memcpy(data + index + 1, buffer, sizeof(T) * (size - index - 1));
     delete[] buffer;
 }
 
 
 template<typename T>
 void Array<T>::pop() {
-    length--;
+    size--;
     T* buffer = data;
-    data = new T[length];
-    std::memcpy(data, buffer, sizeof(T) * length);
+    data = new T[size];
+    std::memcpy(data, buffer, sizeof(T) * size);
     delete[] buffer;
 }
 
 
 template<typename T>
 void Array<T>::pop(uint64_t index) {
-    if(index >= length) {
+    if(index >= size) {
         throw ArrayException("error: bad index");
     }
-    length--;
+    size--;
     T* buffer = data;
-    data = new T[length];
+    data = new T[size];
     std::memcpy(data, buffer, sizeof(T) * index);
-    for (int idx = length; idx > index; idx--) {
+    for (int idx = size; idx > index; idx--) {
         data[idx-1] = buffer[idx];
     }
     delete[] buffer;
@@ -170,7 +170,7 @@ void Array<T>::pop(uint64_t index) {
 
 template<typename T>
 void Array<T>::clear() {
-    length = 0;
+    size = 0;
     delete[] data;
     data = nullptr;
 }
@@ -178,14 +178,14 @@ void Array<T>::clear() {
 
 template<typename T>
 void Array<T>::sort() {
-    if (length < 2) {
+    if (size < 2) {
         return;
     }
-    T barrier = data[length/2];
+    T barrier = data[size / 2];
     Array<T> left(0);
     uint64_t middle_cnt = 0;
     Array<T> right(0);
-    for (int idx = 0; idx < length; idx++) {
+    for (int idx = 0; idx < size; idx++) {
         if (data[idx] < barrier) {
             left.append(data[idx]);
         }
