@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include "ArrayException.h"
+#include "Exception.h"
 
 
 template<typename T>

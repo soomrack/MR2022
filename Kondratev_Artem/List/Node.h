@@ -6,6 +6,9 @@
 #define HELLO_WORLD_NODE_H
 
 
+#include <cstdint>
+
+
 template<typename T>
 class List;
 

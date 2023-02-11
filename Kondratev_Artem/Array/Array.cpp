@@ -110,7 +110,7 @@ void Array<T>::print() {
 template<typename T>
 void Array<T>::setData(T object, uint64_t index) {
     if (index >= size) {
-        throw ArrayException("error: bad index");
+        throw Exception("error: bad index");
     }
     data[index] = object;
 }
@@ -130,7 +130,7 @@ void Array<T>::append(T object) {
 template<typename T>
 void Array<T>::append(T object, uint64_t index) {
     if (index > size) {
-        throw ArrayException("error: bad index");
+        throw Exception("error: bad index");
     }
     size++;
     T* buffer = data;
@@ -155,7 +155,7 @@ void Array<T>::pop() {
 template<typename T>
 void Array<T>::pop(uint64_t index) {
     if(index >= size) {
-        throw ArrayException("error: bad index");
+        throw Exception("error: bad index");
     }
     size--;
     T* buffer = data;
