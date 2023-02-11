@@ -63,11 +63,10 @@ void List<T>::append(T object, uint64_t index) {
     if (index == 0) {
         p->next = first;
         first = p;
+        return;
     }
-    else {
-        p->next = this->operator[](index);
-        this->operator[](index - 1)->next = p;
-    }
+    p->next = this->operator[](index);
+    this->operator[](index - 1)->next = p;
 }
 
 
