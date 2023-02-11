@@ -219,6 +219,14 @@ T List<T>::getData(uint64_t index) {
 }
 
 
+template<typename T>
+void List<T>::clear() {
+    size = 0;
+    first = nullptr;
+    last = nullptr;
+}
+
+
 template
 class List<double>;
 
