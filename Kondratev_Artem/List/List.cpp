@@ -47,6 +47,39 @@ bool List<T>::isFirstEmpty() {
 
 
 template<typename T>
+List<T> &List<T>::operator=(const List<T> &other) {
+    if (this == &other) {
+        return *this;
+    }
+    size = other.size;
+    auto* copy = new Node<T>(other.first->data);
+    first = copy;
+    Node<T>* original = other.first;
+    while(original->next != nullptr) {
+        copy->next = new Node<T>(original->next->data);
+        copy = copy->next;
+        original = original->next;
+    }
+    copy->next = nullptr;
+    last = copy;
+}
+
+
+template<typename T>
+List<T> &List<T>::operator=(List<T> &&other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+    this->first = other.first;
+    this->last = other.last;
+    size = other.size;
+    other.first = nullptr;
+    other.last = nullptr;
+    other.size = 0;
+}
+
+
+template<typename T>
 Node<T> *List<T>::operator[](const uint64_t index) {
     if(isFirstEmpty() || index >= size) {
         return nullptr;

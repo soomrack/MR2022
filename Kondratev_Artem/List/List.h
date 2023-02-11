@@ -24,6 +24,8 @@ public:
     List(const List<T>& other);
     List(List<T>&& other) noexcept ;
     bool isFirstEmpty();
+    List<T>& operator=(const List<T>& other);
+    List<T>& operator=(List<T>&& other) noexcept ;
     Node<T>* operator[](uint64_t index);
     List<T> operator+(List<T> other);
     void append(T object);
@@ -36,6 +38,8 @@ public:
     T getData(uint64_t index);
     void clear();
 };
+
+
 
 
 #endif //HELLO_WORLD_LIST_H
