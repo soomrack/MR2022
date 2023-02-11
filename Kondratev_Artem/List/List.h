@@ -20,8 +20,12 @@ private:
     Node<T>* last;
 public:
     List();
+    ~List() = default;
+    List(const List<T>& other);
+    List(List<T>&& other) noexcept ;
     bool isFirstEmpty();
     Node<T>* operator[](uint64_t index);
+    List<T> operator+(List<T> other);
     void append(T object);
     void append(T object, uint64_t index);
     void pop();
@@ -30,6 +34,7 @@ public:
     void print();
     uint64_t getSize();
     T getData(uint64_t index);
+    void clear();
 };
 
 

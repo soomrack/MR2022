@@ -14,6 +14,33 @@ List<T>::List() {
 
 
 template<typename T>
+List<T>::List(const List<T> &other) {
+    size = other.size;
+    auto* copy = new Node<T>(other.first->data);
+    first = copy;
+    Node<T>* original = other.first;
+    while(original->next != nullptr) {
+        copy->next = new Node<T>(original->next->data);
+        copy = copy->next;
+        original = original->next;
+    }
+    copy->next = nullptr;
+    last = copy;
+}
+
+
+template<typename T>
+List<T>::List(List<T> &&other) noexcept {
+    this->first = other.first;
+    this->last = other.last;
+    size = other.size;
+    other.first = nullptr;
+    other.last = nullptr;
+    other.size = 0;
+}
+
+
+template<typename T>
 bool List<T>::isFirstEmpty() {
     return first == nullptr;
 }
@@ -32,6 +59,17 @@ Node<T> *List<T>::operator[](const uint64_t index) {
         }
     }
     return p;
+}
+
+
+template<typename T>
+List<T> List<T>::operator+(List<T> other) {
+    List<T> result;
+    result.first = this->first;
+    result.last = other.last;
+    result.size = this->size + other.size;
+    this->last->next = other.first;
+    return result;
 }
 
 
@@ -81,7 +119,7 @@ void List<T>::pop() {
     }
     else {
         Node<T>* p = first;
-        for (uint64_t idx = 0; idx < size - 1; idx++) {
+        for (uint64_t idx = 0; idx < size - 2; idx++) {
             p = p->next;
         }
         p->next = nullptr;

@@ -11,8 +11,7 @@ int main() {
     A.print();
 
 
-    A.pop(2);
-    A.print();
+
 
 
     return 0;
