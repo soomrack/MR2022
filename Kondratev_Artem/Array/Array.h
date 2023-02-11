@@ -6,6 +6,7 @@
 #define HELLO_WORLD_ARRAY_H
 
 
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -20,7 +21,7 @@ private:
     uint64_t length;
 public:
     explicit Array(uint64_t length, T number = 0);
-    //explicit Array(T Array[]);
+    explicit Array(uint64_t len, T array[]);
     ~Array();
     Array(const Array<T>& other);
     Array(Array<T>&& other) noexcept;
@@ -32,12 +33,13 @@ public:
 
     uint64_t len();
     void print();
-    void setData(uint64_t index, T object);
+    void setData(T object, uint64_t index);
     void append(T object);
+    void append(T object, uint64_t index);
     void pop();
     void pop(uint64_t index);
     void clear();
-    void quickSort();
+    void sort();
 };
 
 

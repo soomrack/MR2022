@@ -14,13 +14,16 @@ Array<T>::Array(uint64_t len, T number) {
     }
 }
 
-/*
+
 template<typename T>
-Array<T>::Array(T Array[]) {
-    T *a = Array;
-    length = sizeof(*a) / sizeof(a[0]);
+Array<T>::Array(uint64_t len, T array[]) {
+    length = len;
+    data = new T[length];
+    for (int idx = 0; idx < length; idx++) {
+        data[idx] = array[idx];
+    }
 }
-*/
+
 
 template<typename T>
 Array<T>::~Array() {
@@ -105,7 +108,7 @@ void Array<T>::print() {
 
 
 template<typename T>
-void Array<T>::setData(uint64_t index, T object) {
+void Array<T>::setData(T object, uint64_t index) {
     if (index >= length) {
         throw ArrayException("error: bad index");
     }
@@ -120,6 +123,21 @@ void Array<T>::append(T object) {
     data = new T[length];
     std::memcpy(data, buffer, sizeof(T) * (length - 1));
     data[length-1] = object;
+    delete[] buffer;
+}
+
+
+template<typename T>
+void Array<T>::append(T object, uint64_t index) {
+    if (index > length) {
+        throw ArrayException("error: bad index");
+    }
+    length++;
+    T* buffer = data;
+    data = new T[length];
+    std::memcpy(data, buffer, sizeof(T) * (index));
+    data[index] = object;
+    std::memcpy(data + index + 1, buffer, sizeof(T) * (length - index - 1));
     delete[] buffer;
 }
 
@@ -159,12 +177,11 @@ void Array<T>::clear() {
 
 
 template<typename T>
-void Array<T>::quickSort() {
+void Array<T>::sort() {
     if (length < 2) {
         return;
     }
-    T barrier = data[length / 2];
-    uint64_t equal_cnt = 0;
+    T barrier = data[length/2];
     Array<T> left(0);
     uint64_t middle_cnt = 0;
     Array<T> right(0);
@@ -179,8 +196,8 @@ void Array<T>::quickSort() {
             right.append(data[idx]);
         }
     }
-    left.quickSort();
-    right.quickSort();
+    left.sort();
+    right.sort();
     *this = left + Array<T>(middle_cnt, barrier) + right;
 }
 
