@@ -23,6 +23,7 @@ struct Human {
 struct Human Alice;
 struct Human Bob;
 
+
 void init_Bob(struct Human *init_Bob);
 void init_Alice(struct Human *init_Alice);
 void event(int year);

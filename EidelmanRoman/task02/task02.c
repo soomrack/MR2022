@@ -136,7 +136,7 @@ void transposition (Matrix A)
     freeing_memory(&copy_matrix);
 }
 
-void exponent (Matrix A)
+void exponent (Matrix A)  // Вынести умножение
 {
     printf("EXPONENTIAL MATRIX:\n");
 
@@ -172,7 +172,7 @@ void exponent (Matrix A)
         }
         k++;
         factorial *= k;
-    }
+    } // Метод монте карло, градиентный спуск, статохстический -..-, линейная алгебра.
 
     freeing_memory(&temporarily_matrix);
     output(&exp_matrix);
