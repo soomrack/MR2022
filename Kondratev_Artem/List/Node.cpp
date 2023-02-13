@@ -15,4 +15,10 @@ template
 class Node<double>;
 
 template
+class Node<float>;
+
+template
+class Node<uint64_t>;
+
+template
 class Node<int>;

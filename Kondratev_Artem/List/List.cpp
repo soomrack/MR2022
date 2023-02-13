@@ -245,4 +245,10 @@ template
 class List<double>;
 
 template
+class List<float>;
+
+template
+class List<uint64_t>;
+
+template
 class List<int>;

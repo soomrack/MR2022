@@ -2,7 +2,7 @@
 
 
 int main() {
-    List<int> A;
+    List<uint64_t> A;
     A.append(4, 0);
     A.append(5);
     A.append(6, 2);
@@ -10,9 +10,11 @@ int main() {
     A.append(8, 4);
     A.print();
 
-    int c[] = {5, 10, 8, 3};
-    List<int> B(4, c);
+    uint64_t c[] = {5, 10, 8, 3};
+    List<uint64_t> B(4, c);
     B.print();
+    List<uint64_t> C = A + B;
+    C.print();
 
     return 0;
 }
