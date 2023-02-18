@@ -57,8 +57,8 @@ public:
     bool isFirstEmpty();
     void append(T object);
     void append(T object, uint64_t index);
-    void pop();
-    void pop(uint64_t index);
+    T pop();
+    T pop(uint64_t index);
     uint64_t len();
     void print();
     uint64_t getSize();
@@ -141,6 +141,12 @@ bool List<T>::isFirstEmpty() {
 template<typename T>
 List<T> &List<T>::operator=(const List<T> &other) {
     if (this == &other) {
+        return *this;
+    }
+    if (other.size == 0) {
+        first = nullptr;
+        last = nullptr;
+        size = 0;
         return *this;
     }
     size = other.size;
@@ -234,10 +240,11 @@ void List<T>::append(T object, uint64_t index) {
 
 
 template<typename T>
-void List<T>::pop() {
+T List<T>::pop() {
     if (isFirstEmpty()) {
-        return;
+        throw Exception("error: pop from empty list");
     }
+    T object = last->data;
     if (size == 1) {
         first = nullptr;
         last = nullptr;
@@ -251,24 +258,26 @@ void List<T>::pop() {
         last = node;
     }
     size--;
+    return object;
 }
 
 
 template<typename T>
-void List<T>::pop(uint64_t index) {
+T List<T>::pop(uint64_t index) {
     if (index >= size) {
         throw Exception("error: bad index");
     }
     if (index == size - 1) {
-        pop();
-        return;
+        return pop();
     }
+    T object = this->operator[](index)->data;
     Node<T>* node = first;
     for (uint64_t idx = 0; idx < index - 1; idx++) {
         node = node->next;
     }
     node->next = node->next->next;
     size--;
+    return object;
 }
 
 

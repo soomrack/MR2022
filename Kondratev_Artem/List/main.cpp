@@ -16,5 +16,9 @@ int main() {
     List<uint64_t> C = A + B;
     C.print();
 
+    uint64_t n = A.pop(3);
+    std::cout << n;
+
+
     return 0;
 }
