@@ -96,7 +96,7 @@ List<T>::List(uint64_t _size, T array[]) {
     size = _size;
     auto* node = new Node<T>(array[0]);
     first = node;
-    for (int idx = 0; idx < size - 1; idx++) {
+    for (uint64_t idx = 0; idx < size - 1; idx++) {
         node->next = new Node<T>(array[idx+1]);
         node = node->next;
     }
