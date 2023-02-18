@@ -8,25 +8,94 @@
 
 #include <cstdint>
 #include <iostream>
+#include "../List/List.h"
 
 
-class Exception: std::exception {
+template<typename T>
+class Stack {
 private:
-    std::string message;
+    uint64_t size;
+    List<T> list;
 public:
-    explicit Exception(std::string _message);
+    Stack();
+    ~Stack() = default;
+    Stack(const Stack<T>& other);
+    Stack(Stack<T>&& other) noexcept;
 
-    std::string getMessage() const;
+    Stack<T> &operator=(const Stack<T>& other);
+    Stack<T> &operator=(Stack<T>&& other) noexcept;
+
+    void append(T object);
+    T pop();
+    uint64_t len();
 };
 
 
-Exception::Exception(std::string _message) {
-    message = std::move(_message);
+template<typename T>
+Stack<T>::Stack() {
+    list = List<T>();
+    size = 0;
 }
 
 
-std::string Exception::getMessage() const {
-    return message;
+template<typename T>
+Stack<T>::Stack(const Stack<T>& other) {
+    size = other.size;
+    list = other.list;
+}
+
+
+template<typename T>
+Stack<T>::Stack(Stack<T>&& other) noexcept {
+    size = other.size;
+    list = other.list;
+    other.size = 0;
+    other.list = nullptr;
+}
+
+
+template<typename T>
+Stack<T> &Stack<T>::operator=(const Stack<T> &other) {
+    if (this != &other) {
+        size = other.size;
+        list = other.list;
+    }
+    return *this;
+}
+
+
+template<typename T>
+Stack<T> &Stack<T>::operator=(Stack<T> &&other) noexcept {
+    if (this != &other) {
+        size = other.size;
+        list = other.list;
+        other.size = 0;
+        other.list = 0;
+    }
+    return *this;
+}
+
+
+template<typename T>
+void Stack<T>::append(T object) {
+    list.append(object);
+    size++;
+}
+
+
+template<typename T>
+T Stack<T>::pop() {
+    if (size == 0) {
+        throw Exception("error: bad access");
+    }
+    size--;
+    return list.pop();
+}
+
+
+template<typename T>
+uint64_t Stack<T>::len() {
+    return size;
 }
 
 
