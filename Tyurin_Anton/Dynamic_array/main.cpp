@@ -10,7 +10,9 @@ public:
     DM(const DM<T> &copy);
     ~DM();
     static void Arr_print(const DM<T> &Array);
-    static DM<T> push_head(T number);
+    T get(unsigned int id);
+    void set(unsigned int id, T number);
+    void resize(unsigned int newsize);
 };
 
 template<typename T>  // Конструктор создания массива
@@ -42,25 +44,36 @@ DM<T>::~DM() {
     delete[] value;
 }
 
+template<typename T>
+T DM<T>::get(unsigned int id){
+    return value[id];
+}
 
 template<typename T>
-DM<T> DM<T>::push_head(T number){
-    DM<T> Parasite(*this);
-    Array.size = Array.size + 1;
-    delete[] Array.value;
-    Array.value = new T[Array.size];
-    for (unsigned int idx = 1; idx < Array.size; idx++){
-        Array.value[idx] = Parasite.value[idx - 1];
-    }
-    Array.value[0] = number;
-    delete[] Parasite.value;
-return Array;
+void DM<T>::set(unsigned int id, T number){
+    value[id] = number;
+}
+
+template<typename T>
+void DM<T>::resize(unsigned int newsize){
+    size = newsize;
+    DM<T> Parasite(this);
+    value = new T[size];
 }
 
 int main() {
     DM<double> ar(1,3);
     DM<double>::Arr_print(ar);
-    //DM<double>::push_head(ar,2);
+    double Aim = ar.get(2);
+    std::cout << Aim << std::endl;
+
+    ar.set(2,3.21);
+    double Aim1 = ar.get(2);
+    std::cout << Aim1 << std::endl;
+
+    DM<double>::Arr_print(ar);
+
+    ar.resize(5);
     DM<double>::Arr_print(ar);
 
     return 0;
