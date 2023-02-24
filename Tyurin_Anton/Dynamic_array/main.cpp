@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 
 template<typename T>
 class DM {
@@ -57,8 +58,9 @@ void DM<T>::set(unsigned int id, T number){
 template<typename T>
 void DM<T>::resize(unsigned int newsize){
     size = newsize;
-    DM<T> Parasite(this);
+    T *Parasite = value;
     value = new T[size];
+    value = Parasite;
 }
 
 int main() {
