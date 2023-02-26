@@ -17,5 +17,9 @@ int main() {
         A.push(i);
     }
 
+    for (int i = 0; i < 10; i++) {
+        std::cout << A.pop() << std::endl;
+    }
+
     return 0;
 }
