@@ -12,6 +12,7 @@ private:
 
 public:
     dynamic_array();
+    explicit dynamic_array(unsigned long long array_size);
     dynamic_array(T* array, unsigned long long size);
     dynamic_array(const dynamic_array &array);
     dynamic_array(dynamic_array &&array) noexcept;
@@ -37,6 +38,15 @@ public:
 template<typename T>
 dynamic_array<T>::dynamic_array() : data(nullptr), size(0) {}
 
+
+template<typename T>
+dynamic_array<T>::dynamic_array(unsigned long long array_size) : size(array_size) {
+    data = new T[size];
+    if (data == nullptr) {
+        std::cerr << "Unable to allocate memory" << std::endl;
+        exit(1);
+    }
+}
 
 template<typename T>
 dynamic_array<T>::dynamic_array(T *array, unsigned long long array_size) : size(array_size) {
