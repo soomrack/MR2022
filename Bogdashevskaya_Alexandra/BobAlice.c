@@ -7,7 +7,7 @@ struct Client {
 	char* name;
 	unsigned long long account, account_history[20 * 12], deposit, salary, utility,
 		rent, flat, mortage_monthly; // копейки
-	double interest_percentage, mortage_percentage; // 10%=0.1
+	double interest_percentage, mortage_percentage; // 10% = 0.1
 
 };
 

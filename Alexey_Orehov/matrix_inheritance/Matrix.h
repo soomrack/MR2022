@@ -12,8 +12,44 @@ public:
 };
 
 
-class Matrix {
+class MatrixMemory {
 protected:
+    unsigned long int memory_size = 0;
+    static unsigned long int quantity;
+    static unsigned long int total_memory;
+
+public:
+    MatrixMemory() { memory_size = 0; quantity++; }
+    MatrixMemory(unsigned int rows, unsigned int cols) {
+        quantity++;
+        memory_size = rows * cols * sizeof(double);
+        total_memory += memory_size;
+    }
+
+    MatrixMemory(const MatrixMemory& mat) {
+        quantity++;
+        total_memory -= memory_size;
+        memory_size = mat.memory_size;
+        total_memory += memory_size;
+    }
+
+    MatrixMemory(MatrixMemory&& mat) noexcept {
+        quantity++;
+        total_memory -= memory_size;
+        memory_size = mat.memory_size;
+        mat.memory_size = 0;
+    }
+
+    unsigned long int get_memory_size() { return memory_size; }
+    unsigned long int get_total_memory() { return total_memory; }
+    unsigned long int get_total_quantity() { return quantity; }
+
+    ~MatrixMemory() { total_memory -= memory_size; quantity--; };
+};
+
+
+class Matrix : public MatrixMemory {
+private:
     unsigned int rows;
     unsigned int cols;
     double* values;
@@ -21,8 +57,7 @@ protected:
 public:
     Matrix();
     Matrix(unsigned int rows, unsigned int cols);
-
-    Matrix(const Matrix &);
+    Matrix(const Matrix &mat);
     Matrix(Matrix &&mat) noexcept;
 
     Matrix set_value(double value);                                  // Заполнение созданной матрицы одним числом
@@ -76,25 +111,6 @@ public:
 
     ~Matrix() { delete[] this->values; }
 };
-
-
-class MatrixMemory : public Matrix {
-private:
-    static unsigned long int memory_size;
-    static unsigned long int total_memory;
-public:
-    MatrixMemory(unsigned int r_num, unsigned int c_num);
-    MatrixMemory(const MatrixMemory&);
-    MatrixMemory(MatrixMemory &&) noexcept;
-
-    unsigned long int get_total_mem() { return total_memory; }
-    friend std::ostream& operator<<(std::ostream&, MatrixMemory&);
-
-    ~MatrixMemory();
-};
-
-unsigned long int MatrixMemory::total_memory = 0;
-unsigned long int MatrixMemory::memory_size = 0;
 
 
 #endif //PROGRAMMING_MATRIX_H

@@ -48,16 +48,17 @@ public:
 
 	Matrix fill_from_array(double*);
 
-	Matrix operator + (Matrix& second_matrix);
+	Matrix operator + (Matrix second_matrix);
 	Matrix operator - (Matrix second_matrix);
 	Matrix operator * (Matrix second_matrix);
 	Matrix operator / (Matrix second_matrix);
 
-	void operator = (Matrix second_matrix);
+	Matrix& operator=(const Matrix& A);
+	Matrix& operator=(Matrix&& X) noexcept;
 
-	void operator += (Matrix second_matrix);
-	void operator -= (Matrix second_matrix);
-	void operator *= (Matrix second_matrix);
+	Matrix& operator+=(const Matrix& second_matrix);
+	Matrix& operator-=(const Matrix& second_matrix);
+	Matrix& operator*=(const double num);
 
 	Matrix operator ^ (unsigned int x);
 };
@@ -116,6 +117,7 @@ Matrix::Matrix(Matrix&& matrix) noexcept
 Matrix::~Matrix()
 {
 	delete[] values;
+	//std::cout << "Call destrustructor" << "\n";
 }
 
 
@@ -233,7 +235,8 @@ Matrix transposition(Matrix A)
 Matrix Matrix::multiplication_by_num(double num)
 {
 	Matrix result(cols, rows);
-	for (unsigned int index = 0; index < cols * rows; ++index) {
+	for (unsigned int index = 0; index < cols * rows; ++index) 
+	{
 		result.values[index] = values[index] * num;
 	}
 	return result;
@@ -243,8 +246,9 @@ Matrix Matrix::division_by_num(double num)
 {
 	if (num == 0) throw DivisionError;
 	Matrix result(cols, rows);
-	for (unsigned int index = 0; index < cols * rows; ++index) {
-		result.values[index] = values[index] / num;
+	for (unsigned int i = 0; i < cols * rows; ++i)
+	{
+		result.values[i] = values[i] / num;
 	}
 	return result;
 }
@@ -255,7 +259,8 @@ double Matrix::determinant()
 	double result = 0;
 	unsigned int n = cols;
 
-	if (n == 1) {
+	if (n == 1) 
+	{
 		result = values[0];
 
 		return result;
@@ -268,8 +273,10 @@ double Matrix::determinant()
 		unsigned int row_offset = 0;
 		unsigned int col_offset = 0;
 
-		for (unsigned int sub_row = 0; sub_row < n - 1; ++sub_row) {
-			for (unsigned int sub_col = 0; sub_col < n - 1; ++sub_col) {
+		for (unsigned int sub_row = 0; sub_row < n - 1; ++sub_row) 
+		{
+			for (unsigned int sub_col = 0; sub_col < n - 1; ++sub_col) 
+			{
 				if (sub_row == row) { row_offset = 1; }
 				if (sub_col == col) { col_offset = 1; }
 				submatrix.values[sub_row * (n - 1) + sub_col] =
@@ -286,14 +293,18 @@ Matrix invertible(Matrix A)
 	if (A.rows != A.cols) throw NotSquare;
 	Matrix transponent = transposition(A);
 	Matrix result(A.cols, A.rows);
-	for (unsigned int row = 0; row < transponent.rows; ++row) {
-		for (unsigned int col = 0; col < transponent.cols; ++col) {
+	for (unsigned int row = 0; row < transponent.rows; ++row) 
+	{
+		for (unsigned int col = 0; col < transponent.cols; ++col)
+		{
 			Matrix submatrix(transponent.cols - 1, transponent.rows - 1);
 			unsigned int row_offset = 0;
 			unsigned int col_offset = 0;
-			for (unsigned int sub_row = 0; sub_row < submatrix.get_rows(); ++sub_row) {
+			for (unsigned int sub_row = 0; sub_row < submatrix.get_rows(); ++sub_row) 
+			{
 				if (row == sub_row) { row_offset = 1; }
-				for (unsigned int sub_col = 0; sub_col < submatrix.get_cols(); ++sub_col) {
+				for (unsigned int sub_col = 0; sub_col < submatrix.get_cols(); ++sub_col) 
+				{
 					if (col == sub_col) { col_offset = 1; }
 					submatrix.values[sub_row * (transponent.cols - 1) + sub_col] =
 						transponent.values[(sub_row + row_offset) * transponent.cols + (sub_col + col_offset)];
@@ -309,7 +320,7 @@ Matrix invertible(Matrix A)
 
 
 
-Matrix Matrix::operator + (Matrix& second_matrix)
+Matrix Matrix::operator + (Matrix second_matrix)
 {
 	if (rows != second_matrix.rows) throw WrongSize;
 	Matrix maxtix_tmp (cols, rows, 0);
@@ -394,7 +405,6 @@ Matrix Matrix::operator ^ (unsigned int x)
 
 Matrix Matrix::operator / (Matrix second_matrix)
 {
-
 	std::cout << "Result of division A to B through operator \'/\':" << "\n";
 	second_matrix = invertible(second_matrix);
 
@@ -409,38 +419,78 @@ Matrix Matrix::operator / (Matrix second_matrix)
 	return result;
 }
 
-void Matrix::operator = (Matrix second_matrix)
+
+
+
+
+
+
+
+
+Matrix& Matrix::operator=(Matrix&& X) noexcept 
 {
-	for (unsigned int i = 0; i < cols * rows; ++i)
-	{
-		values[i] = second_matrix.values[i];
-	}
+	if (this == &X) return *this;
+	delete[] values;
+	rows = X.rows;
+	cols = X.cols;
+	values = X.values;
+	X.values = nullptr;
+	return *this;
 }
 
-void Matrix::operator += (Matrix second_matrix)
+
+Matrix& Matrix::operator=(const Matrix& A)
 {
-	for (unsigned int i = 0; i < cols * rows; ++i)
-	{
-		values[i] += second_matrix.values[i];
-	}
+	if (this == &A) return *this;
+	delete[] values;
+	rows = A.rows;
+	cols = A.cols;
+	this->values = new double[rows * cols];
+	if (!values) throw MemoryError;
+	memcpy(this->values, A.values, rows * cols * sizeof(double));
+	return *this;
 }
 
-void Matrix::operator -= (Matrix second_matrix)
+
+
+
+
+
+
+
+Matrix& Matrix::operator+=(const Matrix& second_matrix)
 {
-	for (unsigned int i = 0; i < cols * rows; ++i)
+	if (rows != second_matrix.rows || cols != second_matrix.cols) throw WrongSize;
+	for (unsigned int i = 0; i < rows * cols; ++i) 
 	{
-		values[i] -= second_matrix.values[i];
+		this->values[i] += second_matrix.values[i];
 	}
+	return *this;
 }
 
-void Matrix::operator *= (Matrix second_matrix)
+
+Matrix& Matrix::operator-=(const Matrix& second_matrix)
 {
-	for (unsigned int i = 0; i < cols * rows; ++i)
+	if (rows != second_matrix.rows || cols != second_matrix.cols) throw WrongSize;
+	for (unsigned int i = 0; i < rows * cols; ++i) 
 	{
-		values[i] *= second_matrix.values[i];
+		this->values[i] -= second_matrix.values[i];
 	}
+	return *this;
 }
 
+Matrix& Matrix::operator*=(const double num)
+{
+	for (unsigned int i = 0; i < rows * cols; i++) 
+	{
+		this->values[i] *= num;
+	}
+	return *this;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////
 
 int main()
 {
@@ -448,10 +498,17 @@ int main()
 
 	Matrix A = Matrix(3, 3);
 	Matrix B = Matrix(3, 3);
+	Matrix D = Matrix(2, 2);
 
 	double arr [] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	Matrix C = Matrix(3, 3).fill_from_array(arr);
 	
+	std::cout << " " << "\n" << "\n";
+
+	D = A;
+	std::cout << "\tUqality of matrix of different size" << "\n";
+	D.output();
+
 	std::cout << " " << "\n" << "\n";
 
 	std::cout << "\t\t    Matrix A:" << "\n";
@@ -478,5 +535,5 @@ int main()
 	A / B;
 	A += B;
 	A -= B;
-	A *= B;
+	A *= 7;
 }

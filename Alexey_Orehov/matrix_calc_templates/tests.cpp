@@ -93,6 +93,7 @@ void test_mul(){
     SetConsoleTextAttribute(hConsole, DEFAULT);
 }
 
+
 void test_inv(){
     double data[9] = {1, -2, 1,
                       2, 1, -1,
