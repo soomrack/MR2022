@@ -17,6 +17,17 @@ public:
     dynamic_array(dynamic_array &&array) noexcept;
     ~dynamic_array() { delete[] data; }
 
+    dynamic_array& operator=(const dynamic_array& array);
+    dynamic_array& operator=(dynamic_array&& array) noexcept;
+
+    T operator[](unsigned long long idx);
+
+    explicit operator bool() {
+        for (unsigned int idx = 0; idx < size; idx++) {
+            if (!(bool) data[idx]) return false;
+        }
+        return true;
+    }
 
     unsigned long long length() { return size; }
 };
@@ -52,6 +63,37 @@ dynamic_array<T>::dynamic_array(dynamic_array<T> &&array) noexcept {
 
     array.data = nullptr;
     array.size = 0;
+}
+
+
+template<typename T>
+dynamic_array<T>& dynamic_array<T>::operator=(const dynamic_array<T> &array) {
+    if (this == &array) return *this;
+    delete[] data;
+    size = array.size;
+    memcpy(data, array.data, size);
+    return *this;
+}
+
+
+template<typename T>
+dynamic_array<T>& dynamic_array<T>::operator=(dynamic_array<T> &&array)  noexcept {
+    if (this == &array) return *this;
+    delete[] data;
+    data = array.data;
+    size = array.size;
+
+    array.data = nullptr;
+    array.size = 0;
+    return *this;
+}
+
+
+template<typename T>
+T dynamic_array<T>::operator[](unsigned long long idx) {
+    if (idx < size) return data[idx];
+    std::cerr << "Index is out of range" << std::endl;
+    exit(2);
 }
 
 
