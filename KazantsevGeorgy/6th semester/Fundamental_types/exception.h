@@ -18,5 +18,11 @@ public:
     Exception(const char* const msg): domain_error(msg) {}
 };
 
-Exception STACKOVERFLOW("STACK IS FULL\n");
 Exception DIVISIONBYZERO("DIV BY ZERO\n");
+
+// stack exception
+Exception STACKOVERFLOW("STACK IS FULL\n");
+
+// Binary tree exception
+Exception BINARYTREEFULL("BINARYTREEFULL\n");
+

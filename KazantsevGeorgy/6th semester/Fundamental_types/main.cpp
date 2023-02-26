@@ -3,8 +3,11 @@
 #include "stack.h"
 //#include "exception.h"
 #define STACK_SIZE 10
+#define LIST_SIZE 10
 #include "queue.h"
 #include "BinarTree.h"
+#include "List.h"
+
 using namespace std;
 
 void QueueTestProgram() {
@@ -40,6 +43,35 @@ void StackTestProgram() {
     B.top_output();
     cout << "\nElement from the " << position << " position: " << B.StackGet(position);
 }
+void ListTestProgram() {
+    List <double>list;
+    list.Print();
+    ListNode<double>*s = list.getLast();
+    for (int i = 0; i < LIST_SIZE; i++) {
+        int z;
+        cin >> z;
+        s = list.Add(z, s);
+    }
+    list.Print();
+    cout << ": " << list.getValue(list.getLast()) << endl;
+    // удалить все двойки
+    ListNode<double>*p = list.getFirst();
+    do {
+        if (list.getValue(p) == 2)
+            p = list.Delete(p);
+        else
+            p = list.Next(p);
+    }
+    while (p != nullptr);
+    list.setValue(s, 5);
+    list.Print();
+    cout << " " << list.getCount() << " " << endl;
+    list.Swap(list.getFirst(), list.getLast());
+    list.Print();
+    list.Clear();
+    list.Print();
+    cout << "" << list.getCount() << "" << endl;
+}
 
 void BinaryTreeTestProgram() {
     double Element = 8.9;
@@ -54,7 +86,7 @@ void BinaryTreeTestProgram() {
     cout << "TreeSize: " << A.BTSize() << "\n";
 }
 
-void EXceptionTestProgram() {
+void ExceptionTestProgram() {
     int a, b, c;
     a = 2; b = 2;
     cin >> c;
@@ -63,7 +95,7 @@ void EXceptionTestProgram() {
     cout << a;
 
     try {
-        EXceptionTestProgram();
+        ExceptionTestProgram();
     }
     catch(const Exception &e)
     {
@@ -72,8 +104,6 @@ void EXceptionTestProgram() {
     }
 }
 
-
-
 int main() {
-    BinaryTreeTestProgram();
+    ListTestProgram();
 }

@@ -11,18 +11,18 @@
 using namespace std;
 
 
+
 template <typename SPIDER>
-//каждый элемент будет иметь свой класс
 class Node
 {
 public:
-    SPIDER data; //число, которое хранится в вершине
-    Node * left; //указатель на левого потомка этой вершины
-    Node * right; //указатель на правого потомка этой вершины
+    SPIDER data;
+    Node * left;
+    Node * right;
 
     Node(SPIDER val);
 };
-//конструктор класс для записи значения в вершину и инициализации двух потомков
+
 template <typename SPIDER>
 Node<SPIDER>::Node(SPIDER val)
 {
@@ -35,8 +35,8 @@ template <typename SPIDER>
 class Tree
 {
 private:
-    Node <SPIDER>* root; //указатель на корень дерева
-    int BinaryTreeSize; // количество элементов в дерева
+    Node <SPIDER>* root;
+    int BinaryTreeSize;
     // методы класса
     void printTree(Node <SPIDER>*);
     void deleteTree(Node <SPIDER>*);
@@ -157,7 +157,6 @@ void Tree<SPIDER>::erase(SPIDER key)
         return;
     if (curr->left == nullptr)
     {
-        // Вместо curr подвешивается его правое поддерево
         if (parent && parent->left == curr)
             parent->left = curr->right;
         if (parent && parent->right == curr)
@@ -168,7 +167,6 @@ void Tree<SPIDER>::erase(SPIDER key)
     }
     if (curr->right == nullptr)
     {
-        // Вместо curr подвешивается его левое поддерево
         if (parent && parent->left == curr)
             parent->left = curr->left;
         if (parent && parent->right == curr)
@@ -177,8 +175,6 @@ void Tree<SPIDER>::erase(SPIDER key)
         delete curr;
         return;
     }
-    // У элемента есть два потомка, тогда на место элемента поставим
-    // наименьший элемент из его правого поддерева
     Node <SPIDER>* replace = curr->right;
     while (replace->left)
         replace = replace->left;
