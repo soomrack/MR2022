@@ -14,9 +14,9 @@ class Exception: std::exception {
 private:
     std::string message;
 public:
-    explicit Exception(std::string _message);
+    explicit Exception(std::string _message) {message = std::move(_message);};
 
-    std::string getMessage() const;
+    std::string getMessage() const {return message;};
 };
 
 
@@ -28,12 +28,24 @@ template<typename T>
 class Node {
     friend class List<T>;
 private:
-    T data;
+    T object;
     Node<T>* next;
 public:
     explicit Node(T object);
-    ~Node() = default;
+    T getObject();
 };
+
+
+template<typename T>
+Node<T>::Node(T _object) {
+    object = _object;
+}
+
+
+template<typename T>
+T Node<T>::getObject() {
+    return object;
+}
 
 
 template<typename T>
@@ -67,22 +79,6 @@ public:
 };
 
 
-Exception::Exception(std::string _message) {
-    message = std::move(_message);
-}
-
-
-std::string Exception::getMessage() const {
-    return message;
-}
-
-
-template<typename T>
-Node<T>::Node(T object) {
-    data = object;
-}
-
-
 template<typename T>
 List<T>::List() {
     size = 0;
@@ -108,11 +104,11 @@ List<T>::List(uint64_t _size, T array[]) {
 template<typename T>
 List<T>::List(const List<T> &other) {
     size = other.size;
-    auto* copy = new Node<T>(other.first->data);
+    auto* copy = new Node<T>(other.first->object);
     first = copy;
     Node<T>* original = other.first;
     while(original->next != nullptr) {
-        copy->next = new Node<T>(original->next->data);
+        copy->next = new Node<T>(original->next->object);
         copy = copy->next;
         original = original->next;
     }
@@ -150,11 +146,11 @@ List<T> &List<T>::operator=(const List<T> &other) {
         return *this;
     }
     size = other.size;
-    auto* copy = new Node<T>(other.first->data);
+    auto* copy = new Node<T>(other.first->object);
     first = copy;
     Node<T>* original = other.first;
     while(original->next != nullptr) {
-        copy->next = new Node<T>(original->next->data);
+        copy->next = new Node<T>(original->next->object);
         copy = copy->next;
         original = original->next;
     }
@@ -244,7 +240,7 @@ T List<T>::pop() {
     if (isFirstEmpty()) {
         throw Exception("error: pop from empty list");
     }
-    T object = last->data;
+    T object = last->object;
     if (size == 1) {
         first = nullptr;
         last = nullptr;
@@ -270,7 +266,7 @@ T List<T>::pop(uint64_t index) {
     if (index == size - 1) {
         return pop();
     }
-    T object = this->operator[](index)->data;
+    T object = this->operator[](index)->object;
     Node<T>* node = first;
     for (uint64_t idx = 0; idx < index - 1; idx++) {
         node = node->next;
@@ -295,7 +291,7 @@ void List<T>::print() {
     std::cout << "[";
     Node<T>* node = first;
     while (node) {
-        std::cout << node->data;
+        std::cout << node->object;
         if (node != last) {
             std::cout << ", ";
         }
@@ -316,7 +312,7 @@ T List<T>::getData(uint64_t index) {
     if (index >= size) {
         throw Exception("");
     }
-    return this->operator[](index)->data;
+    return this->operator[](index)->object;
 }
 
 
