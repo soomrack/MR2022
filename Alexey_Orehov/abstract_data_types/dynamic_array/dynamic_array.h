@@ -21,6 +21,7 @@ public:
     dynamic_array& operator=(dynamic_array&& array) noexcept;
 
     T operator[](unsigned long long idx);
+    void resize(unsigned long long new_size);
 
     explicit operator bool() {
         for (unsigned int idx = 0; idx < size; idx++) {
@@ -94,6 +95,19 @@ T dynamic_array<T>::operator[](unsigned long long idx) {
     if (idx < size) return data[idx];
     std::cerr << "Index is out of range" << std::endl;
     exit(2);
+}
+
+
+template<typename T>
+void dynamic_array<T>::resize(unsigned long long new_size) {
+    if (size >= new_size) size = new_size;
+    else {
+        T* new_data = new T[new_size];
+        memcpy(new_data, data, size);
+        size = new_size;
+        delete[] data;
+        data = new_data;
+    }
 }
 
 
