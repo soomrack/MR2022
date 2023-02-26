@@ -7,7 +7,11 @@ int main() {
     myarr.output();
     myarr.add(5);
     myarr.output();
-    myarr.add(5, 3);
+    myarr.add(5, 4);
+    myarr.output();
+    myarr.rm();
+    myarr.output();
+    myarr.rm(5);
     myarr.output();
 
     return 0;
