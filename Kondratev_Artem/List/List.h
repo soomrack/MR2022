@@ -215,10 +215,11 @@ T List<T>::pop() {
         throw Exception("error: List is empty");
     }
     if (size == 1) {
+        T data = last->data;
         first = nullptr;
         last = nullptr;
         size--;
-        return last->data;
+        return data;
     }
     Node<T>* node = first;
     for (uint64_t i = 0; i < size - 2; i++) {
