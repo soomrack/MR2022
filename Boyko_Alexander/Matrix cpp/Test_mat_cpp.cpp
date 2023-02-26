@@ -1,26 +1,31 @@
 #include "matrix_cpp.cpp"
 
+#define __CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NE
+
 double ADD_VAL[9] = { 0.0,1.0, 2.0,
-                     1.0,3.0,5.0,
-                     2.0,5.0,8.0 };
+                      1.0,3.0,5.0,
+                      2.0,5.0,8.0 };
 
 double SUB_VAL[9] = { 0.0,1.0, 2.0,
-                     1.0,1.0,1.0,
-                     2.0,1.0,0.0 };
+                      1.0,1.0,1.0,
+                      2.0,1.0,0.0 };
 
 double MUL_VAL[9] = { 0.0,14.0, 28.0,
-                     0.0,20.0,40.0,
-                     0.0,26.0,52.0 };
+                      0.0,20.0,40.0,
+                      0.0,26.0,52.0 };
 
 double MAT_VAL[9] = { 0.0,2.0, 2.0,
-                     1.0,5.0,3.0,
-                     2.0,3.0,4.0 };
+                      1.0,5.0,3.0,
+                      2.0,3.0,4.0 };
 
 double DET_VAL = -10;
 
 double EXP_VAL[9] = { 91.183965,160.707182,231.230400,
-                     160.707182,286.340779,409.974376,
-                     231.230400,409.974376,589.718351 };
+                      160.707182,286.340779,409.974376,
+                      231.230400,409.974376,589.718351 };
 
 void check_add() {
     Matrix MAT_ADD;
@@ -33,8 +38,8 @@ void check_add() {
     B.fill_mult(3,3);
     
     Matrix res;
-    res = A + B;
-    
+	res = A + B;
+
     if (res != MAT_ADD) {
         std::cout << "ERROR: ADDITION INCORRECT\n";
         return;
@@ -61,18 +66,19 @@ void check_sub() {
 }
 
 void check_mult() {
-    Matrix MAT_MUL;
+	Matrix MAT_MUL;
     MAT_MUL.fill_val(3,3, MUL_VAL);
-	
-    Matrix A;
+
+	Matrix A;
     A.fill_sum(3, 4);
-    
-    Matrix B;
+
+	Matrix B;
     B.fill_mult(4, 3);
 
-    Matrix res;
+	Matrix res;
     res = A * B;
-    if (res != MAT_MUL) {
+
+	if (res != MAT_MUL) {
         std::cout << "ERROR: MULTIPLICATION INCORRECT\n";
         return;
     }
@@ -82,7 +88,7 @@ void check_mult() {
 void check_det() {
 	Matrix A;
 	A.fill_val(3,3, MAT_VAL);
-	
+
 	double det_a = matx_det(A);
 	if (det_a != DET_VAL) {
 		printf("ERROR: DETERMINANT INCORRECT\n");
@@ -98,7 +104,7 @@ void check_exp() {
 	Matrix A;
 	A.fill_sum(3, 3);
 	
-	Matrix res = matrix_exp(A);
+	Matrix res = matrix_exp(&A);
 	if (res != MAT_EXP) {
 		std::cout << "ERROR: EXPONENT INCORRECT\n";
 		return;
@@ -107,12 +113,46 @@ void check_exp() {
 }
 
 int main() {
-    {
-        check_add();
-        check_sub();
-		check_mult();
-		check_det();
-		check_exp();
-    }
+	try {check_add();}
+	catch (MatrixExceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_sub();}
+	catch (MatrixExceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_mult();}
+	catch (MatrixExceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_det();}
+	catch (MatrixExceptions& except) {
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	try {check_exp();}
+	catch(MatrixExceptions& except){
+		std::cerr << "Caught: " << except.what() << std::endl;
+		std::cerr << "Type: " << typeid(except).name() << std::endl;
+	}
+	// Memory monitoring check
+	{
+		MemMatrix A;
+		A.fill_sum(3,3);
+
+		MemMatrix B;
+		B.fill_sum(3,3);
+
+		MemMatrix res;
+		res = A + B;
+
+		res.print_mem();
+	}
+
+
+	_CrtDumpMemoryLeaks();
     return 0;
 }

@@ -132,16 +132,27 @@ void test_inv_mul(int num = 100, int size = 5) {
 int main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    test_equal();
-    test_add();
-    test_sub();
-    test_mul();
-    test_inv();
-    test_inv_mul();
+//    test_equal();
+//    test_add();
+//    test_sub();
+//    test_mul();
+//    test_inv();
+//    test_inv_mul();
+//    double values[9] = {1, 0, 0,
+//                        0, 2, 0,
+//                        0 ,0, 3};
+//    Matrix A = Matrix(3, 3).fill_from_array(values);
+//    std::cout << A.exp();
+
     double values[9] = {1, 0, 0,
                         0, 2, 0,
                         0 ,0, 3};
+
+
     Matrix A = Matrix(3, 3).fill_from_array(values);
-    std::cout << A.exp();
+    Matrix B = A * 5;
+    Matrix C = A * B;
+
+
     return 0;
 }

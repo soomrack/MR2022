@@ -253,8 +253,6 @@ void Matrix<T>::is_equal(const Matrix<T>& X) {
 }
 
 
-
-
 template <typename T>
 class MemoryCount : public Matrix<T> {
 private:
@@ -264,6 +262,10 @@ private:
 public:
     unsigned int MemoryCalc(unsigned int i_rows, unsigned int i_cols);
     MemoryCount(unsigned int cols_m, unsigned int rows_m);
+    MemoryCount(MemoryCount<T>& X);
+    MemoryCount(MemoryCount<T>&& X);
+    MemoryCount<T>& operator=(const MemoryCount<T>& X);
+    MemoryCount<T>& operator=( MemoryCount<T>&& X);
     ~MemoryCount();
     static unsigned int getMem();
     static unsigned int getCounter();
@@ -297,6 +299,36 @@ unsigned int MemoryCount<T>::getMem() {
 template<typename T>
 unsigned int MemoryCount<T>::getCounter() {
     return object_count;
+}
+
+template<typename T>
+MemoryCount<T>::MemoryCount(MemoryCount<T>& X) : Matrix<T>(X) {
+    object_count++;
+    local_memory = X.local_memory;
+    general_memory += local_memory;
+}
+
+template<typename T>
+MemoryCount<T>::MemoryCount(MemoryCount<T>&& X) : Matrix<T>(X) {
+    local_memory = X.local_memory;
+    X.local_memory = 0;
+}
+
+template<typename T>
+MemoryCount<T>& MemoryCount<T>::operator=(const MemoryCount<T>& X) {
+    Matrix<T>::operator=((Matrix<double> &&) X);
+    general_memory += X.local_memory - local_memory;
+    local_memory = X.local_memory;
+    general_memory += local_memory;
+    return *this;
+}
+
+template<typename T>
+MemoryCount<T>& MemoryCount<T>::operator=(MemoryCount<T>&& X) {
+    Matrix<T>::operator=(X);
+    local_memory += X.local_memory - local_memory;
+    X.local_memory = 0;
+    return *this;
 }
 
 template<typename T>

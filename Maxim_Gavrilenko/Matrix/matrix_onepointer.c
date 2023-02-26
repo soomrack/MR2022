@@ -245,11 +245,11 @@ int main()
                        0,9,4,
                        8,8,2};*/
     Matrix A;
-    A = memory_allocation(3,3);
+    A = memory_allocation(3,2);
     fill_random(A);
     output("First Matrix",A);
     Matrix B;
-    B = memory_allocation(3,3);
+    B = memory_allocation(3,2);
     fill_random(B);
     output("Second Matrix",B);
     Matrix add = addition(A,B);
