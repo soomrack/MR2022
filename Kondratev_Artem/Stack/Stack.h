@@ -27,7 +27,7 @@ public:
 
     void append(T object);
     T pop();
-    uint64_t len();
+    uint64_t getSize();
 };
 
 
@@ -94,7 +94,7 @@ T Stack<T>::pop() {
 
 
 template<typename T>
-uint64_t Stack<T>::len() {
+uint64_t Stack<T>::getSize() {
     return size;
 }
 
