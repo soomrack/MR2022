@@ -6,6 +6,12 @@ const double COMPARATION_CONST = 0.0001;
 const unsigned int MAX_WEIGHT = 4000000000;
 
 
+double abs(double x){
+    if (x < 0) return -x;
+    return x;
+}
+
+
 struct item {
     double go_to;
     unsigned int weight;
@@ -226,7 +232,7 @@ unsigned int Graph::path_between(const double from, const double to) {
 
     // алгоритм Дейкстры
 
-    bool* marked = new bool[length];  // 0 - посещенные; 1 - надо посетить на этой итерации; -1 - не посещенные
+    bool* marked = new bool[length];
     for (unsigned int idx = 0; idx < length; idx++){
         marked[idx] = false;
     }
@@ -242,17 +248,6 @@ unsigned int Graph::path_between(const double from, const double to) {
     weights[base_point - 1] = 0;
 
     for (unsigned int loop = 0; loop < length; loop++){
-        /*
-        std::cout << "\n";
-        for (unsigned int idx = 0; idx < length; idx++){
-            std::cout << weights[idx] << "  ";
-        }
-        std::cout << "\n";
-        for (unsigned int idx = 0; idx < length; idx++){
-            std::cout << marked[idx] << "  ";
-        }
-        std::cout << "\n";
-        */
 
         // поиск минимального непосещенного
         unsigned int min_of_wghts = MAX_WEIGHT;
