@@ -20,7 +20,7 @@ public:
     dynamic_array& operator=(const dynamic_array& array);
     dynamic_array& operator=(dynamic_array&& array) noexcept;
 
-    T operator[](unsigned long long idx);
+    T& operator[](unsigned long long idx);
     void resize(unsigned long long new_size);
 
     explicit operator bool() {
@@ -45,7 +45,7 @@ dynamic_array<T>::dynamic_array(T *array, unsigned long long array_size) : size(
         std::cerr << "Unable to allocate memory" << std::endl;
         exit(1);
     }
-    memcpy(data, array, size);
+    memcpy(data, array, size * sizeof(T));
 }
 
 
@@ -53,7 +53,7 @@ template<typename T>
 dynamic_array<T>::dynamic_array(const dynamic_array &array) {
     data = new T[array.size];
     size = array.size;
-    memcpy(data, array.data, size);
+    memcpy(data, array.data, size * sizeof(T));
 }
 
 
@@ -72,7 +72,7 @@ dynamic_array<T>& dynamic_array<T>::operator=(const dynamic_array<T> &array) {
     if (this == &array) return *this;
     delete[] data;
     size = array.size;
-    memcpy(data, array.data, size);
+    memcpy(data, array.data, size * sizeof(T));
     return *this;
 }
 
@@ -91,7 +91,7 @@ dynamic_array<T>& dynamic_array<T>::operator=(dynamic_array<T> &&array)  noexcep
 
 
 template<typename T>
-T dynamic_array<T>::operator[](unsigned long long idx) {
+T& dynamic_array<T>::operator[](unsigned long long idx) {
     if (idx < size) return data[idx];
     std::cerr << "Index is out of range" << std::endl;
     exit(2);
@@ -103,7 +103,7 @@ void dynamic_array<T>::resize(unsigned long long new_size) {
     if (size >= new_size) size = new_size;
     else {
         T* new_data = new T[new_size];
-        memcpy(new_data, data, size);
+        memcpy(new_data, data, size * sizeof(T));
         size = new_size;
         delete[] data;
         data = new_data;
