@@ -123,9 +123,9 @@ public:
     }
 
 
-    Node<T>* operator [] (int index) 
+    T operator [] (int index) 
     {
-        return getNode(index);
+        return getNode(index)->data_;
     }
 
     Node<T>* insert(int index, double data) 
@@ -177,12 +177,23 @@ public:
 
 int main()
 {
+    using namespace std;
+
     LinkedList<int> lst;
     lst.push_back(1);
     lst.push_back(2);
     lst.push_back(3);
-
-    lst.pop_back();
+    lst.push_front(4); // 4 1 2 3
     
+    lst.insert(2, 5); // 4 1 5 2 3
+    
+    lst.pop_back(); // 4 1 5 2
+    lst.pop_front(); // 1 5 2
+    lst.push_front(6); // 6 1 5 2
+    lst.erase(3); // 6 1 5
+    
+    for (int i = 0; i < lst.getSize(); ++i)
+        cout << lst[i] << " ";
+
     std::cout << std::endl;
 }
