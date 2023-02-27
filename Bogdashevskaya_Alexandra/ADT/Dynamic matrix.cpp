@@ -1,5 +1,15 @@
 #include <iostream>
 
+class Dynamic_matrix_Exception : public std::exception
+{
+public:
+	Dynamic_matrix_Exception(const char* const& msg) : exception(msg)
+	{}
+};
+
+Dynamic_matrix_Exception NOINDEX("There is no such index\n");
+
+
 template <typename T = double>
 class Dynamic_matrix {
 protected:
@@ -61,6 +71,7 @@ Dynamic_matrix<T>::~Dynamic_matrix() {
 
 template <typename T>
 T& Dynamic_matrix<T> :: operator [](unsigned int idx) {
+	if (idx >= size || idx < 0) throw NOINDEX;
 	return values[idx];
 }
 
@@ -119,9 +130,10 @@ void Dynamic_matrix<T>::push_tail(T value) {
 
 template <typename T>
 void Dynamic_matrix<T>::remove(unsigned int rem_idx) {
+	if (rem_idx >= size || rem_idx < 0) throw NOINDEX;
 	T* new_values = new T[size - 1];
 	unsigned int offset = 0;
-	for (unsigned int idx = 0; idx <= this->size; ++idx) {
+	for (unsigned int idx = 0; idx < this->size; ++idx) {
 		if (idx == rem_idx) {
 			offset = 1;
 			continue;
@@ -143,18 +155,46 @@ void Dynamic_matrix<T>::print_matrix() {
 }
 
 
-//int main() {
-//	Dynamic_matrix<> A(5, 3.);
-//	A.print_matrix();
-//	A[2] = 5;
-//	A.print_matrix();
-//	A.push_tail(4.);
-//	A.print_matrix();
-//	A.push_head(7.1);
-//	A.print_matrix();
-//	A.remove(2);
-//	A.print_matrix();
-//	
-//
-//	return 0;
-//}
+int main() {
+	Dynamic_matrix<> A(5, 3.);
+	A.print_matrix();
+
+	try {
+		A[9] = 5;
+		A.print_matrix();
+	}
+	catch (const Dynamic_matrix_Exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		A[2] = 5;
+		A.print_matrix();
+	}
+	catch (const Dynamic_matrix_Exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	A.push_tail(4.);
+	A.print_matrix();
+	A.push_head(7.1);
+	A.print_matrix();
+
+	try {
+		A.remove(2);
+		A.print_matrix();
+	}
+	catch (const Dynamic_matrix_Exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	try {
+		A.remove(9);
+		A.print_matrix();
+	}
+	catch (const Dynamic_matrix_Exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	return 0;
+}
