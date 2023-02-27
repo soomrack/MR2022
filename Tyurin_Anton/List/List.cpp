@@ -24,6 +24,7 @@ public:
     void push_tale(T _data);
     void print();
     void push_head(T _data);
+    void find(unsigned int id);
 };
 
 template <typename T>
@@ -55,7 +56,6 @@ void List<T>::push_head(T _data){
     first_el = local;
 }
 
-
 template<typename T>
 void List<T>::print() {
     if (is_empty()) {return;}
@@ -67,18 +67,28 @@ void List<T>::print() {
     std::cout << std::endl;
 }
 
-
+template<typename T>
+void List<T>::find(unsigned int id) {
+    auto *local = first_el;
+    for(unsigned int idx; idx < id; idx++ ){
+        local = local->next;
+    }
+   std::cout << local->data;
+}
 
 int main(){
     List<std::string> List;
     List.print();
 
-
-    List.push_tale("ending");
+    List.push_tale("he");
+    List.push_tale("ll");
+    List.push_tale("ow");
+    List.push_tale(" ");
+    List.push_tale("wo");
+    List.push_tale("rl");
+    List.push_tale("d");
     List.print();
 
-    List.push_head("begining");
-    List.print();
-
+    List.find(4);
     return 0;
 }
