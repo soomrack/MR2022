@@ -25,6 +25,8 @@ public:
     void print();
     void push_head(T _data);
     void find(unsigned int id);
+    void pop(unsigned int id);
+    Node<T> loop(unsigned int id, auto *local);
 };
 
 template <typename T>
@@ -69,11 +71,35 @@ void List<T>::print() {
 
 template<typename T>
 void List<T>::find(unsigned int id) {
+    if (is_empty()) {return;}
     auto *local = first_el;
     for(unsigned int idx; idx < id; idx++ ){
         local = local->next;
     }
    std::cout << local->data;
+}
+
+template<typename T>
+Node<T> List<T>::loop(unsigned int id, auto *local) {
+    for(unsigned int idx; idx < id; idx++ ){
+        local = local->next;
+    }
+    return *local;
+}
+
+
+template<typename T>
+void List<T>::pop(unsigned int id) {
+    if (is_empty()) {return;}
+    auto *local = first_el;
+    auto *previous = first_el;
+    auto *following = first_el;
+
+    Node<T> _pop = loop(id,local);
+    Node<T> _previous = loop(id - 1,previous);
+    Node<T> _following = loop(id + 1,following);
+    delete _pop;
+    _previous.next = _following;
 }
 
 int main(){
@@ -90,5 +116,6 @@ int main(){
     List.print();
 
     List.find(4);
+    List.pop(4);
     return 0;
 }
