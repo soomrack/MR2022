@@ -1,5 +1,5 @@
 #include "Array.h"
-
+#include <vector>
 
 int main() {
     Array<int> A(5, 3);

@@ -161,7 +161,7 @@ void Array<T>::pop(uint64_t index) {
     T* buffer = data;
     data = new T[size];
     std::memcpy(data, buffer, sizeof(T) * index);
-    for (int idx = size; idx > index; idx--) {
+    for (uint64_t idx = size; idx > index; idx--) {
         data[idx-1] = buffer[idx];
     }
     delete[] buffer;
@@ -181,7 +181,7 @@ void Array<T>::sort() {
     if (size < 2) {
         return;
     }
-    T barrier = data[size / 2];
+    T barrier = data[size/2];
     Array<T> left(0);
     uint64_t middle_cnt = 0;
     Array<T> right(0);

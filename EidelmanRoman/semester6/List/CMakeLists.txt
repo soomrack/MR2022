@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
-project(hello_world)
+project(MR2022)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(hello_world main.cpp List.h)
+add_executable(MR2022 main.cpp List.h)
