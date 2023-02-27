@@ -2,6 +2,7 @@
 #define MR2022_DARRAY_H
 
 #include <iostream>
+#include <vector>
 #include "DarrayException.h"
 
 
@@ -11,9 +12,7 @@ protected:
     unsigned int size;
     T *data;
 public:
-    DArray() noexcept;// пустой массив
-    DArray(unsigned int size); // массив, заполненный нулями
-    DArray(unsigned int size, T element);
+    explicit DArray(std::vector<T> in_vector); // заполнение массива значениями из вектора при создании
     ~DArray() noexcept;
     DArray(const DArray<T> &other) ;
     DArray(DArray<T> &&other) noexcept;
