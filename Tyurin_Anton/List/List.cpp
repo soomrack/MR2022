@@ -18,8 +18,9 @@ class List {
 protected:
     Node<T> *first_el;
     Node<T> *last_el;
+    unsigned int size;
 public:
-    List() : first_el(nullptr), last_el(nullptr) {}
+    List() : first_el(nullptr), last_el(nullptr), size(0) {}
     bool is_empty();
     void push_tale(T _data);
     void print();
@@ -27,6 +28,11 @@ public:
     void find(unsigned int id);
     void pop(unsigned int id);
     Node<T> loop(unsigned int id, auto *local);
+    Node<T> *operator[](const int index);
+
+    void remove_first();
+
+    void remove_last();
 };
 
 template <typename T>
@@ -44,6 +50,7 @@ void List<T>::push_tale(T _data){
     }
     last_el->next = local;
     last_el = local;
+    size++;
 }
 
 template<typename T>
@@ -56,6 +63,7 @@ void List<T>::push_head(T _data){
     }
     local->next = first_el;
     first_el = local;
+    size++;
 }
 
 template<typename T>
@@ -76,30 +84,58 @@ void List<T>::find(unsigned int id) {
     for(unsigned int idx; idx < id; idx++ ){
         local = local->next;
     }
-   std::cout << local->data;
+   std::cout << local->data << std::endl;
+}
+/*
+template<typename T>
+Node<T>* List<T>::operator[](const int id) {
+    if (is_empty()) return nullptr;
+    Node<T>* local = first_el;
+    for (int idx = 0; idx < id; idx++) {
+        local = local->next;
+        if (!local) return nullptr;
+    }
+    return local;
+}
+*/
+template<typename T>
+void List<T>::remove_first() {
+    if (is_empty()) return;
+    Node<T>* local = first_el;
+    first_el = local->next;
+    delete local;
 }
 
 template<typename T>
-Node<T> List<T>::loop(unsigned int id, auto *local) {
-    for(unsigned int idx; idx < id; idx++ ){
-        local = local->next;
+void List<T>::remove_last() {
+    if (is_empty()) return;
+    if (first_el == last_el) {
+        remove_first();
+        return;
     }
-    return *local;
+    Node<T>* local = first_el;
+    while (local->next != last_el) local = local->next;
+    local->next = nullptr;
+    delete last_el;
+    last_el = local;
 }
-
 
 template<typename T>
 void List<T>::pop(unsigned int id) {
-    if (is_empty()) {return;}
-    auto *local = first_el;
-    auto *previous = first_el;
-    auto *following = first_el;
-
-    Node<T> _pop = loop(id,local);
-    Node<T> _previous = loop(id - 1,previous);
-    Node<T> _following = loop(id + 1,following);
-    delete _pop;
-    _previous.next = _following;
+    if (is_empty()) return;
+    if (0 == id ) {
+        remove_first();
+        return;
+    }
+    else if (id + 1 == size) {
+        remove_last();
+        return;
+    }
+    Node<T>* local = first_el;
+    for (int idx = 0; idx < id; idx++) {
+        local = local->next;
+    }
+    local->next = local->next->next;
 }
 
 int main(){
@@ -116,6 +152,8 @@ int main(){
     List.print();
 
     List.find(4);
-    List.pop(4);
+    List.pop(2);
+    List.print();
+
     return 0;
 }
