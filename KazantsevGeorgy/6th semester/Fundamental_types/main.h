@@ -166,16 +166,4 @@ void DynamicArray<T>::decrease() {
     size--;
 }
 
-void DynamicArrayTestProgram()
-{
-    double TempElement;
-    int TempLength, K = 5;
-    DynamicArray<double> A;
-    A = DynamicArray<double>(5).i_number();
-    A.increase(5);
-    TempElement = A.get(K);
-    cout << "current element position " << K <<" :" <<TempElement;
-    A.decrease();
-    TempLength = A.length();
-    cout << "\ncurrent length: " << TempLength;
-}
+
