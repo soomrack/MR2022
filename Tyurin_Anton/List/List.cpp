@@ -33,6 +33,8 @@ public:
     void remove_first();
 
     void remove_last();
+
+    unsigned int get_size();
 };
 
 template <typename T>
@@ -46,6 +48,7 @@ void List<T>::push_tale(T _data){
     if (is_empty()) {
         first_el = local;
         last_el = local;
+        size++;
         return;
     }
     last_el->next = local;
@@ -104,6 +107,7 @@ void List<T>::remove_first() {
     Node<T>* local = first_el;
     first_el = local->next;
     delete local;
+    size--;
 }
 
 template<typename T>
@@ -118,11 +122,13 @@ void List<T>::remove_last() {
     local->next = nullptr;
     delete last_el;
     last_el = local;
+    size--;
 }
 
 template<typename T>
 void List<T>::pop(unsigned int id) {
     if (is_empty()) return;
+    if (id > size) return;
     if (0 == id ) {
         remove_first();
         return;
@@ -132,11 +138,18 @@ void List<T>::pop(unsigned int id) {
         return;
     }
     Node<T>* local = first_el;
-    for (int idx = 0; idx < id; idx++) {
+    for (int idx = 0; idx < id - 1; idx++) {
         local = local->next;
     }
     local->next = local->next->next;
+    size--;
 }
+
+template<typename T>
+unsigned int List<T>::get_size() {
+    return size;
+}
+
 
 int main(){
     List<std::string> List;
@@ -150,9 +163,9 @@ int main(){
     List.push_tale("rl");
     List.push_tale("d");
     List.print();
-
+    std::cout << List.get_size() << std::endl;
     List.find(4);
-    List.pop(2);
+    List.pop(4);
     List.print();
 
     return 0;
