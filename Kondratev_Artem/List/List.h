@@ -14,9 +14,9 @@ class Exception: std::exception {
 private:
     std::string message;
 public:
-    explicit Exception(std::string _message);
+    explicit Exception(std::string _message) {message = std::move(_message);};
 
-    std::string getMessage() const;
+    std::string getMessage() const {return message;};
 };
 
 
@@ -31,9 +31,21 @@ private:
     T data;
     Node<T>* next;
 public:
-    explicit Node(T object);
-    ~Node() = default;
+    explicit Node(T _data);
+    T getData();
 };
+
+
+template<typename T>
+Node<T>::Node(T _data) {
+    data = _data;
+}
+
+
+template<typename T>
+T Node<T>::getData() {
+    return data;
+}
 
 
 template<typename T>
@@ -44,7 +56,6 @@ private:
     Node<T>* last;
 public:
     List();
-    List(uint64_t _size, T array[]);
     ~List() = default;
     List(const List<T>& other);
     List(List<T>&& other) noexcept ;
@@ -54,12 +65,10 @@ public:
     Node<T>* operator[](uint64_t index);
     List<T> operator+(List<T> other);
 
-    bool isFirstEmpty();
-    void append(T object);
-    void append(T object, uint64_t index);
+    void append(T data);
+    void append(T data, uint64_t index);
     T pop();
     T pop(uint64_t index);
-    uint64_t len();
     void print();
     uint64_t getSize();
     T getData(uint64_t index);
@@ -67,41 +76,11 @@ public:
 };
 
 
-Exception::Exception(std::string _message) {
-    message = std::move(_message);
-}
-
-
-std::string Exception::getMessage() const {
-    return message;
-}
-
-
-template<typename T>
-Node<T>::Node(T object) {
-    data = object;
-}
-
-
 template<typename T>
 List<T>::List() {
     size = 0;
     first = nullptr;
     last = nullptr;
-}
-
-
-template<typename T>
-List<T>::List(uint64_t _size, T array[]) {
-    size = _size;
-    auto* node = new Node<T>(array[0]);
-    first = node;
-    for (uint64_t idx = 0; idx < size - 1; idx++) {
-        node->next = new Node<T>(array[idx+1]);
-        node = node->next;
-    }
-    node->next = nullptr;
-    last = node;
 }
 
 
@@ -129,12 +108,6 @@ List<T>::List(List<T> &&other) noexcept {
     other.first = nullptr;
     other.last = nullptr;
     other.size = 0;
-}
-
-
-template<typename T>
-bool List<T>::isFirstEmpty() {
-    return first == nullptr;
 }
 
 
@@ -179,15 +152,12 @@ List<T> &List<T>::operator=(List<T> &&other) noexcept {
 
 template<typename T>
 Node<T> *List<T>::operator[](const uint64_t index) {
-    if(isFirstEmpty() || index >= size) {
-        return nullptr;
+    if(size == 0 || index >= size) {
+        throw Exception("error: bad index");
     }
     Node<T>* node = first;
-    for (int idx = 0; idx < index; idx++) {
+    for (int i = 0; i < index; i++) {
         node = node->next;
-        if (node == nullptr) {
-            return node;
-        }
     }
     return node;
 }
@@ -205,30 +175,30 @@ List<T> List<T>::operator+(List<T> other) {
 
 
 template<typename T>
-void List<T>::append(T object) {
-    size++;
-    auto* node = new Node<T>(object);
-    if(isFirstEmpty()) {
+void List<T>::append(T data) {
+    auto* node = new Node<T>(data);
+    if(size == 0) {
+        size++;
         first = node;
         last = node;
         return;
     }
+    size++;
     last->next = node;
     last = node;
 }
 
 
 template<typename T>
-void List<T>::append(T object, uint64_t index) {
+void List<T>::append(T data, uint64_t index) {
     if (index > size) {
         throw Exception("error: bad index");
     }
-    if (isFirstEmpty() || index == size) {
-        append(object);
-        return;
+    if (size == 0 || index == size) {
+        return append(data);
     }
     size++;
-    auto* node = new Node<T>(object);
+    auto* node = new Node<T>(data);
     if (index == 0) {
         node->next = first;
         first = node;
@@ -241,24 +211,24 @@ void List<T>::append(T object, uint64_t index) {
 
 template<typename T>
 T List<T>::pop() {
-    if (isFirstEmpty()) {
-        throw Exception("error: pop from empty list");
+    if (size == 0) {
+        throw Exception("error: List is empty");
     }
-    T object = last->data;
     if (size == 1) {
+        T data = last->data;
         first = nullptr;
         last = nullptr;
+        size--;
+        return data;
     }
-    else {
-        Node<T>* node = first;
-        for (uint64_t idx = 0; idx < size - 2; idx++) {
-            node = node->next;
-        }
-        node->next = nullptr;
-        last = node;
+    Node<T>* node = first;
+    for (uint64_t i = 0; i < size - 2; i++) {
+        node = node->next;
     }
+    node->next = nullptr;
+    last = node;
     size--;
-    return object;
+    return last->data;
 }
 
 
@@ -270,31 +240,30 @@ T List<T>::pop(uint64_t index) {
     if (index == size - 1) {
         return pop();
     }
-    T object = this->operator[](index)->data;
+    if (index == 0) {
+        T data = first->data;
+        first = first->next;
+        size--;
+        return data;
+    }
     Node<T>* node = first;
-    for (uint64_t idx = 0; idx < index - 1; idx++) {
+    for (uint64_t i = 0; i < index - 1; i++) {
         node = node->next;
     }
     node->next = node->next->next;
     size--;
-    return object;
-}
-
-
-template<typename T>
-uint64_t List<T>::len() {
-    return size;
+    return this->operator[](index)->data;
 }
 
 
 template<typename T>
 void List<T>::print() {
-    if(isFirstEmpty()) {
+    if(size == 0) {
         return;
     }
     std::cout << "[";
     Node<T>* node = first;
-    while (node) {
+    while (node != nullptr) {
         std::cout << node->data;
         if (node != last) {
             std::cout << ", ";

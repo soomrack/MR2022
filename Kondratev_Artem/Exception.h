@@ -22,4 +22,14 @@ public:
 };
 
 
+Exception::Exception(std::string input_message) {
+    message = std::move(input_message);
+}
+
+
+std::string Exception::getMessage() const {
+    return message;
+}
+
+
 #endif //HELLO_WORLD_EXCEPTION_H

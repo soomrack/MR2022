@@ -5,7 +5,7 @@
 #ifndef CLIONPROJECTS_QUEUE_H
 #define CLIONPROJECTS_QUEUE_H
 
-#endif //CLIONPROJECTS_QUEUE_H
+#endif
 
 #include <iostream>
 #include <cstdlib>

@@ -84,19 +84,16 @@ void array::add(double x) {
 
 void array::add(double x, unsigned int to) {
     ++size;
-    array newarr(size);
-    for (int i = 0; i < newarr.size; ++i) {
-        if (i == to) {
-            newarr.data[i] = x;
+    double* newdata;
+    newdata = new double[size];
+    for (int i = 0; i < size; ++i) {
+        if (i == to)
+            newdata[i] = x;
             continue;
-        }
-        newarr.data[i] = data[i];
+        newdata[i] = data[i];
     }
     delete[] data;
-    data = new double[size];
-    for (int i = 0; i < size; ++i) {
-        data[i] = newarr.data[i];
-    }
+    data = newdata;
 }
 
 
@@ -130,23 +127,28 @@ void array::output() {
 
 
 void array::rm() {
-    array newarr(size - 1);
-    for (int i = 0; i < size - 1; ++i)
-        newarr.data[i] = data[i];
-    size--;
-    *this = newarr;
+    --size;
+    double* newdata;
+    newdata = new double[size];
+    for (int i = 0; i < size; ++i) {
+        newdata[i] = data[i];
+    }
+    delete[] data;
+    data = newdata;
 }
 
 
 void array::rm(unsigned int from) {
-    array newarr(size - 1);
-    for (int i = 0; i < size - 1; ++i) {
+    --size;
+    double* newdata;
+    newdata = new double[size];
+    for (int i = 0; i < size; ++i) {
         if (i == from)
             continue;
-        newarr.data[i] = data[i];
+        newdata[i] = data[i];
     }
-    size--;
-    *this = newarr;
+    delete[] data;
+    data = newdata;
 }
 
 
