@@ -105,7 +105,7 @@ Node<T> *PQueue<T>::operator[](const uint64_t index) {
 template<typename T>
 void PQueue<T>::pop() {
     if (is_empty()) return;
-    Node<T>* local = first_el;
+    Node<T>* local;
     for (unsigned int P = 1; P < MAX_PREORITY; P++) {
         local = first_el;
         for (unsigned int idx = 0; idx < size; idx++) {
