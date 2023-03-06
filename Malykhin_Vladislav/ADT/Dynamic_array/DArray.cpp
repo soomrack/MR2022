@@ -2,28 +2,13 @@
 #include "DArray.h"
 
 
-template <typename T>
-DArray<T>::DArray() noexcept {
-    size = 0;
-    data = nullptr;
-}
-
 
 template <typename T>
-DArray<T>::DArray(unsigned int size_in) {
-    size = size_in;
-    data = new T *[size];
-    for(int  id = 0; id < size; ++id)
-    data[id] = 0;
-}
-
-
-template <typename T>
-DArray<T>::DArray(unsigned int size_in, T element) {
-    size = size_in;
-    data = new T *[size];
+DArray<T>::DArray(const std::vector<T> in_vector) {
+    size = in_vector.size();
+    data = new T [size];
     for(int id = 0; id < size; ++id)
-        data[id] = element;
+        data[id] = in_vector[id];
 }
 
 
@@ -37,7 +22,7 @@ DArray<T>::~DArray() noexcept{
 template <typename T>
 DArray<T>::DArray(const DArray<T> &other){
     size = other.size;
-    data = new T *[size];
+    data = new T [size];
     std::memcpy(data, other.data, sizeof(T)* size);
 }
 
@@ -65,10 +50,11 @@ void DArray<T>::set(unsigned int id, T element) {
 template <typename T>
 void DArray<T>::resize(unsigned int new_size){
     T buffer[new_size];
-    std::memcpy(buffer, data, sizeof(T)* size);
+    std::memcpy(buffer, data, sizeof(T) * size);
     delete(data);
-    data = new T *[new_size];
-    std::memcpy(data, buffer, sizeof(T)* size);
+    size = new_size;
+    data = new T[size];
+    std::memcpy(data, buffer, sizeof(T) * size);
 }
 
 
@@ -80,6 +66,12 @@ T DArray<T>::get_data(unsigned int id) const {
 
 template<typename T>
 void DArray<T>::print() const {
+    std::cout << "{";
     for (int id = 0; id < size; ++id)
-        std::cout << data[id];
+        std::cout << data[id] << ", ";
+    std::cout << "}" << "\n" << std::endl;
 }
+
+template class DArray<int>;
+template class DArray<double>;
+template class DArray<float>;
