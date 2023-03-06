@@ -62,6 +62,7 @@ void List<T>::push_head(T _data){
     if (is_empty()) {
         first_el = local;
         last_el = local;
+        size++;
         return;
     }
     local->next = first_el;
@@ -89,18 +90,7 @@ void List<T>::find(unsigned int id) {
     }
    std::cout << local->data << std::endl;
 }
-/*
-template<typename T>
-Node<T>* List<T>::operator[](const int id) {
-    if (is_empty()) return nullptr;
-    Node<T>* local = first_el;
-    for (int idx = 0; idx < id; idx++) {
-        local = local->next;
-        if (!local) return nullptr;
-    }
-    return local;
-}
-*/
+
 template<typename T>
 void List<T>::remove_first() {
     if (is_empty()) return;
