@@ -19,6 +19,7 @@ public:
     bool full();
 };
 
+
 Queue::Queue(int size) {
     array = new int [size];
     capacity = size;
@@ -27,9 +28,11 @@ Queue::Queue(int size) {
     count = 0;
 }
 
+
 Queue::~Queue() {
     delete[] array;
 }
+
 
 int Queue::pop() {
     if (empty()) {
@@ -37,10 +40,11 @@ int Queue::pop() {
     }
     int element = array[first];
     std::cout << "Remove: " << element << std::endl;
-    first = (first + 1) % capacity;
+    first = (first + 1);
     count--;
     return element;
 }
+
 
 void Queue::push(int item) {
     if (full()){
@@ -48,10 +52,11 @@ void Queue::push(int item) {
     }
 
     std::cout << "Insert: " << item << std::endl;
-    last = (last + 1) % capacity;
+    last = (last + 1);
     array[last] = item;
     count++;
 }
+
 
 int Queue::upper() {
     if (empty()){
@@ -60,17 +65,21 @@ int Queue::upper() {
     return array[first];
 }
 
+
 int Queue::size() {
     return count;
 }
+
 
 bool Queue::empty() {
     return (size() == 0);
 }
 
+
 bool Queue::full() {
     return (size() == capacity);
 }
+
 
 int main() {
     Queue queue(10);
