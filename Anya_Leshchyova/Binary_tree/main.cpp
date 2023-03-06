@@ -29,6 +29,8 @@ public:
     NodePtr minimum(NodePtr node);
 
 };
+
+
 Tree:: Tree(){
     TNULL = new Node;
     TNULL->left = nullptr;
