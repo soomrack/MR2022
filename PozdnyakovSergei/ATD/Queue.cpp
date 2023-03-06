@@ -52,7 +52,7 @@ void Queue::push(int item) {
     }
 
     std::cout << "Insert: " << item << std::endl;
-    last = (last + 1) % capacity;
+    last = (last + 1);
     array[last] = item;
     count++;
 }
