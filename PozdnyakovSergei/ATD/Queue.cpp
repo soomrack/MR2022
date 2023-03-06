@@ -40,7 +40,7 @@ int Queue::pop() {
     }
     int element = array[first];
     std::cout << "Remove: " << element << std::endl;
-    first = (first + 1) % capacity;
+    first = (first + 1);
     count--;
     return element;
 }
