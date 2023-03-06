@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 const double COMPARATION_CONST = 0.0001;  // ???
 
@@ -12,14 +13,15 @@ double abs(double x){
 class Item {
 
 protected:
-    Item *Next;
-    Item *Prev;
+    Item* next_item;
+    Item* prev_item;
 
 public:
     double value;
 
     Item();
     Item(const double x);
+    Item(const double val, Item* his_next, Item* his_prev);
     Item(const Item& x);
     Item(Item&& x);
     ~Item();
@@ -27,47 +29,41 @@ public:
     Item& operator=(const double& x);
     Item& operator=(const Item& x);
 
-    void SetNext(Item* x);
-    void SetPrevios(Item* x);
+    void push_next(Item* x);
+    void push_prev(Item* x);
 
-    Item* GetNext();
-    Item* GetPrev();
+    Item* next();
+    Item* prev();
+
+    void del_current();
 
 };
-
-const Item NULL_ITEM = Item(0.0);
 
 
 class LinkedList {
 
 protected:
 
-    Item *head;
-    Item *tail;
-    unsigned int size;
+    Item *list_head;
+    Item *list_tail;
 
-    void Add(double val, unsigned int position);
 
 public:
 
     LinkedList();
-    LinkedList(double head_val);
+    LinkedList(double list_head_val);
     ~LinkedList();
 
-    void AddHead(double val);
-    void AddTail(double val);
+    void push_head(double val);
+    void push_tail(double val);
 
-    void AddNextTo(double sup_val, double new_val);
-    void AddPrevTo(double sup_val, double new_val);
+    Item* find_first(double val);
+    void del_head();
+    void del_tail();
 
-    unsigned int Contains(double val);
-    void Del(double val);
-    //void Del(Item* elm);  а нужен он?
-    Item Get(double val);
-
-    Item GetHead();
-    Item GetTail();
-    void Output(bool show_data = false);
+    Item* head();
+    Item* tail();
+    void print(bool show_data = false);
 
 };
 
@@ -75,250 +71,200 @@ public:
 
 Item::Item() {  // is undefinded Item;
     value = NULL;
-    Next = nullptr;
-    Prev = nullptr;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
 Item::Item(const double x) {
     value = x;
-    Next = nullptr;
-    Prev = nullptr;
+    next_item = nullptr;
+    prev_item = nullptr;
+}
+
+
+Item::Item(const double val, Item *his_next, Item *his_prev) {
+    value = val;
+    next_item = his_next;
+    prev_item = his_prev;
 }
 
 
 Item::Item(const Item &x) {
     value = x.value;
-    Next = x.Next;
-    Prev = x.Prev;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 }
 
 
 Item::Item(Item &&x) {
     value = x.value;
-    Next = x.Next;
-    Prev = x.Prev;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 
     x.value = 0.0;
-    x.Next = nullptr;
-    x.Prev = nullptr;
+    x.next_item = nullptr;
+    x.prev_item = nullptr;
 }
 
 
 Item::~Item() {
-    Next = nullptr;
-    Prev = nullptr;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
 Item& Item::operator=(const double &x) {
     value = x;
-    Next = this;
-    Prev = this;
+    next_item = this;
+    prev_item = this;
 }
 
 
 Item& Item::operator=(const Item &x) {
     value = x.value;
-    Next = x.Next;
-    Prev = x.Prev;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 }
 
 
-Item* Item::GetNext() {
-    return Next;
+Item* Item::next() {
+    return next_item;
 }
 
 
-Item* Item::GetPrev() {
-    return Prev;
+Item* Item::prev() {
+    return prev_item;
 }
 
 
-void Item::SetNext(Item *x) {
-    Next = x;
+void Item::push_next(Item *x) {
+    next_item = x;
 }
 
 
-void Item::SetPrevios(Item *x) {
-    Prev = x;
+void Item::push_prev(Item *x) {
+    prev_item = x;
+}
+
+
+void Item::del_current() {
+    if (prev_item != nullptr)
+        prev_item->push_next(next_item);
+    if (next_item != nullptr)
+        next_item->push_prev(prev_item);
+
+    push_next(nullptr);
+    push_prev(nullptr);
+    value = NULL; //std::numeric_limits<double>::quiet_NaN();
 }
 
 
 LinkedList::LinkedList() {
-    head = nullptr;
-    size = 0;
+    list_head = nullptr;
+    list_tail = nullptr;
 }
 
 
-LinkedList::LinkedList(double head_value) {
-    size = 0;
-    AddHead(head_value);
+LinkedList::LinkedList(double list_head_value) {
+    list_head = nullptr;
+    list_tail = nullptr;
+    push_head(list_head_value);
 }
 
 
 LinkedList::~LinkedList() {
-    head = nullptr;
-    tail = nullptr;
+    list_head = nullptr;
+    list_tail = nullptr;
 }
 
 
-void LinkedList::AddHead(double val) {
+void LinkedList::push_head(double val) {
     Item* elm = new Item(val);
-    if (size == 0){
-        head = elm;
-        tail = elm;
+    if (list_head == nullptr){
+        list_head = elm;
+        list_tail = elm;
     } else {
-        elm->SetNext(head);
-        head->SetPrevios(elm);
-        head = elm;
+        elm->push_next(list_head);
+        list_head->push_prev(elm);
+        list_head = elm;
     }
-    size++;
 }
 
 
-void LinkedList::AddTail(double val) {
+void LinkedList::push_tail(double val) {
     Item* elm = new Item(val);
-    if (size == 0){
-        head = elm;
-        tail = elm;
+    if (list_head == nullptr){
+        list_head = elm;
+        list_tail = elm;
     } else {
-        tail->SetNext(elm);
-        elm->SetPrevios(tail);
-        tail = elm;
+        list_tail->push_next(elm);
+        elm->push_prev(list_tail);
+        list_tail = elm;
     }
-    size++;
 }
 
 
-void LinkedList::Add(double val, unsigned int position) {
-    if (position > size) return;
-    if (position == 0){
-        AddHead(val);
+Item* LinkedList::find_first(double val) {
+    Item* item_idx = list_head;
+    while (item_idx != nullptr){
+        if (abs(item_idx->value - val) < COMPARATION_CONST) return item_idx;
+        item_idx = item_idx->next();
+    }
+    return item_idx;
+}
+
+
+void LinkedList::del_head() {
+    if (list_head == list_tail){
+        list_head = nullptr;
+        list_tail == nullptr;
         return;
     }
-    if (position == size){
-        AddTail(val);
+
+    list_head->next()->push_prev(nullptr);
+    list_head = list_head->next();
+}
+
+
+void LinkedList::del_tail() {
+    if (list_head == list_tail){
+        list_head = nullptr;
+        list_tail == nullptr;
         return;
     }
 
-    Item* elm = head;
-    for (unsigned int idx = 0; idx < position; idx++){
-        elm = elm->GetNext();
-    }
-    Item* new_item = new Item(val);
-
-    elm->GetPrev()->SetNext(new_item);
-    new_item->SetPrevios(elm->GetPrev());
-    new_item->SetNext(elm);
-    elm->SetPrevios(new_item);
-
-    size++;
+    list_tail->prev()->push_next(nullptr);
+    list_tail = list_tail->prev();
 }
 
 
-void LinkedList::AddNextTo(double sup_val, double new_val) {
-    unsigned int point = Contains(sup_val);
-    if (point == 0) return;
-
-    Add(new_val, point);
+Item* LinkedList::head() {
+    return list_head;
 }
 
 
-void LinkedList::AddPrevTo(double sup_val, double new_val) {
-    unsigned int point = Contains(sup_val);
-    if (point == 0) return;
-
-    Add(new_val, point - 1);
+Item* LinkedList::tail() {
+    return list_tail;
 }
 
 
-unsigned int LinkedList::Contains(double val) {
-    if (size == 0) return 0;
+void LinkedList::print(bool show_data) {
 
-    Item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if (abs(elm->value - val) < COMPARATION_CONST){
-            return idx + 1;
-        }
-        elm = elm->GetNext();
-    }
-    return 0;
-}
+    if (head() == nullptr) return;
+    std::cout << "The list_head is " << list_head->value << ";  the list_tail is " << list_tail->value << "\n";
 
-
-void LinkedList::Del(double val) {
-    unsigned int point = Contains(val);
-    if (point == 0) return;
-
-    Item* elm = head;
-    for (unsigned int idx = 1; idx < point; idx++){
-        elm = elm->GetNext();
-    }
-
-    if (size == 1){
-        head = nullptr;
-        tail = nullptr;
-
-    } else {
-        if (point == 1)
-            head = elm->GetNext();
-        else
-            elm->GetPrev()->SetNext(elm->GetNext());
-
-        if (point == size)
-            tail = elm->GetPrev();
-        else
-            elm->GetNext()->SetPrevios(elm->GetPrev());
-    }
-
-    delete elm;
-    size--;
-}
-
-
-Item LinkedList::Get(double val) {
-    if (size == 0) return NULL_ITEM;
-
-    Item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if (abs(elm->value - val) < COMPARATION_CONST){
-            return *elm;
-        }
-        elm = elm->GetNext();
-    }
-    return NULL_ITEM;
-}
-
-
-Item LinkedList::GetHead() {
-    return *head;
-}
-
-
-Item LinkedList::GetTail() {
-    return *tail;
-}
-
-
-void LinkedList::Output(bool show_data) {
-    if (show_data){
-        std::cout << "The chain's length: " << size << "\n";
-    }
-    if (size == 0) return;
-    std::cout << "The head is " << head->value << ";  the tail is " << tail->value << "\n";
-
-    Item* current = head;
-    for (unsigned int idx = 0; idx < size; idx++){
+    Item* current = list_head;
+    while (current != nullptr){
         std::cout << current->value << "  ";
         if (show_data){
-            if (current->GetPrev() != nullptr) std::cout << "his Prev is " << current->GetPrev()->value << "  ";
-            if (current->GetPrev() != nullptr && current->GetNext() != nullptr) std::cout << "and ";
-            if (current->GetNext() != nullptr) std::cout << "his Next is " << current->GetNext()->value;
+            if (current->prev() != nullptr) std::cout << "his Prev is " << current->prev()->value << "  ";
+            if (current->prev() != nullptr && current->next() != nullptr) std::cout << "and ";
+            if (current->next() != nullptr) std::cout << "his Next is " << current->next()->value;
             std::cout << "\n";
         }
-        current = current->GetNext();
-    }
+        current = current->next();
+    };
     std::cout << "\n";
 }
 
@@ -326,33 +272,24 @@ void LinkedList::Output(bool show_data) {
 int main() {
 
     LinkedList A = LinkedList();
-    A.AddHead(10.1);
-    A.Output(true);
-    A.Del(10.1);
-    A.Output(true);
+    A.push_head(10.1);
+    A.print();
+
 
     LinkedList B = LinkedList(0.1);
-    B.Output(true);
+    B.print(true);
+    B.push_head(1.2);
+    B.print(true);
+    B.push_tail(2.3);
+    B.print(true);
 
-    B.AddHead(1.2);
-    B.Output(true);
+    if (B.find_first(0.1) != nullptr)
+        std::cout << B.find_first(0.1)->value << "\n\n";
 
-    B.AddTail(2.3);
-    B.Output(true);
+    B.find_first(0.1)->del_current();
+    B.print(true);
 
-//    B.Add(9.9, 2);  теперь не работает так как
-//    B.Output(true);
 
-    B.Del(2.3);
-    B.Output(true);
-
-    B.AddNextTo(9.9, 3.4);
-    B.Output(true);
-
-    B.AddPrevTo(0.1, 4.5);
-    B.Output(true);
-
-    std::cout << B.Get(9.9001).value << "\n";
 
     return 0;
 }
