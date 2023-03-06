@@ -19,6 +19,7 @@ public:
     bool full();
 };
 
+
 Queue::Queue(int size) {
     array = new int [size];
     capacity = size;
@@ -27,9 +28,11 @@ Queue::Queue(int size) {
     count = 0;
 }
 
+
 Queue::~Queue() {
     delete[] array;
 }
+
 
 int Queue::pop() {
     if (empty()) {
@@ -42,6 +45,7 @@ int Queue::pop() {
     return element;
 }
 
+
 void Queue::push(int item) {
     if (full()){
         std::cout << "Owerflow";
@@ -53,6 +57,7 @@ void Queue::push(int item) {
     count++;
 }
 
+
 int Queue::upper() {
     if (empty()){
         std::cout << "Empty";
@@ -60,17 +65,21 @@ int Queue::upper() {
     return array[first];
 }
 
+
 int Queue::size() {
     return count;
 }
+
 
 bool Queue::empty() {
     return (size() == 0);
 }
 
+
 bool Queue::full() {
     return (size() == capacity);
 }
+
 
 int main() {
     Queue queue(10);
