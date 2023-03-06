@@ -1,7 +1,7 @@
 #include <iostream>
-//#include "main.h"
+#include "main.h"
 #include "stack.h"
-//#include "exception.h"
+#include "exception.h"
 #define STACK_SIZE 10
 #define LIST_SIZE 10
 #include "queue.h"
@@ -103,7 +103,23 @@ void ExceptionTestProgram() {
         cerr << "Type: " << typeid(e).name() << endl;
     }
 }
-
+void DynamicArrayTestProgram()
+{
+    double TempElement;
+    int TempLength, K = 5;
+    DynamicArray<double> A;
+    A = DynamicArray<double>(5).i_number();
+    A.increase(5);
+    TempElement = A.get(K);
+    cout << "current element position " << K <<" :" <<TempElement;
+    A.decrease();
+    TempLength = A.length();
+    cout << "\ncurrent length: " << TempLength;
+}
 int main() {
     ListTestProgram();
+    BinaryTreeTestProgram();
+    DynamicArrayTestProgram();
+    QueueTestProgram();
+    StackTestProgram();
 }

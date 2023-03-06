@@ -1,243 +1,361 @@
 #include <iostream>
+#include "vector"
 
 
-const double COMPARATION_CONST = 0.0001;
+int GetKey(double val){  // тут должна быть нормальная хэш-функция
+    return int(val) + (int(val * 10) - int(val) * 10) * 10;
+}
 
 
-struct branch {
+struct Branch {
 
     double value;
-    branch* left;
-    branch* right;
+    int key;
+    Branch* left;
+    Branch* right;
 
-    branch();
-    branch(const double vle);
+    Branch();
+    Branch(const double vle, const int new_key);
 
-    bool is_leaf();
+    bool IsLeaf();
 
 };
 
 
-class Binary_tree {
+class BinaryTree {
 
 protected:
-    branch* root;
+    Branch* root;
+
+    void AddRoot(const double vle);
+    void Add(const double vle, const int new_key, Branch* sub_tree);
+
+    bool Contains(const int sup_key, Branch* sub_tree);
+    unsigned int Height(Branch* sub_tree);
+
+    void Remove(Branch* sub_tree);
+    void Print(Branch* sub_tree);
+// вспомогательная для Del рекурсивная функция
+    void NodesToAdd(Branch* sub_tree, std::vector<double> vec_keys, std::vector<int> vec_vals);
 
 public:
-    Binary_tree();
-    Binary_tree(const double root_vle);
-    Binary_tree(const Binary_tree& x);
-    Binary_tree(Binary_tree&& x);
-    ~Binary_tree();
+    BinaryTree();
+    BinaryTree(const double root_vle);
+    ~BinaryTree();
 
-    void add_root(const double vle);
-    void add(const double vle);
-    void add(const double vle, branch* sub_tree);
+    void Add(const double vle);
+    bool Contains(const int sup_key);  // считает кол-во вхождений во всё дерево
+    unsigned int Height();
 
-    unsigned int contains(const double vle);  // считает кол-во вхождений во всё дерево
-    unsigned int contains(const double vle, branch* sub_tree);
-    unsigned int height();
-    unsigned int height(branch* sub_tree);
+    Branch* Get(const int sup_key);
+    void Remove(const int sup_key);  // удаляет элемент со всеми его поддеревьями
+    void Del(const int sup_key);  // замещает удаленный элемент
 
-    branch* get(const double vle);
-    branch* get(const double vle, branch* sub_tree);  // нужно ли в get(vle) и del(vle) добавить contains(vle) ??
-    void del();
-    void del(const double vle);
-    void del(const double vle, branch* sub_tree);
-
-    branch* get_root();
-    void output();
-    void print(branch* sub_tree);
+    Branch* GetRoot();
+    void Output();
 
 };
 
 
-branch::branch() {
-    value = NULL;
+Branch::Branch() {
+    value = 0.0;
+    key = 0;
     left = nullptr;
     right = nullptr;
 }
 
 
-branch::branch(const double vle) {
+Branch::Branch(const double vle, const int new_key) {
     value = vle;
+    key = new_key;
     left = nullptr;
     right = nullptr;
 }
 
 
-bool branch::is_leaf() {
-    return ((left->value == NULL) && (right->value == NULL));
+bool Branch::IsLeaf() {
+    return ((left == nullptr) && (right == nullptr));
 }
 
 
-Binary_tree::Binary_tree() {
+BinaryTree::BinaryTree() {
     root = nullptr;
 }
 
 
-Binary_tree::Binary_tree(const double root_vle) {
+BinaryTree::BinaryTree(const double root_vle) {
     root = nullptr;
-    add_root(root_vle);
+    AddRoot(root_vle);
 }
 
 
-Binary_tree::~Binary_tree() {
-    root = nullptr;
+BinaryTree::~BinaryTree() {
+    if (root != nullptr)
+        Remove(root->key);
 }
 
 
-void Binary_tree::add_root(const double vle) {
-    branch* new_brch = new branch(vle);
-    new_brch->left = new branch();
-    new_brch->right = new branch();
-    if (root == nullptr){
-        root = new_brch;
-    } else {
-        if (vle - root->value > COMPARATION_CONST) {  // vle < root->value
-            new_brch->left = root;
-        } else {
-            new_brch->right = root;
+void BinaryTree::AddRoot(const double vle) {  // корень не переопределяется
+    if (root != nullptr) return;
+    root = new Branch(vle, GetKey(vle));
+}
+
+
+void BinaryTree::Add(const double vle) {
+    if (GetRoot() == nullptr){
+        AddRoot(vle);
+        return;
+    }
+    int new_key = GetKey(vle);
+    Add(vle, new_key, root);
+}
+
+
+void BinaryTree::Add(const double vle, const int new_key, Branch* sub_tree) {
+
+    //Branch* next_step = (sub_tree->key > new_key) ? sub_tree->left : sub_tree->right;
+    // из-за необходимости проверки ссылки (sub_tree->left(right)) на пустоту (nullptr)
+    //                                              применение торнарного оператора невозиможно
+
+    if (sub_tree->key > new_key){
+        if (sub_tree->left == nullptr){
+            sub_tree->left = new Branch(vle, new_key);
+            return;
         }
-        root = new_brch;
-    }
-
-}
-
-
-void Binary_tree::add(const double vle) {
-    add(vle, this->get_root());
-}
-
-
-void Binary_tree::add(const double vle, branch* sub_tree) {
-    if (sub_tree == nullptr){
-        add_root(vle);
-        return;
-    }
-
-    if (sub_tree->value == NULL) {
-        sub_tree->value = vle;
-        sub_tree->left = new branch();
-        sub_tree->right = new branch();
-        return;
-    }
-
-    if (sub_tree->value - vle < COMPARATION_CONST){    // vle >= sub_tree->value
-        add(vle, sub_tree->right);
+        Add(vle, new_key, sub_tree->left);
     } else {
-        add(vle, sub_tree->left);
+        if (sub_tree->right == nullptr){
+            sub_tree->right = new Branch(vle, new_key);
+            return;
+        }
+        Add(vle, new_key, sub_tree->right);
     }
 
 }
 
 
-branch* Binary_tree::get(const double vle) {
-    return get(vle, this->get_root());
-}
+Branch* BinaryTree::Get(const int sup_key) {
+    if (root == nullptr) return new Branch();
 
+    Branch* node = root;
+    while (true){
+        if(node == nullptr) return new Branch();
+        if (node->key == sup_key) return node;
 
-branch* Binary_tree::get(const double vle, branch *sub_tree) {
-    if (sub_tree == nullptr) return new branch();
-    if (sub_tree->value == NULL) return new branch();
-
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) return sub_tree;
-
-    branch* in_left = get(vle, sub_tree->left);
-    branch* in_right = get(vle, sub_tree->right);
-
-    if (in_left->value == NULL){
-        return in_right;
+        node = (node->key > sup_key) ? node->left : node->right;
     }
-    return in_left;
 }
 
 
-unsigned int Binary_tree::contains(const double vle) {
-    return contains(vle, this->get_root());
+bool BinaryTree::Contains(const int sup_key) {
+    if (root == nullptr){
+        return false;
+    }
+    return Contains(sup_key, this->GetRoot());
 }
 
 
-unsigned int Binary_tree::contains(const double vle, branch *sub_tree) {
+bool BinaryTree::Contains(const int sup_key, Branch *sub_tree) {
+    if (sub_tree == nullptr) return false;
+    if (sub_tree->key == sup_key) return true;
+
+    Branch* next_step = (sup_key < sub_tree->key) ? sub_tree->left : sub_tree->right;
+    return Contains(sup_key, next_step);
+}
+
+
+unsigned int BinaryTree::Height() {
+
+    return Height(this->GetRoot());
+}
+
+
+unsigned int BinaryTree::Height(Branch* sub_tree) {
     if (sub_tree == nullptr) return 0;
-    if (sub_tree->value == NULL) return 0;
-
-    unsigned int ans = 0;
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) ans = 1;
-    return contains(vle, sub_tree->left) + contains(vle, sub_tree->right) + ans;
+    if (sub_tree->IsLeaf()) return 1;
+    return std::max(Height(sub_tree->left), Height(sub_tree->right)) + 1;
 }
 
 
-unsigned int Binary_tree::height() {
-    return height(this->get_root());
-}
+void BinaryTree::Remove(const int sup_key) {
+    if (root == nullptr || !Contains(sup_key)) return;
 
-
-unsigned int Binary_tree::height(branch* sub_tree) {
-    if (sub_tree == nullptr) return 0;
-    if (sub_tree->value == NULL) return 0;
-    return std::max(height(sub_tree->left), height(sub_tree->right)) + 1;
-}
-
-
-void Binary_tree::del() {
-    root = nullptr;
-}
-
-
-void Binary_tree::del(const double vle) {
-    if (abs(this->get_root()->value - vle) < COMPARATION_CONST) {
+    if (root->key == sup_key){
+        Remove(root);
         root = nullptr;
         return;
     }
-    del(vle, this->get_root());
+
+    Branch* node = root;
+    while (true){
+        if (node->left != nullptr)
+            if (node->left->key == sup_key){
+                Remove(node->left);
+                node->left = nullptr;
+                return;
+            }
+
+        if (node->right != nullptr)
+            if (node->right->key == sup_key){
+                Remove(node->right);
+                node->right = nullptr;
+                return;
+            }
+
+        node = (sup_key < node->key) ? node->left : node->right;
+    }
+
 }
 
 
-void Binary_tree::del(const double vle, branch *sub_tree) {
+void BinaryTree::Remove(Branch *sub_tree) {
     if (sub_tree == nullptr) return;
-    if (sub_tree == this->get_root()){
-        root = nullptr;
-        return;
-    }
-    if (sub_tree->value == NULL) return;
 
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) {
-        sub_tree->value = NULL;
-        sub_tree->left = nullptr;
-        sub_tree->right = nullptr;
+    if (sub_tree->IsLeaf()){
+        delete sub_tree;
         return;
     }
 
-    del(vle, sub_tree->left);
-    del(vle, sub_tree->right);
+    Remove(sub_tree->left);
+    sub_tree->left = nullptr;
+    Remove(sub_tree->right);
+    sub_tree->right = nullptr;
+
 }
 
 
-branch* Binary_tree::get_root() {
+void BinaryTree::Del(const int sup_key) {
+    if (root == nullptr || !Contains(sup_key)) return;
+
+    Branch* sup_node = root;
+    while (sup_node->key != sup_key) {
+        sup_node = (sup_key < sup_node->key) ? sup_node->left : sup_node->right;
+    }
+
+    if (sup_node->IsLeaf()){
+        Remove(sup_key);
+        return;
+    }
+
+// поиск вершины для замены (самое левое в правом поддереве или самое правое в левом)
+    Branch* replacing_node = nullptr;
+    // сюда бы еще сравнение высоты левого и правого поддеревьев.
+    bool in_right_subtree = false;
+    if (sup_node->right != nullptr){  // !in_left_subtree
+        Branch* right_handed_node = sup_node->right;
+        while(!right_handed_node->IsLeaf()){
+            if (right_handed_node->left != nullptr){
+                in_right_subtree = true;
+                replacing_node = right_handed_node->left;
+                right_handed_node = right_handed_node->left;
+            } else
+                right_handed_node = right_handed_node->right;
+        }
+    }
+    bool in_left_subtree = false;
+    if (!in_right_subtree && sup_node->left != nullptr) {
+        Branch *left_handed_node = sup_node->left;
+        while (!left_handed_node->IsLeaf()){
+            if (left_handed_node->right != nullptr){
+                in_left_subtree = true;
+                replacing_node = left_handed_node->right;
+                left_handed_node = left_handed_node->right;
+            } else
+                left_handed_node = left_handed_node->left;
+        }
+
+    }
+
+    if (replacing_node == nullptr){
+        if (sup_node->left == nullptr){
+            replacing_node = sup_node->right;
+        } else if (sup_node->right == nullptr) {
+            replacing_node = sup_node->left;
+        } else {
+            replacing_node = (Height(sup_node->right) >= Height(sup_node->left)) ?
+                             sup_node->right : sup_node->left;
+        }
+    }
+
+/*
+    std::cout << sup_node->value << "[" << sup_node->key << "]";
+    if (replacing_node != nullptr){
+        std::cout << "  |  " << replacing_node->value << "[" << replacing_node->key << "]";
+    }
+    std::cout << "\n\n";
+*/
+
+// сохраняем все вершины под replacing_node
+    std::vector<double> values_to_add;
+    std::vector<int> keys_to_add;
+
+    NodesToAdd(replacing_node->left, values_to_add, keys_to_add);
+    NodesToAdd(replacing_node->right, values_to_add, keys_to_add);
+
+// перезаписываем значения (value и key) sup_node на replacing_node
+    int rep_key = replacing_node->key;
+    double rep_val = replacing_node->value;
+    Remove(rep_key);
+    Get(sup_key)->value = rep_val;
+    Get(sup_key)->key = rep_key;
+
+// добавление всех сохраненных nodes
+    int length = values_to_add.size();
+    for (unsigned int idx = 0; idx < length; idx++){
+        Add(values_to_add[idx], keys_to_add[idx], root);
+    }
+
+}
+
+
+void BinaryTree::NodesToAdd(Branch *sub_tree, std::vector<double> vec_keys, std::vector<int> vec_vals) {
+    if (sub_tree == nullptr) return;
+
+    vec_keys.push_back(sub_tree->key);
+    vec_vals.push_back(sub_tree->value);
+
+    NodesToAdd(sub_tree->left, vec_keys, vec_vals);
+    NodesToAdd(sub_tree->right, vec_keys, vec_vals);
+}
+
+
+Branch* BinaryTree::GetRoot() {
     return root;
 }
 
 
-void Binary_tree::print(branch* sub_tree) {
+void BinaryTree::Print(Branch* sub_tree) {
     if (sub_tree == nullptr) return;
-    if (sub_tree->value == NULL) return;
 
-    std::cout << "The " << sub_tree->value << " has on the left side " << sub_tree->left->value <<
-                    " and " << sub_tree->right->value << " on the right\n";
-    print(sub_tree->left);
-    print(sub_tree->right);
+    std::cout << "The " << sub_tree->value << "[" << sub_tree->key << "]";
+    if (sub_tree->IsLeaf()){
+        std::cout << "\n";
+        return;
+    }
+
+    if (sub_tree->left != nullptr) {
+        std::cout << " has on the left side " << sub_tree->left->value;
+        if (sub_tree->right != nullptr)
+            std::cout << " and ";
+    }
+    if (sub_tree->right != nullptr){
+        std::cout << " has on the right side " << sub_tree->right->value;
+    }
+    std::cout << "\n";
+
+    Print(sub_tree->left);
+    Print(sub_tree->right);
 }
 
 
-void Binary_tree::output() {
+void BinaryTree::Output() {
     if (root == nullptr){
         std::cout << "There is no one element in this tree\n";
         return;
     }
 
     std::cout << "The root is " << this->root->value << "\n";
-    this->print(this->get_root());
+    this->Print(this->GetRoot());
     std::cout << "\n";
 }
 
@@ -245,25 +363,38 @@ void Binary_tree::output() {
 int main()
 {
 
-    Binary_tree A = Binary_tree();
-    A.add(9.0, A.get_root());
-    A.output();
+    BinaryTree A = BinaryTree();
+    A.Add(9.0);
+    A.Output();
 
-    Binary_tree B = Binary_tree();
-    B.add_root(5.0);
-    B.add_root(4.0);
-    B.output();
+    BinaryTree B = BinaryTree();
+    B.Add(5.0);
+    B.Add(4.0);
+    B.Output();
 
-    B.add(7.0);
-    B.add(3.0);
-    B.output();
+    B.Del(5);
+    B.Output();
 
-    std::cout << B.height() << "\n\n";
-    std::cout << B.contains(9.0) << "\n\n";
-    std::cout << B.get(4.0)->value << "\n\n";
+    B.Add(7.0);
+    B.Add(3.0);
+    B.Output();
 
-    B.del(9.0);
-    B.output();
+    std::cout << B.Height() << "\n\n";
+    std::cout << B.Contains(7) << "\n\n";
+    std::cout << B.Get(4)->value << "\n\n";
+
+    double c_array[10] = {5.0, 8.0, 4.4, 2.0, 3.0, 9.0, 1.0, 7.0, 6.0, 3.3};
+    BinaryTree C = BinaryTree();
+    for (unsigned int idx = 0; idx < 10; idx++){
+        C.Add(c_array[idx]);
+    }
+    C.Output();
+
+    C.Del(1);
+    C.Output();
+
+    C.Remove(44);
+    C.Output();
 
     return 0;
 }
