@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(untitled main.cpp ../Dynamic_array/main.cpp)
+add_executable(untitled Stack.cpp ../Stack/Stack.cpp ../Queue/Queue.cpp)

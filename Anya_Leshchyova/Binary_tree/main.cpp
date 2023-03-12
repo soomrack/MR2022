@@ -1,182 +1,232 @@
-#include <conio.h>
 #include <iostream>
 
-class Tree_Exception {
-public:
-    int kod_mistake;
+struct Node {
+    int data;  // хранит ключ - число
+    Node *parent;  // родитель
+    Node *left;  // левый ребенок
+    Node *right;  // правый ребенок
 
-    Tree_Exception();
-    Tree_Exception(int kod_mistake);
-    //~Matrix_Exception() ;
-
-    void set_mistake (int kod_mistake, int what);
 };
-
-
-//Объявление исключений
-Tree_Exception dyplication=(1);
-Tree_Exception exceeds_the_capacity=(2);
-
-
-
-
-//Операторы класса иcключений
-Tree_Exception:: Tree_Exception(){
-    kod_mistake = 999;
-}
-
-
-Tree_Exception:: Tree_Exception(int kod){
-    kod_mistake = kod;
-}
-
-
-void Tree_Exception::set_mistake (int error, int what){
-    switch (error) {
-        case 1:
-            std::cout << "\n"<< "       Duplicate removed "<<what<< "\n";
-            break;
-        case 2:
-            std::cout<< "\n" << "       Digit capacity exceeded "<<what<<"\n";
-            break;
-        default:
-            std::cout << "       Unknown error \n";
-    }
-}
+typedef Node *NodePtr;
 
 class Tree{
+private:
+    NodePtr root; // корень
+    NodePtr TNULL; // лист
+    NodePtr searchTreeHelper(NodePtr node, int key);
+    void printHelper(NodePtr root, std::string indent, bool last);
+    void deleteNodeHelper(NodePtr node, int key);
+    void rbTransplant(NodePtr u, NodePtr v);
+    void searchTreeHelperPrint(NodePtr node);
+
 public:
-    struct node;
-    int* line;
-    int quantity;
-
-    Tree(const  int n);
-    Tree(const Tree &x) ;
-    Tree(Tree&& x);
-
-
-    void print (node *t, int u);
-    void push(int a, node **t);
-    void search (const int a, node *t, int u );
-    void delet (const int a, node *t, Tree root );
+    Tree();
+    Tree(NodePtr node, NodePtr parent);
+    NodePtr searchTree(int k) ;
+    void deleteNode(int data);
+    void printTree();
+    void insert(int key);
+    NodePtr minimum(NodePtr node);
 
 };
 
-struct Tree::node{
-    int info;
-    node *left, *right;                        //Левая и Правая часть дерева
-};
 
-
-Tree::Tree (const  int n){
-    Tree:: node r = {n, NULL};
-    quantity = n;
-    line = new int[n];
+Tree:: Tree(){
+    TNULL = new Node;
+    TNULL->left = nullptr;
+    TNULL->right = nullptr;
+    root = TNULL;
 }
-Tree::Tree(const Tree &x) {
-    quantity = x.quantity;
-    line = new int[quantity];
-    for (unsigned int idx = 0; idx < quantity; idx++){
-        line[idx] = x.line[idx];
+
+Tree:: Tree(NodePtr node, NodePtr parent){
+    node->data = 0;
+    node->parent = parent;
+    node->left = nullptr;
+    node->right = nullptr;
+}
+
+// Вставка узла
+void Tree:: insert(int key) {
+    NodePtr node = new Node;  // создаём новый узел, у него всё ноль, цвет красный
+    node->parent = nullptr;
+    node->data = key;
+    node->left = TNULL;
+    node->right = TNULL;
+    NodePtr y = nullptr;  // пусть  у - лист
+    NodePtr x = this->root;  // пусть х - корень
+    while (x != TNULL) {  // пока х не доберется до листа
+        y = x;  // сохранит последний не нулевой лист
+        if (node->data <  x->data) {  // если узел дерева меньше нового узла с Х
+            x = x->left;  // кладем х влево
+        } else {
+            x = x->right; // иначе кладем вправо
+        }
     }
+    node->parent = y;   // так как У это последний ненулевой лист, то делаем его родителем для нового узла
+    if (y == nullptr) {
+        root = node;   // если дерева не существовало - то Х становится корнем
+    } else if (node->data <  y->data) {   // дерево было, сравниваем если узел больше У ( родителя)
+        y->left = node;  // кладем влево
+    } else {
+        y->right = node;
+    }
+    return;
+
 }
 
-Tree::Tree(Tree&& x){
-    quantity = x.quantity;
-    line = x.line;
-    x.quantity = 0;
-    x.line = nullptr;
+
+void Tree:: rbTransplant(NodePtr u, NodePtr v) {  // спасает ребенка (правого/ левого) удаляемого родителя
+    if (u->parent == nullptr) {
+        root = v;
+    } else if (u == u->parent->left) { // если у U есть родитель и  U это его левый ребенок
+        u->parent->left = v;
+    } else {
+        u->parent->right = v;
+    }
+    v->parent = u->parent;
 }
 
-Tree::node *tree = NULL;                      //Объявляем переменную, тип которой структура Дерево
-Tree::node *tree2 = NULL;
 
+void Tree:: searchTreeHelperPrint(NodePtr node){
 
-//запись
-void Tree:: push(int a, node **t) {
-    if ((*t) == NULL) {                   //Если дерева не существует
-        (*t) = new node;
-        (*t)->info = a;
-        (*t)->left = (*t)->right = NULL;
+    if ( node == root) {
+        std:: cout << "Element is root = "<< node->data<< "\n";
         return;
     }
-    //Дерево есть
-    if (a == (*t)->info) {
-        try{ throw dyplication;}
-        catch (Tree_Exception error){ error.set_mistake(1, a);}
-
+    if (node != TNULL){
+        std:: cout << "Element  = "<< node->data<< "\n";
+        std:: cout << "     "<< node->parent->data<< "\n";
+        std:: cout << "   |    |   "<<  "\n";
+        std:: cout<<"  " << node->parent->left->data<< "    " << node->parent->right->data << "\n";
+        return;
     }
-
-    if (a > (*t)->info) push(a, &(*t)->right); //Если аргумент а больше чем текущий элемент, кладем его вправо
- //   else push(a, &(*t)->left);         //Иначе кладем его влево
-    if (a < (*t)->info) push(a, &(*t)->left);
-
-}
-// поиск
-int LEVEL =0;
-void Tree:: search (const int a, node *t, int u) {
-    if (t == NULL) return; // Дерева нет
-    search(a, t->left, ++u);
-    for (int i = 0; i < u; ++i) {
-        if (a == (t)->info) LEVEL = u;
-        u--;
-        search(a, t->right, ++u);
-    }
-
+    std:: cout << "Element  = "<< node->data<< "\n";
 }
 
-//удаление
-void Tree:: delet (const int del, node *t, Tree root ){
-    for ( int i = 0; i < root.quantity; i++){
-        if (del == root.line[0] )root.line[i] = root.line[i+1];
-        if (del == root.line[i] & i != 0 )root.line[i] = root.line[i-1];
-        root.push(root.line[i], &tree2);
+
+NodePtr Tree:: minimum(NodePtr node) { // помогает при удалении, отдает последний левый узел
+    while (node->left != TNULL) {
+        node = node->left;
+    }
+
+    return node;
+}
+
+
+void Tree:: deleteNodeHelper(NodePtr node, int key) {  //удаление узла
+    // Z - будет потом тем узлом, который нужно будет удалить
+    NodePtr z = TNULL; // создаем лист
+
+    NodePtr x, y; // и два узла
+
+    while (node != TNULL) { // пока нужный узел не дойдет до конца дерева
+        if (node->data == key) { // если это то число, которое нужно удалить
+            z = node;  // сохраняем узел
         }
-    std::cout << "You removed the number"<< "  "<< del <<"\n";
-    root.print(tree2, 0);
+        if (node->data <= key) {  // если число больше либо  рравен корневого узла идем вправо
+            node = node->right;
+        } else {
+            node = node->left;
+        }
+    }
+
+    if (z == TNULL) { // если узел не был равен  -- то такого числа в дереве нет
+        std::cout << "Key not found in the tree" << "\n";
+        return;
+    }
+    y = z;
+    if (z->left == TNULL) { // если узел не имеет левого ребенка
+        x = z->right;  //сохряняем правого ребенка этого узла
+        rbTransplant(z, z->right); //
+    } else if (z->right == TNULL) { // аналогично наоборот
+        x = z->left;
+        rbTransplant(z, z->left);
+    } else {  // если есть и правый и левый ребенок
+        y = minimum(z->right); // находим минимум в правом поддереве (В левой ветке )
+
+        x = y->right;
+        if (y->parent == z) {  // если родитель минимума равен этому узлу
+            x->parent = y;
+        } else {
+            rbTransplant(y, y->right);
+            y->right = z->right;
+            y->right->parent = y;
+        }
+        rbTransplant(z, y);
+        y->left = z->left;
+        y->left->parent = y;
+    }
 }
 
 
-//Вывод
-void Tree:: print (node *t, int u) {
-    if (t == NULL) return;                  //Если дерево пустое
-    print(t->left, ++u);
-        for (int i = 0; i < u; ++i)
-            if (i > 0) {
-                std::cout << "|";
-                std::cout << " ";
-            }
-            std::cout << t->info;
-            std::cout << "\n";
-            u--;
-            print(t->right, ++u);                       //С помощью рекурсии посещаем правое поддерево
+NodePtr Tree:: searchTreeHelper(NodePtr node, int key) {
+    if (node == TNULL || key == node->data) {
+        searchTreeHelperPrint(node);
+        return node;
+    }
+
+    if (key < node->data) {
+        return searchTreeHelper(node->left, key);
+    }
+    return searchTreeHelper(node->right, key);
 }
+
+
+void Tree::printHelper(NodePtr root, std::string indent, bool last) {
+    if (root != TNULL) {
+        std::cout << indent;
+        if (last) {
+            std::cout << "R----";
+            indent += "   ";
+        } else {
+            std::cout << "L----";
+            indent += "|  ";
+        }
+        std::cout << root->data  << "\n";
+        printHelper(root->left, indent, false);
+        printHelper(root->right, indent, true);
+    }
+}
+
+
+NodePtr Tree:: searchTree(int k) {
+    return searchTreeHelper(this->root, k);
+}
+
+void  Tree:: deleteNode(int data) {  // удаление узла, публичное
+    deleteNodeHelper(this->root, data);
+}
+
+
+void Tree:: printTree() {
+    if (root) {
+        printHelper(this->root, "", true);
+    }
+}
+
 
 int main () {
 
-    Tree My_Tree = Tree {10};
-    for (int i=0; i < My_Tree.quantity; ++i) {
-        My_Tree.line[i] = i;
-        if (i == 0)  My_Tree.line[i]=5;
-        if (i == 1)  My_Tree.line[i]=8;
-        if (i == 2)  My_Tree.line[i]=2;
-        if (i == 6)  My_Tree.line[i]=1;
-        if (i == 5)  My_Tree.line[i]=9;
-        My_Tree.push(My_Tree.line[i], &tree);
-    }
-    std::cout << "Initial series of numbers  ";
-    for (int i=0; i < My_Tree.quantity; ++i) {
-
-        std::cout <<My_Tree.line[i] << "  ";
-    }
-    std::cout << "\n";
-    std::cout << "Tree\n";
-    My_Tree.print(tree, 0);  // Вывод дерева
+    Tree bst;
+    NodePtr  a;
+    bst.insert(55);
+    bst.insert(40);
+    bst.insert(65);
+    bst.insert(60);
+    bst.insert(75);
+    bst.insert(56);
+    bst.insert(5);
+    bst.insert(555);
 
 
-    My_Tree.search(3, tree, 0);
-    std::cout << "Number "<< 3 << " is at the level "<< LEVEL -1 << "\n";
-    My_Tree.delet(3,tree,My_Tree);
+    bst.printTree();
+
+    std::cout << "\n"
+         << "After deleting" << "\n";bst.deleteNode(55);
+    bst.printTree();
+
+    a = bst.searchTree(65);
+
 
     return 0;
 }

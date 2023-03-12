@@ -1,366 +1,295 @@
 #include <iostream>
+#include <limits>
 
-const double COMPARATION_CONST = 0.0001;
+const double COMPARATION_CONST = 0.0001;  // ???
 
 
-class item {
+double abs(double x){
+    if (x < COMPARATION_CONST) return -x;
+    return x;
+}
+
+
+class Item {
 
 protected:
-    item *next;   // next последнего указывает на начало
-    item *previous;
+    Item* next_item;
+    Item* prev_item;
 
 public:
     double value;
 
-    item();
-    item(const double x);
-    item(const item& x);
-    item(item&& x);
-    ~item();
+    Item();
+    Item(const double x);
+    Item(const double val, Item* his_next, Item* his_prev);
+    Item(const Item& x);
+    Item(Item&& x);
+    ~Item();
 
-    item& operator=(const double& x);
-    item& operator=(const item& x);
+    Item& operator=(const double& x);
+    Item& operator=(const Item& x);
 
-    void setNext(item* x);
-    void setPrevios(item* x);
+    void push_next(Item* x);
+    void push_prev(Item* x);
 
-    item* getNext();
-    item* getPrevios();
+    Item* next();
+    Item* prev();
+
+    void del_current();
 
 };
 
-const item NULL_ITEM = item(0.0);
 
-
-class Linked_list {
+class LinkedList {
 
 protected:
 
-    unsigned int size;
-    item *head;
+    Item *list_head;
+    Item *list_tail;
+
 
 public:
 
-    Linked_list();
-    Linked_list(double head_vle);
-    Linked_list(const Linked_list& x);
-    Linked_list(Linked_list&& x);
-    ~Linked_list();
+    LinkedList();
+    LinkedList(double list_head_val);
+    ~LinkedList();
 
-    Linked_list& operator=(const Linked_list& x);
+    void push_head(double val);
+    void push_tail(double val);
 
-    void add_head(double vle);
-    void add_tail(double vle);
-    void add(double vle, unsigned int position = 0);
-    void add_next_to(double sup_vle, double new_vle);  // от support_value
-    void add_previous_to(double sup_vle, double new_vle);
+    Item* find_first(double val);
+    void del_head();
+    void del_tail();
 
-    unsigned int contains(double vle);
-    void del(double vle);
-    item get(double vle);
-
-    item get_head();
-    void output(bool show_data = false);
+    Item* head();
+    Item* tail();
+    void print(bool show_data = false);
 
 };
 
 
 
-item::item() {  // is undefinded item;
-    value = 0.0;
-    next = nullptr;
-    previous = nullptr;
+Item::Item() {  // is undefinded Item;
+    value = NULL;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item::item(const double x) {
+Item::Item(const double x) {
     value = x;
-    next = nullptr;
-    previous = nullptr;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item::item(const item &x) {
-    value = x.value;
-    next = x.next;
-    previous = x.previous;
+Item::Item(const double val, Item *his_next, Item *his_prev) {
+    value = val;
+    next_item = his_next;
+    prev_item = his_prev;
 }
 
 
-item::item(item &&x) {
+Item::Item(const Item &x) {
     value = x.value;
-    next = x.next;
-    previous = x.previous;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
+}
+
+
+Item::Item(Item &&x) {
+    value = x.value;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 
     x.value = 0.0;
-    x.next = nullptr;
-    x.previous = nullptr;
+    x.next_item = nullptr;
+    x.prev_item = nullptr;
 }
 
 
-item::~item() {
-    next = nullptr;
-    previous = nullptr;
+Item::~Item() {
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item& item::operator=(const double &x) {
+Item& Item::operator=(const double &x) {
     value = x;
-    next = this;
-    previous = this;
+    next_item = this;
+    prev_item = this;
 }
 
 
-item& item::operator=(const item &x) {
+Item& Item::operator=(const Item &x) {
     value = x.value;
-    next = x.next;
-    previous = x.previous;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 }
 
 
-item* item::getNext() {
-    return next;
+Item* Item::next() {
+    return next_item;
 }
 
 
-item* item::getPrevios() {
-    return previous;
+Item* Item::prev() {
+    return prev_item;
 }
 
 
-void item::setNext(item *x) {
-    next = x;
+void Item::push_next(Item *x) {
+    next_item = x;
 }
 
 
-void item::setPrevios(item *x) {
-    previous = x;
+void Item::push_prev(Item *x) {
+    prev_item = x;
 }
 
 
-Linked_list::Linked_list() {
-    head = nullptr;
-    size = 0;
+void Item::del_current() {
+    if (prev_item != nullptr)
+        prev_item->push_next(next_item);
+    if (next_item != nullptr)
+        next_item->push_prev(prev_item);
+
+    push_next(nullptr);
+    push_prev(nullptr);
+    value = NULL; //std::numeric_limits<double>::quiet_NaN();
 }
 
 
-Linked_list::Linked_list(double head_value) {
-    size = 0;
-    add_head(head_value);
+LinkedList::LinkedList() {
+    list_head = nullptr;
+    list_tail = nullptr;
 }
 
 
-Linked_list::~Linked_list() {
-    head = nullptr;
+LinkedList::LinkedList(double list_head_value) {
+    list_head = nullptr;
+    list_tail = nullptr;
+    push_head(list_head_value);
 }
 
 
-Linked_list &Linked_list::operator=(const Linked_list &x) {
-    head = x.head;
-    size = x.size;
+LinkedList::~LinkedList() {
+    list_head = nullptr;
+    list_tail = nullptr;
 }
 
 
-void Linked_list::add_head(double vle) {
-    item* elm = new item(vle);
-    if (size == 0){
-        elm->setNext(elm);
-        elm->setPrevios(elm);
-        head = elm;
+void LinkedList::push_head(double val) {
+    Item* elm = new Item(val);
+    if (list_head == nullptr){
+        list_head = elm;
+        list_tail = elm;
     } else {
-        head->getPrevios()->setNext(elm);
-        elm->setNext(head);
-        elm->setPrevios(head->getPrevios());
-        head->setPrevios(elm);
-        head = elm;
+        elm->push_next(list_head);
+        list_head->push_prev(elm);
+        list_head = elm;
     }
-    size++;
 }
 
 
-void Linked_list::add_tail(double vle) {
-    item* elm = new item(vle);
-    if (size == 0){
-        elm->setNext(elm);
-        elm->setPrevios(elm);
-        head = elm;
+void LinkedList::push_tail(double val) {
+    Item* elm = new Item(val);
+    if (list_head == nullptr){
+        list_head = elm;
+        list_tail = elm;
     } else {
-        elm->setPrevios(head->getPrevios());
-        elm->setNext(head);
-        head->getPrevios()->setNext(elm);
-        head->setPrevios(elm);
+        list_tail->push_next(elm);
+        elm->push_prev(list_tail);
+        list_tail = elm;
     }
-    size++;
 }
 
 
-void Linked_list::add(double vle, unsigned int position) {
-    if (position > size) return;
-    if (position == 0){
-        add_head(vle);
+Item* LinkedList::find_first(double val) {
+    Item* item_idx = list_head;
+    while (item_idx != nullptr){
+        if (abs(item_idx->value - val) < COMPARATION_CONST) return item_idx;
+        item_idx = item_idx->next();
+    }
+    return item_idx;
+}
+
+
+void LinkedList::del_head() {
+    if (list_head == list_tail){
+        list_head = nullptr;
+        list_tail == nullptr;
         return;
     }
-    if (position == size){
-        add_tail(vle);
+
+    list_head->next()->push_prev(nullptr);
+    list_head = list_head->next();
+}
+
+
+void LinkedList::del_tail() {
+    if (list_head == list_tail){
+        list_head = nullptr;
+        list_tail == nullptr;
         return;
     }
 
-    item* elm = head;
-    for (unsigned int idx = 0; idx < position; idx++){
-        elm = elm->getNext();
-    }
-    item* new_item = new item(vle);
-
-    elm->getPrevios()->setNext(new_item);
-    new_item->setPrevios(elm->getPrevios());
-    new_item->setNext(elm);
-    elm->setPrevios(new_item);
-
-    size++;
+    list_tail->prev()->push_next(nullptr);
+    list_tail = list_tail->prev();
 }
 
 
-void Linked_list::add_next_to(double sup_vle, double new_vle) {
-    unsigned int point = contains(sup_vle);
-    if (point == 0) return;
-
-    item* elm = head;
-    for (unsigned int idx = 1; idx < point; idx++){
-        elm = elm->getNext();
-    }
-
-    item* new_elm = new item(new_vle);
-    elm->getNext()->setPrevios(new_elm);
-    new_elm->setNext(elm->getNext());
-    elm->setNext(new_elm);
-    new_elm->setPrevios(elm);
-
-    size++;
+Item* LinkedList::head() {
+    return list_head;
 }
 
 
-void Linked_list::add_previous_to(double sup_vle, double new_vle) {
-    unsigned int point = contains(sup_vle);
-    if (point == 0) return;
-
-    if (point == 1){
-        add_head(new_vle);
-        return;
-    }
-    item* elm = head;
-    for (unsigned int idx = 1; idx < point - 1; idx++){
-        elm = elm->getNext();
-    }
-
-    item* new_elm = new item(new_vle);
-    elm->getNext()->setPrevios(new_elm);
-    new_elm->setNext(elm->getNext());
-    elm->setNext(new_elm);
-    new_elm->setPrevios(elm);
-
-    size++;
+Item* LinkedList::tail() {
+    return list_tail;
 }
 
 
-unsigned int Linked_list::contains(double vle) {
-    if (size == 0) return 0;
+void LinkedList::print(bool show_data) {
 
-    item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if (abs(elm->value - vle) < COMPARATION_CONST){
-            return idx + 1;
-        }
-        elm = elm->getNext();
-    }
-    return 0;
-}
+    if (head() == nullptr) return;
+    std::cout << "The list_head is " << list_head->value << ";  the list_tail is " << list_tail->value << "\n";
 
-
-void Linked_list::del(double vle) {
-    unsigned int point = contains(vle);
-    if (point == 0) return;
-
-    item* elm = head;
-    for (unsigned int idx = 1; idx < point; idx++){
-        elm = elm->getNext();
-    }
-
-    elm->getPrevios()->setNext(elm->getNext());
-    elm->getNext()->setPrevios(elm->getPrevios());
-    if (point == 1) head = elm->getNext();
-    size--;
-}
-
-
-item Linked_list::get(double vle) {
-    if (size == 0) return NULL_ITEM;
-
-    item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if (abs(elm->value - vle) < COMPARATION_CONST){
-            return *elm;
-        }
-        elm = elm->getNext();
-    }
-    return NULL_ITEM;
-}
-
-
-item Linked_list::get_head() {
-    return *head;
-}
-
-
-void Linked_list::output(bool show_data) {
-    if (show_data){
-        std::cout << "The chain's length: " << size << "\n";
-    }
-    if (size == 0) return;
-
-    item* current = head;
-    for (unsigned int idx = 0; idx < size; idx++){
+    Item* current = list_head;
+    while (current != nullptr){
         std::cout << current->value << "  ";
         if (show_data){
-            std::cout << "his previous is " << current->getPrevios()->value << "  and " <<
-                      "his next is " << current->getNext()->value << "\n";
+            if (current->prev() != nullptr) std::cout << "his Prev is " << current->prev()->value << "  ";
+            if (current->prev() != nullptr && current->next() != nullptr) std::cout << "and ";
+            if (current->next() != nullptr) std::cout << "his Next is " << current->next()->value;
+            std::cout << "\n";
         }
-        current = current->getNext();
-    }
+        current = current->next();
+    };
     std::cout << "\n";
 }
 
 
 int main() {
 
-    Linked_list A = Linked_list();
-    A.add_head(10.1);
-    A.output(true);
-    A.del(10.1);
-    A.output(true);
+    LinkedList A = LinkedList();
+    A.push_head(10.1);
+    A.print();
 
 
-    Linked_list B = Linked_list(0.1);
-    B.output(true);
+    LinkedList B = LinkedList(0.1);
+    B.print(true);
+    B.push_head(1.2);
+    B.print(true);
+    B.push_tail(2.3);
+    B.print(true);
 
-    B.add_head(1.2);
-    B.output(true);
+    if (B.find_first(0.1) != nullptr)
+        std::cout << B.find_first(0.1)->value << "\n\n";
 
-    B.add_tail(2.3);
-    B.output(true);
+    B.find_first(0.1)->del_current();
+    B.print(true);
 
-    B.add(9.9, 2);
-    B.output(true);
 
-    B.del(1.2);
-    B.output(true);
-
-    B.add_next_to(2.3, 3.4);
-    B.output(true);
-
-    B.add_previous_to(0.1, 4.5);
-    B.output(true);
-
-    std::cout << B.get(10.9).value << "\n";
 
     return 0;
 }
