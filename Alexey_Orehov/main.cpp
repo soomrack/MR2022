@@ -29,7 +29,8 @@ void test_stack() {
 
 
 void test_list() {
-    List<int> A;
+    int A_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    List<int> A(A_data, 10);
     A.push_back(3);
     A.push_front(10);
     A.push_front(5);

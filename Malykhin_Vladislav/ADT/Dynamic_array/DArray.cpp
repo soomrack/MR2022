@@ -1,14 +1,20 @@
 #include <cstring>
 #include "DArray.h"
-
+/* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса),
+заменить вектор на какое-нибудь заполнение из списка (зачем нужен наш класс, если есть вектор?),
+удалить не нужный buffer, копировать напрямую в "нововыделенную" память, можно перегрузить квадратные скобочки */
 
 
 template <typename T>
-DArray<T>::DArray(const std::vector<T> in_vector) {
-    size = in_vector.size();
-    data = new T [size];
-    for(int id = 0; id < size; ++id)
-        data[id] = in_vector[id];
+DArray<T>::DArray(const std::list<T> in_list,int new_cache_size) {
+    auto iter = in_list.begin(); // typename std::list<T>::iterator iter = in_list.begin();
+    size = in_list.size();
+    cache_size = new_cache_size;
+    data = new T [size + cache_size];
+    for(int id = 0; id < size; ++id){
+        data[id] = *iter;
+        iter++;
+    }
 }
 
 
@@ -19,27 +25,12 @@ DArray<T>::~DArray() noexcept{
 }
 
 
-template <typename T>
-DArray<T>::DArray(const DArray<T> &other){
-    size = other.size;
-    data = new T [size];
-    std::memcpy(data, other.data, sizeof(T)* size);
-}
-
-
-template <typename T>
-DArray<T>::DArray(DArray<T> &&other) noexcept {
-    size = other.size;
-    data = other.data;
-    other.size = 0;
-    other.data = nullptr;
-}
-
 
 template <typename T>
 unsigned int DArray<T>::get_size() const {
     return size;
 }
+
 
 template <typename T>
 void DArray<T>::set(unsigned int id, T element) {
@@ -47,19 +38,36 @@ void DArray<T>::set(unsigned int id, T element) {
 }
 
 
-template <typename T>
-void DArray<T>::resize(unsigned int new_size){
+/*template <typename T>
+void DArray<T>::resize(unsigned int new_size) {
     T buffer[new_size];
     std::memcpy(buffer, data, sizeof(T) * size);
     delete(data);
     size = new_size;
     data = new T[size];
     std::memcpy(data, buffer, sizeof(T) * size);
+}*/
+
+
+template <typename T>
+void DArray<T>::resize(unsigned int new_size) {
+    if (new_size <= size + cache_size) {
+        cache_size -= new_size - size;
+        size = new_size;
+    } else {
+        T *new_data = new T[new_size];
+        std::memcpy(new_data, data, sizeof(T) * size);
+        cache_size = 0;
+        size = new_size;
+        delete (data);
+        data = new_data;
+    }
 }
 
 
+
 template<typename T>
-T DArray<T>::get_data(unsigned int id) const {
+T DArray<T>::get(unsigned int id) const {
     return data[id];
 }
 
@@ -71,6 +79,7 @@ void DArray<T>::print() const {
         std::cout << data[id] << ", ";
     std::cout << "}" << "\n" << std::endl;
 }
+
 
 template class DArray<int>;
 template class DArray<double>;

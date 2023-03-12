@@ -18,6 +18,18 @@ public:
     bool full();
 };
 
+
+class Stack_exceptions: public std::domain_error {
+public:
+    Stack_exceptions(const char* const error) : std::domain_error(error) {
+    }
+};
+
+
+Stack_exceptions IS_EMPTY ("Error: Stack is empty, you can't pop anything");
+Stack_exceptions IS_FULL ("Error: Stack is full, you can't push anything");
+
+
 Stack::Stack(int size) {
     array = new int[size];
     capacity = size;
@@ -30,7 +42,7 @@ Stack::~Stack() {
 
 void Stack::push(int item) {  // Проверка на заполненность и если не полный то пушится элемент
     if (full()) {
-        std::cout << "Stack owerflow";
+        throw IS_FULL;
     }
     std::cout << "Push: " << item << std::endl;
     stp = stp + 1;
@@ -83,16 +95,10 @@ int main () {
     std::cout << "Stack size: " << st.size() <<  std::endl;
 
     if (st.empty()) {
-        std::cout << "Stack is empty" <<  std::endl;
-    }
-    else {
-        std::cout << "Stack isn't empty" <<  std::endl;
+        throw IS_EMPTY;
     }
 
     if (st.full()) {
-        std::cout << "Stack is full" <<  std::endl;
-    }
-    else {
-        std::cout << "Stack isn't full" <<  std::endl;
+        throw IS_FULL;
     }
 }

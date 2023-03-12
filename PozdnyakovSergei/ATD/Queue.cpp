@@ -19,6 +19,18 @@ public:
     bool full();
 };
 
+
+class Queue_exceptions: public std::domain_error {
+public:
+    Queue_exceptions (const char* const error) : std::domain_error(error) {
+    }
+};
+
+
+Queue_exceptions IS_EMPTY ("Error: queue is empty, you can't pop anything");
+Queue_exceptions IS_FULL ("Error: queue if full, you can't push anything");
+
+
 Queue::Queue(int size) {
     array = new int [size];
     capacity = size;
@@ -27,50 +39,58 @@ Queue::Queue(int size) {
     count = 0;
 }
 
+
 Queue::~Queue() {
     delete[] array;
 }
 
+
 int Queue::pop() {
     if (empty()) {
-        std::cout << "Empty";
+        throw IS_EMPTY;
     }
     int element = array[first];
     std::cout << "Remove: " << element << std::endl;
-    first = (first + 1) % capacity;
+    first = (first + 1);
     count--;
     return element;
 }
 
+
 void Queue::push(int item) {
     if (full()){
-        std::cout << "Owerflow";
+        throw IS_FULL;
     }
 
     std::cout << "Insert: " << item << std::endl;
-    last = (last + 1) % capacity;
+    last = (last + 1);
     array[last] = item;
     count++;
 }
 
+
 int Queue::upper() {
     if (empty()){
-        std::cout << "Empty";
+        throw IS_EMPTY;
     }
     return array[first];
 }
+
 
 int Queue::size() {
     return count;
 }
 
+
 bool Queue::empty() {
     return (size() == 0);
 }
 
+
 bool Queue::full() {
     return (size() == capacity);
 }
+
 
 int main() {
     Queue queue(10);
@@ -97,16 +117,10 @@ int main() {
     std::cout << "Size: " << queue.size() << std::endl;
 
     if (queue.empty()) {
-        std::cout << "Empty" << std::endl;
-    }
-    else {
-        std::cout << "Not empty" << std::endl;
+        throw IS_EMPTY;
     }
 
     if (queue.full()) {
-        std::cout << "Full" << std::endl;
-    }
-    else {
-        std::cout << "Not full" << std::endl;
+        throw IS_FULL;
     }
 }
