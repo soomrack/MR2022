@@ -9,7 +9,16 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include "../Exception.h"
+
+
+class Exception: std::exception {
+private:
+    std::string message;
+public:
+    explicit Exception(std::string _message) {message = std::move(_message);};
+
+    std::string getMessage() const {return message;};
+};
 
 
 template<typename T>
