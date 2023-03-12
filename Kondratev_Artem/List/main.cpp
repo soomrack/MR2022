@@ -1,4 +1,5 @@
-#include "List.h"
+#include "List2.h"
+#include <iostream>
 
 
 typedef struct Matrix {
@@ -16,7 +17,7 @@ int main() {
     A.append(4);
     A.append(5);
     A.print();
-    A.pop(0);
+    A.pop();
     A.print();
 
     List<Matrix> B;
@@ -26,6 +27,8 @@ int main() {
     B.append(m);
     B.append(m);
     B.append(m, 0);
+    B.pop();
+
 
     return 0;
 }

@@ -2,8 +2,8 @@
 // Created by user on 11.02.23.
 //
 
-#ifndef HELLO_WORLD_LIST_H
-#define HELLO_WORLD_LIST_H
+#ifndef HELLO_WORLD_LIST2_H
+#define HELLO_WORLD_LIST2_H
 
 
 #include <cstdint>
@@ -28,12 +28,12 @@ template<typename T>
 class Node {
     friend class List<T>;
 private:
-    T data;
+    T* data;
     Node<T>* next;
 public:
-    explicit Node(T _data) {data = _data;};
+    explicit Node(T* _data) {data = _data;};
 
-    T* getData() {return data;};
+    T* getData() {return *data;};
 };
 
 
@@ -172,7 +172,7 @@ bool List<T>::isEmpty() {
 
 template<typename T>
 void List<T>::append(T data) {
-    auto* node = new Node<T>(data);
+    auto* node = new Node<T>(&data);
     if(isEmpty()) {
         size++;
         first = node;
@@ -194,7 +194,7 @@ void List<T>::append(T data, uint64_t index) {
         return append(data);
     }
     size++;
-    auto* node = new Node<T>(data);
+    auto* node = new Node<T>(&data);
     if (index == 0) {
         node->next = first;
         first = node;
@@ -211,11 +211,11 @@ T List<T>::pop() {
         throw Exception("error: List is empty");
     }
     if (size == 1) {
-        T data = last->data;
+        T* data = last->data;
         first = nullptr;
         last = nullptr;
         size--;
-        return data;
+        return *data;
     }
     Node<T>* node = first;
     for (uint64_t i = 0; i < size - 2; i++) {
@@ -224,7 +224,7 @@ T List<T>::pop() {
     node->next = nullptr;
     last = node;
     size--;
-    return last->data;
+    return *last->data;
 }
 
 
@@ -260,10 +260,10 @@ void List<T>::print() {
     std::cout << "[";
     Node<T>* node = first;
     while (node != last) {
-        std::cout << node->data << ", ";
+        std::cout << *node->data << ", ";
         node = node->next;
     }
-    std::cout << last->data << "]" << std::endl;
+    std::cout << *last->data << "]" << std::endl;
 }
 
 
@@ -290,4 +290,4 @@ void List<T>::clear() {
 }
 
 
-#endif //HELLO_WORLD_LIST_H
+#endif //HELLO_WORLD_LIST2_H
