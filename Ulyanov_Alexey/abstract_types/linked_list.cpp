@@ -1,7 +1,7 @@
 #include <iostream>
-#include <limits>
+//#include <exception>
 
-const double COMPARATION_CONST = 0.0001;  // ???
+const double COMPARATION_CONST = 0.0001;
 
 
 double abs(double x){
@@ -58,6 +58,8 @@ public:
     void push_tail(double val);
 
     Item* find_first(double val);
+    Item* pop(double val);
+
     void del_head();
     void del_tail();
 
@@ -156,7 +158,7 @@ void Item::del_current() {
 
     push_next(nullptr);
     push_prev(nullptr);
-    value = NULL; //std::numeric_limits<double>::quiet_NaN();
+    //value = NULL; //std::numeric_limits<double>::quiet_NaN();
 }
 
 
@@ -215,6 +217,28 @@ Item* LinkedList::find_first(double val) {
 }
 
 
+Item* LinkedList::pop(double val) {
+    if (list_head == nullptr){
+        //throw exception("Nothing to pop");
+        return nullptr;
+    }
+    Item* current = list_head;
+    do {
+        if (abs(current->value - val) < COMPARATION_CONST){
+            if (current == list_head) list_head = current->next();
+            if (current == list_tail) list_tail = current->prev();
+            current->del_current();
+            return current;
+        }
+        current = current->next();
+    } while (current != nullptr);
+
+    //throw exception("Item wasn't founded");
+    return nullptr;
+
+}
+
+
 void LinkedList::del_head() {
     if (list_head == list_tail){
         list_head = nullptr;
@@ -258,9 +282,9 @@ void LinkedList::print(bool show_data) {
     while (current != nullptr){
         std::cout << current->value << "  ";
         if (show_data){
-            if (current->prev() != nullptr) std::cout << "his Prev is " << current->prev()->value << "  ";
+            if (current->prev() != nullptr) std::cout << "his prev is " << current->prev()->value << "  ";
             if (current->prev() != nullptr && current->next() != nullptr) std::cout << "and ";
-            if (current->next() != nullptr) std::cout << "his Next is " << current->next()->value;
+            if (current->next() != nullptr) std::cout << "his next is " << current->next()->value;
             std::cout << "\n";
         }
         current = current->next();
@@ -286,7 +310,7 @@ int main() {
     if (B.find_first(0.1) != nullptr)
         std::cout << B.find_first(0.1)->value << "\n\n";
 
-    B.find_first(0.1)->del_current();
+    B.pop(2.3);
     B.print(true);
 
 
