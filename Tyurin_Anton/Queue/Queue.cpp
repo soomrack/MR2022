@@ -63,6 +63,7 @@ template<typename T>
 void Queue<T>::pop() {
     if (is_empty()) return;
     Node<T>* local = first_el;
+    if (local == last_el){ last_el = nullptr;}
     first_el = local->next;
     delete local;
     size--;

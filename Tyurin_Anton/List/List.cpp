@@ -16,8 +16,8 @@ public:
 template<typename T>
 class List {
 protected:
-    Node<T> *first_el;
-    Node<T> *last_el;
+    Node<T> *first_el; // head
+    Node<T> *last_el;  // tail
     unsigned int size;
 public:
     List() : first_el(nullptr), last_el(nullptr), size(0) {}
@@ -152,6 +152,9 @@ int main(){
     List.push_tale("wo");
     List.push_tale("rl");
     List.push_tale("d");
+    //Node *ptr = List.find("ff");
+   //List.push_next(Node* ptr, "gg");
+   // delete_next
     List.print();
     std::cout << List.get_size() << std::endl;
     List.find(4);

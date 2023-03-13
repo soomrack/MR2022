@@ -101,8 +101,10 @@ int main(){
     Stack.push("rl");
     Stack.push("d");
     Stack.print();
-    Stack.pop();
+    Stack.pop(); // должен возвращать значение
     Stack.print();
 
     return 0;
 }
+
+// push и pop переделать

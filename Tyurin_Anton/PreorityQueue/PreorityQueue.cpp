@@ -63,7 +63,7 @@ void PQueue<T>::remove_last() {
 }
 
 template <typename T>
-void PQueue<T>::push(T _data, unsigned int p){
+void PQueue<T>::push(T _data, unsigned int p){ // добавить епремещение по приоритету вперед
     Node<T> *local = new Node<T>(_data);
     if(p > MAX_PREORITY){
         std::cout << "Maximal preority is " << MAX_PREORITY << std::endl;
@@ -81,6 +81,8 @@ void PQueue<T>::push(T _data, unsigned int p){
     last_el->preority = p;
     size++;
 }
+
+
 
 template<typename T>
 void PQueue<T>::print() {
@@ -103,7 +105,7 @@ Node<T> *PQueue<T>::operator[](const uint64_t index) {
 }
 
 template<typename T>
-void PQueue<T>::pop() {
+void PQueue<T>::pop() { //  станет проще
     if (is_empty()) return;
     Node<T>* local;
     for (unsigned int P = 1; P < MAX_PREORITY; P++) {

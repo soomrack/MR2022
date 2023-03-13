@@ -60,7 +60,7 @@ void DM<T>::resize(unsigned int newsize){
     size = newsize;
     T *Parasite = value;
     value = new T[size];
-    value = Parasite;
+    value = Parasite; // поправить функцию. (не приравнивать указатели)
 }
 
 int main() {
