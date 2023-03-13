@@ -31,14 +31,9 @@ unsigned int DArray<T>::get_size() const {
 }
 
 
-/*template <typename T>
-DArray<T>&:: operator[] (int index){
-
-}*/
-
 template <typename T>
-void DArray<T>::set(unsigned int id, T element) {
-    data[id] = element;
+T& DArray<T>::operator[] (int idx){
+return data[idx];
 }
 
 
@@ -58,7 +53,6 @@ void DArray<T>::resize(unsigned int new_size) {
 }
 
 
-
 template<typename T>
 T DArray<T>::get(unsigned int id) const {
     return data[id];
@@ -72,6 +66,7 @@ void DArray<T>::print() const {
         std::cout << data[id] << ", ";
     std::cout << "}" << "\n" << std::endl;
 }
+
 
 
 template class DArray<int>;

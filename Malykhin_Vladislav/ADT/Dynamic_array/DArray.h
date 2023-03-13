@@ -8,7 +8,7 @@
 /* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса), CHECK
  заменить вектор на какое-нибудь заполнение из списка (зачем нужен наш класс, если есть вектор?), CHECK
  удалить не нужный buffer, копировать напрямую в "нововыделенную" память, CHECK
- можно перегрузить квадратные скобочки,
+ можно перегрузить квадратные скобочки, CHECK
  можно выкинуть исключения CHECK
  */
 
@@ -22,10 +22,9 @@ protected:
 public:
     explicit DArray(std::list<T> in_list, int new_cache_size = 5); // заполнение массива значениями из массива при создании
     ~DArray() noexcept;
-    DArray<T>& operator[] (const int index);
+    T& operator[] (int idx);
     unsigned int get_size() const;
     T get(unsigned int id) const;
-    void set(unsigned int id, T element);
     void resize(unsigned int new_size);
     void print() const;
 
