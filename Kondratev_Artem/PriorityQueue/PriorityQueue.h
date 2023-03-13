@@ -40,15 +40,10 @@ private:
     List<Object<T>> list;
 public:
     PriorityQueue();
-    PriorityQueue(const PriorityQueue<T>& other);
-    PriorityQueue(PriorityQueue<T>&& other) noexcept;
-
-    PriorityQueue<T> &operator=(const PriorityQueue<T>& other);
-    PriorityQueue<T> &operator=(PriorityQueue<T>&& other) noexcept;
 
     void append(T object, uint64_t priority);
     T pop();
-    uint64_t len();
+    uint64_t getSize();
 };
 
 
@@ -60,47 +55,9 @@ PriorityQueue<T>::PriorityQueue() {
 
 
 template<typename T>
-PriorityQueue<T>::PriorityQueue(const PriorityQueue<T>& other) {
-    size = other.size;
-    list = other.list;
-}
-
-
-template<typename T>
-PriorityQueue<T>::PriorityQueue(PriorityQueue<T>&& other) noexcept {
-    size = other.size;
-    list = other.list;
-    other.size = 0;
-    other.list = nullptr;
-}
-
-
-template<typename T>
-PriorityQueue<T> &PriorityQueue<T>::operator=(const PriorityQueue<T> &other) {
-    if (this != &other) {
-        size = other.size;
-        list = other.list;
-    }
-    return *this;
-}
-
-
-template<typename T>
-PriorityQueue<T> &PriorityQueue<T>::operator=(PriorityQueue<T> &&other) noexcept {
-    if (this != &other) {
-        size = other.size;
-        list = other.list;
-        other.size = 0;
-        other.list = 0;
-    }
-    return *this;
-}
-
-
-template<typename T>
 void PriorityQueue<T>::append(T object, uint64_t priority) {
     Object<T> new_object(object, priority);
-    list.append(new_object);
+    list.push(new_object);
     size++;
 }
 
@@ -125,7 +82,7 @@ T PriorityQueue<T>::pop() {
 
 
 template<typename T>
-uint64_t PriorityQueue<T>::len() {
+uint64_t PriorityQueue<T>::getSize() {
     return size;
 }
 
