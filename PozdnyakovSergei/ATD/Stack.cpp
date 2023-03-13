@@ -97,8 +97,8 @@ int main () {
     if (st.empty()) {
         throw IS_EMPTY;
     }
-
     if (st.full()) {
         throw IS_FULL;
     }
+
 }
