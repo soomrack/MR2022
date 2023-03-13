@@ -5,7 +5,7 @@
 #include <list>
 #include <iterator>
 
-/* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса),
+/* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса), CHECK
  заменить вектор на какое-нибудь заполнение из списка (зачем нужен наш класс, если есть вектор?), CHECK
  удалить не нужный buffer, копировать напрямую в "нововыделенную" память, CHECK
  можно перегрузить квадратные скобочки,
@@ -22,6 +22,7 @@ protected:
 public:
     explicit DArray(std::list<T> in_list, int new_cache_size = 5); // заполнение массива значениями из массива при создании
     ~DArray() noexcept;
+    DArray<T>& operator[] (const int index);
     unsigned int get_size() const;
     T get(unsigned int id) const;
     void set(unsigned int id, T element);

@@ -3,7 +3,7 @@
 
 
 template<typename T>
-void DArrayTest<T>::set_test(){
+void DArrayTest<T>::set_test() {
     std::cout << "Testing set method:\n";
     int flag_counter = 0;
     DArray<T> dArray1(DArrayTest::test_list);
@@ -22,7 +22,7 @@ void DArrayTest<T>::set_test(){
 
 
 template<typename T>
-void DArrayTest<T>::resize_test(){
+void DArrayTest<T>::resize_test() {
     std::cout << "Testing resize method (size decreased):\n";
     int flag_counter = 0;
     DArray<T> dArray1(DArrayTest::test_list); // проверка уменьшения размера массива

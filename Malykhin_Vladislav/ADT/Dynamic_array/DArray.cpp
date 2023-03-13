@@ -11,12 +11,11 @@ DArray<T>::DArray(const std::list<T> in_list,int new_cache_size) {
     size = in_list.size();
     cache_size = new_cache_size;
     data = new T [size + cache_size];
-    for(int id = 0; id < size; ++id){
+    for(int id = 0; id < size; ++id) {
         data[id] = *iter;
         iter++;
     }
 }
-
 
 template <typename T>
 DArray<T>::~DArray() noexcept{
@@ -32,21 +31,15 @@ unsigned int DArray<T>::get_size() const {
 }
 
 
+/*template <typename T>
+DArray<T>&:: operator[] (int index){
+
+}*/
+
 template <typename T>
 void DArray<T>::set(unsigned int id, T element) {
     data[id] = element;
 }
-
-
-/*template <typename T>
-void DArray<T>::resize(unsigned int new_size) {
-    T buffer[new_size];
-    std::memcpy(buffer, data, sizeof(T) * size);
-    delete(data);
-    size = new_size;
-    data = new T[size];
-    std::memcpy(data, buffer, sizeof(T) * size);
-}*/
 
 
 template <typename T>
@@ -55,9 +48,9 @@ void DArray<T>::resize(unsigned int new_size) {
         cache_size -= new_size - size;
         size = new_size;
     } else {
-        T *new_data = new T[new_size];
+        cache_size = 5;
+        T *new_data = new T[new_size + cache_size];
         std::memcpy(new_data, data, sizeof(T) * size);
-        cache_size = 0;
         size = new_size;
         delete (data);
         data = new_data;
