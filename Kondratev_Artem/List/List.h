@@ -31,9 +31,8 @@ private:
     T data;
     Node<T>* next;
 public:
-    explicit Node(T _data) {data = _data;};
-
-    T* getData() {return data;};
+    explicit Node(T _data, Node<T>* _next=nullptr) {data = _data; next = _next;};
+    T* get() {return data;};
 };
 
 
@@ -41,8 +40,8 @@ template<typename T>
 class List {
 private:
     uint64_t size;
-    Node<T>* first;
-    Node<T>* last;
+    Node<T>* first;//head
+    Node<T>* last;//tail
 public:
     List();
     ~List() = default;
@@ -55,8 +54,8 @@ public:
     List<T> operator+(List<T> other);
 
     bool isEmpty();
-    void append(T data);
-    void append(T data, uint64_t index);
+    void push(T data);
+    void push(T data, uint64_t index);
     T pop();
     T pop(uint64_t index);
     void print();
@@ -64,7 +63,7 @@ public:
     T getData(uint64_t index);
     void clear();
 };
-
+//итератор
 
 template<typename T>
 List<T>::List() {
@@ -171,7 +170,7 @@ bool List<T>::isEmpty() {
 
 
 template<typename T>
-void List<T>::append(T data) {
+void List<T>::push(T data) {
     auto* node = new Node<T>(data);
     if(isEmpty()) {
         size++;
@@ -186,12 +185,12 @@ void List<T>::append(T data) {
 
 
 template<typename T>
-void List<T>::append(T data, uint64_t index) {
+void List<T>::push(T data, uint64_t index) {
     if (index > size) {
         throw Exception("error: bad index");
     }
     if (isEmpty() || index == size) {
-        return append(data);
+        return push(data);
     }
     size++;
     auto* node = new Node<T>(data);

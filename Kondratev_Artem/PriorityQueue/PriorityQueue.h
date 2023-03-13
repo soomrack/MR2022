@@ -11,51 +11,46 @@
 #include "../List/List.h"
 
 
-template<typename T>
 class PriorityQueue;
 
 
-template<typename T>
 class Object {
-    friend class PriorityQueue<T>;
+    friend class PriorityQueue;
 private:
-    T object;
+    void* object;
     uint64_t priority;
 public:
-    Object(T object, uint64_t _priority);
+    Object(void* object, uint64_t _priority);
 };
 
 
-template<typename T>
-Object<T>::Object(T _object, uint64_t _priority) {
+Object::Object(void* _object, uint64_t _priority) {
     object = _object;
     priority = _priority;
 }
 
 
-template<typename T>
 class PriorityQueue {
 private:
     uint64_t size;
-    List<Object<T>> list;
+    List list;
 public:
     PriorityQueue();
 
-    void append(T object, uint64_t priority);
-    T pop();
+    void append(void* object, uint64_t priority);
+    void* pop();
     uint64_t getSize();
 };
 
 
-template<typename T>
-PriorityQueue<T>::PriorityQueue() {
-    list = List<Object<T>>();
+PriorityQueue::PriorityQueue() {
+    list = List();
     size = 0;
 }
 
 
 template<typename T>
-void PriorityQueue<T>::append(T object, uint64_t priority) {
+void PriorityQueue::append(void* object, uint64_t priority) {
     Object<T> new_object(object, priority);
     list.push(new_object);
     size++;
