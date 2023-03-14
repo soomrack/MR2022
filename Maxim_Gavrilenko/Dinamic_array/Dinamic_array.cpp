@@ -74,7 +74,9 @@ void dynamic_array::resize(unsigned int new_size) {
 
 void dynamic_array::searchAndReplace(double num, double den) {
     for (unsigned int i = 0; i < size; i++) {
-        if (arr[i] = num) arr[i] = den;
+        if (arr[i] == num) {
+            arr[i] = den;
+        }
     }
 }
 
@@ -116,9 +118,10 @@ int main() {
     A.PushMove(7.04, 3);
     A.PushMove(98.06, 0);
     A.PushMove(4.08, 5);
-
     A.print();
     std::cout << A.lenght() << std::endl;
+    A.searchAndReplace(1.90, 3);
+    A.print();
     A.search(4.08) ? std::cout << "YES" : std::cout << "NO";
     std:: cout << std::endl;
     A.resize(4);
