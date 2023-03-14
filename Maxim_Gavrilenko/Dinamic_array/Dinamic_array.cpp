@@ -17,7 +17,7 @@ public:
     void searchAndReplace (double, double);
     void PushMove (double, int);
     bool search (double);
-    int lenght();
+    unsigned int lenght();
     void print();
     dynamic_array& operator=(const dynamic_array& A);
 };
@@ -108,7 +108,8 @@ void dynamic_array::print (){
     std::cout << "\n";
 }
 
-int dynamic_array::lenght() {return size;}
+unsigned int dynamic_array::lenght() {return size;}
+
 int main() {
     dynamic_array A;
     A.PushMove(1.90, 1);
