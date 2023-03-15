@@ -1,17 +1,4 @@
-#include <iostream>
-#include <cstdlib>
-#include <cmath>
-#include <cstring>
 
-class Matrix_Exception : public std::domain_error
-{
-public:
-    Matrix_Exception(const char* const message) : std::domain_error(message)
-    {}
-};
-
-Matrix_Exception NOTSQUARE("Make matrix square\n");
-Matrix_Exception ERRORSIZE("Change matrix size\n");
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -28,7 +15,7 @@ Matrix_Exception NOTSQUARE("Make matrix square\n");
 Matrix_Exception ERRORSIZE("Change matrix size\n");
 
 template<typename T>
-class Matrix {
+class Matrix{
 protected:
     unsigned int cols;
     unsigned int rows;
@@ -80,6 +67,7 @@ Matrix<T>::Matrix() {
     cols = 0;
     rows = 0;
     values = nullptr;
+//    std:: cout << "matrix_f" << "\n";
 }
 
 template <typename T>
@@ -98,6 +86,7 @@ Matrix<T>::Matrix(unsigned int col, unsigned int row) {
     for (unsigned int idx = 0; idx < n_values; ++idx) {
         values[idx] = 0.0;
     }
+//    std:: cout << "matrix_2p" << "\n";
 }
 
 template <typename T>
@@ -106,6 +95,7 @@ Matrix<T>::Matrix(const Matrix<T>& matrix) {
     rows = matrix.rows;
     values = new T[rows * cols];
     memcpy(values,matrix.values,rows * cols * sizeof(T));
+//    std::cout << "matrix_copy ";
 }
 
 
@@ -285,15 +275,17 @@ double Matrix<T>::determinant(const Matrix<T>& matrix)
 template <typename T1>
 class Matrix_Memory : public Matrix<T1> {
 private:
-    static unsigned long memory_size;
+    unsigned long memory_size;
     static unsigned long total_memory;
 public:
     Matrix_Memory<T1>();
-    Matrix_Memory<T1>(unsigned int, unsigned int);
+    Matrix_Memory<T1>(unsigned int row, unsigned int col);
     Matrix_Memory<T1>(const Matrix_Memory<T1>&);
     Matrix_Memory<T1>(Matrix_Memory<T1>&&) noexcept;
     ~Matrix_Memory();
-    Matrix_Memory<T1>&  operator= (const  Matrix_Memory<T1>& );
+    
+    Matrix_Memory<T1>& operator=(const  Matrix_Memory<T1>& );
+    Matrix_Memory<T1>& operator=(const  Matrix_Memory<T1>&& );
     void report() override;
 };
 
@@ -306,10 +298,27 @@ Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &matrix) {
     this->rows = matrix.rows;
     this->cols = matrix.cols;
     delete[] this->values;
+    total_memory -= matrix.memory_size;
     this->values = new T[this->cols * this->rows];
     memcpy(this->values, matrix.values, this->rows * this->cols * sizeof(T));
     memory_size += matrix.memory_size;
     total_memory += memory_size;
+    return *this;
+}
+
+template <typename T>
+Matrix_Memory<T>&::Matrix_Memory<T>::operator=(const Matrix_Memory<T> &&matrix) {
+    if (this == &matrix)
+    {
+        return *this;
+    }
+    this->rows = matrix.rows;
+    this->cols = matrix.cols;
+    delete[] this->values;
+    total_memory -= matrix.memory_size;
+    this -> values = matrix.values;
+    matrix.values = nullptr;
+    matrix.memory_size = 0;
     return *this;
 }
 
@@ -322,13 +331,14 @@ Matrix_Memory<T>::Matrix_Memory()
 
 
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col)
+Matrix_Memory<T>::Matrix_Memory(unsigned int row, unsigned int col) : Matrix<T>(row, col)
 {
-    this->rows = row;
-    this->cols = col;
-    this->values = new T[this->rows * this->cols];
+//    this->rows = row;
+//    this->cols = col;
+//    this->values = new T[this->rows * this->cols];
     memory_size = row * col * sizeof(T);
     total_memory += memory_size;
+//    std::cout << "matrix_mem";
 }
 
 
@@ -338,10 +348,8 @@ Matrix_Memory<T>::~Matrix_Memory()
     total_memory -= memory_size;
 }
 template <typename T>
-Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
+Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix) : Matrix<T>(matrix)
 {
-    this->values = new T[this->rows * this->cols];
-    memcpy(this->values, matrix.values, sizeof(T) * this->rows * this->cols);
     memory_size = matrix.memory_size;
     total_memory += memory_size;
 }
@@ -350,13 +358,15 @@ Matrix_Memory<T>::Matrix_Memory(const Matrix_Memory<T>& matrix)
 template <typename T>
 Matrix_Memory<T>::Matrix_Memory(Matrix_Memory<T>&& matrix) noexcept
 {
-
-memory_size = matrix.memory_size;
-
-matrix.rows = 0;
-matrix.cols = 0;
-matrix.values = nullptr;
-matrix.memory_size = 0;
+    this -> rows = matrix.rows;
+    this -> cols = matrix.cols;
+    this -> values = new T[this->rows * this->cols];
+    memory_size = matrix.memory_size;
+    total_memory += memory_size;
+    matrix.rows = 0;
+    matrix.cols = 0;
+    matrix.values = nullptr;
+    matrix.memory_size = 0;
 }
 
 
@@ -368,14 +378,15 @@ void Matrix_Memory<T>::report()
 
 template <typename T>
 unsigned long int Matrix_Memory<T>::total_memory = 0;
-template <typename T>
-unsigned long int Matrix_Memory<T>::memory_size = 0;
+//template <typename T>
+//unsigned long int Matrix_Memory<T>::memory_size = 0;
 
 int main() {
-    Matrix_Memory<float> mat1(3,3);
+    Matrix_Memory<double> mat1(3,3);
+    //std:: cout << mat1;
     mat1.set_values(10);
     std:: cout << mat1;
-    Matrix_Memory<float> mat2(3, 3);
+    Matrix_Memory<double> mat2(3, 3);
     mat2.set_values(10);
     std:: cout << mat2;
     std::cout << mat1 + mat2;

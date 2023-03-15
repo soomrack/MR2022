@@ -31,21 +31,10 @@ private:
     T data;
     Node<T>* next;
 public:
-    explicit Node(T _data);
-    T getData();
+    explicit Node(T _data) {data = _data;};
+
+    T* getData() {return data;};
 };
-
-
-template<typename T>
-Node<T>::Node(T _data) {
-    data = _data;
-}
-
-
-template<typename T>
-T Node<T>::getData() {
-    return data;
-}
 
 
 template<typename T>
@@ -65,6 +54,7 @@ public:
     Node<T>* operator[](uint64_t index);
     List<T> operator+(List<T> other);
 
+    bool isEmpty();
     void append(T data);
     void append(T data, uint64_t index);
     T pop();
@@ -116,7 +106,7 @@ List<T> &List<T>::operator=(const List<T> &other) {
     if (this == &other) {
         return *this;
     }
-    if (other.size == 0) {
+    if (other.isEmpty()) {
         first = nullptr;
         last = nullptr;
         size = 0;
@@ -152,7 +142,7 @@ List<T> &List<T>::operator=(List<T> &&other) noexcept {
 
 template<typename T>
 Node<T> *List<T>::operator[](const uint64_t index) {
-    if(size == 0 || index >= size) {
+    if(isEmpty() || index >= size) {
         throw Exception("error: bad index");
     }
     Node<T>* node = first;
@@ -175,9 +165,15 @@ List<T> List<T>::operator+(List<T> other) {
 
 
 template<typename T>
+bool List<T>::isEmpty() {
+    return size == 0;
+}
+
+
+template<typename T>
 void List<T>::append(T data) {
     auto* node = new Node<T>(data);
-    if(size == 0) {
+    if(isEmpty()) {
         size++;
         first = node;
         last = node;
@@ -194,7 +190,7 @@ void List<T>::append(T data, uint64_t index) {
     if (index > size) {
         throw Exception("error: bad index");
     }
-    if (size == 0 || index == size) {
+    if (isEmpty() || index == size) {
         return append(data);
     }
     size++;
@@ -211,7 +207,7 @@ void List<T>::append(T data, uint64_t index) {
 
 template<typename T>
 T List<T>::pop() {
-    if (size == 0) {
+    if (isEmpty()) {
         throw Exception("error: List is empty");
     }
     if (size == 1) {
@@ -258,19 +254,16 @@ T List<T>::pop(uint64_t index) {
 
 template<typename T>
 void List<T>::print() {
-    if(size == 0) {
+    if(isEmpty()) {
         return;
     }
     std::cout << "[";
     Node<T>* node = first;
-    while (node != nullptr) {
-        std::cout << node->data;
-        if (node != last) {
-            std::cout << ", ";
-        }
+    while (node != last) {
+        std::cout << node->data << ", ";
         node = node->next;
     }
-    std::cout << "]" << std::endl;
+    std::cout << last->data << "]" << std::endl;
 }
 
 
@@ -283,7 +276,7 @@ uint64_t List<T>::getSize() {
 template<typename T>
 T List<T>::getData(uint64_t index) {
     if (index >= size) {
-        throw Exception("");
+        throw Exception("error: bad index");
     }
     return this->operator[](index)->data;
 }
