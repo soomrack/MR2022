@@ -14,8 +14,8 @@ public:
     ~dynamic_array();
 
     void resize(unsigned int);
-    void searchAndReplace (double, double);
-    void PushMove (double, int);
+    void replace (double, double);
+    void insert (double, int);
     bool search (double);
     unsigned int lenght();
     void print();
@@ -72,7 +72,7 @@ void dynamic_array::resize(unsigned int new_size) {
     arr = new_data;
 }
 
-void dynamic_array::searchAndReplace(double num, double den) {
+void dynamic_array::replace(double num, double den) {
     for (unsigned int i = 0; i < size; i++) {
         if (arr[i] == num) {
             arr[i] = den;
@@ -80,28 +80,29 @@ void dynamic_array::searchAndReplace(double num, double den) {
     }
 }
 
-void dynamic_array::PushMove(double num, int place) {
+void dynamic_array::insert(double num, int place) {
     if (size == 0){
         arr = new double [size + 1];
         arr[size] = num;
         size++;
     }
-    if ( place >= size) return;
+    if (place >= size) return;
     double* temp = new double[size + 1];
-    int t = 0;
-    for (unsigned int i = 0; i <= size  ; i ++){
-        if ( i == place ){
-            t = 1;
+    int shift = 0;
+    for (unsigned int i = 0; i <= size ; i ++){
+        if (i == place){
+            shift = 1;
             temp[i] = num;
-            continue;
+            break;
         }
-        temp[i] = arr [i - t];
+        temp[i] = arr [i - shift];
     }
     arr = temp;
     size++;
 }
 
-void dynamic_array::print (){
+
+void dynamic_array::print () {
     for (unsigned int number = 0; number < size; number++){
         std::cout << arr[number] << "  ";
     }
@@ -112,16 +113,16 @@ unsigned int dynamic_array::lenght() {return size;}
 
 int main() {
     dynamic_array A;
-    A.PushMove(1.90, 1);
-    A.PushMove(2.032, 0);
-    A.PushMove(6.011, 1);
-    A.PushMove(34.05, 1);
-    A.PushMove(7.04, 3);
-    A.PushMove(98.06, 0);
-    A.PushMove(4.08, 5);
+    A.insert(1.90, 1);
+    A.insert(2.032, 0);
+    A.insert(6.011, 1);
+    A.insert(34.05, 1);
+    A.insert(7.04, 3);
+    A.insert(98.06, 0);
+    A.insert(4.08, 5);
     A.print();
     std::cout << A.lenght() << std::endl;
-    A.searchAndReplace(1.90, 3);
+    A.replace(1.90, 3);
     A.print();
     A.search(4.08) ? std::cout << "YES" : std::cout << "NO";
     std:: cout << std::endl;
