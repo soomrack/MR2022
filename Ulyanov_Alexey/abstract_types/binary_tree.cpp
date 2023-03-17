@@ -7,8 +7,9 @@ int get_key(double val){  // тут должна быть нормальная �
 }
 
 
-struct Node {
+class Node {
 
+public:
     double value;
     int key;
     Node* left;
@@ -16,8 +17,9 @@ struct Node {
 
     Node();
     Node(const double vle, const int new_key);
+    Node(const Node& x);
 
-    bool IsLeaf();
+    bool is_leaf();
 
 };
 
@@ -53,11 +55,14 @@ protected:
     unsigned int height(Node* sub_tree);
 
     Node* get_node(const int sup_key);
+    Node* get_parent_to(const int sup_key);
 
     void remove(Node* sub_tree);
     void print(Node* sub_tree);
-// вспомогательная для del рекурсивная функция
+
     Node* find_node_to_replace(Node* sup_node);
+    Node* max_in_left(Node* sup_node);
+    Node* min_in_right(Node* sup_node);
 
 };
 
@@ -78,7 +83,15 @@ Node::Node(const double vle, const int new_key) {
 }
 
 
-bool Node::IsLeaf() {
+Node::Node(const Node &x) {
+    value = x.value;
+    key = x.key;
+    left = x.left;
+    right = x.right;
+}
+
+
+bool Node::is_leaf() {
     return ((left == nullptr) && (right == nullptr));
 }
 
@@ -89,8 +102,7 @@ BinaryTree::BinaryTree() {
 
 
 BinaryTree::BinaryTree(const double root_vle) {
-    root = nullptr;
-    add(root_vle);
+    root = new Node(root_vle, get_key(root_vle));
 }
 
 
@@ -105,18 +117,12 @@ void BinaryTree::add(const double vle) {
         root = new Node(vle, get_key(vle));
         return;
     }
-    int new_key = get_key(vle);
-    add(vle, new_key, root);
+    add(vle, get_key(vle), root);
 }
 
 
 void BinaryTree::add(const double vle, const int new_key, Node* sub_tree) {
-
-    //Node* next_step = (sub_tree->key > new_key) ? sub_tree->left : sub_tree->right;
-    // из-за необходимости проверки ссылки (sub_tree->left(right)) на пустоту (nullptr) применение торнарного оператора невозиможно
-
     Node* next_step = nullptr;
-
     if (sub_tree->key > new_key){
         if (sub_tree->left == nullptr){
             sub_tree->left = new Node(vle, new_key);
@@ -136,15 +142,32 @@ void BinaryTree::add(const double vle, const int new_key, Node* sub_tree) {
 
 
 Node* BinaryTree::get_node(const int sup_key) {
-    if (root == nullptr) return new Node();
+    if (root == nullptr) return nullptr;
 
     Node* node = root;
-    while (true){
-        if(node == nullptr) return new Node();
+    while (node != nullptr){
+        //if(node == nullptr) return nullptr;
         if (node->key == sup_key) return node;
 
         node = (node->key > sup_key) ? node->left : node->right;
     }
+    return nullptr;
+}
+
+
+Node* BinaryTree::get_parent_to(const int sup_key) {
+    if (root == nullptr || root->is_leaf()) return nullptr;
+
+    Node* current = root;
+    while (current != nullptr){
+        Node* next_step = (current->key > sup_key) ? current->left : current->right;
+        if (next_step != nullptr)
+            if (next_step->key == sup_key)
+                return current;
+
+        current = next_step;
+    }
+    return nullptr;
 }
 
 
@@ -155,9 +178,6 @@ double BinaryTree::get(const int sup_key) {
 
 
 bool BinaryTree::find(const int sup_key) {
-    if (root == nullptr){
-        return false;
-    }
     return find(sup_key, root);
 }
 
@@ -178,13 +198,13 @@ unsigned int BinaryTree::height() {
 
 unsigned int BinaryTree::height(Node* sub_tree) {
     if (sub_tree == nullptr) return 0;
-    if (sub_tree->IsLeaf()) return 1;
+    if (sub_tree->is_leaf()) return 1;
     return std::max(height(sub_tree->left), height(sub_tree->right)) + 1;
 }
 
 
 void BinaryTree::remove(const int sup_key) {
-    if (root == nullptr || !find(sup_key)) return;
+    if (/*root == nullptr || */!find(sup_key)) return;
 
     if (root->key == sup_key){
         remove(root);
@@ -217,7 +237,7 @@ void BinaryTree::remove(const int sup_key) {
 void BinaryTree::remove(Node *sub_tree) {
     if (sub_tree == nullptr) return;
 
-    if (sub_tree->IsLeaf()){
+    if (sub_tree->is_leaf()){
         delete sub_tree;
         return;
     }
@@ -235,12 +255,13 @@ void BinaryTree::del(const int sup_key) {
 
     Node* sup_node = get_node(sup_key);
 
-    if (sup_node->IsLeaf()){
+    if (sup_node->is_leaf()){
         remove(sup_key);
         return;
     }
 
     Node* replacing_node = find_node_to_replace(sup_node);
+    std::cout << sup_node->value << "[" << sup_node->key << "]  |  " << replacing_node->value << "[" << replacing_node->key << "]\n\n";
 
     int new_key = replacing_node->key;
     double new_val = replacing_node->value;
@@ -252,52 +273,42 @@ void BinaryTree::del(const int sup_key) {
 
 
 Node* BinaryTree::find_node_to_replace(Node *sup_node) {
+    //if (sup_node->is_leaf()) return nullptr;  //  на данном этапе гарантируется, что sup_node не лист
 
-    if (sup_node->IsLeaf()) return nullptr;
+    if (height(sup_node->right) >= height(sup_node->left))
+        return min_in_right(sup_node->right);
+    else
+        return max_in_left(sup_node->left);
+}
 
-    //if (sup_node->left == nullptr) return sup_node->right;
-    //if (sup_node->right == nullptr) return sup_node->left;
 
-
-    Node* replacing_node = nullptr;
-    bool in_right_subtree = false;
-    if (sup_node->right != nullptr){  // !in_left_subtree
-        Node* right_handed_node = sup_node->right;
-        while(!right_handed_node->IsLeaf()){
-            if (right_handed_node->left != nullptr){
-                in_right_subtree = true;
-                replacing_node = right_handed_node->left;
-                right_handed_node = right_handed_node->left;
-            } else
-                right_handed_node = right_handed_node->right;
-        }
+Node* BinaryTree::max_in_left(Node *sup_node) {
+    //sup_node гарантированно не nullptr
+    Node* ans = sup_node;
+    Node* left_handed_node = sup_node;
+    while (!left_handed_node->is_leaf()){
+        if (left_handed_node->right != nullptr){
+            ans = left_handed_node->right;
+            left_handed_node = left_handed_node->right;
+        } else
+            left_handed_node = left_handed_node->left;
     }
-    bool in_left_subtree = false;
-    if (!in_right_subtree && sup_node->left != nullptr) {
-        Node* left_handed_node = sup_node->left;
-        while (!left_handed_node->IsLeaf()){
-            if (left_handed_node->right != nullptr){
-                in_left_subtree = true;
-                replacing_node = left_handed_node->right;
-                left_handed_node = left_handed_node->right;
-            } else
-                left_handed_node = left_handed_node->left;
-        }
+    return ans;
+}
 
+
+Node* BinaryTree::min_in_right(Node *sup_node) {
+    //sup_node гарантированно не nullptr
+    Node* ans = sup_node;
+    Node* right_handed_node = sup_node;
+    while(!right_handed_node->is_leaf()){
+        if (right_handed_node->left != nullptr){
+            ans = right_handed_node->left;
+            right_handed_node = right_handed_node->left;
+        } else
+            right_handed_node = right_handed_node->right;
     }
-
-    if (replacing_node == nullptr){
-        if (sup_node->left == nullptr){
-            replacing_node = sup_node->right;
-        } else if (sup_node->right == nullptr) {
-            replacing_node = sup_node->left;
-        } else {
-            replacing_node = (height(sup_node->right) >= height(sup_node->left)) ?
-                             sup_node->right : sup_node->left;
-        }
-    }
-
-    return replacing_node;
+    return ans;
 }
 
 
@@ -305,7 +316,7 @@ void BinaryTree::print(Node* sub_tree) {
     if (sub_tree == nullptr) return;
 
     std::cout << "The " << sub_tree->value << "[" << sub_tree->key << "]";
-    if (sub_tree->IsLeaf()){
+    if (sub_tree->is_leaf()){
         std::cout << "\n";
         return;
     }
@@ -313,7 +324,7 @@ void BinaryTree::print(Node* sub_tree) {
     if (sub_tree->left != nullptr) {
         std::cout << " has on the left side " << sub_tree->left->value;
         if (sub_tree->right != nullptr)
-            std::cout << " and ";
+            std::cout << "  and ";
     }
     if (sub_tree->right != nullptr){
         std::cout << " has on the right side " << sub_tree->right->value;
