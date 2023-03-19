@@ -15,8 +15,8 @@ public:
     void push(int item);
     int upper();
     int size();
-    bool empty();
-    bool full();
+    bool is_empty();
+    bool is_full();
 };
 
 
@@ -46,7 +46,7 @@ Queue::~Queue() {
 
 
 int Queue::pop() {
-    if (empty()) {
+    if (is_empty()) {
         throw IS_EMPTY;
     }
     int element = array[first];
@@ -58,7 +58,7 @@ int Queue::pop() {
 
 
 void Queue::push(int item) {
-    if (full()){
+    if (is_full()){
         throw IS_FULL;
     }
 
@@ -70,7 +70,7 @@ void Queue::push(int item) {
 
 
 int Queue::upper() {
-    if (empty()){
+    if (is_empty()){
         throw IS_EMPTY;
     }
     return array[first];
@@ -82,12 +82,12 @@ int Queue::size() {
 }
 
 
-bool Queue::empty() {
+bool Queue::is_empty() {
     return (size() == 0);
 }
 
 
-bool Queue::full() {
+bool Queue::is_full() {
     return (size() == capacity);
 }
 
@@ -101,26 +101,19 @@ int main() {
     queue.push(4);
     queue.push(5);
 
-    std::cout <<"First " << queue.upper() << std::endl;
-    std::cout << "Size " << queue.size() << std::endl;
-
     queue.pop();
     queue.pop();
-
-    std::cout << "First: " << queue.upper() << std::endl;
-    std::cout << "Size: " << queue.size() << std::endl;
 
     queue.push(10);
     queue.push(20);
 
-    std::cout << "First: " << queue.upper() << std::endl;
-    std::cout << "Size: " << queue.size() << std::endl;
 
-    if (queue.empty()) {
+    if (queue.is_empty()) {
         throw IS_EMPTY;
     }
 
-    if (queue.full()) {
+    if (queue.is_full()) {
         throw IS_FULL;
     }
+
 }

@@ -2,38 +2,46 @@
 #include <new>
 using namespace std;
 
-
+double E = 0.00000001;
+unsigned int RESERVE = 5;
 class Queue {
 private:
-    double *queue_massive; // динамический массив
-    int count; // количество элементов в очереди
+    double *queue_massive;
+    int count;
+    int sp;
+
 
 public:
     Queue();
     Queue(unsigned int);
-
-
     Queue(const Queue &obj);
     Queue(Queue &&x);
     ~Queue();
 
+    Queue& operator=(const Queue& obj);
+
     void push( double);
     double pop( );
-
-    Queue& operator=(const Queue& obj);
-    double GetItem();
     bool  IsEmpty();
-    int GetN();
     void  print();
     int search(double);
+    inline bool isFull();
 
 };
 
 
 
 Queue:: Queue(){
-    count = 0; // очередь пустая
+    count = 0;
     queue_massive = nullptr;
+}
+
+
+Queue:: Queue(unsigned int n){
+    count = n + RESERVE;
+    queue_massive = new double [count];
+    sp = -1;
+
 }
 
 
@@ -53,7 +61,7 @@ Queue::Queue(Queue &&x) {
 }
 
 
-Queue:: ~Queue() {  // деструктор
+Queue:: ~Queue() {
     delete[] queue_massive;
 }
 
@@ -71,21 +79,14 @@ Queue& Queue:: operator =(const Queue& X) {
 }
 
 
+inline bool Queue::isFull() {
+    return sp == count - 1;
+}
+
+
 void Queue:: push(double item){
-    if (count == 0){
-        queue_massive = new double [count +1];
-        queue_massive[0] = item;
-        count++;
-        return;
-    }
-    double* queue_massive_2;
-    queue_massive_2 = new double [count];
-    for (int i = 0; i < count; i++){
-        queue_massive_2[i] = queue_massive[i] ;
-    }
-    queue_massive_2[count] =item;
-    queue_massive = queue_massive_2;
-    count++;
+    if (isFull()) exit(EXIT_FAILURE);
+    queue_massive[++sp] = item;
 }
 
 
@@ -95,34 +96,18 @@ bool Queue:: IsEmpty() {
 
 
 double Queue:: pop() {
-    if (IsEmpty()) return 0.00;
-    double item = queue_massive[0] ;
-    if (count == 0)
-        return 0;
-    double*  queue_massive_2 = new double[count - 1];
-    for (int i = 0; i < count - 1; i++)
-        queue_massive_2[i] = queue_massive[i + 1];
-
-    queue_massive = queue_massive_2;
-    count--;
+    if (IsEmpty()) exit(EXIT_FAILURE);
+    double item =queue_massive [0];
+    for (unsigned int number = 1; number <= sp; number ++){
+        queue_massive[number -1] = queue_massive[number];
+    }
+    sp--;
     return item;
 }
 
 
-double Queue::GetItem() {
-    if (count == 0) return 0;
-    return queue_massive[0];
-}
-
-
-int Queue::GetN() {
-    return count;
-}
-
-
 void Queue:: print() {
-    cout << "\n------------------- Current queue------------------- \n";
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i <= sp; i++)
         cout << queue_massive[i] << "  ";
     cout << endl;
 }
@@ -130,15 +115,15 @@ void Queue:: print() {
 
 int Queue::search(double item) {
     for ( int number = 0; number < count; number++){
-        if (queue_massive[number] == item) return number+1;
+        if (abs(queue_massive[number] - item) < E) return number+1;
     }
     std:: cout << "Not found" << "\n";
     return 0;
 }
 
 int main() {
-    Queue My_queue;
-    double r;
+    Queue My_queue = Queue{5};
+double r;
     My_queue.push(1.00);
     My_queue.push(2.00);
     My_queue.push(3.00);
@@ -146,19 +131,26 @@ int main() {
     My_queue.push(5.00);
     My_queue.push(6.00);
     My_queue.push(7.00);
+    My_queue.push(8.00);
+    My_queue.push(9.00);
+    My_queue.push(10.00);
+
 
     My_queue.print();
 
-    cout << "-------------------After deletion-------------------\n";
     r =  My_queue.pop();
     r =  My_queue.pop();
     r =  My_queue.pop();
+    My_queue.push(11.00);
     My_queue.print();
-    cout << "-------------------After search-------------------\n";
+
     r = My_queue.search(7.00);
-    std::cout <<"Current position in the queue  " <<r<<"\n";
+
 
     return 0;
 
 }
+
+
+
 

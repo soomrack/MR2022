@@ -14,8 +14,8 @@ public:
     int upper();
     int size();
 
-    bool empty();
-    bool full();
+    bool is_empty();
+    bool is_full();
 };
 
 
@@ -41,7 +41,7 @@ Stack::~Stack() {
 }
 
 void Stack::push(int item) {  // Проверка на заполненность и если не полный то пушится элемент
-    if (full()) {
+    if (is_full()) {
         throw IS_FULL;
     }
     std::cout << "Push: " << item << std::endl;
@@ -50,7 +50,7 @@ void Stack::push(int item) {  // Проверка на заполненност�
 }
 
 int Stack::pop() {  // Проверка на пустоту, если не пустой то вынимается элемент, уменьшается на 1 верхний элемент
-    if (empty()) {
+    if (is_empty()) {
         std::cout << "Stack is empty " <<  std::endl;
     }
     std::cout << "Pop " << upper() << std::endl;
@@ -59,11 +59,11 @@ int Stack::pop() {  // Проверка на пустоту, если не пу�
 }
 
 int Stack::upper() {  // Для возврата верхнего элемента
-    if (!empty()) {
+    if (!is_empty()) {
         return array[stp];
     }
     else {
-        exit;
+        throw IS_EMPTY;
     }
 }
 
@@ -71,33 +71,23 @@ int Stack::size() { // Для определения размера стека
     return stp + 1;
 }
 
-bool Stack::full() {  // Для проверки заполненности стека
+bool Stack::is_full() {  // Для проверки заполненности стека
     return size() == capacity;
 }
 
-bool Stack::empty() {  // Для проверки пустоты стека
+bool Stack::is_empty() {  // Для проверки пустоты стека
     return size() == 0;
 }
 
 int main () {
     Stack st(5);
-
     st.push(1); st.push(44); st.push(7);
-    std::cout << "Upper element: " << st.upper() << std::endl;
-    std::cout << "Stack size: " << st.size() <<  std::endl;
-
     st.pop(); st.pop();
-    std::cout << "Upper element: " << st.upper() << std::endl;
-    std::cout << "Stack size: " << st.size() <<  std::endl;
-
     st.push(25);
-    std::cout << "Upper element: " << st.upper() << std::endl;
-    std::cout << "Stack size: " << st.size() <<  std::endl;
 
     if (st.empty()) {
         throw IS_EMPTY;
     }
-
     if (st.full()) {
         throw IS_FULL;
     }
