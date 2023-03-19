@@ -1,15 +1,5 @@
-//
-// Created by delta on 24.02.2023.
-//
-
-#ifndef CLIONPROJECTS_BINARTREE_H
-#define CLIONPROJECTS_BINARTREE_H
-
-#endif //CLIONPROJECTS_BINARTREE_H
-
 #include <iostream>
 using namespace std;
-
 
 
 template <typename SPIDER>
@@ -19,8 +9,7 @@ public:
     SPIDER data;
     Node * left;
     Node * right;
-
-    Node(SPIDER val);
+    explicit Node(SPIDER val);
 };
 
 template <typename SPIDER>
@@ -35,7 +24,7 @@ template <typename SPIDER>
 class Tree
 {
 private:
-    Node <SPIDER>* root;
+    Node<SPIDER> *root;
     int BinaryTreeSize;
     // методы класса
     void printTree(Node <SPIDER>*);
@@ -71,11 +60,12 @@ Tree<SPIDER>::~Tree()
 template <typename SPIDER>
 void Tree<SPIDER>::deleteTree(Node <SPIDER>* curr)
 {
-    if (curr)
+    if (curr==0)
     {
         deleteTree(curr->left);
         deleteTree(curr->right);
         delete curr;
+        // BinaryTreeSize = 0;
     }
 }
 
@@ -97,6 +87,7 @@ void Tree<SPIDER>::printTree(Node <SPIDER>* curr)
     }
 }
 
+// возвращать значение
 template <typename SPIDER>
 bool Tree<SPIDER>::find(SPIDER key)
 {
@@ -111,6 +102,7 @@ bool Tree<SPIDER>::find(SPIDER key)
     return curr != nullptr;
 }
 
+// возвращать данные
 template <typename SPIDER>
 void Tree<SPIDER>::insert(SPIDER key)
 {
@@ -136,6 +128,8 @@ void Tree<SPIDER>::insert(SPIDER key)
     }
 }
 
+
+// find сохранять родителя и возвращать родителя
 template <typename SPIDER>
 void Tree<SPIDER>::erase(SPIDER key)
 {
@@ -153,8 +147,6 @@ void Tree<SPIDER>::erase(SPIDER key)
             curr = curr->right;
         }
     }
-    if (!curr)
-        return;
     if (curr->left == nullptr)
     {
         if (parent && parent->left == curr)
@@ -163,6 +155,7 @@ void Tree<SPIDER>::erase(SPIDER key)
             parent->right = curr->right;
         --BinaryTreeSize;
         delete curr;
+        // if parent == nullptr delete root;
         return;
     }
     if (curr->right == nullptr)
@@ -175,10 +168,12 @@ void Tree<SPIDER>::erase(SPIDER key)
         delete curr;
         return;
     }
+    // лучше менять узлы
     Node <SPIDER>* replace = curr->right;
     while (replace->left)
         replace = replace->left;
-    int replace_value = replace->data;
+    SPIDER replace_value = replace->data;
+    // добаить ключ в Node
     erase(replace_value);
     curr->data = replace_value;
 }
