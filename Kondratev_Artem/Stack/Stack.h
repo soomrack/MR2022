@@ -19,11 +19,6 @@ private:
 public:
     Stack();
     ~Stack() = default;
-    Stack(const Stack<T>& other);
-    Stack(Stack<T>&& other) noexcept;
-
-    Stack<T> &operator=(const Stack<T>& other);
-    Stack<T> &operator=(Stack<T>&& other) noexcept;
 
     void append(T object);
     T pop();
@@ -35,44 +30,6 @@ template<typename T>
 Stack<T>::Stack() {
     list = List<T>();
     size = 0;
-}
-
-
-template<typename T>
-Stack<T>::Stack(const Stack<T>& other) {
-    size = other.size;
-    list = other.list;
-}
-
-
-template<typename T>
-Stack<T>::Stack(Stack<T>&& other) noexcept {
-    size = other.size;
-    list = other.list;
-    other.size = 0;
-    other.list = nullptr;
-}
-
-
-template<typename T>
-Stack<T> &Stack<T>::operator=(const Stack<T> &other) {
-    if (this != &other) {
-        size = other.size;
-        list = other.list;
-    }
-    return *this;
-}
-
-
-template<typename T>
-Stack<T> &Stack<T>::operator=(Stack<T> &&other) noexcept {
-    if (this != &other) {
-        size = other.size;
-        list = other.list;
-        other.size = 0;
-        other.list = 0;
-    }
-    return *this;
 }
 
 
