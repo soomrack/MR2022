@@ -2,12 +2,12 @@
 #include "dinamic_array.cpp"
 #include "linked_list.h"
 
-DinArray<char> A;
-DinArray<char> B;
 
-LinkList<char> List;
 
-int main() {
+void check_DinArr(){
+	DinArray<char> A;
+	DinArray<char> B;
+
 	A.append('A');
 	A.append('C');
 	A.append('D');
@@ -41,9 +41,55 @@ int main() {
 		std::cout << A[ind];
 	}
 	std::cout << std::endl;
-/*
+}
+
+void check_LinkList(){
+	ListMember<char> Member1;
+	ListMember<char> Member2;
+
+	LinkList<char> List;
+
+	Member1.set_data('A');
+	Member2.set_data('B');
+	Member1.set_next(&Member2);
+
+	std::cout<< Member1.get_next()->get_data() <<std::endl;
+
 	List.push_tail('A');
-	std::cout<< List[0].get_data();
+	List.push_tail('B');
+	List.push_tail('C');
+	List.push_tail('D');
+	List.push_tail('E');
+	List.push_tail('F');
+	List.push_tail('G');
+	List.push_tail('H');
+	List.push_tail('I');
+	List.push_tail('J');
+	List.push_tail('K');
+
+	List.push_head('0');
+
+	List.pop_back();
+	List.pop_front();
+
+	List.push_tail('J');
+
+	std::cout << "\nSize = " << List.size() << std::endl;
+	for(int ind = 0; ind < List.size();ind++){
+		std::cout << List[ind]->get_data();
+	}
+	std::cout << std::endl;
+
+	std::cout << "\nHead = " << List.get_head()->get_data() << std::endl;
+	std::cout << "\nTail = " << List.get_tail()->get_data() << std::endl;
+}
+
+int main() {
+
+	check_DinArr();
+
+	check_LinkList();
+
 	return 0;
-*/
+
 }
