@@ -12,13 +12,13 @@ class Stack {
     int capacity; // размер стека
 
 public:
-    Stack();  // конструктор по умолчанию
-    Stack(int size = SIZE);         // конструктор
-    ~Stack();                       // деструктор
+    Stack();
+    Stack(int size = SIZE);
+    ~Stack();
 
     void push(int); // вставить элемент
     int pop();  // извлечь элемент
-    int peek();  // извлечь самый верхни элемент
+    int peek();  // посмотреть самый верхний элемент ( без извлечения )
 
     int size();  // размер стека
     inline bool isEmpty();  // заполнен ли стек?
@@ -33,21 +33,17 @@ public:
 class Stack_Exception {
 public:
     int kod_mistake;
-
     Stack_Exception();
     Stack_Exception(int kod_mistake);
     void set_mistake (int kod_mistake);
 };
 
-
-//Объявление исключений
 Stack_Exception Overflow=(1);
 Stack_Exception Underflow=(2);
 
 Stack_Exception:: Stack_Exception(){
     kod_mistake = 999;
 }
-
 
 Stack_Exception:: Stack_Exception(int kod){
     kod_mistake = kod;
@@ -68,7 +64,6 @@ void Stack_Exception::set_mistake (int error){
 }
 
 
-// Конструкторы
 Stack::Stack(){
     capacity = 0;
     arr = NULL;
@@ -83,7 +78,6 @@ Stack::Stack(int size) {
 }
 
 
-// Деструктор
 Stack::~Stack() {
     delete[] arr;
 }
@@ -91,9 +85,10 @@ Stack::~Stack() {
 unsigned int Stack::getsize() {
     return (capacity);
 }
-// Добавления элемента в stack
+
+
 void Stack::push(int x) {
-    if (isFull()) { // Проверка на переполнения стека
+    if (isFull()) {
         try{ throw Overflow;}
         catch (Stack_Exception error){ error.set_mistake(1);}
         exit(EXIT_FAILURE);
@@ -103,7 +98,6 @@ void Stack::push(int x) {
 }
 
 
-// Извлечения верхнего элемента из stack
 int Stack::pop() {
     if (isEmpty()) {
         try{ throw Underflow;}
@@ -114,7 +108,7 @@ int Stack::pop() {
     return arr[sp--];
 }
 
-// Возврат верхнего элемента stack
+
 int Stack::peek() {
     if (!isEmpty()) {
         return arr[sp];
@@ -124,28 +118,30 @@ int Stack::peek() {
     }
 }
 
-// Возврата размера stack
+
 int Stack::size() {
     return sp + 1;
 }
 
-// Вспомогательная функция для проверки, пуст stack или нет
+
 inline bool Stack::isEmpty() {
     return sp == -1;
 }
 
-// Вспомогательная функция для проверки, заполнен ли stack или нет
+
 inline bool Stack::isFull() {
     return sp == capacity - 1;
 }
 
+
 void Stack::print() {
     cout << "Stack =  ";
-    for (int number = 0; number <= sp; number++){
+    for (int number = sp; number >= 0; number--){
         cout << arr[number]<< " ";
     }
     cout <<  " \n";
 }
+
 
 void Stack::search(int x) {
     for (int number = 0; number <= sp; number++){
@@ -158,14 +154,11 @@ void Stack::search(int x) {
 }
 
 
-
-int main()
-{
+int main() {
     Stack pt(7);
     for ( int i = 0; i < pt.getsize(); i++) {
         pt.push(i);
     }
-
 
     pt.print();
     pt.search(3);
@@ -175,8 +168,14 @@ int main()
     pt.pop();
     pt.pop();
     pt.pop();
+    pt.print();
 
     cout << "The sp element is " << pt.peek() << endl;
     cout << "The stack size is " << pt.size() << endl;
+
+    pt.pop();
+    pt.pop();
+    pt.pop();
+    pt.pop();
     return 0;
 }

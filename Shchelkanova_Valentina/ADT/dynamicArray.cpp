@@ -1,74 +1,115 @@
 #include <iostream>
-#include <ctime>
 #include <cstdlib>
-using namespace std;
+#include <ctime>
 
-
-class TwoDimArray {
+class DynamicArray {
 private:
-    int** data;
-    int width;
-    int height;
+    int *arr; // указатель на начало массива
+    int size; // текущий размер массива
+
 public:
-    TwoDimArray(int row, int col) { // Конструктор для создания массива
-        width = col;
-        height = row;
-        data = new int*[height];
-        for (int idx = 0; idx < height; idx++) {
-            data[idx] = new int[width];
-        }
-    }
+    DynamicArray();
 
-    void randFill() { // Заполнение значениями от 0 до 99
-        srand(time(NULL));
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                data[row][col] = rand() % 100;
-            }
-        }
-    }
+    ~DynamicArray();
 
-    void printArray() { // Вывод массива на экран
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                std::cout << data[row][col] << ' ';
-            }
-            std::cout << std::endl;
-        }
-    }
+    void add(int value, int index);
 
-    void addElement(int row, int col, int value) { // Добавление элемента по индексу
-        data[row][col] = value;
-    }
+    void fillRandom(int n);
 
-    void deleteElement(int row, int col) { // Удаление элемента по индексу
-        data[row][col] = 0;
-    }
+    void remove(int index);
 
-    int elementsNumber() { // Возврат числа элементов массива
-        return width * height;
-    }
+    void print();
 
-    void deleteArray() { // Удаление всего массива
-        for (int i = 0; i < height; i++) {
-            delete [] data[i];
-        }
-        delete [] data;
-    }
+    void resize(int n);
+
+    void clear();
 };
+DynamicArray::DynamicArray() {
+        arr = nullptr;
+        size = 0;
+    }
+
+DynamicArray::~DynamicArray() {
+        delete[] arr;
+    }
+
+    void DynamicArray::fillRandom(int n) {
+        srand(time(nullptr));
+        arr = new int[n]; // создаем массив нужной длины
+
+        for (int i = 0; i < n-3; i++) {
+            arr[i] = rand() % 100;
+        }
+
+        size = n;
+    }
+
+    void DynamicArray::add(int value, int index) {
+        int* temp = new int[size + 1]; // создаем временный массив на один элемент больше
+        for (int i = 0; i < index; i++) {
+            temp[i] = arr[i]; // копируем элементы до индекса
+        }
+        temp[index] = value; // вставляем новый элемент
+        for (int i = index; i < size; i++) {
+            temp[i + 1] = arr[i]; // копируем элементы после индекса
+        }
+        delete[] arr;
+        arr = temp;
+        size++;
+    }
+
+    void DynamicArray::remove(int index) {
+        int* temp = new int[size - 1]; // создаем временный массив на один элемент меньше
+        for (int i = 0; i < index; i++) {
+            temp[i] = arr[i]; // копируем элементы до индекса
+        }
+        for (int i = index + 1; i < size; i++) {
+            temp[i - 1] = arr[i]; // копируем элементы после индекса
+        }
+        delete[] arr;
+        arr = temp;
+        size--;
+    }
+
+    void DynamicArray::print() {
+        for (int i = 0; i < size; i++) {
+            std::cout << arr[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    void DynamicArray::resize(int n) {
+        int* temp = new int[n]; // создаем временный массив нужной длины
+        int minSize = (size < n) ? size : n; // определяем минимальный размер для копирования
+        for (int i = 0; i < minSize; i++) {
+            temp[i] = arr[i]; // копируем элементы из текущего массива во временный
+        }
+        delete[] arr;
+        arr = temp;
+        size = n;
+    }
+
+    void DynamicArray::clear() {
+        delete[] arr;
+        arr = nullptr;
+        size = 0;
+    }
 
 int main() {
-    TwoDimArray arr(5, 5);
-    arr.randFill();
-    arr.printArray();
-    cout << " \n";
-    arr.addElement(4, 0, 99);
-    arr.printArray();
-    cout << " \n";
-    arr.deleteElement(2, 3);
-    arr.printArray();
-    cout << " \n";
-    std::cout << "Number of elements: " << arr.elementsNumber() << std::endl;
-    arr.deleteArray();
+    DynamicArray arr;
+    arr.fillRandom(10);
+    arr.print();
+
+    arr.add(42, 5);
+    arr.print();
+
+    arr.remove(3);
+    arr.print();
+
+    arr.resize(6);
+    arr.print();
+
+    arr.clear();
+
     return 0;
 }

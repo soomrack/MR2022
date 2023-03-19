@@ -30,13 +30,21 @@ Stack<T>::Stack(unsigned long long size) {
 
 template<typename T>
 void Stack<T>::push(const T &element) {
-
+    if (stack_pointer != allocated_space) data[stack_pointer++] = element;
+    else {
+        std::cerr << "unable to push" << std::endl;
+        exit(2);
+    }
 }
 
 
 template<typename T>
 T Stack<T>::pop() {
-    return data[--stack_pointer];
+    if (stack_pointer != 0) return data[--stack_pointer];
+    else {
+        std::cerr << "Unable to pop" << std::endl;
+        exit(3);
+    }
 }
 
 #endif //PROGRAMMING_STACK_H

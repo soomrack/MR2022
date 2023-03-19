@@ -2,7 +2,7 @@
 #include <ctime>
 #include <cstdlib>
 
-using namespace std;
+using namespace std; // (везде вынести функции из класса)
 
 // Определяем структуру элемента списка
 struct Node
@@ -19,23 +19,34 @@ private:
     Node *tail;
 
 public:
-    List()
-    {
-        head = NULL;
-        tail = NULL;
+    List();
+
+    void push_tail(int value);
+    void display();
+    void push_head(int value);
+    void delete_head();
+    void delete_tail();
+    void delete_position(int pos);
+    void fillWithRandom();
+    void clearList();
+};
+
+    List::List(){
+        head = nullptr;
+        tail = nullptr;
     }
 
-    void push_tail(int value)  // Добавление элемента в конец списка
+    void List::push_tail(int value)  // Добавление элемента в конец списка
     {
         Node *temp = new Node;
         temp->data = value;
-        temp->next = NULL;
+        temp->next = nullptr;
 
-        if(head == NULL)
+        if(head == nullptr)
         {
             head = temp;
             tail = temp;
-            temp = NULL;
+            temp = nullptr;
         }
         else
         {
@@ -44,57 +55,36 @@ public:
         }
     }
 
-    void display()  // Вывод списка
-    {
+    void List::display(){  // Вывод списка
         Node *temp = new Node;
         temp = head;
-        while(temp != NULL)
+        while(temp != nullptr)
         {
             cout << temp->data << "\t";
             temp = temp->next;
         }
     }
 
-    void push_head(int value)
-    {
+    void List::push_head(int value){
         Node *temp = new Node;
         temp->data = value;
         temp->next = head;
         head = temp;
     }
 
-    void push_position(int pos, int value)
-    {
-        Node *pre=new Node;
-        Node *cur=new Node;
-        Node *temp=new Node;
-        cur=head;
-
-        for(int i=1;i<pos;i++)
-        {
-            pre=cur;
-            cur=cur->next;
-        }
-
-        temp->data=value;
-        pre->next=temp;
-        temp->next=cur;
-    }
-
-    void delete_head()
-    {
+    void List::delete_head(){
         Node *temp = new Node;
         temp = head;
         head = head->next;
         delete temp;
     }
 
-    void delete_tail()
+    void List::delete_tail()
     {
         Node *current = new Node;
         Node *previous = new Node;
         current = head;
-        while(current->next != NULL)
+        while(current->next != nullptr)
         {
             previous = current;
             current = current->next;
@@ -104,8 +94,7 @@ public:
         delete current;
     }
 
-    void delete_position(int pos)
-    {
+    void List::delete_position(int pos){
         Node *current = new Node;
         Node *previous = new Node;
         current = head;
@@ -117,8 +106,7 @@ public:
         previous->next = current->next;
     }
 
-    void fillWithRandom()
-    {
+    void List::fillWithRandom(){
         srand(time(0));
         for (int el = 0; el < 5; el++)
         {
@@ -126,12 +114,11 @@ public:
         }
     }
 
-    void clearList()
+    void List::clearList()
     {
-        head = NULL;
-        tail = NULL;
+        head = nullptr;
+        tail = nullptr;
     }
-};
 
 int main()
 {
@@ -144,9 +131,6 @@ int main()
     l.display();
     cout <<" \n";
     l.push_head(50);
-    l.display();
-    cout <<" \n";
-    l.push_position(5,60);
     l.display();
     cout <<" \n";
     l.delete_head();

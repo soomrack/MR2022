@@ -1,243 +1,349 @@
 #include <iostream>
+#include <limits>
 
 
-const double COMPARATION_CONST = 0.0001;
+int get_key(double val){  // тут должна быть нормальная хэш-функция
+    return int(val) + (int(val * 10) - int(val) * 10) * 10;
+}
 
 
-struct branch {
+class Node {
 
+public:
     double value;
-    branch* left;
-    branch* right;
+    int key;
+    Node* left;
+    Node* right;
 
-    branch();
-    branch(const double vle);
+    Node();
+    Node(const double vle, const int new_key);
+    Node(const Node& x);
 
     bool is_leaf();
 
 };
 
 
-class Binary_tree {
+class BinaryTree {
 
 protected:
-    branch* root;
+    Node* root;
 
 public:
-    Binary_tree();
-    Binary_tree(const double root_vle);
-    Binary_tree(const Binary_tree& x);
-    Binary_tree(Binary_tree&& x);
-    ~Binary_tree();
+    BinaryTree();
+    BinaryTree(const double root_vle);
+    ~BinaryTree();
 
-    void add_root(const double vle);
     void add(const double vle);
-    void add(const double vle, branch* sub_tree);
-
-    unsigned int contains(const double vle);  // считает кол-во вхождений во всё дерево
-    unsigned int contains(const double vle, branch* sub_tree);
+    bool find(const int sup_key);
     unsigned int height();
-    unsigned int height(branch* sub_tree);
 
-    branch* get(const double vle);
-    branch* get(const double vle, branch* sub_tree);  // нужно ли в get(vle) и del(vle) добавить contains(vle) ??
-    void del();
-    void del(const double vle);
-    void del(const double vle, branch* sub_tree);
+    double get(const int sup_key);
 
-    branch* get_root();
-    void output();
-    void print(branch* sub_tree);
+    void remove(const int sup_key);  // удаляет элемент со всеми его поддеревьями
+    void del(const int sup_key);  // замещает удаленный элемент
+
+    void print();
+
+
+protected:
+
+    //void addRoot(const double vle);
+    void add(const double vle, const int new_key, Node* sub_tree);
+
+    bool find(const int sup_key, Node* sub_tree);
+    unsigned int height(Node* sub_tree);
+
+    Node* get_node(const int sup_key);
+    Node* get_parent_to(const int sup_key);
+
+    void remove(Node* sub_tree);
+    void print(Node* sub_tree);
+
+    Node* find_node_to_replace(Node* sup_node);
+    Node* max_in_left(Node* sup_node);
+    Node* min_in_right(Node* sup_node);
 
 };
 
 
-branch::branch() {
-    value = NULL;
+Node::Node() {
+    value = 0.0;
+    key = 0;
     left = nullptr;
     right = nullptr;
 }
 
 
-branch::branch(const double vle) {
+Node::Node(const double vle, const int new_key) {
     value = vle;
+    key = new_key;
     left = nullptr;
     right = nullptr;
 }
 
 
-bool branch::is_leaf() {
-    return ((left->value == NULL) && (right->value == NULL));
+Node::Node(const Node &x) {
+    value = x.value;
+    key = x.key;
+    left = x.left;
+    right = x.right;
 }
 
 
-Binary_tree::Binary_tree() {
+bool Node::is_leaf() {
+    return ((left == nullptr) && (right == nullptr));
+}
+
+
+BinaryTree::BinaryTree() {
     root = nullptr;
 }
 
 
-Binary_tree::Binary_tree(const double root_vle) {
-    root = nullptr;
-    add_root(root_vle);
+BinaryTree::BinaryTree(const double root_vle) {
+    root = new Node(root_vle, get_key(root_vle));
 }
 
 
-Binary_tree::~Binary_tree() {
-    root = nullptr;
+BinaryTree::~BinaryTree() {
+    remove(root->key);
+    //root = nullptr;
 }
 
 
-void Binary_tree::add_root(const double vle) {
-    branch* new_brch = new branch(vle);
-    new_brch->left = new branch();
-    new_brch->right = new branch();
+void BinaryTree::add(const double vle) {
     if (root == nullptr){
-        root = new_brch;
-    } else {
-        if (vle - root->value > COMPARATION_CONST) {  // vle < root->value
-            new_brch->left = root;
-        } else {
-            new_brch->right = root;
+        root = new Node(vle, get_key(vle));
+        return;
+    }
+    add(vle, get_key(vle), root);
+}
+
+
+void BinaryTree::add(const double vle, const int new_key, Node* sub_tree) {
+    Node* next_step = nullptr;
+    if (sub_tree->key > new_key){
+        if (sub_tree->left == nullptr){
+            sub_tree->left = new Node(vle, new_key);
+            return;
         }
-        root = new_brch;
-    }
-
-}
-
-
-void Binary_tree::add(const double vle) {
-    add(vle, this->get_root());
-}
-
-
-void Binary_tree::add(const double vle, branch* sub_tree) {
-    if (sub_tree == nullptr){
-        add_root(vle);
-        return;
-    }
-
-    if (sub_tree->value == NULL) {
-        sub_tree->value = vle;
-        sub_tree->left = new branch();
-        sub_tree->right = new branch();
-        return;
-    }
-
-    if (sub_tree->value - vle < COMPARATION_CONST){    // vle >= sub_tree->value
-        add(vle, sub_tree->right);
+        next_step = sub_tree->left;
     } else {
-        add(vle, sub_tree->left);
+        if (sub_tree->right == nullptr){
+            sub_tree->right = new Node(vle, new_key);
+            return;
+        }
+        next_step = sub_tree->right;
     }
 
+    add(vle, new_key, next_step);
 }
 
 
-branch* Binary_tree::get(const double vle) {
-    return get(vle, this->get_root());
-}
+Node* BinaryTree::get_node(const int sup_key) {
+    if (root == nullptr) return nullptr;
 
+    Node* node = root;
+    while (node != nullptr){
+        //if(node == nullptr) return nullptr;
+        if (node->key == sup_key) return node;
 
-branch* Binary_tree::get(const double vle, branch *sub_tree) {
-    if (sub_tree == nullptr) return new branch();
-    if (sub_tree->value == NULL) return new branch();
-
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) return sub_tree;
-
-    branch* in_left = get(vle, sub_tree->left);
-    branch* in_right = get(vle, sub_tree->right);
-
-    if (in_left->value == NULL){
-        return in_right;
+        node = (node->key > sup_key) ? node->left : node->right;
     }
-    return in_left;
+    return nullptr;
 }
 
 
-unsigned int Binary_tree::contains(const double vle) {
-    return contains(vle, this->get_root());
+Node* BinaryTree::get_parent_to(const int sup_key) {
+    if (root == nullptr || root->is_leaf()) return nullptr;
+
+    Node* current = root;
+    while (current != nullptr){
+        Node* next_step = (current->key > sup_key) ? current->left : current->right;
+        if (next_step != nullptr)
+            if (next_step->key == sup_key)
+                return current;
+
+        current = next_step;
+    }
+    return nullptr;
 }
 
 
-unsigned int Binary_tree::contains(const double vle, branch *sub_tree) {
+double BinaryTree::get(const int sup_key) {
+    if (get_node(sup_key) == nullptr) return std::numeric_limits<double>::quiet_NaN();
+    return get_node(sup_key)->value;
+}
+
+
+bool BinaryTree::find(const int sup_key) {
+    return find(sup_key, root);
+}
+
+
+bool BinaryTree::find(const int sup_key, Node *sub_tree) {
+    if (sub_tree == nullptr) return false;
+    if (sub_tree->key == sup_key) return true;
+
+    Node* next_step = (sup_key < sub_tree->key) ? sub_tree->left : sub_tree->right;
+    return find(sup_key, next_step);
+}
+
+
+unsigned int BinaryTree::height() {
+    return height(root);
+}
+
+
+unsigned int BinaryTree::height(Node* sub_tree) {
     if (sub_tree == nullptr) return 0;
-    if (sub_tree->value == NULL) return 0;
-
-    unsigned int ans = 0;
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) ans = 1;
-    return contains(vle, sub_tree->left) + contains(vle, sub_tree->right) + ans;
-}
-
-
-unsigned int Binary_tree::height() {
-    return height(this->get_root());
-}
-
-
-unsigned int Binary_tree::height(branch* sub_tree) {
-    if (sub_tree == nullptr) return 0;
-    if (sub_tree->value == NULL) return 0;
+    if (sub_tree->is_leaf()) return 1;
     return std::max(height(sub_tree->left), height(sub_tree->right)) + 1;
 }
 
 
-void Binary_tree::del() {
-    root = nullptr;
-}
+void BinaryTree::remove(const int sup_key) {
+    if (/*root == nullptr || */!find(sup_key)) return;
 
-
-void Binary_tree::del(const double vle) {
-    if (abs(this->get_root()->value - vle) < COMPARATION_CONST) {
+    if (root->key == sup_key){
+        remove(root);
         root = nullptr;
         return;
     }
-    del(vle, this->get_root());
+
+    Node* node = root;
+    while (true){
+        if (node->left != nullptr)
+            if (node->left->key == sup_key){
+                remove(node->left);
+                node->left = nullptr;
+                return;
+            }
+
+        if (node->right != nullptr)
+            if (node->right->key == sup_key){
+                remove(node->right);
+                node->right = nullptr;
+                return;
+            }
+
+        node = (sup_key < node->key) ? node->left : node->right;
+    }
+
 }
 
 
-void Binary_tree::del(const double vle, branch *sub_tree) {
+void BinaryTree::remove(Node *sub_tree) {
     if (sub_tree == nullptr) return;
-    if (sub_tree == this->get_root()){
-        root = nullptr;
+
+    if (sub_tree->is_leaf()){
+        delete sub_tree;
         return;
     }
-    if (sub_tree->value == NULL) return;
 
-    if (abs(sub_tree->value - vle) < COMPARATION_CONST) {
-        sub_tree->value = NULL;
-        sub_tree->left = nullptr;
-        sub_tree->right = nullptr;
+    remove(sub_tree->left);
+    sub_tree->left = nullptr;
+    remove(sub_tree->right);
+    sub_tree->right = nullptr;
+
+}
+
+
+void BinaryTree::del(const int sup_key) {
+    if (root == nullptr || !find(sup_key)) return;
+
+    Node* sup_node = get_node(sup_key);
+
+    if (sup_node->is_leaf()){
+        remove(sup_key);
         return;
     }
 
-    del(vle, sub_tree->left);
-    del(vle, sub_tree->right);
+    Node* replacing_node = find_node_to_replace(sup_node);
+    std::cout << sup_node->value << "[" << sup_node->key << "]  |  " << replacing_node->value << "[" << replacing_node->key << "]\n\n";
+
+    int new_key = replacing_node->key;
+    double new_val = replacing_node->value;
+    del(replacing_node->key);
+    sup_node->key = new_key;
+    sup_node->value = new_val;
+
 }
 
 
-branch* Binary_tree::get_root() {
-    return root;
+Node* BinaryTree::find_node_to_replace(Node *sup_node) {
+    //if (sup_node->is_leaf()) return nullptr;  //  на данном этапе гарантируется, что sup_node не лист
+
+    if (height(sup_node->right) >= height(sup_node->left))
+        return min_in_right(sup_node->right);
+    else
+        return max_in_left(sup_node->left);
 }
 
 
-void Binary_tree::print(branch* sub_tree) {
+Node* BinaryTree::max_in_left(Node *sup_node) {
+    //sup_node гарантированно не nullptr
+    Node* ans = sup_node;
+    Node* left_handed_node = sup_node;
+    while (!left_handed_node->is_leaf()){
+        if (left_handed_node->right != nullptr){
+            ans = left_handed_node->right;
+            left_handed_node = left_handed_node->right;
+        } else
+            left_handed_node = left_handed_node->left;
+    }
+    return ans;
+}
+
+
+Node* BinaryTree::min_in_right(Node *sup_node) {
+    //sup_node гарантированно не nullptr
+    Node* ans = sup_node;
+    Node* right_handed_node = sup_node;
+    while(!right_handed_node->is_leaf()){
+        if (right_handed_node->left != nullptr){
+            ans = right_handed_node->left;
+            right_handed_node = right_handed_node->left;
+        } else
+            right_handed_node = right_handed_node->right;
+    }
+    return ans;
+}
+
+
+void BinaryTree::print(Node* sub_tree) {
     if (sub_tree == nullptr) return;
-    if (sub_tree->value == NULL) return;
 
-    std::cout << "The " << sub_tree->value << " has on the left side " << sub_tree->left->value <<
-                    " and " << sub_tree->right->value << " on the right\n";
+    std::cout << "The " << sub_tree->value << "[" << sub_tree->key << "]";
+    if (sub_tree->is_leaf()){
+        std::cout << "\n";
+        return;
+    }
+
+    if (sub_tree->left != nullptr) {
+        std::cout << " has on the left side " << sub_tree->left->value;
+        if (sub_tree->right != nullptr)
+            std::cout << "  and ";
+    }
+    if (sub_tree->right != nullptr){
+        std::cout << " has on the right side " << sub_tree->right->value;
+    }
+    std::cout << "\n";
+
     print(sub_tree->left);
     print(sub_tree->right);
 }
 
 
-void Binary_tree::output() {
+void BinaryTree::print() {
     if (root == nullptr){
         std::cout << "There is no one element in this tree\n";
         return;
     }
 
     std::cout << "The root is " << this->root->value << "\n";
-    this->print(this->get_root());
+    this->print(root);
     std::cout << "\n";
 }
 
@@ -245,25 +351,38 @@ void Binary_tree::output() {
 int main()
 {
 
-    Binary_tree A = Binary_tree();
-    A.add(9.0, A.get_root());
-    A.output();
+    BinaryTree A = BinaryTree();
+    A.add(9.0);
+    A.print();
 
-    Binary_tree B = Binary_tree();
-    B.add_root(5.0);
-    B.add_root(4.0);
-    B.output();
+    BinaryTree B = BinaryTree();
+    B.add(5.0);
+    B.add(4.0);
+    B.print();
+
+    B.del(5);
+    B.print();
 
     B.add(7.0);
     B.add(3.0);
-    B.output();
+    B.print();
 
     std::cout << B.height() << "\n\n";
-    std::cout << B.contains(9.0) << "\n\n";
-    std::cout << B.get(4.0)->value << "\n\n";
+    std::cout << B.find(7) << "\n\n";
+    std::cout << B.get(4) << "\n\n";
 
-    B.del(9.0);
-    B.output();
+    double c_array[10] = {5.0, 8.0, 4.4, 2.0, 3.0, 9.0, 1.0, 7.0, 6.0, 3.3};
+    BinaryTree C = BinaryTree();
+    for (unsigned int idx = 0; idx < 10; idx++){
+        C.add(c_array[idx]);
+    }
+    C.print();
+
+    C.del(5);
+    C.print();
+
+    //C.remove(44);
+    //C.print();
 
     return 0;
 }
