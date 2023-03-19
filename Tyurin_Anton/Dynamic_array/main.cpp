@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstring>
 
 template<typename T>
 class DM {
@@ -8,7 +7,6 @@ protected:
     T *value;
 public:
     DM(T X, unsigned int n);
-    DM(const DM<T> &copy);
     ~DM();
     static void Arr_print(const DM<T> &Array);
     T get(unsigned int id);
@@ -18,9 +16,9 @@ public:
 
 template<typename T>  // Конструктор создания массива
 DM<T>::DM(T X, unsigned int n){
-    size = n;
+    size = n + 3;
     value = new T[size];
-    for (unsigned int idx = 0; idx < size; idx ++){
+    for (unsigned int idx = 0; idx < n; idx ++){
         value[idx] = X;
     }
 }
@@ -31,13 +29,6 @@ void DM<T>::Arr_print(const DM<T> &Array){
         std::cout << Array.value[idx] << ' ';
     }
     std::cout << std::endl;
-}
-
-template<typename T>
-DM<T>::DM(const DM<T> &copy) {
-    size = copy.size;
-    value = new T[size];
-    memcpy(value, copy.value, sizeof(T) * size);
 }
 
 template<typename T>
@@ -57,10 +48,24 @@ void DM<T>::set(unsigned int id, T number){
 
 template<typename T>
 void DM<T>::resize(unsigned int newsize){
-    size = newsize;
-    T *Parasite = value;
-    value = new T[size];
-    value = Parasite; // поправить функцию. (не приравнивать указатели)
+    if (newsize - size <= 3){
+        T *Parasite = value;
+        size = newsize;
+        value = new T[size];
+        for (unsigned int idx = 0; idx < size; idx ++){
+            value[idx] = Parasite[idx];
+        }
+        delete Parasite;
+    }
+    else{
+        T *Parasite = value;
+        size = newsize + 3;
+        value = new T[size];
+        for (unsigned int idx = 0; idx < newsize; idx ++){
+            value[idx] = Parasite[idx];
+        }
+        delete Parasite;
+    }
 }
 
 int main() {
@@ -75,7 +80,7 @@ int main() {
 
     DM<double>::Arr_print(ar);
 
-    ar.resize(5);
+    ar.resize(7);
     DM<double>::Arr_print(ar);
 
     return 0;
