@@ -1,5 +1,4 @@
 #include "List.h"
-#include <iostream>
 
 
 typedef struct Matrix {
@@ -29,6 +28,10 @@ int main() {
     B.push(m, 0);
     B.pop();
 
+    ListIterator<int> iter(&A, A[2]);
+    iter.find(4);
+    iter.pushNext(19);
+    A.print();
 
     return 0;
 }
