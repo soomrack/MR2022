@@ -1,57 +1,51 @@
 #include <iostream>
 
-template<typename T>
 class Queue;
 
-template<typename T>
 class Node {
-    friend class Queue<T>;
+    friend class Queue;
 protected:
-    Node<T> *next;
-    T data;
+    Node *next;
+    std::string data;
 public:
-    Node(T _data) : data(_data), next(nullptr){}
+    Node(std::string data) : data(data), next(nullptr){}
 };
 
-template<typename T>
 class Queue {
 protected:
-    Node<T> *first_el;
-    Node<T> *last_el;
+    Node *head;
+    Node *tail;
     unsigned int size;
 public:
-    Queue() : first_el(nullptr), last_el(nullptr), size(0) {}
+    Queue() : head(nullptr), tail(nullptr), size(0) {}
     bool is_empty();
-    void push(T _data);
+    void push(std::string _data);
     void print();
     void pop();
     void remove_first();
     unsigned int get_size();
 };
 
-template <typename T>
-bool Queue<T>::is_empty() {
-    return first_el == nullptr;
+bool Queue::is_empty() {
+    return head == nullptr;
 }
 
-template <typename T>
-void Queue<T>::push(T _data){
-    Node<T> *local = new Node<T>(_data);
+void Queue::push(std::string data){
+    Node *local = new Node(data);
     if (is_empty()) {
-        first_el = local;
-        last_el = local;
+        head = local;
+        tail = local;
         size++;
         return;
     }
-    last_el->next = local;
-    last_el = local;
+    tail->next = local;
+    tail = local;
     size++;
 }
 
-template<typename T>
-void Queue<T>::print() {
+void Queue::print() {
     if (is_empty()) {return;}
-    Node<T> *local = first_el;
+    Node *local = head;
     while (local) {
         std::cout << local->data << " ";
         local = local->next;
@@ -59,24 +53,22 @@ void Queue<T>::print() {
     std::cout << std::endl;
 }
 
-template<typename T>
-void Queue<T>::pop() {
+void Queue::pop() {
     if (is_empty()) return;
-    Node<T>* local = first_el;
-    if (local == last_el){ last_el = nullptr;}
-    first_el = local->next;
+    Node* local = head;
+    if (local == tail){ tail = nullptr;}
+    head = local->next;
     delete local;
     size--;
 }
 
-template<typename T>
-unsigned int Queue<T>::get_size() {
+unsigned int Queue::get_size() {
     return size;
 }
 
 
 int main(){
-    Queue<std::string> Queue;
+    Queue Queue;
     Queue.print();
     Queue.push("he");
     Queue.push("ll");
