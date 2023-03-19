@@ -8,71 +8,117 @@
 
 #include <cstdint>
 #include <iostream>
-#include "../List/List.h"
 
 
+class Exception: std::exception {
+private:
+    std::string message;
+public:
+    explicit Exception(std::string _message) {message = std::move(_message);};
+
+    std::string getMessage() const {return message;};
+};
+
+
+template<typename T>
 class PriorityQueue;
 
 
-class Object {
-    friend class PriorityQueue;
+template<typename T>
+class Node {
+    friend class PriorityQueue<T>;
 private:
-    void* object;
+    T data;
     uint64_t priority;
+    Node<T>* next;
 public:
-    Object(void* object, uint64_t _priority);
+    Node(T _object, uint64_t _priority);
 };
 
 
-Object::Object(void* _object, uint64_t _priority) {
-    object = _object;
+template<typename T>
+Node<T>::Node(T _object, uint64_t _priority) {
+    data = _object;
     priority = _priority;
-}
-
-
-class PriorityQueue {
-private:
-    uint64_t size;
-    List list;
-public:
-    PriorityQueue();
-
-    void append(void* object, uint64_t priority);
-    void* pop();
-    uint64_t getSize();
-};
-
-
-PriorityQueue::PriorityQueue() {
-    list = List();
-    size = 0;
+    next = nullptr;
 }
 
 
 template<typename T>
-void PriorityQueue::append(void* object, uint64_t priority) {
-    Object<T> new_object(object, priority);
-    list.push(new_object);
+class PriorityQueue {
+private:
+    uint64_t size;
+    Node<T>* head;
+    Node<T>* tail;
+public:
+    PriorityQueue();
+
+    bool isEmpty();
+    void append(T object, uint64_t priority);
+    T pop();
+    void print();
+    uint64_t getSize();
+};
+
+
+template<typename T>
+PriorityQueue<T>::PriorityQueue() {
+    size = 0;
+    head = nullptr;
+    tail = nullptr;
+}
+
+
+template<typename T>
+bool PriorityQueue<T>::isEmpty() {
+    return size == 0;
+}
+
+
+template<typename T>
+void PriorityQueue<T>::append(T object, uint64_t priority) {
+    auto*  new_object = new Node<T>(object, priority);
+    if (isEmpty()) {
+        head = new_object;
+        tail = new_object;
+        size++;
+        return;
+    }
+    tail->next = new_object;
+    tail = new_object;
     size++;
 }
 
 
 template<typename T>
 T PriorityQueue<T>::pop() {
-    if (size == 0) {
-        throw Exception("error: bad access");
+    if (isEmpty()) {
+        throw Exception("error: queue is empty");
     }
-    uint64_t index = 0;
-    Object<T> object = list[0]->getData();
-    uint64_t max_priority = object.priority;
-    for (uint64_t idx = 1; idx < size; idx++) {
-        object = list[idx]->getData();
-        if (object.priority < max_priority) {
-            index = idx;
-            max_priority = object.priority;
+    Node<T>* node = head;
+    Node<T>* target = head;
+    while(node->next) {
+        if (node->next->priority > target->priority) {
+            target = node->next;
         }
+        node = node->next;
     }
-    return list.pop(index).object;
+    return target->data;
+}
+
+
+template<typename T>
+void PriorityQueue<T>::print() {
+    if(isEmpty()) {
+        return;
+    }
+    std::cout << "[";
+    Node<T>* node = head;
+    while (node != tail) {
+        std::cout << node->data << ", ";
+        node = node->next;
+    }
+    std::cout << tail->data << "]" << std::endl;
 }
 
 
