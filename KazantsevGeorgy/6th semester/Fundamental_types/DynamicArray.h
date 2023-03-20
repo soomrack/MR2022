@@ -1,11 +1,3 @@
-//
-// Created by delta on 13.02.2023.
-//
-
-#ifndef CLIONPROJECTS_MAIN_H
-#define CLIONPROJECTS_MAIN_H
-
-#endif //CLIONPROJECTS_MAIN_H
 #include <iostream>
 using namespace std;
 
@@ -15,22 +7,18 @@ class DynamicArray {
 public:
     unsigned int size;
     T *values;
-//конструкторы
 DynamicArray();
 DynamicArray(unsigned int size);
 DynamicArray(const DynamicArray &other);
-DynamicArray(DynamicArray&& DA) noexcept; //переноса
-//деструкторы
+DynamicArray(DynamicArray&& DA) noexcept;
 ~DynamicArray();
 
-//методы
 DynamicArray<T> one_number(T n);
 DynamicArray<T> i_number();
-//переопределенные операторы
 DynamicArray<T>& operator=(DynamicArray<T>&& DA);
 template <typename R>friend std::ostream& operator<<(std::ostream& out, DynamicArray<R> DA); //для оператора вывода необходимо использовать другой шаблон};
 void output();
-T get(int position); //метод доступа к элементу
+T get(int position);
 
 unsigned int length();
 void increase(double temp);
@@ -38,7 +26,6 @@ void decrease();
 
 };
 
-//конструктор создает пустой динамический массив
 template <typename T>
 DynamicArray<T>::DynamicArray() {
     size = 0;
