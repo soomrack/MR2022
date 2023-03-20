@@ -1,6 +1,15 @@
 
 #ifndef MR2022_QUEUE_H
 #define MR2022_QUEUE_H
+
+class QUEUE_ERROR: public std:: domain_error {
+public:
+    QUEUE_ERROR(const char *const str) : std::domain_error(str) {};
+};
+QUEUE_ERROR OVERFLOWED("Out of range");
+QUEUE_ERROR EMPTY("Queue is empty");
+QUEUE_ERROR BADALLOC("Memory has not been allocated");
+
 template <typename T>
 class queue {
 private:
@@ -13,34 +22,26 @@ private:
 public:
 
     queue(int);
-
     ~queue();
 
-    bool isFull();
-
-    bool isEmpty();
-
+    bool is_full();
+    bool is_empty();
     void push(T num);
-
     T pop();
-
     T get_top();
-
     T get_tail();
-
     void swap(queue<T>&);
-
-    int current_size();
-
+    unsigned int get_size();
     void clear();
 
-    void print();
+    T& operator[](unsigned );
 };
 
 
 template <typename T>
 queue<T>::queue(int num) {
     arr = new T[num];
+    if (!arr) throw BADALLOC;
     top = -1;
     tail = -1;
     size = 0;
@@ -53,18 +54,18 @@ queue<T>::~queue() {
 }
 
 template <typename T>
-bool queue<T>::isFull() {
+bool queue<T>::is_full() {
     return tail == maxSize - 1;
 }
 
 template <typename T>
-bool queue<T>::isEmpty() {
+bool queue<T>::is_empty() {
     return top == -1 || top > tail;
 }
 
 template <typename T>
 void queue<T>::push(T num) {
-    if (isFull()) return;
+    if (is_full()) throw OVERFLOWED;
     arr[++tail] = num;
     size++;
     if (top == -1) top = 0;
@@ -72,43 +73,37 @@ void queue<T>::push(T num) {
 
 template <typename T>
 T queue<T>::pop() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
+    if (is_empty()) throw EMPTY;
     size--;
     return arr[top++];
 }
 
 template <typename T>
 T queue<T>::get_top() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
+    if (is_empty()) throw EMPTY;
     return arr[top];
 }
 
 template <typename T>
 T queue<T>::get_tail() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
+    if (is_empty()) throw EMPTY;
     return arr[tail];
 }
 
 template <typename T>
-int queue<T>::current_size() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
+unsigned int queue<T>::get_size()
+{
+    if (is_empty()) throw EMPTY;
     return size;
 }
 
 
 template <typename T>
 void queue<T>::clear() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
-    while (!isEmpty()) {
+    if (is_empty()) throw EMPTY;
+    while (!is_empty()) {
         pop();
     }
-}
-
-template <typename T>
-void queue<T>::print() {
-    if (isEmpty()) throw std::domain_error("queue is Empty");
-    for(unsigned int i = 0; i < size; i++)
-        std::cout << arr[i] << " ";
 }
 
 template <typename T>
@@ -118,5 +113,11 @@ void queue<T>::swap(queue<T> & A) {
     memcpy(temp.arr,A.arr,sizeof(T) * size);
     memcpy(A.arr,arr,sizeof(T) * A.size);
     memcpy(arr,temp.arr, sizeof(T) * size);
+}
+
+template<typename T>
+T& queue<T>::operator[](unsigned int idx)
+{
+    return arr[idx];
 }
 #endif //MR2022_QUEUE_H
