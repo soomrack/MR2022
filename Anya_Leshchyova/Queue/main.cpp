@@ -15,6 +15,7 @@ public:
 
 QueueException Overflow=(1);
 QueueException Underflow=(2);
+QueueException Notfound=(3);
 
 QueueException:: QueueException(){
     kod_mistake = 999;
@@ -33,6 +34,9 @@ void QueueException::set_mistake (int error){
             break;
         case 2:
             std::cout<< "\n" << "       Underflow --> Program Terminated\n"<< "\n";
+            break;
+        case 3:
+            std::cout<< "\n" << "       Not found \n"<< "\n";
             break;
         default:
             std::cout << "       Unknown error \n";
@@ -63,8 +67,8 @@ public:
     inline bool  is_empty();
     void  print();
     void  print(int);
-    int  search(bool, double);
-    int search(double);
+    unsigned int  search(bool, double);
+    unsigned int search(double);
     inline bool is_full();
 
 };
@@ -131,10 +135,8 @@ inline bool Queue::is_full() {
 
 
 void Queue:: push(double item){
-    if (is_full()) {
-        try { throw Overflow; }
-        catch (QueueException error) { error.set_mistake(1); }
-    }
+    if (is_full())  throw Overflow;
+
     sp = (sp + 1) % size_max;
     queue_massive[sp] = item;
     size_real++;
@@ -147,10 +149,7 @@ inline bool Queue:: is_empty() {
 
 
 double Queue:: pop() {
-    if (is_empty()) {
-        try{ throw Underflow;}
-        catch (QueueException error){ error.set_mistake(2);} // перенеси ловить исключения в меин
-    }
+    if (is_empty()) throw Underflow;
     double item = queue_massive[pp];
     pp = (pp + 1) % size_max;
     size_real--;
@@ -178,7 +177,7 @@ void Queue:: print() {
 }
 
 
-int Queue::search(bool,double item) {
+unsigned int Queue::search(bool,double item) {
     int chet = 0;
     for (auto number = pp; number < size_max; number++) {
         chet++;
@@ -188,25 +187,25 @@ int Queue::search(bool,double item) {
         chet++;
         if (abs(queue_massive[number] - item) < E) return chet;
     }
-
-    return -1;
+    throw Notfound;
 }
 
 
-int Queue::search(double item) {
+unsigned int Queue::search(double item) {
     if (pp > sp) return search(true,item);
     int chet = 0;
     for ( auto number = pp; number <= sp; number++){
         chet++;
         if (abs(queue_massive[number] - item) < E) return chet;
     }
-    return -1;
+    throw Notfound;
 }
 
 
 int main() {
     Queue My_queue = Queue{5};
     double r1, r2, r3;
+
     My_queue.push(1.00);
     My_queue.push(2.00);
     My_queue.push(3.00);
@@ -215,10 +214,10 @@ int main() {
     My_queue.print();
 
 
-    r1 =  My_queue.pop();
-    r2 =  My_queue.pop();
-    r3 =  My_queue.pop();
-    cout << "After pop -->   "<<"R1 =  "<<r1<<";  R2 =  "<<r2<<";  R3 =  "<<r3<< endl;
+    r1 = My_queue.pop();
+    r2 = My_queue.pop();
+    r3 = My_queue.pop();
+    cout << "After pop -->   " << "R1 =  " << r1 << ";  R2 =  " << r2 << ";  R3 =  " << r3 << endl;
     My_queue.print();
 
 
@@ -228,13 +227,13 @@ int main() {
     My_queue.print();
 
 
-    r1 =  My_queue.pop();
-    r2 =  My_queue.pop();
-    r3 =  My_queue.pop();
-    cout << "After pop -->   "<<"R1 =  "<<r1<<";  R2 =  "<<r2<<";  R3 =  "<<r3<< endl;
+    r1 = My_queue.pop();
+    r2 = My_queue.pop();
+    r3 = My_queue.pop();
+    cout << "After pop -->   " << "R1 =  " << r1 << ";  R2 =  " << r2 << ";  R3 =  " << r3 << endl;
     My_queue.print();
 
-    cout << "Search -->   "<<"8--> "<<My_queue.search(8.00)<< endl;
+    cout << "Search -->   " << "8--> " << My_queue.search(8.00) << endl;
 
     My_queue.push(9.00);
     My_queue.print();
@@ -242,7 +241,7 @@ int main() {
     My_queue.print();
     My_queue.push(11.00);
     My_queue.print();
-    cout << "Search -->   "<<"11--> "<<My_queue.search(11.00)<< endl;
+    cout << "Search -->   " << "11--> " << My_queue.search(11.00) << endl;
     My_queue.push(12.00);
     My_queue.print();
     My_queue.push(13.00);
@@ -262,6 +261,8 @@ int main() {
     return 0;
 
 }
+
+
 
 
 
