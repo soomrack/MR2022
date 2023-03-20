@@ -2,7 +2,9 @@
 #include <limits>
 using namespace std;
 
-
+int get_key(double val) {
+    return int(179 + 179 * val + 179 * val * val);
+}
 
 template <typename SPIDER>
 class Node
@@ -31,8 +33,8 @@ public:
     BinaryTree();
     BinaryTree(SPIDER _value);
     ~BinaryTree();
-    void add(SPIDER _value);
-    SPIDER get(int _key);
+    void BTadd(SPIDER _value);
+    SPIDER BTget(int _key);
     bool find(int _key);
     void remove(int _key);
     void print();
@@ -76,7 +78,6 @@ Node<SPIDER>::Node(const Node &other) {
 }
 
 
-// ''' '''
 template <typename SPIDER>
 BinaryTree<SPIDER>::BinaryTree() {
     root = nullptr;
@@ -104,7 +105,7 @@ BinaryTree<SPIDER>::~BinaryTree() {
  //   BinaryTreeSize = 0;
 //}
 template <typename SPIDER>
-void BinaryTree<SPIDER>::add(SPIDER _value) {
+void BinaryTree<SPIDER>::BTadd(SPIDER _value) {
     if (root == nullptr){
         root = new Node<SPIDER>(_value, get_key(_value));
         return;
@@ -144,7 +145,7 @@ Node<SPIDER>* BinaryTree<SPIDER>::get_node(int _key) {
 }
 
 template <typename SPIDER>
-SPIDER BinaryTree<SPIDER>::get(int _key) {
+SPIDER BinaryTree<SPIDER>::BTget(int _key) {
     return get_node(_key)->value;
 }
 
@@ -226,22 +227,20 @@ template <typename SPIDER>
 void BinaryTree<SPIDER>::print(Node<SPIDER>* _tree) {
     if (_tree == nullptr) return;
 
-    std::cout << "The " << _tree->value << "[" << _tree->key << "]";
+    cout << _tree->value << ":" << _tree->key;
     if (_tree->is_leaf()){
-        std::cout << "\n";
+        cout << "\n";
         return;
     }
-
     if (_tree->left != nullptr) {
-        std::cout << " has on the left side " << _tree->left->value;
+        cout << "left: " << _tree->left->value;
         if (_tree->right != nullptr)
-            std::cout << "  and ";
+            cout << "  and ";
     }
     if (_tree->right != nullptr){
-        std::cout << " has on the right side " << _tree->right->value;
+        cout << "right: " << _tree->right->value;
     }
-    std::cout << "\n";
-
+    cout << "\n";
     print(_tree->left);
     print(_tree->right);
 }
@@ -249,16 +248,11 @@ void BinaryTree<SPIDER>::print(Node<SPIDER>* _tree) {
 template <typename SPIDER>
 void BinaryTree<SPIDER>::print() {
     if (root == nullptr){
-        std::cout << "There is no one element in this tree\n";
+        cout << "Tree is empty\n";
         return;
     }
-
-    std::cout << "The root is " << this->root->value << "\n";
-    this->print(root);
-    std::cout << "\n";
+    cout << "root: " << this->root->value << "\n" << this->print(root);
 }
 
-int get_key(double val) {
-    return int(179 + 179 * val + 179 * val * val);
-}
+
 //https://www.strchr.com/hash_functions#results
