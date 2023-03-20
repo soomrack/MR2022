@@ -25,24 +25,30 @@ class List;
 
 
 template<typename T>
+class ListIterator;
+
+
+template<typename T>
 class Node {
     friend class List<T>;
+    friend class ListIterator<T>;
 private:
     T data;
     Node<T>* next;
 public:
-    explicit Node(T _data) {data = _data;};
-
-    T* getData() {return data;};
+    explicit Node(T _data, Node<T>* _next=nullptr) {data = _data; next = _next;};
+    T get() {return data;};
 };
 
 
 template<typename T>
 class List {
+    friend class ListIterator<T>;
 private:
     uint64_t size;
-    Node<T>* first;
-    Node<T>* last;
+    Node<T>* head;
+    Node<T>* tail;
+
 public:
     List();
     ~List() = default;
@@ -55,8 +61,8 @@ public:
     List<T> operator+(List<T> other);
 
     bool isEmpty();
-    void append(T data);
-    void append(T data, uint64_t index);
+    void push(T data);
+    void push(T data, uint64_t index);
     T pop();
     T pop(uint64_t index);
     void print();
@@ -67,36 +73,51 @@ public:
 
 
 template<typename T>
+class ListIterator {
+private:
+    List<T>* list;
+    Node<T>* iterator;
+
+public:
+    explicit ListIterator(List<T> *_list, Node<T> *_iterator);
+    void pushNext(T data);
+    T popNext();
+    void find(T data);
+    T get();
+};
+
+
+template<typename T>
 List<T>::List() {
     size = 0;
-    first = nullptr;
-    last = nullptr;
+    head = nullptr;
+    tail = nullptr;
 }
 
 
 template<typename T>
 List<T>::List(const List<T> &other) {
     size = other.size;
-    auto* copy = new Node<T>(other.first->data);
-    first = copy;
-    Node<T>* original = other.first;
+    auto* copy = new Node<T>(other.head->data);
+    head = copy;
+    Node<T>* original = other.head;
     while(original->next != nullptr) {
         copy->next = new Node<T>(original->next->data);
         copy = copy->next;
         original = original->next;
     }
     copy->next = nullptr;
-    last = copy;
+    tail = copy;
 }
 
 
 template<typename T>
 List<T>::List(List<T> &&other) noexcept {
-    this->first = other.first;
-    this->last = other.last;
+    this->head = other.head;
+    this->tail = other.tail;
     size = other.size;
-    other.first = nullptr;
-    other.last = nullptr;
+    other.head = nullptr;
+    other.tail = nullptr;
     other.size = 0;
 }
 
@@ -107,22 +128,22 @@ List<T> &List<T>::operator=(const List<T> &other) {
         return *this;
     }
     if (other.isEmpty()) {
-        first = nullptr;
-        last = nullptr;
+        head = nullptr;
+        tail = nullptr;
         size = 0;
         return *this;
     }
     size = other.size;
-    auto* copy = new Node<T>(other.first->data);
-    first = copy;
-    Node<T>* original = other.first;
+    auto* copy = new Node<T>(other.head->data);
+    head = copy;
+    Node<T>* original = other.head;
     while(original->next != nullptr) {
         copy->next = new Node<T>(original->next->data);
         copy = copy->next;
         original = original->next;
     }
     copy->next = nullptr;
-    last = copy;
+    tail = copy;
 }
 
 
@@ -131,11 +152,11 @@ List<T> &List<T>::operator=(List<T> &&other) noexcept {
     if (this == &other) {
         return *this;
     }
-    this->first = other.first;
-    this->last = other.last;
+    this->head = other.head;
+    this->tail = other.tail;
     size = other.size;
-    other.first = nullptr;
-    other.last = nullptr;
+    other.head = nullptr;
+    other.tail = nullptr;
     other.size = 0;
 }
 
@@ -145,7 +166,7 @@ Node<T> *List<T>::operator[](const uint64_t index) {
     if(isEmpty() || index >= size) {
         throw Exception("error: bad index");
     }
-    Node<T>* node = first;
+    Node<T>* node = head;
     for (int i = 0; i < index; i++) {
         node = node->next;
     }
@@ -156,10 +177,10 @@ Node<T> *List<T>::operator[](const uint64_t index) {
 template<typename T>
 List<T> List<T>::operator+(List<T> other) {
     List<T> result;
-    result.first = this->first;
-    result.last = other.last;
+    result.head = this->head;
+    result.tail = other.tail;
     result.size = this->size + other.size;
-    this->last->next = other.first;
+    this->tail->next = other.head;
     return result;
 }
 
@@ -171,33 +192,33 @@ bool List<T>::isEmpty() {
 
 
 template<typename T>
-void List<T>::append(T data) {
+void List<T>::push(T data) {
     auto* node = new Node<T>(data);
     if(isEmpty()) {
         size++;
-        first = node;
-        last = node;
+        head = node;
+        tail = node;
         return;
     }
     size++;
-    last->next = node;
-    last = node;
+    tail->next = node;
+    tail = node;
 }
 
 
 template<typename T>
-void List<T>::append(T data, uint64_t index) {
+void List<T>::push(T data, uint64_t index) {
     if (index > size) {
         throw Exception("error: bad index");
     }
     if (isEmpty() || index == size) {
-        return append(data);
+        return push(data);
     }
     size++;
     auto* node = new Node<T>(data);
     if (index == 0) {
-        node->next = first;
-        first = node;
+        node->next = head;
+        head = node;
         return;
     }
     node->next = this->operator[](index);
@@ -211,20 +232,20 @@ T List<T>::pop() {
         throw Exception("error: List is empty");
     }
     if (size == 1) {
-        T data = last->data;
-        first = nullptr;
-        last = nullptr;
+        T data = tail->data;
+        head = nullptr;
+        tail = nullptr;
         size--;
         return data;
     }
-    Node<T>* node = first;
+    Node<T>* node = head;
     for (uint64_t i = 0; i < size - 2; i++) {
         node = node->next;
     }
     node->next = nullptr;
-    last = node;
+    tail = node;
     size--;
-    return last->data;
+    return tail->data;
 }
 
 
@@ -237,12 +258,12 @@ T List<T>::pop(uint64_t index) {
         return pop();
     }
     if (index == 0) {
-        T data = first->data;
-        first = first->next;
+        T data = head->data;
+        head = head->next;
         size--;
         return data;
     }
-    Node<T>* node = first;
+    Node<T>* node = head;
     for (uint64_t i = 0; i < index - 1; i++) {
         node = node->next;
     }
@@ -258,12 +279,12 @@ void List<T>::print() {
         return;
     }
     std::cout << "[";
-    Node<T>* node = first;
-    while (node != last) {
+    Node<T>* node = head;
+    while (node != tail) {
         std::cout << node->data << ", ";
         node = node->next;
     }
-    std::cout << last->data << "]" << std::endl;
+    std::cout << tail->data << "]" << std::endl;
 }
 
 
@@ -285,8 +306,61 @@ T List<T>::getData(uint64_t index) {
 template<typename T>
 void List<T>::clear() {
     size = 0;
-    first = nullptr;
-    last = nullptr;
+    head = nullptr;
+    tail = nullptr;
+}
+
+
+template<typename T>
+ListIterator<T>::ListIterator(List<T> *_list, Node<T>* _iterator) {
+    list = _list;
+    iterator = _iterator;
+}
+
+
+template<typename T>
+void ListIterator<T>::pushNext(T data) {
+    auto* new_node = new Node<T>(data, iterator->next);
+    iterator->next = new_node;
+    if (iterator == list->tail) {
+        list->tail = iterator->next;
+    }
+    list->size++;
+}
+
+
+template<typename T>
+T ListIterator<T>::popNext() {
+    if (!iterator->next) {
+        throw Exception("error: bad access");
+    }
+    list->size--;
+    T data = iterator->next->get();
+    if (iterator->next == list->tail) {
+        list->tail = iterator;
+    }
+    iterator->next = iterator->next->next;
+    return data;
+}
+
+
+template<typename T>
+void ListIterator<T>::find(T data) {
+    Node<T>* node = list->head;
+    while(node) {
+        if (node->data == data) {
+            iterator = node;
+            return;
+        }
+        node = node->next;
+    }
+    iterator = nullptr;
+}
+
+
+template<typename T>
+T ListIterator<T>::get() {
+    return iterator->get();
 }
 
 

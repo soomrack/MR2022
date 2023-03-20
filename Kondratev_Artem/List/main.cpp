@@ -1,5 +1,4 @@
-#include "List2.h"
-#include <iostream>
+#include "List.h"
 
 
 typedef struct Matrix {
@@ -10,12 +9,12 @@ typedef struct Matrix {
 
 int main() {
     List<int> A;
-    A.append(0);
-    A.append(1);
-    A.append(2);
-    A.append(3);
-    A.append(4);
-    A.append(5);
+    A.push(0);
+    A.push(1);
+    A.push(2);
+    A.push(3);
+    A.push(4);
+    A.push(5);
     A.print();
     A.pop();
     A.print();
@@ -24,11 +23,15 @@ int main() {
     Matrix m;
     m.a = 6;
     m.b = 5;
-    B.append(m);
-    B.append(m);
-    B.append(m, 0);
+    B.push(m);
+    B.push(m);
+    B.push(m, 0);
     B.pop();
 
+    ListIterator<int> iter(&A, A[2]);
+    iter.find(4);
+    iter.pushNext(19);
+    A.print();
 
     return 0;
 }

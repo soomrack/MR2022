@@ -253,21 +253,39 @@ void BinaryTree::remove(Node *sub_tree) {
 void BinaryTree::del(const int sup_key) {
     if (root == nullptr || !find(sup_key)) return;
 
-    Node* sup_node = get_node(sup_key);
+    Node* parent_node = get_parent_to(sup_key);
+    bool sup_node_is_root = false;
+    if (parent_node == nullptr) sup_node_is_root = true;
 
-    if (sup_node->is_leaf()){
+    Node* required_child = nullptr;
+    if (sup_node_is_root) required_child = root;
+    else {
+        if (parent_node->left == nullptr || parent_node->left->key != sup_key)
+            required_child = parent_node->right;
+        else
+            required_child = parent_node->left;
+    }
+
+    if (required_child->is_leaf()){
         remove(sup_key);
         return;
     }
 
-    Node* replacing_node = find_node_to_replace(sup_node);
-    std::cout << sup_node->value << "[" << sup_node->key << "]  |  " << replacing_node->value << "[" << replacing_node->key << "]\n\n";
+    Node replacing_node = *find_node_to_replace(required_child);
 
-    int new_key = replacing_node->key;
-    double new_val = replacing_node->value;
-    del(replacing_node->key);
-    sup_node->key = new_key;
-    sup_node->value = new_val;
+    del(replacing_node.key);
+
+    replacing_node.left = required_child->left;
+    replacing_node.right = required_child->right;
+    if (sup_node_is_root){
+        root = new Node(replacing_node);
+        return;
+    }
+
+    if (parent_node->left == nullptr || parent_node->left->key != sup_key)
+        parent_node->right = new Node(replacing_node);
+    else
+        parent_node->left = new Node(replacing_node);
 
 }
 
@@ -338,7 +356,7 @@ void BinaryTree::print(Node* sub_tree) {
 
 void BinaryTree::print() {
     if (root == nullptr){
-        std::cout << "There is no one element in this tree\n";
+        std::cout << "There is no one element in this tree\n\n";
         return;
     }
 
@@ -380,9 +398,6 @@ int main()
 
     C.del(5);
     C.print();
-
-    //C.remove(44);
-    //C.print();
 
     return 0;
 }
