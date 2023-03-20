@@ -83,11 +83,11 @@ template<typename T>
 T& list<T>::operator[] (const int idx)
 {
     if (size == 0)
-        throw ATD_exc("zero size error");
+        throw ZERO_SIZE;
     else if (idx >= size)
-        throw std::runtime_error("index out of the range(operator [])");
+        throw OUT_OF_TRE_RANGE_1;
     else if (idx < 0)
-        throw std::runtime_error("index can`t be n less zero");
+        throw std::runtime_error("index can`t be less zero");
 
     Node<T>* current_node = head;
     int counter = 0;
@@ -224,7 +224,7 @@ bool list<T>::operator!=(const list &other) {
 
 
 
-#include "list.cpp"
+
 #endif //ATD_LIST_H
 
 

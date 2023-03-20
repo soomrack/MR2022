@@ -167,4 +167,9 @@ dynamic_array::~dynamic_array()
         delete[] data;
     }
 }
+
+void dynamic_array::resize(int new_size) {
+
+}
+
 #endif ATD_DYNAMIC_ARRAY

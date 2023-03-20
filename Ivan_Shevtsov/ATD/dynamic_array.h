@@ -23,6 +23,7 @@ public:
     bool operator==(const dynamic_array& other);
     bool operator!=(dynamic_array& other);
     int& operator[](int idx);
+    void resize(int new_size);
 
     //resize #TODO
     int find(int element);  // return index first equal element
