@@ -1,79 +1,68 @@
 #include <iostream>
 
-template<typename T>
 class List;
-
-template<typename T>
 class Node {
-    friend class List<T>;
+    friend class List;
 protected:
-    Node<T> *next;
-    T data;
+    Node *next;
+    std::string data;
 public:
-    Node(T _data) : data(_data), next(nullptr){}
+    Node(std::string data) : data(data), next(nullptr){}
 };
 
-template<typename T>
 class List {
 protected:
-    Node<T> *first_el;
-    Node<T> *last_el;
+    Node *head; // head
+    Node *tail;  // tail
     unsigned int size;
 public:
-    List() : first_el(nullptr), last_el(nullptr), size(0) {}
+    List() : head(nullptr), tail(nullptr), size(0) {}
     bool is_empty();
-    void push_tale(T _data);
+    void push_tail(std::string data);
     void print();
-    void push_head(T _data);
+    void push_head(std::string data);
     void find(unsigned int id);
     void pop(unsigned int id);
-    Node<T> loop(unsigned int id, auto *local);
-    Node<T> *operator[](const int index);
-
+    Node loop(unsigned int id, auto *local);
+    Node *operator[](const int index);
     void remove_first();
-
     void remove_last();
-
     unsigned int get_size();
 };
 
-template <typename T>
-bool List<T>::is_empty() {
-    return first_el == nullptr;
+bool List::is_empty() {
+    return head == nullptr;
 }
 
-template <typename T>
-void List<T>::push_tale(T _data){
-    Node<T> *local = new Node<T>(_data);
+void List::push_tail(std::string data){
+    Node *local = new Node(data);
     if (is_empty()) {
-        first_el = local;
-        last_el = local;
+        head = local;
+        tail = local;
         size++;
         return;
     }
-    last_el->next = local;
-    last_el = local;
+    tail->next = local;
+    tail = local;
     size++;
 }
 
-template<typename T>
-void List<T>::push_head(T _data){
-    Node<T> *local = new Node<T>(_data);
+void List::push_head(std::string data){
+    Node *local = new Node(data);
     if (is_empty()) {
-        first_el = local;
-        last_el = local;
+        head = local;
+        tail = local;
         size++;
         return;
     }
-    local->next = first_el;
-    first_el = local;
+    local->next = head;
+    head = local;
     size++;
 }
 
-template<typename T>
-void List<T>::print() {
+void List::print() {
     if (is_empty()) {return;}
-    Node<T> *local = first_el;
+    Node *local = head;
     while (local) {
         std::cout << local->data << " ";
         local = local->next;
@@ -81,42 +70,38 @@ void List<T>::print() {
     std::cout << std::endl;
 }
 
-template<typename T>
-void List<T>::find(unsigned int id) {
+void List::find(unsigned int id) {
     if (is_empty()) {return;}
-    auto *local = first_el;
+    auto *local = head;
     for(unsigned int idx; idx < id; idx++ ){
         local = local->next;
     }
    std::cout << local->data << std::endl;
 }
 
-template<typename T>
-void List<T>::remove_first() {
+void List::remove_first() {
     if (is_empty()) return;
-    Node<T>* local = first_el;
-    first_el = local->next;
+    Node* local = head;
+    head = local->next;
     delete local;
     size--;
 }
 
-template<typename T>
-void List<T>::remove_last() {
+void List::remove_last() {
     if (is_empty()) return;
-    if (first_el == last_el) {
+    if (head == tail) {
         remove_first();
         return;
     }
-    Node<T>* local = first_el;
-    while (local->next != last_el) local = local->next;
+    Node* local = head;
+    while (local->next != tail) local = local->next;
     local->next = nullptr;
-    delete last_el;
-    last_el = local;
+    delete tail;
+    tail = local;
     size--;
 }
 
-template<typename T>
-void List<T>::pop(unsigned int id) {
+void List::pop(unsigned int id) {
     if (is_empty()) return;
     if (id > size) return;
     if (0 == id ) {
@@ -127,7 +112,7 @@ void List<T>::pop(unsigned int id) {
         remove_last();
         return;
     }
-    Node<T>* local = first_el;
+    Node* local = head;
     for (int idx = 0; idx < id - 1; idx++) {
         local = local->next;
     }
@@ -135,23 +120,22 @@ void List<T>::pop(unsigned int id) {
     size--;
 }
 
-template<typename T>
-unsigned int List<T>::get_size() {
+unsigned int List::get_size() {
     return size;
 }
 
 
 int main(){
-    List<std::string> List;
+    List List;
     List.print();
 
-    List.push_tale("he");
-    List.push_tale("ll");
-    List.push_tale("ow");
-    List.push_tale(" ");
-    List.push_tale("wo");
-    List.push_tale("rl");
-    List.push_tale("d");
+    List.push_tail("he");
+    List.push_tail("ll");
+    List.push_tail("ow");
+    List.push_tail(" ");
+    List.push_tail("wo");
+    List.push_tail("rl");
+    List.push_tail("d");
     List.print();
     std::cout << List.get_size() << std::endl;
     List.find(4);

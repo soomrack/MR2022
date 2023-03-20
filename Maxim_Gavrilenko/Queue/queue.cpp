@@ -1,0 +1,39 @@
+#include <iostream>
+#include "queue.h"
+int main() {
+    queue<int> q(5);
+    queue<int> z(5);
+    try {
+        q.push(10);
+        q.push(20);
+        q.push(30);
+        q.push(40);
+        q.push(50);
+        z.push(30);
+        z.push(20);
+        z.push(1000);
+        z.push(21);
+        z.push(52);
+        std::cout << "Front element: " << q.get_top() << std::endl;
+        std::cout << "Rear element: " << q.get_tail() << std::endl;
+        std::cout << "Current_size:" << q.current_size() << std::endl;
+        std::cout << "Print q: ";
+        q.print();
+        std::cout << "Print z: ";
+        z.print();
+        q.swap(z);
+        std::cout<<std::endl;
+        std::cout << "Print q:";
+        q.print();
+        std::cout<<std::endl;
+        std::cout << "Print z:";
+        z.print();
+        std::cout << std::endl;
+        std::cout << std::endl;
+        q.clear();
+    }
+    catch (std::domain_error& e) {
+        std::cerr << "Caught: " << e.what() << std::endl;
+    }
+    return 0;
+}

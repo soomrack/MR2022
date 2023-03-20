@@ -1,13 +1,15 @@
 #include <iostream>
-#include "main.h"
+#include "DynamicArray.h"
 #include "stack.h"
-#include "exception.h"
+//#include "ExceptError.h"
 #define STACK_SIZE 10
 #define LIST_SIZE 10
 #include "queue.h"
 #include "BinarTree.h"
 #include "List.h"
-
+ExceptError DIVISIONBYZERO("DIV BY ZERO\n");
+ExceptError STACKOVERFLOW("STACK IS FULL\n");
+ExceptError BINARYTREEFULL("BINARYTREEFULL\n");
 using namespace std;
 
 void QueueTestProgram() {
@@ -46,26 +48,27 @@ void StackTestProgram() {
 void ListTestProgram() {
     List <double>list;
     list.Print();
-    ListNode<double>*s = list.getLast();
-    for (int i = 0; i < LIST_SIZE; i++) {
-        int z;
-        cin >> z;
-        s = list.Add(z, s);
+    ListNode<double> *s = list.getFirst();
+    double ListArray[LIST_SIZE] = {1.6, 2.6, 2.8, 2.6, 3.9, -4.6,
+                                   -6.4, -7.8, 0.6, 9.6,};
+    for (double i : ListArray) {
+        s = list.Add(i, s);
     }
     list.Print();
-    cout << ": " << list.getValue(list.getLast()) << endl;
-    // удалить все двойки
-    ListNode<double>*p = list.getFirst();
+    cout << "List last value: " << List<double>::getValue(list.getLast())<< endl;
+
+    ListNode<double> *p = list.getFirst();
     do {
-        if (list.getValue(p) == 2)
+        if (List<double>::getValue(p) < 0)
             p = list.Delete(p);
         else
             p = list.Next(p);
     }
     while (p != nullptr);
-    list.setValue(s, 5);
+
+    List<double>::setValue(s, 5.1);
     list.Print();
-    cout << " " << list.getCount() << " " << endl;
+    cout << "List count: " << list.getCount() << " " << endl;
     list.Swap(list.getFirst(), list.getLast());
     list.Print();
     list.Clear();
@@ -87,17 +90,14 @@ void BinaryTreeTestProgram() {
 }
 
 void ExceptionTestProgram() {
-    int a, b, c;
-    a = 2; b = 2;
-    cin >> c;
-    if (c == 0) throw DIVISIONBYZERO;
-    a = b/c;
-    cout << a;
-
     try {
-        ExceptionTestProgram();
+        int a, b, c;
+        b = 2;
+        cin >> c;
+        a = b/c;
+        cout << a;
     }
-    catch(const Exception &e)
+    catch(const ExceptError &e)
     {
         cerr << "Caught: " << e.what() << endl;
         cerr << "Type: " << typeid(e).name() << endl;
@@ -118,8 +118,4 @@ void DynamicArrayTestProgram()
 }
 int main() {
     ListTestProgram();
-    BinaryTreeTestProgram();
-    DynamicArrayTestProgram();
-    QueueTestProgram();
-    StackTestProgram();
 }
