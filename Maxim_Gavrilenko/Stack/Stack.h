@@ -1,65 +1,75 @@
-#define MAX_SIZE 1000
 
 #ifndef MR2022_stack_H
 #define MR2022_stack_H
+
+class STACK_ERROR: public std::domain_error
+{
+public:
+    STACK_ERROR(const char* const str): std::domain_error(str){};
+};
+
+STACK_ERROR BADALLOC("Memory is not allocate");
+STACK_ERROR EMPTY("Stack is empty");
+STACK_ERROR FULL("Stack is full");
+
 template <typename T>
 class stack {
 private:
+    unsigned int max_size;
+    unsigned int size;
     int top;        // индекс верхнего элемента стека
-    T arr[MAX_SIZE];   // массив для хранения элементов стека
+    T* data;   // массив для хранения элементов стека
 public:
-    stack();
-    bool isEmpty();
-    bool isFull();
-
+    stack(unsigned int max);
+    bool is_empty();
+    bool is_full();
+    unsigned int get_size();
     void push(int x);
-    void print();
     T pop();
     T peek();
+    T& operator[](unsigned int idx) {return data[idx];};
 };
 
 template <typename T>
-stack<T>::stack() {
+stack<T>::stack(unsigned int max) {
+    max_size = max;
+    data = new T[max_size];
+    if (!data) throw BADALLOC;
+    size = 0;
     top = -1;   // инициализация вершины пустым значением
 }
 template <typename T>
-bool stack<T>::isEmpty() {
+bool stack<T>::is_empty() {
     return top == -1;
 }
 
+template<typename T>
+unsigned int stack<T>::get_size() {return size;}
+
 template <typename T>
-bool stack<T>::isFull(){
-    return top == MAX_SIZE - 1;
+bool stack<T>::is_full(){
+    return top == max_size - 1;
 }
 
 template <typename T>
 void stack<T>::push(int x) {
-    if (isFull()) throw std::out_of_range("Is full");
+    if (is_full()) throw FULL;
     top++;
-    arr[top] = x;
+    size++;
+    data[top] = x;
 }
 
 template <typename T>
 T stack<T>::pop() {
-    if (isEmpty()) throw std::out_of_range("Is empty");
-    return arr[top];
-    top--;
+    if (is_empty()) throw EMPTY;
+    size--;
+    return data[top--];
 }
 
 template <typename T>
 T stack<T>::peek() {
-    if (isEmpty()) throw std::out_of_range("Is empty");
-    return arr[top];
-}
-
-template <typename T>
-void stack<T>::print() {
-    if (isEmpty()) throw std::out_of_range("Is empty");
-    std::cout << "stack: ";
-    for (int i = top; i >= 0; i--) {
-        std::cout << arr[i] << " ";
-    }
-    std::cout << std::endl;
+    if (is_empty()) throw EMPTY;
+    return data[top];
 }
 
 #endif //MR2022_stack_H
