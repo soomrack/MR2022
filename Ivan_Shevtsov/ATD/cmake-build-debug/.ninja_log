@@ -1,0 +1,6 @@
+# ninja log v5
+0	12	1679307947584285158	CMakeFiles/ATD.dir/stack.cpp.o	29bdbd433dff52a8
+0	15	1679307947588285081	CMakeFiles/ATD.dir/list.cpp.o	e84ff46cfac7585e
+1	287	1679307947860279827	CMakeFiles/ATD.dir/dynamic_array.cpp.o	e1f764ab29d881db
+0	307	1679307947880279441	CMakeFiles/ATD.dir/main.cpp.o	86810e7ef0cfb65d
+307	375	1679307947948278127	ATD	d9207eb2d32f66ce
