@@ -8,6 +8,10 @@ public:
 
 };
 
+ATD_exc ZERO_SIZE("zero size error");
+ATD_exc OUT_OF_TRE_RANGE_1("index out of the range(operator [])");
+
+
 #include "list.h"
 #include "stack.h"
 #include "dynamic_array.h"
@@ -120,7 +124,7 @@ int main() {
         //test_dynamic_array();
 
     }
-    catch (exception& err)  // does`t work. why??
+    catch (ATD_exc& err)  // does`t work. why??
     {
         err.what();
     }

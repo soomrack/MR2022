@@ -16,7 +16,16 @@ public:
         this->data =  data;
         this->p_next = p_next;
     }
-    T* next;
+
+    void add_next(T data){
+        p_next = new Node<T>(data, *p_next);
+    };
+    void del_next(){
+        Node<T> del_node = *p_next; //#TODO
+        p_next = del_node.p_next;
+
+        delete del_node;
+    }
 };
 
 template<typename T>
@@ -83,11 +92,11 @@ template<typename T>
 T& list<T>::operator[] (const int idx)
 {
     if (size == 0)
-        throw ATD_exc("zero size error");
+        throw ZERO_SIZE;
     else if (idx >= size)
-        throw std::runtime_error("index out of the range(operator [])");
+        throw OUT_OF_TRE_RANGE_1;
     else if (idx < 0)
-        throw std::runtime_error("index can`t be n less zero");
+        throw std::runtime_error("index can`t be less zero");
 
     Node<T>* current_node = head;
     int counter = 0;
@@ -224,7 +233,7 @@ bool list<T>::operator!=(const list &other) {
 
 
 
-#include "list.cpp"
+
 #endif //ATD_LIST_H
 
 

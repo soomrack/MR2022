@@ -23,8 +23,10 @@ public:
     bool operator==(const dynamic_array& other);
     bool operator!=(dynamic_array& other);
     int& operator[](int idx);
+    void resize(int new_size);
 
     //resize #TODO
+    dynamic_array& resize();
     int find(int element);  // return index first equal element
     void fill_random(int MAX_RANDOM_VALUE=100);
     void push_back(const int value); // del it #TODO
