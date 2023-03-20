@@ -34,6 +34,8 @@ private:
     };
     unsigned int size;
     Node *head;
+    Node *previous;
+    void previous_element(unsigned int idx);
 };
 
 template <typename T>
@@ -55,6 +57,7 @@ int List<T>::get_size() {return size;}
 template<typename T>
 T& List<T>::operator[](const unsigned idx)
 {
+    if (idx > size) throw std::out_of_range("Out of range");
     unsigned int i = 0;
     Node* current = this->head;
     while(current)
@@ -67,9 +70,11 @@ T& List<T>::operator[](const unsigned idx)
         i++;
     }
 }
+
 template<typename T>
 void List<T>::pop_front()
 {
+    if (size == 0) throw std::out_of_range("List is empty");
     Node* temp = head;
     head = head->next;
     delete temp;
@@ -83,6 +88,7 @@ void List<T>::push_back(T data)
     if(!head)
     {
         head = new Node(data);
+        if (!head) throw std::bad_alloc();
     }
     else
     {
@@ -109,17 +115,14 @@ template<typename T>
 void List<T>::push_front(T data)
 {
     head = new Node(data,head);
+    if (!head) throw std::bad_alloc();
     size++;
 }
 
 template<typename T>
 void List<T>::remove(unsigned int idx)
 {
-    Node* previous = this->head;
-    for(unsigned int i = 0; i < idx - 1; i++)
-    {
-        previous = previous -> next;
-    }
+    previous = this->head;
     Node* doDelete = previous -> next;
     previous -> next = doDelete -> next;
     delete doDelete;
@@ -130,6 +133,7 @@ void List<T>::remove(unsigned int idx)
 template<typename T>
 void List<T>::pop_back()
 {
+    if (size == 0) throw std::out_of_range("List is empty");
     Node* current = head;
     Node* temp;
     while(current->next)
@@ -145,18 +149,23 @@ void List<T>::pop_back()
 template<typename T>
 void List<T>::insert(T data, unsigned int idx)
 {
+    if (idx > size) throw std::out_of_range("Out of range");
     if (idx == 0) push_front(data);
     else
     {
         size++;
-        Node* previous = head;
-        for(unsigned int i = 0; i < idx - 1; i++)
-        {
-            previous = previous -> next;
-        }
-        previous->next = new Node(data,previous->next);
+        previous_element(idx);
+        previous->next = new Node(data, previous->next);
     }
 }
 
-
+template <typename T>
+void List<T>::previous_element(unsigned int idx)
+{
+    previous = head;
+    for(unsigned int i = 0; i < idx - 1; i++)
+    {
+        previous = previous -> next;
+    }
+}
 #endif //MR2022_LINKED_LIST_H
