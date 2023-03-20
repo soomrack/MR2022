@@ -2,7 +2,7 @@
 #include <ctime>
 #include <cstdlib>
 
-using namespace std;
+using namespace std; // (везде вынести функции из класса)
 
 // Определяем структуру элемента списка
 struct Node
@@ -19,13 +19,24 @@ private:
     Node *tail;
 
 public:
-    List()
-    {
+    List();
+
+    void push_tail(int value);
+    void display();
+    void push_head(int value);
+    void delete_head();
+    void delete_tail();
+    void delete_position(int pos);
+    void fillWithRandom();
+    void clearList();
+};
+
+    List::List(){
         head = nullptr;
         tail = nullptr;
     }
 
-    void push_tail(int value)  // Добавление элемента в конец списка
+    void List::push_tail(int value)  // Добавление элемента в конец списка
     {
         Node *temp = new Node;
         temp->data = value;
@@ -44,8 +55,7 @@ public:
         }
     }
 
-    void display()  // Вывод списка
-    {
+    void List::display(){  // Вывод списка
         Node *temp = new Node;
         temp = head;
         while(temp != nullptr)
@@ -55,23 +65,21 @@ public:
         }
     }
 
-    void push_head(int value)
-    {
+    void List::push_head(int value){
         Node *temp = new Node;
         temp->data = value;
         temp->next = head;
         head = temp;
     }
 
-    void delete_head()
-    {
+    void List::delete_head(){
         Node *temp = new Node;
         temp = head;
         head = head->next;
         delete temp;
     }
 
-    void delete_tail()
+    void List::delete_tail()
     {
         Node *current = new Node;
         Node *previous = new Node;
@@ -86,8 +94,7 @@ public:
         delete current;
     }
 
-    void delete_position(int pos)
-    {
+    void List::delete_position(int pos){
         Node *current = new Node;
         Node *previous = new Node;
         current = head;
@@ -99,8 +106,7 @@ public:
         previous->next = current->next;
     }
 
-    void fillWithRandom()
-    {
+    void List::fillWithRandom(){
         srand(time(0));
         for (int el = 0; el < 5; el++)
         {
@@ -108,12 +114,11 @@ public:
         }
     }
 
-    void clearList()
+    void List::clearList()
     {
         head = nullptr;
         tail = nullptr;
     }
-};
 
 int main()
 {

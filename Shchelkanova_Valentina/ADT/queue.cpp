@@ -6,27 +6,38 @@ using namespace std;
 
 class Queue {
 private:
-    // Размер очереди
     int size;
-    // Указатель на массив чисел
     int *arr;
-    // Начало очереди
     int head;
-    // Конец очереди
     int tail;
 
 public:
-    // Конструктор
-    Queue(int s)
-    {
+    Queue();
+
+    ~Queue();
+
+    void fill_queue();
+
+    void push(int el);
+
+    int pop();
+
+    void print_queue();
+
+    void free_queue();
+
+    bool is_empty();
+
+    Queue(int s);
+};
+    Queue::Queue(){
         size = s;
         arr = new int[s];
         head = 0;
         tail = 0;
     }
 
-    // Заполнение очереди случайными числами
-    void fill_queue()
+    void Queue::fill_queue()  // Заполнение очереди случайными числами
     {
         srand(time(0));
         for (int i = 0; i < size-1; i++)
@@ -34,48 +45,46 @@ public:
         tail = size-1;
     }
 
-    // Добавление нового элемента в конец очереди
-    void add(int el)
+
+    void Queue::push(int el)  // Добавление нового элемента в конец очереди
     {
         if (tail < size)
             arr[tail++] = el;
         else
             cout << "Очередь переполнена." << endl;
     }
-    // Удаление элемента из начала очереди
-    int remove()
+
+    int Queue::pop()  // Удаление элемента из начала очереди
     {
-        if (head < tail)
+        if (head != tail)
             return arr[head++];
-        else
-            cout << "Очередь пустая." << endl;
+        else return nullptr;
         return 0;
     }
-    // Вывод очереди
-    void print_queue()
+
+    void Queue::print_queue()  // Вывод очереди
     {
         for (int i = head; i < tail; i++)
             cout << arr[i] << " ";
         cout << endl;
     }
-    // Удаление всей очереди
-    void free_queue()
+
+    void Queue::free_queue()  // Удаление всей очереди
     {
         delete arr;
     }
-    // Проверка очереди на пустоту
-    bool is_empty()
+
+    bool Queue::is_empty()  // Проверка очереди на пустоту
     {
         return head == tail;
     }
-    // Деструктор
-    ~Queue()
+
+    Queue::~Queue()  // Деструктор
     {
         delete arr;
     }
 };
 
-// Главная функция
 int main()
 {
     Queue queue(10);

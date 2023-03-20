@@ -1,12 +1,4 @@
-//
-// Created by delta on 18.02.2023.
-//
-
-#ifndef CLIONPROJECTS_STACK_H
-#define CLIONPROJECTS_STACK_H
-
-#endif //CLIONPROJECTS_STACK_H
-#include "exception.h"
+#include "ExceptError.h"
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -66,14 +58,16 @@ void Stack::StackPush(double new_value) {
     else {stackvalues[top++] = new_value;}
 }
 
-void Stack::StackZering() {
+// top = top +1
+void Stack::StackZering() { // set to zero
     for (unsigned int i = 0; i < stacksize; i++) {
         stackvalues[i] = 0;
     }
 }
 void Stack::StackPop() {
     unsigned int k = top;
-    if (top == - 1) {
+    if (top == 0) { // проверить 0
+        // возвращать 0 или 1 при переполнении
         cout << "Out of Range";
     }
     else
