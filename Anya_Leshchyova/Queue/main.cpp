@@ -3,8 +3,6 @@
 using namespace std;
 
 double E = 0.00000001;
-unsigned int RESERVE = 5;
-
 
 class QueueException {
 public:
@@ -45,10 +43,12 @@ void QueueException::set_mistake (int error){
 class Queue {
 private:
     double *queue_massive;
-    int count;  //максимум в очереди
+    unsigned int size_max;
     int sp;
     int pp;
-    int count_real;
+    unsigned int size_real;
+    unsigned int RESERVE = 5;
+
 public:
     Queue();
     Queue(unsigned int);
@@ -71,39 +71,39 @@ public:
 
 
 Queue:: Queue(){
-    count = 0;
+    size_max = 0;
     queue_massive = nullptr;
 }
 
 
 Queue:: Queue(unsigned int size){
-    count = size + RESERVE;
-    queue_massive = new double [count];
+    size_max = size + RESERVE;
+    queue_massive = new double [size_max];
     sp = -1;
     pp = 0;
-    count_real = 0;
+    size_real = 0;
 }
 
 
 Queue::Queue(const Queue &obj) {
-    count = obj.count;
-    queue_massive = new double[count];
-    for (int i = 0; i < count; i++)
-        queue_massive[i] = obj.queue_massive[i];
+    size_max = obj.size_max;
+    queue_massive = new double[size_max];
+    for (unsigned int number = 0; number < size_max; number++)
+        queue_massive[number] = obj.queue_massive[number];
 }
 
 
 Queue::Queue(Queue &&x) {
-    count = x.count;
+    size_max = x.size_max;
     queue_massive = x.queue_massive;
     sp = x.sp;
     pp = x.pp;
-    count_real = x.count_real;
-    x.count = 0;
+    size_real = x.size_real;
+    x.size_max = 0;
     x.queue_massive = nullptr;
     x.sp = 0;
     x.pp= 0;
-    x.count_real = 0;
+    x.size_real = 0;
 }
 
 
@@ -117,16 +117,16 @@ Queue& Queue:: operator =(const Queue& X) {
         return *this;
     }
     delete[] this->queue_massive;
-    count = X.count;
-    queue_massive = new double [count];
-    for (unsigned int number = 0; number < count; number++) {
+    size_max = X.size_max;
+    queue_massive = new double [size_max];
+    for (unsigned int number = 0; number < size_max; number++) {
         this->queue_massive[number] = X.queue_massive[number];
     }
 }
 
 
 inline bool Queue::is_full() {
-    return count_real == count;
+    return size_real == size_max;
 }
 
 
@@ -135,54 +135,56 @@ void Queue:: push(double item){
         try { throw Overflow; }
         catch (QueueException error) { error.set_mistake(1); }
     }
-        sp = (sp + 1) % count;
-        queue_massive[sp] = item;
-        count_real++;
+    sp = (sp + 1) % size_max;
+    queue_massive[sp] = item;
+    size_real++;
 }
 
 
 inline bool Queue:: is_empty() {
-    return count_real == 0;
+    return size_real == 0;
 }
 
 
 double Queue:: pop() {
     if (is_empty()) {
         try{ throw Underflow;}
-        catch (QueueException error){ error.set_mistake(2);}
+        catch (QueueException error){ error.set_mistake(2);} // перенеси ловить исключения в меин
     }
     double item = queue_massive[pp];
-    pp = (pp + 1) % count;
-    count_real--;
+    pp = (pp + 1) % size_max;
+    size_real--;
     return  item;
 }
 
 
 
 void Queue:: print(int) {
-    for (int i = pp; i < count; i++)
-        cout << queue_massive[i] << "  ";
-    for (int i =0; i<=sp; i++  )
-        cout << queue_massive[i] << "  ";
+    for (auto number = pp; number < size_max; number++)
+        cout << queue_massive[number] << "  ";
+    for (auto number = 0; number <= sp; number++  )
+        cout << queue_massive[number] << "  ";
 
     cout << endl;
 }
 
+
 void Queue:: print() {
-    for (int i = pp; i <= sp; i++)
-        cout << queue_massive[i] << "  ";
+    for (auto number = pp; number <= sp; number++)
+        cout << queue_massive[number] << "  ";
     cout << endl;
     if (pp > sp) print(1);
 
 }
 
+
 int Queue::search(bool,double item) {
-    unsigned int chet = 0;
-    for (unsigned int number = pp; number < count; number++) {
+    int chet = 0;
+    for (auto number = pp; number < size_max; number++) {
         chet++;
         if (abs(queue_massive[number] - item) < E) return chet;
     }
-    for (unsigned int number =0; number <= sp; number++  ){
+    for (auto number =0; number <= sp; number++  ){
         chet++;
         if (abs(queue_massive[number] - item) < E) return chet;
     }
@@ -193,8 +195,8 @@ int Queue::search(bool,double item) {
 
 int Queue::search(double item) {
     if (pp > sp) return search(true,item);
-    unsigned int chet = 0;
-    for ( int number = pp; number <= sp; number++){
+    int chet = 0;
+    for ( auto number = pp; number <= sp; number++){
         chet++;
         if (abs(queue_massive[number] - item) < E) return chet;
     }
@@ -204,7 +206,7 @@ int Queue::search(double item) {
 
 int main() {
     Queue My_queue = Queue{5};
-double r1, r2, r3;
+    double r1, r2, r3;
     My_queue.push(1.00);
     My_queue.push(2.00);
     My_queue.push(3.00);
@@ -257,11 +259,10 @@ double r1, r2, r3;
     My_queue.print();
 
 
-
-
     return 0;
 
 }
+
 
 
 
