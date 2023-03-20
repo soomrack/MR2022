@@ -2,6 +2,7 @@
 #define PROGRAMMING_TREE_H
 
 #include <exception>
+#include <functional>
 
 
 class TreeException: public std::exception {
@@ -12,14 +13,14 @@ public:
 
 template<class T>
 struct TreeNode {
-    TreeNode<T>* parent;
     TreeNode<T>* right;
     TreeNode<T>* left;
     T element = {};
+    int hash = 0;
 
-    bool is_leaf = true;
+    TreeNode(TreeNode<T>* right, TreeNode<T>* left): right(right), left(left) {}
 
-    TreeNode(TreeNode<T>* parent, TreeNode<T>* right, TreeNode<T>* left): parent(parent), right(right), left(left) {}
+    void init(T value, const std::hash<T> &hash_fn);
 };
 
 
@@ -29,14 +30,14 @@ private:
     TreeNode<T>* root;
     unsigned long long int size;
 
-    void insert(TreeNode<T>* new_root, const T& element);
-    bool find(TreeNode<T>* new_root, const T& element);
+    std::hash<T> hash_fn;
+
+    void insert(TreeNode<T>* subtree, const T& element);
+    bool find(TreeNode<T>* subtree, const T& element);
 
 public:
     Tree();
     explicit Tree(const T &element);
-//    Tree(const Tree<T>& tree);
-//    Tree(Tree<T>&& tree) noexcept;
 
     void insert(const T& element);
     bool find(const T& element);
@@ -46,15 +47,22 @@ public:
 template<typename T>
 Tree<T>::Tree() {
     size = 0;
-    root = new TreeNode<T>(nullptr, nullptr, nullptr);
+    root = new TreeNode<T>(nullptr, nullptr);
 }
 
 
 template<typename T>
 Tree<T>::Tree(const T &element) {
     size = 0;
-    root = new TreeNode<T>(nullptr, nullptr, nullptr);
+    root = new TreeNode<T>(nullptr, nullptr);
     this->insert(root, element);
+}
+
+
+template<typename T>
+void TreeNode<T>::init(T value, const std::hash<T> &hash_fn) {
+    this->element = value;
+    this->hash = hash_fn(value);
 }
 
 
@@ -65,23 +73,23 @@ void Tree<T>::insert(const T &element) {
 
 
 template<typename T>
-void Tree<T>::insert(TreeNode<T> *new_root, const T &element) {
-    if (new_root->is_leaf) {
-        new_root->element = element;
-        new_root->right = new TreeNode<T>(new_root, nullptr, nullptr);
-        new_root->left = new TreeNode<T>(new_root, nullptr, nullptr);
-        new_root->is_leaf = false;
+void Tree<T>::insert(TreeNode<T> *subtree, const T &element) {
+    if (subtree->hash == 0) {
+        subtree->init(element, hash_fn);
+        subtree->right = new TreeNode<T>(nullptr, nullptr);
+        subtree->left = new TreeNode<T>(nullptr, nullptr);
         size += 1;
         return;
     }
-    if (new_root->element < element) {
-        insert(new_root->left, element);
+
+    int hash_diff = hash_fn(element) - subtree->hash;
+
+    if (hash_diff > 0) {
+        insert(subtree->right, element);
         return;
     }
-    if (new_root->element > element) {
-        insert(new_root->right, element);
-        return;
-    }
+    // if (hash_diff < 0)
+    insert(subtree->left, element);
 }
 
 
@@ -92,13 +100,14 @@ bool Tree<T>::find(const T &element) {
 
 
 template<typename T>
-bool Tree<T>::find(TreeNode<T> *new_root, const T &element) {
-    if (new_root != nullptr) {
-        if (new_root->element == element) return true;
-        if (new_root->element > element) return find(new_root->right, element);
-        if (new_root->element < element) return find(new_root->left, element);
-    }
-    return false;
+bool Tree<T>::find(TreeNode<T> *subtree, const T &element) {
+    if (subtree->hash == 0) return false;
+
+    int hash_diff = hash_fn(element) - subtree->hash;
+    if (hash_diff == 0) return true;
+    if (hash_diff > 0) return find(subtree->right, element);
+    // if (hash_diff < 0)
+    return find(subtree->left, element);
 }
 
 #endif //PROGRAMMING_TREE_H

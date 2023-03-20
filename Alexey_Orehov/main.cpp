@@ -4,6 +4,7 @@
 #include "list.h"
 #include "tree.h"
 
+
 void test_dynamic_array() {
     int A_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     dynamic_array<int> A = {A_data, 10};
@@ -40,6 +41,7 @@ void test_list() {
 
 }
 
+#include <functional>
 
 int main() {
     int data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
