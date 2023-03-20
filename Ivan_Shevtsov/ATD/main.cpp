@@ -15,7 +15,7 @@ public:
 #define DEBUG
 
 // enum: psstate #TODO
-// git token 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
+
 
 
 void sep(const char* massege= "")
