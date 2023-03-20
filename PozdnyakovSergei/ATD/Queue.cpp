@@ -1,11 +1,13 @@
 #include <iostream>
 
+
 class Queue {
     int *array;
     int capacity;
     int first;
     int last;
     int count;
+
 
 public:
     Queue(int size);
