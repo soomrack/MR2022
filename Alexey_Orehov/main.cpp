@@ -42,9 +42,16 @@ void test_list() {
 
 
 int main() {
-    Tree<int> tree(10);
-    tree.insert(1);
-    tree.insert(20);
-    tree.insert(10);
+    int data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    Tree<int> tree;
+
+    for (auto& element : data) {
+        tree.insert(element);
+    }
+
+    tree.find(4);
+    tree.find(12);
+
+
     return 0;
 }

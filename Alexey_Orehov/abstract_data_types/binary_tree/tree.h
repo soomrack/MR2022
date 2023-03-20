@@ -30,6 +30,7 @@ private:
     unsigned long long int size;
 
     void insert(TreeNode<T>* new_root, const T& element);
+    bool find(TreeNode<T>* new_root, const T& element);
 
 public:
     Tree();
@@ -38,6 +39,7 @@ public:
 //    Tree(Tree<T>&& tree) noexcept;
 
     void insert(const T& element);
+    bool find(const T& element);
 };
 
 
@@ -80,6 +82,23 @@ void Tree<T>::insert(TreeNode<T> *new_root, const T &element) {
         insert(new_root->right, element);
         return;
     }
+}
+
+
+template<typename T>
+bool Tree<T>::find(const T &element) {
+    return find(root, element);
+}
+
+
+template<typename T>
+bool Tree<T>::find(TreeNode<T> *new_root, const T &element) {
+    if (new_root != nullptr) {
+        if (new_root->element == element) return true;
+        if (new_root->element > element) return find(new_root->right, element);
+        if (new_root->element < element) return find(new_root->left, element);
+    }
+    return false;
 }
 
 #endif //PROGRAMMING_TREE_H
