@@ -16,7 +16,16 @@ public:
         this->data =  data;
         this->p_next = p_next;
     }
-    T* next;
+
+    void add_next(T data){
+        p_next = new Node<T>(data, *p_next);
+    };
+    void del_next(){
+        Node<T> del_node = *p_next; //#TODO
+        p_next = del_node.p_next;
+
+        delete del_node;
+    }
 };
 
 template<typename T>

@@ -13,7 +13,7 @@ dynamic_array::dynamic_array()
 dynamic_array::dynamic_array(const int size)
 {
     this->size = size;
-    this->data = new int[size];
+    this->data = new int[size + buf_size];
 }
 
 dynamic_array::dynamic_array(const dynamic_array &other)
@@ -169,7 +169,13 @@ dynamic_array::~dynamic_array()
 }
 
 void dynamic_array::resize(int new_size) {
-
+    size = new_size;
+    if (data != nullptr)
+    {
+        delete[] data;
+    }
+    this->data = new int[size + buf_size];
 }
+
 
 #endif ATD_DYNAMIC_ARRAY
