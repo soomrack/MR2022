@@ -1,184 +1,258 @@
 #include <iostream>
+#include <limits>
 using namespace std;
 
+int get_key(double val) {
+    return int(179 + 179 * val + 179 * val * val);
+}
 
 template <typename SPIDER>
 class Node
 {
 public:
-    SPIDER data;
-    Node * left;
-    Node * right;
-    explicit Node(SPIDER val);
+    SPIDER value;
+    int key;
+    Node *left;
+    Node *right;
+    Node();
+    Node(SPIDER _value, int _key);
+    Node(const Node &other);
+    bool is_leaf();
 };
 
+
 template <typename SPIDER>
-Node<SPIDER>::Node(SPIDER val)
+class BinaryTree
 {
+
+protected:
+    Node<SPIDER> *root;
+    int BinaryTreeSize = 0;
+public:
+    unsigned int height();
+    BinaryTree();
+    BinaryTree(SPIDER _value);
+    ~BinaryTree();
+    void BTadd(SPIDER _value);
+    SPIDER BTget(int _key);
+    bool find(int _key);
+    void remove(int _key);
+    void print();
+    Node<SPIDER>* get_node(int _key);
+    bool find(int _key, Node<SPIDER>* _tree);
+    unsigned int height(Node<SPIDER>* _tree);
+    void remove(Node<SPIDER>* _tree);
+    void print(Node<SPIDER>* _tree);
+    void add(SPIDER _value, int _key, Node<SPIDER> *_tree);
+};
+
+
+template <typename SPIDER>
+Node<SPIDER>::Node() {
+    value = 0.0;
+    key = 0;
     left = nullptr;
     right = nullptr;
-    data = val;
-}
-
-template <typename SPIDER>
-class Tree
-{
-private:
-    Node<SPIDER> *root;
-    int BinaryTreeSize;
-    // методы класса
-    void printTree(Node <SPIDER>*);
-    void deleteTree(Node <SPIDER>*);
-
-public:
-    //конструктор класса
-    Tree(int);
-    //деструктор
-    ~Tree();
-
-    //методы класса
-    void print();
-    bool find(SPIDER);
-    void insert(SPIDER);
-    void erase(SPIDER);
-    int BTSize();
-};
-
-template <typename SPIDER>
-Tree<SPIDER>::Tree(int key)
-{
-    root = new Node <SPIDER>(key);
-    BinaryTreeSize = 1;
-}
-
-template <typename SPIDER>
-Tree<SPIDER>::~Tree()
-{
-    deleteTree(root);
-}
-
-template <typename SPIDER>
-void Tree<SPIDER>::deleteTree(Node <SPIDER>* curr)
-{
-    if (curr==0)
-    {
-        deleteTree(curr->left);
-        deleteTree(curr->right);
-        delete curr;
-        // BinaryTreeSize = 0;
-    }
-}
-
-template <typename SPIDER>
-void Tree<SPIDER>::print()
-{
-    printTree(root);
-    cout << endl;
-}
-
-template <typename SPIDER>
-void Tree<SPIDER>::printTree(Node <SPIDER>* curr)
-{
-    if (curr)
-    {
-        printTree(curr->left);
-        cout << curr->data << " ";
-        printTree(curr->right);
-    }
-}
-
-// возвращать значение
-template <typename SPIDER>
-bool Tree<SPIDER>::find(SPIDER key)
-{
-    Node <SPIDER>* curr = root;
-    while (curr && curr->data != key)
-    {
-        if (curr->data > key)
-            curr = curr->left;
-        else
-            curr = curr->right;
-    }
-    return curr != nullptr;
-}
-
-// возвращать данные
-template <typename SPIDER>
-void Tree<SPIDER>::insert(SPIDER key)
-{
-    Node <SPIDER>* curr = root;
-    while (curr && curr->data != key)
-    {
-        if (curr->data > key && curr->left == nullptr)
-        {
-            curr->left = new Node<SPIDER>(key);
-            ++BinaryTreeSize;
-            return;
-        }
-        if (curr->data < key && curr->right == nullptr)
-        {
-            curr->right = new Node<SPIDER>(key);
-            ++BinaryTreeSize;
-            return;
-        }
-        if (curr->data > key)
-            curr = curr->left;
-        else
-            curr = curr->right;
-    }
 }
 
 
-// find сохранять родителя и возвращать родителя
 template <typename SPIDER>
-void Tree<SPIDER>::erase(SPIDER key)
-{
-    Node <SPIDER>* curr = root;
-    Node <SPIDER>* parent = nullptr;
-    while (curr && curr->data != key)
-    {
-        parent = curr;
-        if (curr->data > key)
-        {
-            curr = curr->left;
-        }
-        else
-        {
-            curr = curr->right;
-        }
-    }
-    if (curr->left == nullptr)
-    {
-        if (parent && parent->left == curr)
-            parent->left = curr->right;
-        if (parent && parent->right == curr)
-            parent->right = curr->right;
-        --BinaryTreeSize;
-        delete curr;
-        // if parent == nullptr delete root;
+Node<SPIDER>::Node(SPIDER _value, int _key) {
+    value = _value;
+    key = _key;
+    left = nullptr;
+    right = nullptr;
+}
+
+template <typename SPIDER>
+bool Node<SPIDER>::is_leaf() {
+    return ((left == nullptr) && (right == nullptr));
+}
+
+template <typename SPIDER>
+Node<SPIDER>::Node(const Node &other) {
+    value = other.value;
+    key = other.key;
+    left = other.left;
+    right = other.right;
+}
+
+
+template <typename SPIDER>
+BinaryTree<SPIDER>::BinaryTree() {
+    root = nullptr;
+}
+
+template <typename SPIDER>
+BinaryTree<SPIDER>::BinaryTree(SPIDER _value) {
+    root = new Node<SPIDER>(_value, get_key(_value));
+}
+
+template <typename SPIDER>
+BinaryTree<SPIDER>::~BinaryTree() {
+    remove(root->key);
+}
+
+
+//void Tree<SPIDER>::deleteTree(Node <SPIDER> *curr)
+//{
+   // if (curr==0)
+  //  {
+ //       deleteTree(curr->left);
+ //       deleteTree(curr->right);
+  //      delete curr;
+ //   }
+ //   BinaryTreeSize = 0;
+//}
+template <typename SPIDER>
+void BinaryTree<SPIDER>::BTadd(SPIDER _value) {
+    if (root == nullptr){
+        root = new Node<SPIDER>(_value, get_key(_value));
         return;
     }
-    if (curr->right == nullptr)
-    {
-        if (parent && parent->left == curr)
-            parent->left = curr->left;
-        if (parent && parent->right == curr)
-            parent->right = curr->left;
-        --BinaryTreeSize;
-        delete curr;
-        return;
+    add(_value, get_key(_value), root);
+}
+
+
+template <typename SPIDER>
+void BinaryTree<SPIDER>::add(SPIDER _value, int _key, Node<SPIDER>* _tree) {
+    Node<SPIDER>* next_branch = nullptr; //создаем новую ветку
+    if (_tree->key > _key){
+        if (_tree->left == nullptr){
+            _tree->left = new Node<SPIDER>(_value, _key);
+            return;
+        }
+        next_branch = _tree->left;
+    } else {
+        if (_tree->right == nullptr){
+            _tree->right = new Node<SPIDER>(_value, _key);
+            return;
+        }
+        next_branch = _tree->right;
     }
-    // лучше менять узлы
-    Node <SPIDER>* replace = curr->right;
-    while (replace->left)
-        replace = replace->left;
-    SPIDER replace_value = replace->data;
-    // добаить ключ в Node
-    erase(replace_value);
-    curr->data = replace_value;
+    add(_value, _key, next_branch);
 }
 
 template <typename SPIDER>
-int Tree<SPIDER>::BTSize() {
-    return BinaryTreeSize;
+Node<SPIDER>* BinaryTree<SPIDER>::get_node(int _key) {
+    if (root == nullptr) return nullptr;
+    Node<SPIDER>* node = root;
+    while (node != nullptr){
+        if (node->key == _key) return node;
+        node = (node->key > _key) ? node->left : node->right;
+    }
+    return nullptr;
 }
+
+template <typename SPIDER>
+SPIDER BinaryTree<SPIDER>::BTget(int _key) {
+    return get_node(_key)->value;
+}
+
+template <typename SPIDER>
+bool BinaryTree<SPIDER>::find(int _key, Node<SPIDER> *_tree) {
+    if (_tree == nullptr) return false;
+    if (_tree->key == _key) return true;
+
+    Node<SPIDER>* next_branch = (_key < _tree->key) ? _tree->left : _tree->right;
+    return find(_key, next_branch);
+}
+
+
+template <typename SPIDER>
+bool BinaryTree<SPIDER>::find(int _key) {
+    return find(_key, root);
+}
+
+
+template <typename SPIDER>
+unsigned int BinaryTree<SPIDER>::height() {
+    return height(root);
+}
+
+
+template <typename SPIDER>
+unsigned int BinaryTree<SPIDER>::height(Node<SPIDER>* _tree) {
+    if (_tree == nullptr) return 0;
+    if (_tree->is_leaf()) return 1;
+    return max(height(_tree->left), height(_tree->right)) + 1;
+}
+
+template <typename SPIDER>
+void BinaryTree<SPIDER>::remove(int _key) {
+
+    if (root->key == _key){
+        remove(root);
+        root = nullptr;
+        return;
+    }
+
+    Node<SPIDER>* node = root;
+    while (true){
+        if (node->left != nullptr)
+            if (node->left->key == _key){
+                remove(node->left);
+                node->left = nullptr;
+                return;
+            }
+
+        if (node->right != nullptr)
+            if (node->right->key == _key){
+                remove(node->right);
+                node->right = nullptr;
+                return;
+            }
+
+        node = (_key < node->key) ? node->left : node->right;
+    }
+}
+
+template <typename SPIDER>
+void BinaryTree<SPIDER>::remove(Node<SPIDER>*_tree) {
+    if (_tree == nullptr) return;
+
+    if (_tree->is_leaf()){
+        delete _tree;
+        return;
+    }
+
+    remove(_tree->left);
+    _tree->left = nullptr;
+    remove(_tree->right);
+    _tree->right = nullptr;
+
+}
+
+template <typename SPIDER>
+void BinaryTree<SPIDER>::print(Node<SPIDER>* _tree) {
+    if (_tree == nullptr) return;
+
+    cout << _tree->value << ":" << _tree->key;
+    if (_tree->is_leaf()){
+        cout << "\n";
+        return;
+    }
+    if (_tree->left != nullptr) {
+        cout << "left: " << _tree->left->value;
+        if (_tree->right != nullptr)
+            cout << "  and ";
+    }
+    if (_tree->right != nullptr){
+        cout << "right: " << _tree->right->value;
+    }
+    cout << "\n";
+    print(_tree->left);
+    print(_tree->right);
+}
+
+template <typename SPIDER>
+void BinaryTree<SPIDER>::print() {
+    if (root == nullptr){
+        cout << "Tree is empty\n";
+        return;
+    }
+    cout << "root: " << this->root->value << "\n" << this->print(root);
+}
+
+
+//https://www.strchr.com/hash_functions#results

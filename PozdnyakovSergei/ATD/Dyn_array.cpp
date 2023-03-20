@@ -187,9 +187,6 @@ int main() {
     D.push_back(2);
     D.value[5] = 3;
 
-/*
-    A.print();
-*/
     D.print();
 
     D.remove(1);

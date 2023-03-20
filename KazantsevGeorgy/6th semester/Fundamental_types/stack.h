@@ -11,17 +11,11 @@ class Stack{
     unsigned int top; //вершина стека
     unsigned int stacksize;
 public:
-    // конструкторы
     Stack();
     Stack(unsigned int size);
-
-    // деструктор
     ~Stack();
-
-    //оператор перегрузки (переноса)
     Stack& operator=(const Stack &stack);
 
-    // Методы
     void StackPush(double new_value);
     void StackZering();
     void StackPop();
@@ -41,7 +35,7 @@ Stack::Stack() {
 }
 
 Stack::Stack(unsigned int size) {
-    stackvalues = new double[size]; //создание пустого стека со стек поинтером в нуле
+    stackvalues = new double[size];
     stacksize = size;
     top = 0;
 }
@@ -58,18 +52,14 @@ void Stack::StackPush(double new_value) {
     else {stackvalues[top++] = new_value;}
 }
 
-// top = top +1
-void Stack::StackZering() { // set to zero
+void Stack::StackZering() {
     for (unsigned int i = 0; i < stacksize; i++) {
         stackvalues[i] = 0;
     }
 }
 void Stack::StackPop() {
     unsigned int k = top;
-    if (top == 0) { // проверить 0
-        // возвращать 0 или 1 при переполнении
-        cout << "Out of Range";
-    }
+    if (top == 0) throw OUTOFRANGE;
     else
     {
         stackvalues[--k] = 0;
