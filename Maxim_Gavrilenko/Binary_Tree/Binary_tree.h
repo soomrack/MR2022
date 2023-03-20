@@ -14,14 +14,14 @@ BINARY_EXCEPTION BADALLOC("Memory is not allocated");
 class Node
 {
 public:
-    int data;
+    double data;
     Node* left;
     Node* right;
-    Node(int);
+    Node(double);
     Node();
 };
 
-Node::Node(int value)
+Node::Node(double value)
 {
     data = value;
     left = nullptr;
@@ -41,20 +41,61 @@ class BinaryTree:Node
 public:
     BinaryTree();
     ~BinaryTree();
-    void addNode(int);
-    Node deleteNode(Node*, int);
+    void addNode(double);
+    void remove(double);
+    void print();
+    bool search(double);
+    double get_max();
+    double get_min();
 private:
     Node* root;
+    Node* deleteNode(Node*, double);
     void deleteTree(Node*);
+    bool searchNode(Node* node, double data);
+    void printNode(Node* node);
+    Node* findMin(Node* node);
+    Node* findMax(Node* node);
 };
 
+double BinaryTree::get_max()
+{
+    Node* temp;
+    temp = findMax(root);
+    return temp->data;
+}
+
+double BinaryTree::get_min()
+{
+    Node* temp;
+    temp = findMin(root);
+    return temp->data;
+}
+
+void BinaryTree::print()
+{
+    printNode(root);
+    std:: cout << std:: endl;
+}
+void BinaryTree::printNode(Node* node)
+{
+    if (node == nullptr) return;
+
+    printNode(node->left); // рекурсивно обрабатываем левое поддерево
+    std::cout << node->data << " "; // выводим значение текущего узла
+    printNode(node->right); // рекурсивно обрабатываем правое поддерево
+}
+void BinaryTree::remove(double data)
+{
+    root = deleteNode(root,data);
+}
 
 BinaryTree::BinaryTree()
 {
     root = nullptr;
 }
 
-void BinaryTree::deleteTree(Node* node) {
+void BinaryTree::deleteTree(Node* node)
+{
     if (node != nullptr) {
         deleteTree(node->left);
         deleteTree(node->right);
@@ -62,16 +103,28 @@ void BinaryTree::deleteTree(Node* node) {
     }
 }
 
+Node* BinaryTree::findMin(Node *node)
+{
+    while (node->left != nullptr) {
+        node = node->left;
+    }
+    return node;
+}
+
+Node* BinaryTree::findMax(Node *node)
+{
+    while (node->right != nullptr) {
+        node = node->right;
+    }
+    return node;
+}
 
 BinaryTree::~BinaryTree()
 {
     deleteTree(root);
 }
 
-
-
-
-void BinaryTree::addNode(int val)
+void BinaryTree::addNode(double val)
 {
     Node* newNode = new Node(val);
     if (root == nullptr) {
@@ -102,7 +155,7 @@ void BinaryTree::addNode(int val)
     }
 }
 
-/*Node* BinaryTree::deleteNode(Node* node, int value)
+Node* BinaryTree::deleteNode(Node* node, double value)
 {
     if (node == nullptr) {
         return node;
@@ -118,24 +171,45 @@ void BinaryTree::addNode(int val)
             node = nullptr;
         } else if (node->left == nullptr) {
             // У узла есть только правый потомок
-            Node<T>* temp = node;
+            Node* temp = node;
             node = node->right;
             delete temp;
         } else if (node->right == nullptr) {
             // У узла есть только левый потомок
-            Node<T>* temp = node;
+            Node* temp = node;
             node = node->left;
             delete temp;
         } else {
             // У узла есть и левый, и правый потомок
             // Найдем самый левый узел в правом поддереве
-            Node<T>* temp = findMin(node->right);
+            Node* temp = findMin(node->right);
             // Заменим значение удаляемого узла на значение temp
-            node->value = temp->value;
+            node->data = temp->data;
             // Удалим узел с найденным значением из правого поддерева
-            node->right = deleteNode(node->right, temp->value);
+            node->right = deleteNode(node->right, temp->data);
         }
     }
     return node;
-}*/
+}
+
+bool BinaryTree::searchNode(Node *node, double data)
+{
+    if (node == nullptr) {
+        return false;
+    }
+    if (data < node->data) {
+        return searchNode(node->left, data);
+    }
+    else if (data > node->data) {
+        return searchNode(node->right, data);
+    }
+    else {
+        return true;
+    }
+}
+
+bool BinaryTree::search(double data)
+{
+    return searchNode(root,data);
+}
 #endif //MR2022_BINARY_TREE_H
