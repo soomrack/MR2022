@@ -52,16 +52,15 @@ void PQueue::push(std::string data, unsigned int p) { // добавить пeр�
         size++;
         return;
     }
-    Node *local1 = tail;
+    local = tail;
+    local->priority = p;
+    size++;
     for (unsigned int idx = 0; idx < size; idx++) {
-        if(p <= local1->priority) {
-            local1->next = local1;
+        if(p > local->previous->priority) {
+            local->previous = local;
         }
     }
-    local1->next = local;
-    local->priority = p;
-    //delete local1;
-    size++;
+// дописать
 }
 
 void PQueue::print() {

@@ -62,10 +62,8 @@ std::string Stack::pop() {
         head = nullptr;
         tail = nullptr;
         size--;
-        return local; // pop должен возвращать local->data, но мы должны чистить память local. Как быть?
+        return local;
     }
-
-    // переделать
     auto local = head->data;
     delete head->previous;
     head = head->next;
