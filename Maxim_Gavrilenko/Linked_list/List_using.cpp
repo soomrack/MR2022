@@ -18,7 +18,9 @@ int main () {
         list.push_back(30);
         list.push_back(22);
         print(list);
-        std::cout << "Pop_back ";
+        std::cout << "Pop_back and resize ";
+        list.resize(7);
+        std::cout<<"GET SIZE" << list.get_size();
         list.pop_back();
         print(list);
         std::cout << "Push_back ";

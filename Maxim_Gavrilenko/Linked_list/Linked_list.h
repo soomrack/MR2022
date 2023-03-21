@@ -1,6 +1,6 @@
 #ifndef MR2022_LINKED_LIST_H
 #define MR2022_LINKED_LIST_H
-
+#include <iostream>
 class LIST_ERROR: public std:: domain_error
 {
 public:
@@ -11,18 +11,19 @@ LIST_ERROR OUTOFRANGE("Out of range");
 LIST_ERROR EMPTY("List is empty");
 LIST_ERROR BADALLOC("Memory has not been allocated");
 
-template <typename T>
+template <typename T = double>
 class Node
 {
 public:
     Node* next;
     T data;
 
-    Node(T data = T(), Node* next = nullptr)
+    Node(T data = T(0), Node* next = nullptr)
     {
         this -> data = data;
         this -> next = next;
     }
+
 };
 
 template <typename T>
@@ -38,16 +39,50 @@ public:
     void push_front(T data);
     void insert(List<T>&, T);
     void clear();
+    void resize(unsigned int);
     void remove(List<T> &);
     void advance(List&, unsigned int); //Метод сдвигающий private указатель на n-1 элемент
     int get_size();
 
     T& operator[](unsigned);
 private:
+    void set_tail(Node<T>*);
     unsigned int size;
+    Node<T> *tail;
     Node<T> *head;
     Node<T> *previous;
 };
+template <typename T>
+void List<T>::set_tail(Node<T>* node)
+{
+    Node<T>* current = head;
+    while(current->next) current = current->next;
+    delete tail;
+    tail = current;
+}
+/*template <typename T>
+void List<T>::resize(unsigned int new_size) {
+    if (new_size > size) {
+        // Добавление новых элементов со значением по умолчанию
+        for (int i = 0; i < new_size - size; i++) {
+            Node<T>* newNode = new Node<T>();
+            tail->next = newNode;
+            tail = newNode;
+        }
+    } else if (new_size < size) {
+        // Удаление лишних элементов
+        for (int i = 0; i < size - new_size; i++) {
+            Node<T>* current = head;
+            while (current->next != tail) {
+                current = current->next;
+            }
+            delete tail;
+            tail = current;
+            tail->next = nullptr;
+        }
+    }
+    size = new_size;
+}*/
 
 template <typename T>
 List<T>::List()
@@ -55,6 +90,7 @@ List<T>::List()
     size = 0;
     head = nullptr;
     previous = nullptr;
+    tail = nullptr;
 }
 
 template<typename T>
@@ -107,19 +143,20 @@ void List<T>::pop_front()
 template<typename T>
 void List<T>::push_back(T data)
 {
-    if(!head)
+    if(!tail)
     {
         head = new Node<T>(data);
+        tail = head;
         if (!head) throw std::bad_alloc();
     }
     else
     {
-        Node<T>* current = this->head;
-        while (current->next != nullptr)
+        while (tail->next != nullptr)
         {
-          current = current -> next;
+          tail = tail -> next;
         }
-        current->next = new Node<T>(data);
+        tail->next = new Node<T>(data);
+        tail = tail->next;
     }
     size++;
 }
@@ -167,8 +204,9 @@ void List<T>::pop_back()
         temp = current;
         current = current->next;
     }
-    delete current;
-    temp->next = nullptr;
+    delete tail;
+    tail = temp;
+    tail->next = nullptr;
     size--;
 }
 
