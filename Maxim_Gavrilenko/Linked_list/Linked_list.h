@@ -45,20 +45,12 @@ public:
 
     T& operator[](unsigned);
 private:
-    void set_tail(Node<T>*);
     unsigned int size;
     Node<T> *tail;
     Node<T> *head;
     Node<T> *previous;
 };
-template <typename T>
-void List<T>::set_tail(Node<T>* node)
-{
-    Node<T>* current = head;
-    while(current->next) current = current->next;
-    delete tail;
-    tail = current;
-}
+
 
 template <typename T>
 List<T>::List()
