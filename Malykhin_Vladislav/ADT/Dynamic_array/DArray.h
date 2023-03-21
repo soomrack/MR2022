@@ -17,17 +17,17 @@ template<typename T>
 class DArray {
 protected:
     unsigned int size;
-    unsigned int cache_size = 0;
     T *data;
+
 public:
+    unsigned int cache_size = 0;
+
     explicit DArray(std::list<T> in_list, int new_cache_size = 5); // заполнение массива значениями из массива при создании
     ~DArray() noexcept;
-    T& operator[] (int idx);
     unsigned int get_size() const;
-    T get(unsigned int id) const;
     void resize(unsigned int new_size);
-    void print() const;
 
+    T& operator[] (unsigned int idx);
 };
 
 
