@@ -39,7 +39,6 @@ public:
     void push_front(T data);
     void insert(List<T>&, T);
     void clear();
-    void resize(unsigned int);
     void remove(List<T> &);
     void advance(List&, unsigned int); //Метод сдвигающий private указатель на n-1 элемент
     int get_size();
@@ -60,29 +59,6 @@ void List<T>::set_tail(Node<T>* node)
     delete tail;
     tail = current;
 }
-/*template <typename T>
-void List<T>::resize(unsigned int new_size) {
-    if (new_size > size) {
-        // Добавление новых элементов со значением по умолчанию
-        for (int i = 0; i < new_size - size; i++) {
-            Node<T>* newNode = new Node<T>();
-            tail->next = newNode;
-            tail = newNode;
-        }
-    } else if (new_size < size) {
-        // Удаление лишних элементов
-        for (int i = 0; i < size - new_size; i++) {
-            Node<T>* current = head;
-            while (current->next != tail) {
-                current = current->next;
-            }
-            delete tail;
-            tail = current;
-            tail->next = nullptr;
-        }
-    }
-    size = new_size;
-}*/
 
 template <typename T>
 List<T>::List()
