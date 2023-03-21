@@ -1,15 +1,6 @@
-//
-// Created by El1x3r7714 on 21/03/2023.
-//
+
 #ifndef MR2022_BINARY_TREE_H
 #define MR2022_BINARY_TREE_H
-class BINARY_EXCEPTION: public std::domain_error
-{
-public:
-    BINARY_EXCEPTION(const char* const str): std::domain_error(str) {};
-};
-
-BINARY_EXCEPTION BADALLOC("Memory is not allocated");
 
 class Node
 {
@@ -36,7 +27,7 @@ Node::Node()
     right = nullptr;
 }
 
-class BinaryTree:Node
+class BinaryTree
 {
 public:
     BinaryTree();
