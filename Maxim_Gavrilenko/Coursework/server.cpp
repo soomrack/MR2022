@@ -1,6 +1,5 @@
 #include "chat_library_initialization.h"
 
-
 #define DEFAULT_PORT 1600
 #define ERROR_S "SERVER ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
@@ -68,7 +67,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         if(is_connection_close(buffer)) {
             isExit = true;
         }
-        while (isExit) {
+        while (!isExit) {
             std::cerr << "Server: ";
             std::cin.getline(buffer, BUFFER_SIZE);
             send(server,buffer,BUFFER_SIZE,0);

@@ -1,9 +1,10 @@
-#include "chat_library_initialization.h"
+#include "C:\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Coursework\chat_library_initialization.h"
+
 
 #define DEFAULT_PORT 1600
 #define ERROR_S "CLIENT ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
-#define SERVER_IP "127.0.0.0"
+#define SERVER_IP "127.0.0.1"
 #define BUFFER_SIZE 4096
 
 bool connection_close(char* message)
@@ -15,7 +16,6 @@ bool connection_close(char* message)
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
     int client;
-
     WSADATA data;
     if (0 != WSAStartup(MAKEWORD(2, 1), &data)) return 101;
     SOCKADDR_IN server_address;
@@ -25,9 +25,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         std::cerr << "Error " << strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
     }
+    inet_pton(AF_INET, SERVER_IP, &server_address.sin_addr);
     server_address.sin_family = AF_INET;
     server_address.sin_port = ntohs(DEFAULT_PORT);
-    inet_pton(AF_INET, SERVER_IP, &server_address.sin_addr);
+
 
     std:: cout << "=> Client socket created\n";
     int ret = connect(client, (sockaddr*) &server_address, sizeof(sockaddr));
@@ -36,8 +37,8 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
                               << " with port: " << DEFAULT_PORT << " FAILED" << std:: endl;
         return 101;
     }
-    std:: cout << "=> Connection to" << inet_ntoa(server_address.sin_addr)
-               << "with port: " << DEFAULT_PORT << std:: endl;
+    std:: cout << "=> Connection to " << inet_ntoa(server_address.sin_addr)
+               << " with port: " << DEFAULT_PORT << std:: endl;
     char buffer[BUFFER_SIZE];
     std::cout << "Waiting for server confirmation...";
     recv(client, buffer, BUFFER_SIZE, 0);
@@ -46,7 +47,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
 
     while(true) {
         std:: cout <<"Client: ";
-        std::cin.getline(buffer, BUFFER_SIZE, 0);
+        std::cin.getline(buffer, BUFFER_SIZE);
         send(client, buffer, BUFFER_SIZE,0);
         if (connection_close(buffer)) {
             break;
