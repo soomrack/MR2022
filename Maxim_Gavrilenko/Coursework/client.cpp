@@ -1,4 +1,4 @@
-#include "../chat_library_initialization.h"
+#include "chat_library_initialization.h"
 
 #define DEFAULT_PORT 1600
 #define ERROR_S "CLIENT ERROR: "
