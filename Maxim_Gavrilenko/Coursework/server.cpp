@@ -1,7 +1,10 @@
 #include <cstring>
 #include <iostream>
-#include <WinSock2.h>
 #include <Ws2tcpip.h>
+#include <WinSock2.h>
+#include <winsock.h>
+#include <cerrno>
+#include <thread>
 
 #define DEFAULT_PORT 1600
 #define ERROR_S "SERVER ERROR: "
@@ -18,16 +21,18 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
     int client;
     int server;
 
+    WSADATA data;
+    if(0 != WSAStartup(MAKEWORD(2,1), &data));
     struct sockaddr_in server_address;
-    client = socket(AF_INET, SOCK_STREAM, 0);
+    client = socket(AF_INET, SOCK_STREAM, NULL);
     if (client == -1)
     {
         std::cerr << ERROR_S << "establishing socket error"<< std::endl; // Ошибка установки сокета
-        perror("socket");
+        std::cerr << "Error " << strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "Server: Socket for server was successfully estalished" << std::endl;
+    /*std::cout << "Server: Socket for server was successfully estalished" << std::endl;
 
     server_address.sin_port = htons(DEFAULT_PORT);
     server_address.sin_family = AF_INET; // Семейство портов IPV4
@@ -86,5 +91,5 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         std::cout << "Goodbye " << std::endl;
         isExit = false;
         exit(1);
-    }
+    }*/
 }
