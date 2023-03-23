@@ -1,14 +1,10 @@
-#include <cstring>
-#include <iostream>
-#include <Ws2tcpip.h>
-#include <WinSock2.h>
-#include <winsock.h>
-#include <cerrno>
-#include <thread>
+#include "../chat_library_initialization.h"
+
 
 #define DEFAULT_PORT 1600
 #define ERROR_S "SERVER ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
+#define BUFFER_SIZE 4096
 
 bool is_connection_close(char* message)
 {
@@ -22,9 +18,9 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
     int server;
 
     WSADATA data;
-    if(0 != WSAStartup(MAKEWORD(2,1), &data));
-    struct sockaddr_in server_address;
-    client = socket(AF_INET, SOCK_STREAM, NULL);
+    if(0 != WSAStartup(MAKEWORD(2,1), &data)) return 101;
+    SOCKADDR_IN server_address;
+    client = socket(AF_INET, SOCK_STREAM, 0);
     if (client == -1)
     {
         std::cerr << ERROR_S << "establishing socket error"<< std::endl; // Ошибка установки сокета
@@ -32,7 +28,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         exit(EXIT_FAILURE);
     }
 
-    /*std::cout << "Server: Socket for server was successfully estalished" << std::endl;
+    std::cout << "Server: Socket for server was successfully estalished" << std::endl;
 
     server_address.sin_port = htons(DEFAULT_PORT);
     server_address.sin_family = AF_INET; // Семейство портов IPV4
@@ -51,37 +47,37 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
 
     socklen_t size = sizeof(server_address);
     std::cout << "Server: " << "It is listening for clients... " << std::endl;
-    int Listen = listen(client, 1);
+    listen(client, 1);
     server = accept(client, (sockaddr*) &server_address, &size);
     if (server == 0)
     {
         std::cerr << ERROR_S << "Can't accepting a client \n";
         return -1;
     }
-    char buffer[4096];
+    char buffer[BUFFER_SIZE];
     bool isExit = false;
     while (server > 0) {
         strcpy(buffer, "=> Server connected\n");
-        send(server,buffer, 4096,0);
+        send(server,buffer, BUFFER_SIZE,0);
         std::cerr << "=> Connected to the client" << std:: endl;
         std::cerr << "Enter " << CONNECTION_BREAK_SYMBOL << "to end the connection" << std:: endl;
 
         std::cerr << "Client :";
-        recv(server, buffer, 4096, 0);
+        recv(server, buffer, BUFFER_SIZE, 0);
         std::cerr << buffer << std::endl;
         if(is_connection_close(buffer)) {
             isExit = true;
         }
         while (isExit) {
             std::cerr << "Server: ";
-            std::cin.getline(buffer, 4096);
-            send(server,buffer,4096,0);
+            std::cin.getline(buffer, BUFFER_SIZE);
+            send(server,buffer,BUFFER_SIZE,0);
             if(is_connection_close(buffer))
             {
                 break;
             }
             std::cerr << "Client: ";
-            recv(server,buffer, 4096, 0);
+            recv(server,buffer, BUFFER_SIZE, 0);
             std::cout << buffer << std::endl;
             if(is_connection_close(buffer))
             {
@@ -91,5 +87,5 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         std::cout << "Goodbye " << std::endl;
         isExit = false;
         exit(1);
-    }*/
+    }
 }
