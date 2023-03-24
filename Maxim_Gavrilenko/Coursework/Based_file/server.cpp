@@ -1,0 +1,119 @@
+#include "Client/chat_library_initialization.h"
+#include "mingw.thread.h"
+#include "vector"
+#define DEFAULT_PORT 1600
+#define ERROR_S "SERVER ERROR: "
+#define CONNECTION_BREAK_SYMBOL '*'
+#define BUFFER_SIZE 4096
+
+using namespace std;
+void handle_client(int client_socket) {
+    std::vector<int> clients;
+    char buffer[BUFFER_SIZE];
+    int read_size;
+
+    // Добавляем клиента в список
+    clients.push_back(client_socket);
+    std::cout << "Client " << client_socket << " connected." << std::endl;
+
+    // Читаем данные от клиента и отправляем их всем остальным клиентам
+    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
+        buffer[read_size] = '\0';
+        std::cout << "Received message from client " << client_socket << ": " << buffer << std::endl;
+
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients[i] != client_socket) {
+                send(clients[i], buffer, strlen(buffer), 0);
+            }
+        }
+    }
+
+    // Удаляем клиента из списка и закрываем сокет
+    closesocket(client_socket);
+    //clients.erase(std::remove(clients.begin(), clients.end(), client_socket), clients.end());
+    std::cout << "Client " << client_socket << " disconnected." << std::endl;
+}
+
+bool is_connection_close(char* message)
+{
+    char* ptr = std::strchr(message, CONNECTION_BREAK_SYMBOL);
+    if (ptr != nullptr) return true;
+    return false;
+}
+
+int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
+    vector<int>client;
+    int server;
+
+    WSADATA data;
+    if(0 != WSAStartup(MAKEWORD(2,1), &data)) return 101;
+    SOCKADDR_IN server_address;
+    client = socket(AF_INET, SOCK_STREAM, 0);
+    if (client == -1)
+    {
+        std::cerr << ERROR_S << "establishing socket error"<< std::endl; // Ошибка установки сокета
+        std::cerr << "Error " << strerror(errno) << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::cout << "Server: Socket for server was successfully estalished" << std::endl;
+
+    server_address.sin_port = htons(DEFAULT_PORT);
+    server_address.sin_family = AF_INET; // Семейство портов IPV4
+    server_address.sin_addr.s_addr = htons(INADDR_ANY);
+
+    // sin_port Хранит номер порта структуры,
+    // htons_ -эта функция преобразует 16-битные (2-байтовые) величины из порядка байтов хоста в порядок байтов сети.
+    // sin_addr.s_addr - поле хранит в себе IP адрес в сетевом порядке байтов
+
+    int ret = (bind(client, (sockaddr*) (&server_address),sizeof(server_address)));
+    if (ret < 0)
+    {
+        std::cerr << ERROR_S << "Binding connection. Socket has been already established";
+        return -1; // Окончание программы, сервер не был поднят
+    }
+
+    socklen_t size = sizeof(server_address);
+    std::cout << "Server: " << "It is listening for clients... " << std::endl;
+    listen(client, 1);
+    server = accept(client, (sockaddr*) &server_address, &size);
+    if (server == 0)
+    {
+        std::cerr << ERROR_S << "Can't accepting a client \n";
+        return -1;
+    }
+    char buffer[BUFFER_SIZE];
+    bool isExit = false;
+    while (server > 0) {
+        strcpy(buffer, "=> Server connected\n");
+        send(server,buffer, BUFFER_SIZE,0);
+        std::cerr << "=> Connected to the client" << std:: endl;
+        std::cerr << "Enter " << CONNECTION_BREAK_SYMBOL << "to end the connection" << std:: endl;
+
+        std::cerr << "Client :";
+        recv(server, buffer, BUFFER_SIZE, 0);
+        std::cerr << buffer << std::endl;
+        if(is_connection_close(buffer)) {
+            isExit = true;
+        }
+        while (!isExit) {
+            std::cerr << "Server: ";
+            std::cin.getline(buffer, BUFFER_SIZE);
+            send(server,buffer,BUFFER_SIZE,0);
+            if(is_connection_close(buffer))
+            {
+                break;
+            }
+            std::cerr << "Client: ";
+            recv(server,buffer, BUFFER_SIZE, 0);
+            std::cout << buffer << std::endl;
+            if(is_connection_close(buffer))
+            {
+                break;
+            }
+        }
+        std::cout << "Goodbye " << std::endl;
+        isExit = false;
+        exit(1);
+    }
+}
