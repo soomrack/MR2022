@@ -47,7 +47,7 @@ void receive_messages(int client_socket) {
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
     int client;
     WSADATA data;
-    SET_CONSOLE_NORMAL();
+    GET_CONSOLE_NORMAL();
     SET_CONSOLE_GREEN();
     if (0 != WSAStartup(MAKEWORD(2, 1), &data)) return 101;
     SOCKADDR_IN server_address;
@@ -79,7 +79,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
     std::cout << "=> Connection established.\n" <<
         "Enter " << CONNECTION_BREAK_SYMBOL << " for disconnection\n";
     // Запускаем отдельный поток для чтения данных из сокета
-    SET_CONSOLE_NORMAL();
+    GET_CONSOLE_NORMAL();
     std::thread read(receive_messages, client);
     // Запускаем отдельный поток для посылки сообщения серверу
     std::thread write(write_messages, client);
