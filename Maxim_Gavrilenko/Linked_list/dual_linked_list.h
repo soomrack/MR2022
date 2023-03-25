@@ -68,7 +68,7 @@ void LinkedList<T>::insert(Iterator<T>& pos, const T data)
     Node<T>* node = new Node(data);
     Node<T>* it = pos.get_node(); // Получаем указатель на текущий узел
     node->prev = it->prev;
-    node->next = it;
+    node->next = it->prev->next;
     if (it->prev) {
         it->prev->next = node;
     } else {

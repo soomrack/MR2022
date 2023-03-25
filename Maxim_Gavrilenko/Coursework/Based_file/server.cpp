@@ -1,38 +1,9 @@
-#include "Client/chat_library_initialization.h"
-#include "mingw.thread.h"
-#include "vector"
+#include "chat_library_initialization.h"
+
 #define DEFAULT_PORT 1600
 #define ERROR_S "SERVER ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
 #define BUFFER_SIZE 4096
-
-using namespace std;
-void handle_client(int client_socket) {
-    std::vector<int> clients;
-    char buffer[BUFFER_SIZE];
-    int read_size;
-
-    // Добавляем клиента в список
-    clients.push_back(client_socket);
-    std::cout << "Client " << client_socket << " connected." << std::endl;
-
-    // Читаем данные от клиента и отправляем их всем остальным клиентам
-    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
-        buffer[read_size] = '\0';
-        std::cout << "Received message from client " << client_socket << ": " << buffer << std::endl;
-
-        for (int i = 0; i < clients.size(); i++) {
-            if (clients[i] != client_socket) {
-                send(clients[i], buffer, strlen(buffer), 0);
-            }
-        }
-    }
-
-    // Удаляем клиента из списка и закрываем сокет
-    closesocket(client_socket);
-    //clients.erase(std::remove(clients.begin(), clients.end(), client_socket), clients.end());
-    std::cout << "Client " << client_socket << " disconnected." << std::endl;
-}
 
 bool is_connection_close(char* message)
 {
@@ -42,7 +13,7 @@ bool is_connection_close(char* message)
 }
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
-    vector<int>client;
+    int client;
     int server;
 
     WSADATA data;
