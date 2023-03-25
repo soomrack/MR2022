@@ -151,7 +151,7 @@ int main () {
     L.push_tail(10);
     L.print();
 
-    L.delete_head();s
+    L.delete_head();
     L.delete_tail();
     L.print();
 
