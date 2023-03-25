@@ -1,10 +1,11 @@
 #include <iostream>
 #include "dual_linked_list.h"
 template <typename T>
-void print(LinkedList<T> &A)
+void print(Iterator<T> it)
 {
-    for (unsigned int i = 0; i < A.get_size(); i++){
-    std:: cout << A[i] << " ";
+    while (it.get_node() != nullptr) {
+        std::cout << *it << " "; // выводим значение текущего элемента
+        ++it; // перемещаем итератор на следующий элемент
     }
     std:: cout << std::endl;
 }
@@ -14,11 +15,22 @@ int main()
     list.push_head(3);
     list.push_head(10);
     list.push_head(12);
-    list.push_tail(11);
-    print(list);
-    list.remove(10);
-    print(list);
-    Node<double> *temp = list.get_node(4);
-    list.insert(temp,5);
-    print(list);
+    list.push_head(67);
+
+    Iterator<double> it = list.begin();
+    print(list.begin());
+
+    // Выводим элементы списка
+// Вставляем новый элемент со значением 4 перед вторым элементом списка
+    ++it;
+    list.insert(it, 4);
+    ++it;
+    print(list.begin());
+    list.remove(it);
+    ++it;
+    print(list.begin());
+    list.clear();
+    std::cout<<list.get_size();
+
+
 }

@@ -1,14 +1,13 @@
 #include "Graph.h"
 int main() {
-    Graph<double> graph(5);
-    graph.addEdge(0, 1);
-    graph.addEdge(0, 4);
-    graph.addEdge(1, 3);
-    graph.addEdge(2,3);
-    graph.addEdge(1,2);
-    graph.addVertex(7);
-    graph.removeEdge(0,1);
-    graph.removeVertex(1);
+    Graph<double> g(4);
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 2);
+    g.addEdge(2, 0);
+    g.addEdge(2, 3);
+    g.addEdge(3, 3);
+    g.print();
 
     return 0;
 

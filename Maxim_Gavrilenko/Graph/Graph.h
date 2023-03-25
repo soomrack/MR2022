@@ -10,8 +10,8 @@ private:
     unsigned int V; // Количество вершин
     LinkedList<T> *adj; // Указатель на массив, содержащий списки смежности
 public:
-    Graph(unsigned int V) {
-        this->V = V;
+    Graph(unsigned int v) {
+        this->V = v;
         adj = new LinkedList<T>[this->V];
     }
 
@@ -47,7 +47,7 @@ public:
             return; // Вершина не существует
         }
         V--;
-        LinkedList<T> *newAdj = new LinkedList<T>[V];
+        auto *newAdj = new LinkedList<T>[V];
         for (int i = 0, j = 0; i < V + 1; i++) {
             if (i != v) {
                 newAdj[j++] = adj[i];
@@ -55,6 +55,17 @@ public:
         }
         adj = newAdj;
     }
+
+    void print() {
+        for(int v = 0; v < V; ++v) {
+            std::cout << "Adjacency list of vertex " << v << ":\n";
+            std::cout << v;
+            for(auto w : adj[v])
+                std::cout << "->" << w;
+            std::cout << "\n";
+        }
+    }
+
 };
 
 #endif //MR2022_GRAPH_H
