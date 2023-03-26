@@ -21,14 +21,24 @@ int main() {
     Vertex* v1 = A.find(2);
     Vertex* v2 = A.find(5);
 
-    std::cout << A.createEdge(v1, v2, true) << std::endl;
-    std::cout << A.createEdge(0, 3, false) << std::endl;
-    std::cout << A.createEdge(2, 1, false) << std::endl;
-    std::cout << A.createEdge(4, 0, false) << std::endl;
-    std::cout << A.createEdge(5, 3, false) << std::endl;
-    std::cout << A.createEdge(1, 4, false) << std::endl;
+    A.createEdge(v1, v2, true);
+    A.createEdge(0, 3, false);
+    A.createEdge(2, 1, false);
+    A.createEdge(4, 0, false);
+    A.createEdge(5, 3, false);
+    A.createEdge(1, 4, false);
 
+    std::cout << std::endl;
+    A.getEdges();
 
+    A.deleteEdge(0, 4);
+    std::cout << std::endl;
+    A.getEdges();
+
+    A.createEdge(1, 4, true);
+    A.createEdge(4, 2, true);
+    A.createEdge(4, 0, true);
+    A.createEdge(4, 3, true);
     std::cout << std::endl;
     A.getEdges();
 

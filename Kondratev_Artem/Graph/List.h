@@ -17,7 +17,6 @@ private:
 public:
     explicit Exception(std::string _message) { message = std::move(_message); };
 
-
     std::string getMessage() const { return message; };
 };
 
@@ -468,7 +467,6 @@ T ListIterator<T>::popThis() {
         throw Exception("error: bad access");
     }
 
-    list->size--;
     T data = iterator->getNodeObject();
 
     if (list->getSize() == 1) {
@@ -484,10 +482,15 @@ T ListIterator<T>::popThis() {
         list->tail = iterator->prev;
     }
 
-    iterator->next->prev = iterator->prev;
-    iterator->prev->next = iterator->next;
+    if (iterator->next) {
+        iterator->next->prev = iterator->prev;
+    }
+    if (iterator->prev) {
+        iterator->prev->next = iterator->next;
+    }
 
     iterator = nullptr;
+    list->size--;
     return data;
 }
 
@@ -514,13 +517,17 @@ T ListIterator<T>::get() {
 
 template<typename T>
 void ListIterator<T>::shiftToHead() {
-    iterator = iterator->prev;
+    if (iterator) {
+        iterator = iterator->prev;
+    }
 }
 
 
 template<typename T>
 void ListIterator<T>::shiftToTail() {
-    iterator = iterator->next;
+    if (iterator) {
+        iterator = iterator->next;
+    }
 }
 
 

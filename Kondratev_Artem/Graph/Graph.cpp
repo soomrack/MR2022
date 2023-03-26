@@ -7,7 +7,6 @@
 
 Graph::Graph() {
     size = 0;
-    edges_counter = 0;
 }
 
 
@@ -26,7 +25,6 @@ bool Graph::createEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_bidirecti
     auto* edge = new Edge(from_vertex, to_vertex, is_bidirectional);
     from_vertex->appendEdge(edge);
     to_vertex->appendEdge(edge);
-    edges_counter++;
     return true;
 }
 
@@ -45,11 +43,6 @@ bool Graph::createEdge(int from_data, int to_data, bool is_bidirectional) {
 
 uint64_t Graph::getSize() const {
     return size;
-}
-
-
-uint64_t Graph::getEdgesNumber() const {
-    return edges_counter;
 }
 
 
@@ -77,7 +70,6 @@ void Graph::getEdges() {
             std::cout << edge_iterator.get()->getEnd()->get() << std::endl;
             edge_iterator.shiftToTail();
         }
-
         iterator.shiftToTail();
     }
 }
@@ -99,32 +91,19 @@ void Graph::deleteVertex(int data) {
 }
 
 
-void Graph::deleteEdge(Vertex* from_vertex, Vertex* to_vertex) {
-    if (edges_counter == 0 || from_vertex->getEdgesNumber() == 0 || to_vertex->getEdgesNumber() == 0) {
+void Graph::deleteEdge(Vertex* vertex1, Vertex* vertex2) {
+    if (!vertex1 || !vertex2) {
         return;
     }
 
-    ListIterator<Edge*> list_iterator(&from_vertex->edge_list, from_vertex->edge_list.getHead());
-    while (true) {
-        if (list_iterator.get()->getStart() == to_vertex || list_iterator.get()->getEnd() == to_vertex) {
-            list_iterator.popThis();
-            from_vertex->edges_number--;
-            to_vertex->edges_number--;
-            edges_counter--;
-            return;
-        }
-        list_iterator.shiftToTail();
-    }
+    vertex1->deleteEdge(vertex2);
+    vertex2->deleteEdge(vertex1);
 }
 
 
-void Graph::deleteEdge(int from_data, int to_data) {
-    Vertex* from_vertex = GraphIterator(this).find(from_data);
-    Vertex* to_vertex = GraphIterator(this).find(to_data);
+void Graph::deleteEdge(int data1, int data2) {
+    Vertex* vertex1 = GraphIterator(this).find(data1);
+    Vertex* vertex2 = GraphIterator(this).find(data2);
 
-    if (!from_vertex || !to_vertex) {
-        return;
-    }
-
-    deleteEdge(from_vertex, to_vertex);
+    deleteEdge(vertex1, vertex2);
 }

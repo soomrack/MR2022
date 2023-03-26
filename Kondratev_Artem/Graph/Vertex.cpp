@@ -25,3 +25,20 @@ int Vertex::get() const {
 uint64_t Vertex::getEdgesNumber() const {
     return edges_number;
 }
+
+
+void Vertex::deleteEdge(Vertex* other) {
+    if (getEdgesNumber() == 0) {
+        return;
+    }
+
+    ListIterator<Edge*> list_iterator(&edge_list, edge_list.getHead());
+    while (true) {
+        if (list_iterator.get()->getStart() == other || list_iterator.get()->getEnd() == other) {
+            list_iterator.popThis();
+            edges_number--;
+            return;
+        }
+        list_iterator.shiftToTail();
+    }
+}
