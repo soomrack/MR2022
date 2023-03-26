@@ -3,13 +3,55 @@
 using namespace std;
 
 double E = 0.00000001;
-unsigned int RESERVE = 5;
+
+class QueueException {
+public:
+    int kod_mistake;
+    QueueException();
+    QueueException(int kod_mistake);
+    void set_mistake (int kod_mistake);
+};
+
+
+QueueException Overflow=(1);
+QueueException Underflow=(2);
+QueueException Notfound=(3);
+
+QueueException:: QueueException(){
+    kod_mistake = 999;
+}
+
+
+QueueException:: QueueException(int kod){
+    kod_mistake = kod;
+}
+
+
+void QueueException::set_mistake (int error){
+    switch (error) {
+        case 1:
+            std::cout << "\n"<< "       Overflow --> Program Terminated \n"<< "\n";
+            break;
+        case 2:
+            std::cout<< "\n" << "       Underflow --> Program Terminated\n"<< "\n";
+            break;
+        case 3:
+            std::cout<< "\n" << "       Not found \n"<< "\n";
+            break;
+        default:
+            std::cout << "       Unknown error \n";
+    }
+}
+
+
 class Queue {
 private:
     double *queue_massive;
-    int count;
+    unsigned int size_max;
     int sp;
-
+    int pp;
+    unsigned int size_real;
+    unsigned int RESERVE = 5;
 
 public:
     Queue();
@@ -22,42 +64,50 @@ public:
 
     void push( double);
     double pop( );
-    bool  IsEmpty();
+    inline bool  is_empty();
     void  print();
-    int search(double);
-    inline bool isFull();
+    void  print(int);
+    unsigned int  search(bool, double);
+    unsigned int search(double);
+    inline bool is_full();
 
 };
 
 
-
 Queue:: Queue(){
-    count = 0;
+    size_max = 0;
     queue_massive = nullptr;
 }
 
 
-Queue:: Queue(unsigned int n){
-    count = n + RESERVE;
-    queue_massive = new double [count];
+Queue:: Queue(unsigned int size){
+    size_max = size + RESERVE;
+    queue_massive = new double [size_max];
     sp = -1;
-
+    pp = 0;
+    size_real = 0;
 }
 
 
 Queue::Queue(const Queue &obj) {
-    count = obj.count;
-    queue_massive = new double[count];
-    for (int i = 0; i < count; i++)
-        queue_massive[i] = obj.queue_massive[i];
+    size_max = obj.size_max;
+    queue_massive = new double[size_max];
+    for (unsigned int number = 0; number < size_max; number++)
+        queue_massive[number] = obj.queue_massive[number];
 }
 
 
 Queue::Queue(Queue &&x) {
-    count = x.count;
+    size_max = x.size_max;
     queue_massive = x.queue_massive;
-    x.count = 0;
+    sp = x.sp;
+    pp = x.pp;
+    size_real = x.size_real;
+    x.size_max = 0;
     x.queue_massive = nullptr;
+    x.sp = 0;
+    x.pp= 0;
+    x.size_real = 0;
 }
 
 
@@ -71,85 +121,150 @@ Queue& Queue:: operator =(const Queue& X) {
         return *this;
     }
     delete[] this->queue_massive;
-    count = X.count;
-    queue_massive = new double [count];
-    for (unsigned int number = 0; number < count; number++) {
+    size_max = X.size_max;
+    queue_massive = new double [size_max];
+    for (unsigned int number = 0; number < size_max; number++) {
         this->queue_massive[number] = X.queue_massive[number];
     }
 }
 
 
-inline bool Queue::isFull() {
-    return sp == count - 1;
+inline bool Queue::is_full() {
+    return size_real == size_max;
 }
 
 
 void Queue:: push(double item){
-    if (isFull()) exit(EXIT_FAILURE);
-    queue_massive[++sp] = item;
+    if (is_full())  throw Overflow;
+
+    sp = (sp + 1) % size_max;
+    queue_massive[sp] = item;
+    size_real++;
 }
 
 
-bool Queue:: IsEmpty() {
-    return count == 0;
+inline bool Queue:: is_empty() {
+    return size_real == 0;
 }
 
 
 double Queue:: pop() {
-    if (IsEmpty()) exit(EXIT_FAILURE);
-    double item =queue_massive [0];
-    for (unsigned int number = 1; number <= sp; number ++){
-        queue_massive[number -1] = queue_massive[number];
-    }
-    sp--;
-    return item;
+    if (is_empty()) throw Underflow;
+    double item = queue_massive[pp];
+    pp = (pp + 1) % size_max;
+    size_real--;
+    return  item;
 }
 
 
-void Queue:: print() {
-    for (int i = 0; i <= sp; i++)
-        cout << queue_massive[i] << "  ";
+
+void Queue:: print(int) {
+    for (auto number = pp; number < size_max; number++)
+        cout << queue_massive[number] << "  ";
+    for (auto number = 0; number <= sp; number++  )
+        cout << queue_massive[number] << "  ";
+
     cout << endl;
 }
 
 
-int Queue::search(double item) {
-    for ( int number = 0; number < count; number++){
-        if (abs(queue_massive[number] - item) < E) return number+1;
-    }
-    std:: cout << "Not found" << "\n";
-    return 0;
+void Queue:: print() {
+    for (auto number = pp; number <= sp; number++)
+        cout << queue_massive[number] << "  ";
+    cout << endl;
+    if (pp > sp) print(1);
+
 }
+
+
+unsigned int Queue::search(bool,double item) {
+    int chet = 0;
+    for (auto number = pp; number < size_max; number++) {
+        chet++;
+        if (abs(queue_massive[number] - item) < E) return chet;
+    }
+    for (auto number =0; number <= sp; number++  ){
+        chet++;
+        if (abs(queue_massive[number] - item) < E) return chet;
+    }
+    throw Notfound;
+}
+
+
+unsigned int Queue::search(double item) {
+    if (pp > sp) return search(true,item);
+    int chet = 0;
+    for ( auto number = pp; number <= sp; number++){
+        chet++;
+        if (abs(queue_massive[number] - item) < E) return chet;
+    }
+    throw Notfound;
+}
+
 
 int main() {
     Queue My_queue = Queue{5};
-double r;
+    double r1, r2, r3;
+
     My_queue.push(1.00);
     My_queue.push(2.00);
     My_queue.push(3.00);
     My_queue.push(4.00);
     My_queue.push(5.00);
+    My_queue.print();
+
+
+    r1 = My_queue.pop();
+    r2 = My_queue.pop();
+    r3 = My_queue.pop();
+    cout << "After pop -->   " << "R1 =  " << r1 << ";  R2 =  " << r2 << ";  R3 =  " << r3 << endl;
+    My_queue.print();
+
+
     My_queue.push(6.00);
     My_queue.push(7.00);
     My_queue.push(8.00);
-    My_queue.push(9.00);
-    My_queue.push(10.00);
-
-
     My_queue.print();
 
-    r =  My_queue.pop();
-    r =  My_queue.pop();
-    r =  My_queue.pop();
+
+    r1 = My_queue.pop();
+    r2 = My_queue.pop();
+    r3 = My_queue.pop();
+    cout << "After pop -->   " << "R1 =  " << r1 << ";  R2 =  " << r2 << ";  R3 =  " << r3 << endl;
+    My_queue.print();
+
+    cout << "Search -->   " << "8--> " << My_queue.search(8.00) << endl;
+
+    My_queue.push(9.00);
+    My_queue.print();
+    My_queue.push(10.00);
+    My_queue.print();
     My_queue.push(11.00);
     My_queue.print();
+    cout << "Search -->   " << "11--> " << My_queue.search(11.00) << endl;
+    My_queue.push(12.00);
+    My_queue.print();
+    My_queue.push(13.00);
+    My_queue.print();
+    My_queue.push(14.00);
+    My_queue.print();
+    My_queue.push(15.00);
+    My_queue.print();
+    My_queue.push(16.00);
+    My_queue.print();
+    My_queue.push(17.00);
 
-    r = My_queue.search(7.00);
+
+    My_queue.print();
 
 
     return 0;
 
 }
+
+
+
+
 
 
 
