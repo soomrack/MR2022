@@ -6,8 +6,29 @@
 #define HELLO_WORLD_VERTEX_H
 
 
-class Vertex {
+#include <cstdint>
+#include "Edge.h"
+#include "Graph.h"
+#include "List.h"
 
+
+class Edge;
+
+
+class Vertex {
+    friend class Graph;
+
+private:
+    int data;
+    uint64_t edges_number;
+    List<Edge*> edge_list;
+
+public:
+    explicit Vertex(int _data);
+
+    void appendEdge(Edge* edge);
+    int get() const;
+    uint64_t getEdgesNumber() const;
 };
 
 

@@ -33,29 +33,24 @@ class ListIterator;
 template<typename T>
 class Node {
     friend class List<T>;
-
-
     friend class ListIterator<T>;
-
 
 private:
     T data;
     Node<T>* next;
+    Node<T>* prev;
 public:
-    explicit Node(T _data, Node<T>* _next = nullptr) {
-        data = _data;
-        next = _next;
-    };
+    explicit Node(T _data, Node<T>* _next = nullptr, Node<T>* _prev = nullptr);
 
-
-    T get() { return data; };
+    T getNodeObject();
+    Node<T>* getNext();
+    Node<T>* getPrev();
 };
 
 
 template<typename T>
 class List {
     friend class ListIterator<T>;
-
 
 private:
     uint64_t size;
@@ -83,6 +78,8 @@ public:
     void print();
     uint64_t getSize();
     T getData(uint64_t index);
+    Node<T>* getHead();
+    Node<T>* getTail();
     void clear();
 };
 
@@ -94,12 +91,45 @@ private:
     Node<T>* iterator;
 
 public:
-    explicit ListIterator(List<T>* _list, Node<T>* _iterator);
+    explicit ListIterator(List<T>* _list, Node<T>* _iterator=nullptr);
     void pushNext(T data);
+    void pushPrev(T data);
     T popNext();
+    T popPrev();
+    T popThis();
     void find(T data);
     T get();
+    void shiftToHead();
+    void shiftToTail();
+    bool isHead();
+    bool isTail();
 };
+
+
+template<typename T>
+Node<T>::Node(T _data, Node<T>* _next, Node<T>* _prev) {
+    data = _data;
+    next = _next;
+    prev = _prev;
+}
+
+
+template<typename T>
+T Node<T>::getNodeObject() {
+    return data;
+}
+
+
+template<typename T>
+Node<T>* Node<T>::getNext() {
+    return next;
+}
+
+
+template<typename T>
+Node<T>* Node<T>::getPrev() {
+    return prev;
+}
 
 
 template<typename T>
@@ -217,6 +247,7 @@ void List<T>::push(T data) {
     }
     size++;
     tail->next = node;
+    node->prev = tail;
     tail = node;
 }
 
@@ -237,7 +268,9 @@ void List<T>::push(T data, uint64_t index) {
         return;
     }
     node->next = this->operator[](index);
+    node->prev = this->operator[](index - 1);
     this->operator[](index - 1)->next = node;
+    node->next->prev = node;
 }
 
 
@@ -287,6 +320,7 @@ T List<T>::pop(uint64_t index) {
     if (index == 0) {
         T data = head->data;
         head = head->next;
+        head->prev = nullptr;
         size--;
         return data;
     }
@@ -294,6 +328,7 @@ T List<T>::pop(uint64_t index) {
     for (uint64_t i = 0; i < index - 1; i++) {
         node = node->next;
     }
+    node->next->next->prev = node;
     node->next = node->next->next;
     size--;
     return this->operator[](index)->data;
@@ -331,6 +366,18 @@ T List<T>::getData(uint64_t index) {
 
 
 template<typename T>
+Node<T>* List<T>::getHead() {
+    return head;
+}
+
+
+template<typename T>
+Node<T>* List<T>::getTail() {
+    return tail;
+}
+
+
+template<typename T>
 void List<T>::clear() {
     size = 0;
     head = nullptr;
@@ -347,7 +394,13 @@ ListIterator<T>::ListIterator(List<T>* _list, Node<T>* _iterator) {
 
 template<typename T>
 void ListIterator<T>::pushNext(T data) {
+    if (!iterator) {
+        return;
+    }
     auto* new_node = new Node<T>(data, iterator->next);
+    new_node->next = iterator->next;
+    new_node->prev = iterator;
+    iterator->next->prev = new_node;
     iterator->next = new_node;
     if (iterator == list->tail) {
         list->tail = iterator->next;
@@ -357,16 +410,84 @@ void ListIterator<T>::pushNext(T data) {
 
 
 template<typename T>
+void ListIterator<T>::pushPrev(T data) {
+    if (!iterator) {
+        return;
+    }
+    auto* new_node = new Node<T>(data, iterator->next);
+    new_node->next = iterator;
+    new_node->prev = iterator->prev;
+    iterator->prev->next = new_node;
+    iterator->prev = new_node;
+    if (iterator == list->head) {
+        list->head = iterator->prev;
+    }
+    list->size++;
+}
+
+
+template<typename T>
 T ListIterator<T>::popNext() {
-    if (!iterator->next) {
+    if (!iterator->next  || list->isEmpty()) {
         throw Exception("error: bad access");
     }
     list->size--;
-    T data = iterator->next->get();
+    T data = iterator->next->getNodeObject();
     if (iterator->next == list->tail) {
         list->tail = iterator;
     }
+    if(iterator->next->next) {
+        iterator->next->next->prev = iterator;
+    }
     iterator->next = iterator->next->next;
+    return data;
+}
+
+
+template<typename T>
+T ListIterator<T>::popPrev() {
+    if (!iterator->prev || list->isEmpty()) {
+        throw Exception("error: bad access");
+    }
+    list->size--;
+    T data = iterator->prev->getNodeObject();
+    if (iterator->prev == list->head) {
+        list->head = iterator;
+    }
+    if (iterator->prev->prev) {
+        iterator->prev->prev->next = iterator;
+    }
+    iterator->prev = iterator->prev->prev;
+    return data;
+}
+
+
+template<typename T>
+T ListIterator<T>::popThis() {
+    if (!iterator || list->isEmpty()) {
+        throw Exception("error: bad access");
+    }
+
+    list->size--;
+    T data = iterator->getNodeObject();
+
+    if (list->getSize() == 1) {
+        list->clear();
+        iterator = nullptr;
+        return data;
+    }
+
+    if (iterator == list->head) {
+        list->head = iterator->next;
+    }
+    if (iterator == list->tail) {
+        list->tail = iterator->prev;
+    }
+
+    iterator->next->prev = iterator->prev;
+    iterator->prev->next = iterator->next;
+
+    iterator = nullptr;
     return data;
 }
 
@@ -387,7 +508,31 @@ void ListIterator<T>::find(T data) {
 
 template<typename T>
 T ListIterator<T>::get() {
-    return iterator->get();
+    return iterator->getNodeObject();
+}
+
+
+template<typename T>
+void ListIterator<T>::shiftToHead() {
+    iterator = iterator->prev;
+}
+
+
+template<typename T>
+void ListIterator<T>::shiftToTail() {
+    iterator = iterator->next;
+}
+
+
+template<typename T>
+bool ListIterator<T>::isHead() {
+    return iterator == list->head;
+}
+
+
+template<typename T>
+bool ListIterator<T>::isTail() {
+    return iterator == list->tail;
 }
 
 
