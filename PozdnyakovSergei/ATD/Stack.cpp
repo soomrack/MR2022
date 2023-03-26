@@ -85,10 +85,10 @@ int main () {
     st.pop(); st.pop();
     st.push(25);
 
-    if (st.empty()) {
+    if (st.is_empty()) {
         throw IS_EMPTY;
     }
-    if (st.full()) {
+    if (st.is_full()) {
         throw IS_FULL;
     }
 }

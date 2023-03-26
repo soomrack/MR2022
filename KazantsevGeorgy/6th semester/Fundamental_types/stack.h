@@ -1,12 +1,4 @@
-//
-// Created by delta on 18.02.2023.
-//
-
-#ifndef CLIONPROJECTS_STACK_H
-#define CLIONPROJECTS_STACK_H
-
-#endif //CLIONPROJECTS_STACK_H
-#include "exception.h"
+#include "ExceptError.h"
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -19,17 +11,11 @@ class Stack{
     unsigned int top; //вершина стека
     unsigned int stacksize;
 public:
-    // конструкторы
     Stack();
     Stack(unsigned int size);
-
-    // деструктор
     ~Stack();
-
-    //оператор перегрузки (переноса)
     Stack& operator=(const Stack &stack);
 
-    // Методы
     void StackPush(double new_value);
     void StackZering();
     void StackPop();
@@ -49,7 +35,7 @@ Stack::Stack() {
 }
 
 Stack::Stack(unsigned int size) {
-    stackvalues = new double[size]; //создание пустого стека со стек поинтером в нуле
+    stackvalues = new double[size];
     stacksize = size;
     top = 0;
 }
@@ -73,9 +59,7 @@ void Stack::StackZering() {
 }
 void Stack::StackPop() {
     unsigned int k = top;
-    if (top == - 1) {
-        cout << "Out of Range";
-    }
+    if (top == 0) throw OUTOFRANGE;
     else
     {
         stackvalues[--k] = 0;
