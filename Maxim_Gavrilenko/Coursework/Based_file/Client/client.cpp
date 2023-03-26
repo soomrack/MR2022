@@ -2,7 +2,7 @@
 
 #include "C:\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Coursework\SERVER_FOR_CLIENTS\chat.h"
 
-#define DEFAULT_PORT 1600
+#define DEFAULT_PORT 22222
 #define ERROR_S "CLIENT ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
 #define SERVER_IP "127.0.0.1"

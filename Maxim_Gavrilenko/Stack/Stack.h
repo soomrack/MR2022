@@ -15,12 +15,17 @@ STACK_ERROR FULL("Stack is full");
 template <typename T>
 class stack {
 private:
-    unsigned int max_size;
-    unsigned int size;
+    size_t capacity;
+    size_t size;
     int top;        // индекс верхнего элемента стека
     T* data;   // массив для хранения элементов стека
 public:
-    stack(unsigned int max);
+    stack();
+    explicit stack(size_t max);
+    stack(const stack&);
+    stack(stack&&) noexcept;
+    stack& operator=(const stack&);
+    stack& operator=(stack&&) noexcept;
     bool is_empty();
     bool is_full();
     unsigned int get_size();
@@ -31,9 +36,9 @@ public:
 };
 
 template <typename T>
-stack<T>::stack(unsigned int max) {
-    max_size = max;
-    data = new T[max_size];
+stack<T>::stack(size_t max) {
+    capacity = max;
+    data = new T[capacity];
     if (!data) throw BADALLOC;
     size = 0;
     top = -1;   // инициализация вершины пустым значением
@@ -48,7 +53,7 @@ unsigned int stack<T>::get_size() {return size;}
 
 template <typename T>
 bool stack<T>::is_full(){
-    return top == max_size - 1;
+    return top == capacity - 1;
 }
 
 template <typename T>
@@ -72,4 +77,53 @@ T stack<T>::peek() {
     return data[top];
 }
 
+template <typename T>
+stack<T>::stack() {
+    capacity = 0;
+    size = 0;
+    top = -1;
+    data = nullptr;
+}
+
+template <typename T>
+stack<T>::stack(const stack<T> & s) : capacity(s.capacity), size(s.size), top(s.top) {
+    data = new T[capacity];
+    if (!data) throw BADALLOC;
+    memcpy(data,s.data,capacity);
+}
+
+template <typename T>
+stack<T>& stack<T>::operator=(const stack<T> & s) {
+    if(this == &s) return *this;
+    capacity = s.capacity;
+    size = s.size;
+    top = s.top;
+    data = new T[capacity];
+    if(!data) throw EMPTY;
+    memcpy(data,s.data,capacity);
+    return *this;
+}
+
+template <typename T>
+stack<T>::stack(stack<T> && s) noexcept : capacity(s.capacity), size(s.size),
+top(s.top), data(s.data) {
+    s.capacity = NULL;
+    s.size = NULL;
+    s.top = -1;
+    s.data = nullptr;
+}
+
+template <typename T>
+stack<T>& stack<T>::operator=(stack<T> && s) noexcept {
+    if (this == &s) return *this;
+    capacity = s.capacity;
+    size = s.size;
+    top = s.top;
+    data = s.data;
+    s.capacity = NULL;
+    s.size = NULL;
+    s.top = -1;
+    s.data = nullptr;
+    return *this;
+}
 #endif //MR2022_stack_H

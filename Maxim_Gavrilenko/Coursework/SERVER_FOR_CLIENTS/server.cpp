@@ -1,6 +1,6 @@
 #include "chat.h"
 
-#define DEFAULT_PORT 55555
+#define DEFAULT_PORT 22222
 #define ERROR_S "SERVER ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
 #define BUFFER_SIZE 1024
@@ -57,7 +57,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
     // Настраиваем адрес сервера
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(DEFAULT_PORT);
-    inet_pton(AF_INET, "192.168.0.100", &server_addr.sin_addr);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
 
     // Связываем сокет сервера с адресом
     if (bind(server_socket, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
