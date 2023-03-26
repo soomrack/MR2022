@@ -64,7 +64,7 @@ public:
     void pop (double);
     void push (double, unsigned int);
     void push (double);
-    unsigned int search (double);
+    unsigned int search(double);
     inline bool is_full ();
     inline bool is_empty ();
 
