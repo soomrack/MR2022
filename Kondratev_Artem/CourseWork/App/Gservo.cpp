@@ -76,6 +76,31 @@ void Gservo::setTorque(uint8_t _torque1, uint8_t _torque2) {
 }
 
 
-void Gservo::setIsMoving(uint8_t _is_moving1, uint8_t _is_moving2) {
-    is_moving = _is_moving1 * 100 + _is_moving2;
+void Gservo::setIsMoving(uint8_t _is_moving1) {
+    is_moving = _is_moving1;
+}
+
+
+void Gservo::setGoal(uint16_t _goal) {
+    goal = _goal;
+}
+
+
+void Gservo::setAngle(uint16_t _angle) {
+    angle = _angle;
+}
+
+
+void Gservo::setSpeed(uint16_t _speed) {
+    speed = _speed;
+}
+
+
+void Gservo::setBoost(uint16_t _boost) {
+    boost = _boost;
+}
+
+
+void Gservo::setTorque(uint16_t _torque) {
+    torque = _torque;
 }

@@ -21,7 +21,6 @@ class Graph {
     friend class GraphIterator;
 private:
     uint64_t size;
-    uint64_t edges_counter;
     List<Vertex*> list;
 
 public:
@@ -32,7 +31,6 @@ public:
     bool createEdge(int from_data, int to_data, bool is_bidirectional);
 
     uint64_t getSize() const;
-    uint64_t getEdgesNumber() const;
 
     void getVertices();
     void getEdges();
@@ -40,8 +38,8 @@ public:
     Vertex* find(int data);
 
     void deleteVertex(int data);
-    void deleteEdge(Vertex* from_vertex, Vertex* to_vertex);
-    void deleteEdge(int from_data, int to_data);
+    void deleteEdge(Vertex* vertex1, Vertex* vertex2);
+    void deleteEdge(int data1, int data2);
 };
 
 
