@@ -11,13 +11,14 @@
 #include "Vertex.h"
 
 
-class Exception: std::exception {
+class Exception : std::exception {
 private:
     std::string message;
 public:
-    explicit Exception(std::string _message) {message = std::move(_message);};
+    explicit Exception(std::string _message) { message = std::move(_message); };
 
-    std::string getMessage() const {return message;};
+
+    std::string getMessage() const { return message; };
 };
 
 
@@ -32,19 +33,30 @@ class ListIterator;
 template<typename T>
 class Node {
     friend class List<T>;
+
+
     friend class ListIterator<T>;
+
+
 private:
     T data;
     Node<T>* next;
 public:
-    explicit Node(T _data, Node<T>* _next=nullptr) {data = _data; next = _next;};
-    T get() {return data;};
+    explicit Node(T _data, Node<T>* _next = nullptr) {
+        data = _data;
+        next = _next;
+    };
+
+
+    T get() { return data; };
 };
 
 
 template<typename T>
 class List {
     friend class ListIterator<T>;
+
+
 private:
     uint64_t size;
     Node<T>* head;
@@ -53,11 +65,11 @@ private:
 public:
     List();
     ~List() = default;
-    List(const List<T>& other);
-    List(List<T>&& other) noexcept ;
+    List(const List<T> &other);
+    List(List<T> &&other) noexcept;
 
-    List<T>& operator=(const List<T>& other);
-    List<T>& operator=(List<T>&& other) noexcept ;
+    List<T> &operator=(const List<T> &other);
+    List<T> &operator=(List<T> &&other) noexcept;
     Node<T>* operator[](uint64_t index);
     List<T> operator+(List<T> other);
 
@@ -82,7 +94,7 @@ private:
     Node<T>* iterator;
 
 public:
-    explicit ListIterator(List<T> *_list, Node<T> *_iterator);
+    explicit ListIterator(List<T>* _list, Node<T>* _iterator);
     void pushNext(T data);
     T popNext();
     void find(T data);
@@ -104,7 +116,7 @@ List<T>::List(const List<T> &other) {
     auto* copy = new Node<T>(other.head->data);
     head = copy;
     Node<T>* original = other.head;
-    while(original->next != nullptr) {
+    while (original->next != nullptr) {
         copy->next = new Node<T>(original->next->data);
         copy = copy->next;
         original = original->next;
@@ -140,7 +152,7 @@ List<T> &List<T>::operator=(const List<T> &other) {
     auto* copy = new Node<T>(other.head->data);
     head = copy;
     Node<T>* original = other.head;
-    while(original->next != nullptr) {
+    while (original->next != nullptr) {
         copy->next = new Node<T>(original->next->data);
         copy = copy->next;
         original = original->next;
@@ -165,8 +177,8 @@ List<T> &List<T>::operator=(List<T> &&other) noexcept {
 
 
 template<typename T>
-Node<T> *List<T>::operator[](const uint64_t index) {
-    if(isEmpty() || index >= size) {
+Node<T>* List<T>::operator[](const uint64_t index) {
+    if (isEmpty() || index >= size) {
         throw Exception("error: bad index");
     }
     Node<T>* node = head;
@@ -197,7 +209,7 @@ bool List<T>::isEmpty() {
 template<typename T>
 void List<T>::push(T data) {
     auto* node = new Node<T>(data);
-    if(isEmpty()) {
+    if (isEmpty()) {
         size++;
         head = node;
         tail = node;
@@ -290,7 +302,7 @@ T List<T>::pop(uint64_t index) {
 
 template<typename T>
 void List<T>::print() {
-    if(isEmpty()) {
+    if (isEmpty()) {
         return;
     }
     std::cout << "[";
@@ -327,7 +339,7 @@ void List<T>::clear() {
 
 
 template<typename T>
-ListIterator<T>::ListIterator(List<T> *_list, Node<T>* _iterator) {
+ListIterator<T>::ListIterator(List<T>* _list, Node<T>* _iterator) {
     list = _list;
     iterator = _iterator;
 }
@@ -362,7 +374,7 @@ T ListIterator<T>::popNext() {
 template<typename T>
 void ListIterator<T>::find(T data) {
     Node<T>* node = list->head;
-    while(node) {
+    while (node) {
         if (node->data == data) {
             iterator = node;
             return;
