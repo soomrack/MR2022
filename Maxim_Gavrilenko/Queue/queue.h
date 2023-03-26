@@ -144,6 +144,7 @@ queue<T>& queue<T>::operator=(const queue<T> &q) {
     data = new T[capacity];
     if (!data) throw BADALLOC;
     memcpy(data,q.data,sizeof(capacity));
+    return  *this;
 }
 
 template<typename T>
@@ -169,6 +170,7 @@ queue<T>& queue<T>::operator=(queue<T> &&q) noexcept {
     q.size = NULL;
     q.capacity =NULL;
     q.data = nullptr;
+    return *this;
 }
 
 #endif //MR2022_QUEUE_H
