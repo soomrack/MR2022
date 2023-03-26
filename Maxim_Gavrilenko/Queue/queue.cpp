@@ -1,5 +1,13 @@
 #include <iostream>
 #include "queue.h"
+template <typename T>
+void print(queue<T>& A) {
+    if (A.is_empty()) throw std::domain_error("queue is Empty");
+    for (unsigned int i = 0; i < A.get_size(); i++){
+        std::cout << A[i] << " ";
+    }
+    std::cout << std::endl;
+}
 int main() {
     queue<int> q(5);
     queue<int> z(5);
@@ -16,21 +24,17 @@ int main() {
         z.push(52);
         std::cout << "Front element: " << q.get_top() << std::endl;
         std::cout << "Rear element: " << q.get_tail() << std::endl;
-        std::cout << "Current_size:" << q.current_size() << std::endl;
+        std::cout << "Current_size:" << q.get_size() << std::endl;
         std::cout << "Print q: ";
-        q.print();
+        print(q);
         std::cout << "Print z: ";
-        z.print();
+        print(z);
+        std::cout<<"SWAP"<<std::endl;
         q.swap(z);
-        std::cout<<std::endl;
         std::cout << "Print q:";
-        q.print();
-        std::cout<<std::endl;
-        std::cout << "Print z:";
-        z.print();
-        std::cout << std::endl;
-        std::cout << std::endl;
-        q.clear();
+        print(q);
+        queue<int>ab(std::move(q));
+        print(ab);
     }
     catch (std::domain_error& e) {
         std::cerr << "Caught: " << e.what() << std::endl;
