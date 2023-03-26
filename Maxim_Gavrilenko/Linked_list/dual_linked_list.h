@@ -25,7 +25,7 @@ public:
 template <typename T>
 class Iterator {
 public:
-    Iterator(Node<T>* node_it) : node(node_it) {}
+    explicit Iterator(Node<T>* node_it) : node(node_it) {}
     Iterator operator++() {
         node = node->next;
             return *this; }
@@ -53,14 +53,15 @@ public:
     LinkedList<T>& operator==(LinkedList &&) noexcept;
     ~LinkedList();
 
-    Iterator<T> begin() { return Iterator(head);}
-    Iterator<T> end() {return Iterator(tail);}
+    Iterator<T> begin() { return Iterator<T>(head);}
+    Iterator<T> end() {return Iterator<T>(tail);}
     unsigned int get_size() {return size;}
     void push_tail(T data);
     void push_head(T data);
     void pop_head();
     void pop_tail();
     void remove(Iterator <T>);
+    void remove(const T& value);
     void clear();
     void insert(Iterator<T>&, T);
 
@@ -70,8 +71,8 @@ public:
 template <typename T>
 void LinkedList<T>::insert(Iterator<T>& pos, const T data)
 {
-    Node<T>* node = new Node(data);
-    Node<T>* it = pos.get_node(); // Получаем указатель на текущий узел
+    auto * node = new Node<T>(data);
+    auto * it = pos.get_node(); // Получаем указатель на текущий узел
     node->prev = it->prev;
     node->next = it->prev->next;
     if (it->prev) {
@@ -147,7 +148,7 @@ void LinkedList<T>::push_tail(T data)
 template <typename T>
 void LinkedList<T>::push_head(T data)
 {
-    auto* node = new Node(data);
+    auto* node = new Node<T>(data);
     if (head == nullptr) {
         head = tail = node;
     } else {
@@ -175,6 +176,35 @@ void LinkedList<T>::remove(Iterator<T> pos)
     }
     delete node;
     size--;
+}
+
+template <typename T>
+void LinkedList<T>::remove(const T& value) {
+    auto * current = head;
+    // Поиск элемента с заданным значением
+    while (current != nullptr && current->data != value) {
+        current = current->next;
+    }
+    // Если элемент найден, удаляем его
+    if (current != nullptr) {
+        // Если удаляемый элемент - начальный элемент списка, обновляем указатель head
+        if (current == head) {
+            head = current->next;
+        }
+        // Если удаляемый элемент - конечный элемент списка, обновляем указатель tail
+        if (current == tail) {
+            tail = current->prev;
+        }
+        // Обновляем указатели на соседние элементы
+        if (current->prev != nullptr) {
+            current->prev->next = current->next;
+        }
+        if (current->next != nullptr) {
+            current->next->prev = current->prev;
+        }
+        // Удаляем узел
+        delete current;
+    }
 }
 
 template <typename T>
@@ -230,4 +260,5 @@ LinkedList<T>& LinkedList<T>::operator==(LinkedList<T> && list) noexcept  {
     list.tail = nullptr;
     list.size = 0;
 }
+
 #endif //MR2022_DUAL_LINKED_LIST_H

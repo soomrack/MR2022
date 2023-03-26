@@ -31,7 +31,7 @@ int main()
     ++it;
     print(list.begin());
     std::cout<<list.get_size();
-    LinkedList<double> list2(std::move(list));
+    LinkedList<double> list2 = std::move(list);
     list2.clear();
     list2.push_head(3);
 }
