@@ -1,22 +1,20 @@
 #include <iostream>
 #include <algorithm>
-
 #include <exception>
 
 double E =0.00000001;
 
-static unsigned int RESERVE = 2;  //Запас пустого места в массиве
 
 class DynamicArrayException {
 public:
     int kod_mistake;
     DynamicArrayException();
     DynamicArrayException(int kod_mistake);
-    void set_mistake (int kod_mistake);
+
 };
 
-DynamicArrayException Overflow=(1);
-DynamicArrayException Underflow=(2);
+DynamicArrayException Negative = 1;
+
 
 DynamicArrayException:: DynamicArrayException(){
     kod_mistake = 999;
@@ -27,48 +25,31 @@ DynamicArrayException:: DynamicArrayException(int kod){
 }
 
 
-void DynamicArrayException::set_mistake (int error){
-    switch (error) {
-        case 1:
-            std::cout << "\n"<< "       Overflow --> Program Terminated \n"<< "\n";
-            break;
-        case 2:
-            std::cout<< "\n" << "       Underflow --> Program Terminated\n"<< "\n";
-            break;
-        default:
-            std::cout << "       Unknown error \n";
-    }
-}
+
 
 class DynamicArray {
 protected:
-    unsigned int size;
+    int size;
     double* line;
     int sp;
 
 
-
-
 public:
-
+    int RESERVE = 2;
     DynamicArray();
-    DynamicArray( const unsigned int number);
+    DynamicArray( const int size_massive);
     DynamicArray(const DynamicArray& A);
     DynamicArray(DynamicArray&& A);
     ~DynamicArray();
 
-
-
     void print();
-
     void pop (double);
-    void push (double, unsigned int);
+    void insert (double, unsigned int);
     void push (double);
     unsigned int search(double);
     inline bool is_full ();
     inline bool is_empty ();
-
-
+    void dop();
 
     DynamicArray& operator=(const DynamicArray &x);
 };
@@ -81,8 +62,9 @@ DynamicArray::DynamicArray() {
 }
 
 
-DynamicArray::DynamicArray(const unsigned int number) {
-    size = number + RESERVE;
+DynamicArray::DynamicArray(const int size_massive) {
+    if (size_massive < 0 || RESERVE < 0) throw Negative;
+    size = size_massive + RESERVE;
     line = new double[size];
     sp = -1;
 }
@@ -120,6 +102,8 @@ DynamicArray::DynamicArray(DynamicArray &&x) {
 DynamicArray::~DynamicArray() {
     delete[] line;
 }
+
+
 inline bool DynamicArray:: is_empty (){
     return sp == -1;
 }
@@ -142,37 +126,38 @@ void DynamicArray::push(double X, unsigned int  place) {
     line[place] = X;
 }
 */
+void DynamicArray:: dop(){
+    double* massive = new double[size + RESERVE];
+    for (int number = 0; number < size; number++){
+        massive[number] = line[number];
+    }
+    line = massive;
+    size = size + RESERVE;
 
+}
 
-void DynamicArray::push(double item, unsigned int  place) {
+void DynamicArray::insert(double item, unsigned int  place) {
     line[place] = item;
 }
 
 
 void DynamicArray::push(double item) {
-    if (is_full()) {
-        try{ throw Overflow;}
-        catch (DynamicArrayException error){ error.set_mistake(1);}
-    }
+    if (is_full()) dop();
     line[++sp] = item;
 }
 
 
 unsigned int DynamicArray:: search (double item){
-    for (unsigned int number = 0; number <= sp  ; number ++){
+    for ( int number = 0; number <= sp  ; number ++){
         if (  abs(line[number] - item) < E ){
             return number;
         }
     }
-    return size + 10;
+    return size + 1;
 }
 
 
 void DynamicArray:: pop (double item) {
-    if (is_empty()) {
-        try{ throw Underflow;}
-        catch (DynamicArrayException error){ error.set_mistake(2);}
-    }
     unsigned int place = search(item);
     if ( place > size) return;
     double help, help2= line[place+1];
@@ -192,6 +177,8 @@ void DynamicArray::print (){
     std::cout << "\n";
 }
 
+
+
 int main() {
     DynamicArray A = DynamicArray{4};
 
@@ -204,9 +191,9 @@ int main() {
     A.print();
 
 
-    A.push(4.00, 3);
-    A.push(5.00, 4);
-    A.push(1.00, 0);
+    A.insert(4.00, 3);
+    A.insert(5.00, 4);
+    A.insert(1.00, 0);
     A.print();
 
     A.pop (1.00);
@@ -227,5 +214,8 @@ int main() {
     A.print();
 
     A.push(999.00);
+    A.push(999.00);
+    A.print();
+
     return 0;
 }
