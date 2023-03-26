@@ -20,7 +20,6 @@ class Vertex {
 
 private:
     int data;
-    uint64_t edges_number;
     List<Edge*> edge_list;
 
 public:
@@ -28,7 +27,7 @@ public:
 
     void appendEdge(Edge* edge);
     int get() const;
-    uint64_t getEdgesNumber() const;
+    uint64_t getEdgesNumber();
     void deleteEdge(Vertex* other);
 };
 
