@@ -3,4 +3,4 @@ project(hello_world)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(hello_world main.cpp Graph.h Graph.cpp)
+add_executable(hello_world main.cpp Graph.h Graph.cpp Vertex.h)
