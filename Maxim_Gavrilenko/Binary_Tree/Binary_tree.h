@@ -32,7 +32,7 @@ class BinaryTree
 public:
     BinaryTree();
     ~BinaryTree();
-    void addNode(double);
+    void add_node(double);
     void remove(double);
     void print();
     bool search(double);
@@ -40,25 +40,25 @@ public:
     double get_min();
 private:
     Node* root;
-    Node* deleteNode(Node*, double);
+    Node* delete_node(Node*, double);
     void deleteTree(Node*);
     bool searchNode(Node* node, double data);
     void printNode(Node* node);
-    Node* findMin(Node* node);
-    Node* findMax(Node* node);
+    Node* find_min(Node* node);
+    Node* find_max(Node* node);
 };
 
 double BinaryTree::get_max()
 {
     Node* temp;
-    temp = findMax(root);
+    temp = find_max(root);
     return temp->data;
 }
 
 double BinaryTree::get_min()
 {
     Node* temp;
-    temp = findMin(root);
+    temp = find_min(root);
     return temp->data;
 }
 
@@ -77,7 +77,7 @@ void BinaryTree::printNode(Node* node)
 }
 void BinaryTree::remove(double data)
 {
-    root = deleteNode(root,data);
+    root = delete_node(root,data);
 }
 
 BinaryTree::BinaryTree()
@@ -94,7 +94,7 @@ void BinaryTree::deleteTree(Node* node)
     }
 }
 
-Node* BinaryTree::findMin(Node *node)
+Node* BinaryTree::find_min(Node *node)
 {
     while (node->left != nullptr) {
         node = node->left;
@@ -102,7 +102,7 @@ Node* BinaryTree::findMin(Node *node)
     return node;
 }
 
-Node* BinaryTree::findMax(Node *node)
+Node* BinaryTree::find_max(Node *node)
 {
     while (node->right != nullptr) {
         node = node->right;
@@ -115,7 +115,7 @@ BinaryTree::~BinaryTree()
     deleteTree(root);
 }
 
-void BinaryTree::addNode(double val)
+void BinaryTree::add_node(double val)
 {
     Node* newNode = new Node(val);
     if (root == nullptr) {
@@ -146,14 +146,14 @@ void BinaryTree::addNode(double val)
     }
 }
 
-Node* BinaryTree::deleteNode(Node* node, double value)
+Node* BinaryTree::delete_node(Node* node, double value)
 {
     if (node == nullptr) {
         return node;
     } else if (value < node->data) {
-        node->left = deleteNode(node->left, value);
+        node->left = delete_node(node->left, value);
     } else if (value > node->data) {
-        node->right = deleteNode(node->right, value);
+        node->right = delete_node(node->right, value);
     } else {
         // Узел со значением val найден
         if (node->left == nullptr && node->right == nullptr) {
@@ -173,11 +173,11 @@ Node* BinaryTree::deleteNode(Node* node, double value)
         } else {
             // У узла есть и левый, и правый потомок
             // Найдем самый левый узел в правом поддереве
-            Node* temp = findMin(node->right);
+            Node* temp = find_min(node->right);
             // Заменим значение удаляемого узла на значение temp
             node->data = temp->data;
             // Удалим узел с найденным значением из правого поддерева
-            node->right = deleteNode(node->right, temp->data);
+            node->right = delete_node(node->right, temp->data);
         }
     }
     return node;
