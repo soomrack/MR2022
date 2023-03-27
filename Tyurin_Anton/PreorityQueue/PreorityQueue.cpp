@@ -48,21 +48,35 @@ void PQueue::push(std::string data, unsigned int p) { // добавить пeр�
     if (is_empty()) {
         head = local;
         tail = local;
+        head->priority = p;
         tail->priority = p;
         size++;
         return;
     }
-
-
-    local->previous = tail;
-    //local = tail;
-    local->priority = p;
-
-    while ((p > local->previous->priority) && local) {
-        local->previous = local;
+    if (head->priority < p) {
+        local->next = head;
+        head->previous = local;
+        head = local;
+        head->priority = p;
+        size++;
+        return;
     }
-// дописать
-
+    if (tail->priority >= p) {
+        tail->next = local;
+        local->previous = tail;
+        tail = local;
+        tail->priority = p;
+        size++;
+        return;
+    }
+    Node *current = tail;
+    current->priority = tail->priority;
+    while (current->priority < p) {
+            current = current->previous;
+    }
+    local->previous = current;
+    local->next = current->next;
+    current->next = local;
     size++;
 }
 
@@ -86,19 +100,17 @@ void PQueue::pop() {
 
 int main() {
     PQueue PQueue;
-    PQueue.push("he", 2);
-    PQueue.push("ll", 3);
-    //PQueue.push("ow", 1);
-    //PQueue.push(" ",1);
-    //PQueue.push("wo",1);
-    //PQueue.push("rl",2);
-    //PQueue.push("d",1);
+    PQueue.push("he", 3);
+    PQueue.push("ll", 2);
+    PQueue.push("ow", 1);
+    PQueue.push("__", 3);
+    PQueue.push("wo",1);
+    PQueue.push("rl",2);
+    PQueue.push("d",1);
     PQueue.print();
-    //PQueue.pop();
-    //PQueue.print();
-    //PQueue.pop();
-    //PQueue.print();
-    //PQueue.pop();
-    //PQueue.print();
+    PQueue.pop();
+    PQueue.print();
+    PQueue.pop();
+    PQueue.print();
     return 0;
 }
