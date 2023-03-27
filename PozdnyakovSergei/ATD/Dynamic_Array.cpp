@@ -34,6 +34,7 @@ DynArray::~DynArray() {
     size = 0;
 }
 
+
 void DynArray::fill_random(int num) {
     cout << "Fill randomly" << "\n";
     srand(time(NULL));
@@ -43,6 +44,7 @@ void DynArray::fill_random(int num) {
     }
     size = num;
 }
+
 
 void DynArray::add(int value, int idx) {
     cout << "Adding an " << value << " on place " << idx << "\n";
@@ -59,6 +61,7 @@ void DynArray::add(int value, int idx) {
     size++;
 }
 
+
 void DynArray::remove(int idx) {
     cout << "Remove element on place " << idx << "\n";
     int *temp = new int[size - 1];
@@ -73,6 +76,7 @@ void DynArray::remove(int idx) {
     size--;
 }
 
+
 void DynArray::print() {
     for (int i = 0; i < size; ++i) {
         cout << array[i] << " ";
@@ -80,11 +84,13 @@ void DynArray::print() {
     cout << "\n";
 }
 
+
 void DynArray::clean() {
     delete[] array;
     array = nullptr;
     size = NULL;
 }
+
 
 void DynArray::resize(int num) {
     cout << "Size changed to " << num << "\n";
