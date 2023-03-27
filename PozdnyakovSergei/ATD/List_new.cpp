@@ -152,18 +152,9 @@ int main () {
     L.print();
 
     L.delete_head();
-    L.delete_tail();
+    L.delete_tail();    
     L.print();
 
 //    L.delete_pos(4);
     L.clean();
 }
-
-
-
-
-
-
-
-
-
