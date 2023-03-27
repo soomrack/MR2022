@@ -3,14 +3,14 @@
 
 int main() {
     BinaryTree A;
-    A.addNode(25);
-    A.addNode(5);
-    A.addNode(12);
-    A.addNode(18);
-    A.addNode(3);
-    A.addNode(18);
-    A.addNode(50);
-    A.addNode(99);
+    A.add_node(25);
+    A.add_node(5);
+    A.add_node(12);
+    A.add_node(18);
+    A.add_node(3);
+    A.add_node(16);
+    A.add_node(50);
+    A.add_node(99);
 
     A.print();
     std::cout << "Search 50" << std::endl;

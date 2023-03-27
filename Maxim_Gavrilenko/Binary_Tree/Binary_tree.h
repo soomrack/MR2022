@@ -41,9 +41,9 @@ public:
 private:
     Node* root;
     Node* delete_node(Node*, double);
-    void deleteTree(Node*);
-    bool searchNode(Node* node, double data);
-    void printNode(Node* node);
+    void delete_tree(Node*);
+    bool search_node(Node* node, double data);
+    void print_node(Node* node);
     Node* find_min(Node* node);
     Node* find_max(Node* node);
 };
@@ -64,16 +64,16 @@ double BinaryTree::get_min()
 
 void BinaryTree::print()
 {
-    printNode(root);
+    print_node(root);
     std:: cout << std:: endl;
 }
-void BinaryTree::printNode(Node* node)
+void BinaryTree::print_node(Node* node)
 {
     if (node == nullptr) return;
 
-    printNode(node->left); // рекурсивно обрабатываем левое поддерево
+    print_node(node->left); // рекурсивно обрабатываем левое поддерево
     std::cout << node->data << " "; // выводим значение текущего узла
-    printNode(node->right); // рекурсивно обрабатываем правое поддерево
+    print_node(node->right); // рекурсивно обрабатываем правое поддерево
 }
 void BinaryTree::remove(double data)
 {
@@ -85,11 +85,11 @@ BinaryTree::BinaryTree()
     root = nullptr;
 }
 
-void BinaryTree::deleteTree(Node* node)
+void BinaryTree::delete_tree(Node* node)
 {
     if (node != nullptr) {
-        deleteTree(node->left);
-        deleteTree(node->right);
+        delete_tree(node->left);
+        delete_tree(node->right);
         delete node;
     }
 }
@@ -112,7 +112,7 @@ Node* BinaryTree::find_max(Node *node)
 
 BinaryTree::~BinaryTree()
 {
-    deleteTree(root);
+    delete_tree(root);
 }
 
 void BinaryTree::add_node(double val)
@@ -183,16 +183,16 @@ Node* BinaryTree::delete_node(Node* node, double value)
     return node;
 }
 
-bool BinaryTree::searchNode(Node *node, double data)
+bool BinaryTree::search_node(Node *node, double data)
 {
     if (node == nullptr) {
         return false;
     }
     if (data < node->data) {
-        return searchNode(node->left, data);
+        return search_node(node->left, data);
     }
     else if (data > node->data) {
-        return searchNode(node->right, data);
+        return search_node(node->right, data);
     }
     else {
         return true;
@@ -201,6 +201,6 @@ bool BinaryTree::searchNode(Node *node, double data)
 
 bool BinaryTree::search(double data)
 {
-    return searchNode(root,data);
+    return search_node(root,data);
 }
 #endif //MR2022_BINARY_TREE_H
