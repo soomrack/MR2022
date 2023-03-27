@@ -3,179 +3,228 @@
 
 #include <iostream>
 
-template<class Type>
-class LinkList{
-private:
-
-	class ListMember{
-	private:
-		Type* data;
-		ListMember* next;
-	public:
-		ListMember();
-		~ListMember();
-		void set_data(Type new_data);
-		Type get_data();
-		Type* get_next();
-		void set_next(ListMember next_member);
-	};
-	ListMember empty;
-	ListMember* list;
-	Type* head = 0;
-	int data_size = 10;
-	int arr_size = 0;
-	void set_head(Type* obj);
-	void resize(int new_size);
+template<class T>
+class ListMember{
 public:
-	LinkList();
-	~LinkList();
-	LinkList(LinkList& other);
-	LinkList(LinkList&& other) noexcept;
-	ListMember operator[](int ind);
-	LinkList<Type>& operator=(const LinkList<Type>& other);
-	LinkList<Type>& operator=(LinkList<Type>&& other) noexcept;
+	T data;
+	int* list_size = nullptr;
+	ListMember* next = NULL;
+	explicit ListMember(int* size = nullptr){ list_size = size;};
+	~ListMember(){};
+	ListMember(ListMember& other);
+	ListMember(ListMember&& other) noexcept;
+	ListMember<T>& operator=(const ListMember<T>& other);
+	ListMember<T>& operator=(ListMember<T>&& other) noexcept;
+	bool operator==(ListMember<T> other);
+	bool operator!=(ListMember<T> other);
+	void push_next(T new_member);
+	void pop_next();
+};
+
+template<typename Type>
+ListMember<Type> empty;
+
+template<class Type>
+class LinkedList{
+private:
+	ListMember<Type>* head;
+	ListMember<Type>* tail;
+	int list_size = 0;
+public:
+	LinkedList();
+	~LinkedList(){};
+	ListMember<Type>* operator[](int ind);
 	int size() const;
 	void push_head(Type new_member);
 	void push_tail(Type new_member);
+
 	void pop_front();
 	void pop_back();
+
 	void clear();
-	Type* next();
-	Type* get_head();
+	ListMember<Type>* get_head();
+	ListMember<Type>* get_tail();
 };
 
-template<class Type>
-LinkList<Type>::ListMember::ListMember() {
-	data = new Type;
-	next = new ListMember;
+template<class T>
+ListMember<T> &ListMember<T>::operator=(const ListMember<T> &other) {
+	data = other.data;
+	if (other.next){
+		next = &other.next;
+	}
+	return *this;
 }
 
-template<class Type>
-LinkList<Type>::ListMember::~ListMember() {
-	delete data;
-	delete next;
+template<class T>
+ListMember<T> &ListMember<T>::operator=(ListMember<T> &&other) noexcept {
+	data = other.data;
+	next = other.next;
+	return *this;
 }
 
-template<class Type>
-void LinkList<Type>::ListMember::set_data(Type new_data) {
-	data = &new_data;
-}
-
-template<class Type>
-Type LinkList<Type>::ListMember::get_data() {
-	return *data;
-}
-
-template<class Type>
-Type *LinkList<Type>::ListMember::get_next() {
-	return *next;
-}
-
-template<class Type>
-void LinkList<Type>::ListMember::set_next(ListMember next_member) {
-	next = &next_member;
-}
-
-template<class Type>
-LinkList<Type>::LinkList() {
-	list = new ListMember[data_size];
-	arr_size = 0;
-}
-
-template<class Type>
-LinkList<Type>::~LinkList() {
-	delete[] list;
-}
-
-template<class Type>
-LinkList<Type>::LinkList(LinkList &other) {
+template<class T>
+ListMember<T>::ListMember(ListMember &other) {
 	*this = other;
 }
 
-template<class Type>
-LinkList<Type>::LinkList(LinkList &&other) noexcept {
+template<class T>
+ListMember<T>::ListMember(ListMember &&other) noexcept {
 	*this = other;
 }
 
+template<class T>
+bool ListMember<T>::operator==(ListMember<T> other) {
+	if(data != other.data){
+		return false;
+	}
+	if(&next != &other.next){
+		return false;
+	}
+	return true;
+}
+
+
+template<class T>
+bool ListMember<T>::operator!=(ListMember<T> other) {
+	return !(*this==other);
+}
+
+template<class T>
+void ListMember<T>::push_next(T new_member) {
+	ListMember<T>* new_next = new ListMember<T>(list_size);
+	new_next->data = new_member;
+	new_next->next = next;
+	next = new_next;
+	*list_size += 1;
+}
+
+template<class T>
+void ListMember<T>::pop_next() {
+	if(next){
+		ListMember<T>* new_next = next->next;
+		next->next = NULL;
+		next = new_next;
+		*list_size -= 1;
+	}
+}
+
 template<class Type>
-typename LinkList<Type>::ListMember LinkList<Type>::operator[](int ind) {
-	if(ind > data_size - 1){
+LinkedList<Type>::LinkedList() {
+	list_size = 0;
+	head = NULL;
+	tail = NULL;
+}
+
+template<class Type>
+void LinkedList<Type>::push_tail(Type new_member) {
+	list_size += 1;
+	if(list_size == 1){
+		head = new ListMember<Type>(&list_size);
+		head->data = new_member;
+		tail = head;
+	}
+	else{
+		ListMember<Type>* old_tail = tail;
+		tail = new ListMember<Type>(&list_size);
+		tail->data = new_member;
+		old_tail->next = tail;
+	}
+
+}
+
+template<class Type>
+void LinkedList<Type>::push_head(Type new_member) {
+	list_size += 1;
+
+	if (list_size == 1) {
+		head = new ListMember<Type>(&list_size);
+		head->data = new_member;
+		tail = head;
+	} else {
+		ListMember<Type> *old_head = head;
+		head = new ListMember<Type>(&list_size);
+		head->data = new_member;
+		head->next = old_head;
+	}
+
+}
+
+
+template<class Type>
+ListMember<Type>* LinkedList<Type>::operator[](int ind) {
+	ListMember<Type>* next_member = head;
+	if(ind > list_size - 1){
 		std::cout << "\nOut of bounds\n";
-		return empty;
+		return &empty<Type>;
 	}
-	return list[ind];
-}
 
-template<class Type>
-LinkList<Type> &LinkList<Type>::operator=(const LinkList<Type> &other) {
-	resize(other.size());
-	arr_size = other.arr_size;
-	memcpy(list, other.list, arr_size * sizeof (ListMember));
-	return *this;
-}
-
-template<class Type>
-LinkList<Type> &LinkList<Type>::operator=(LinkList<Type> &&other) noexcept {
-	delete[] list;
-	arr_size = other.size();
-	list = other.list;
-	return *this;
-}
-
-template<class Type>
-void LinkList<Type>::resize(int new_size) {
-	ListMember* mid_list;
-	mid_list = new ListMember[arr_size];
-	memcpy(mid_list,list,arr_size * sizeof(ListMember));
-	delete[] list;
-	list = new ListMember[new_size];
-	memcpy(list,mid_list,arr_size * sizeof(ListMember));
-	data_size = new_size;
-}
-
-template<class Type>
-int LinkList<Type>::size() const {
-	return arr_size;
-}
-
-template<class Type>
-void LinkList<Type>::push_head(Type new_member) {
-	arr_size += 1;
-	if(arr_size >= data_size){
-		resize(arr_size+10);
+	for(int i = 1; i <= ind; i++){
+		next_member = next_member->next;
 	}
-	list[arr_size-1] = new_member;
+	return next_member;
+}
 
-	head = *new_member;
+
+
+template<class Type>
+int LinkedList<Type>::size() const {
+	return list_size;
 }
 
 template<class Type>
-void LinkList<Type>::set_head(Type * obj) {
-	head = *obj;
+void LinkedList<Type>::pop_front() {
+	if(list_size < 1){
+		return;
+	}
+	if(list_size == 1){
+		list_size = 0;
+		head->next = NULL;
+		head = NULL;
+		tail = NULL;
+		return;
+	}
+	ListMember<Type>* old_head = head;
+	head = old_head->next;
+	old_head->next = NULL;
+	list_size -= 1;
 }
 
 template<class Type>
-Type *LinkList<Type>::get_head() {
+void LinkedList<Type>::pop_back() {
+	if(list_size < 1){
+		return;
+	}
+	if(list_size == 1){
+		list_size = 0;
+		head->next = NULL;
+		head = NULL;
+		tail = NULL;
+		return;
+	}
+	ListMember<Type>* old_tail = tail;
+	tail = head;
+	while(tail->next != old_tail){
+		tail = tail->next;
+	}
+	tail->next = NULL;
+	list_size -= 1;
+}
+
+template<class Type>
+void LinkedList<Type>::clear() {
+	head = NULL;
+	tail = NULL;
+	list_size = 0;
+}
+
+template<class Type>
+ListMember<Type> *LinkedList<Type>::get_head() {
 	return head;
 }
 
 template<class Type>
-void LinkList<Type>::push_tail(Type new_member) {
-	arr_size += 1;
-	if(arr_size >= data_size){
-		resize(arr_size+10);
-	}
-	ListMember new_list_member;
-	new_list_member.set_data(new_member);
-	list[arr_size-1] = new_list_member;
-	if(arr_size > 1){
-		list[arr_size-2].set_next(list[arr_size-1]);
-	}
-}
-
-template<class Type>
-void LinkList<Type>::pop_front() {
-
+ListMember<Type> *LinkedList<Type>::get_tail() {
+	return tail;
 }
 
 

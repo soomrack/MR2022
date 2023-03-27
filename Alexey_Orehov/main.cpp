@@ -2,6 +2,7 @@
 #include "dynamic_array.h"
 #include "stack.h"
 #include "list.h"
+#include "tree.h"
 
 
 void test_dynamic_array() {
@@ -40,9 +41,19 @@ void test_list() {
 
 }
 
+#include <functional>
 
 int main() {
-    test_list();
+    int data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    Tree<int> tree;
+
+    for (auto& element : data) {
+        tree.insert(element);
+    }
+
+    tree.find(4);
+    tree.find(12);
+
 
     return 0;
 }

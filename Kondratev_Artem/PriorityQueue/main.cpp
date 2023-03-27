@@ -3,13 +3,15 @@
 
 int main() {
     PriorityQueue<int> A;
-    A.append(0, 3);
-    A.append(1, 3);
-    A.append(2, 4);
-    A.append(3, 5);
-    A.append(4, 4);
-    A.append(5, 3);
-    std::cout << A.pop() << std::endl;
+    A.push(0, 0);
+    A.push(1, 1);
+    A.push(2, 5);
+    A.push(3, 2);
+    A.push(4, 0);
+    A.push(5, 5);
+    A.print();
+
+    A.pop();
     A.print();
 
     return 0;
