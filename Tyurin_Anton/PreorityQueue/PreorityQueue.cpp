@@ -52,15 +52,18 @@ void PQueue::push(std::string data, unsigned int p) { // добавить пeр�
         size++;
         return;
     }
-    local = tail;
+
+
+    local->previous = tail;
+    //local = tail;
     local->priority = p;
-    size++;
-    for (unsigned int idx = 0; idx < size; idx++) {
-        if(p > local->previous->priority) {
-            local->previous = local;
-        }
+
+    while ((p > local->previous->priority) && local) {
+        local->previous = local;
     }
 // дописать
+
+    size++;
 }
 
 void PQueue::print() {
@@ -96,6 +99,6 @@ int main() {
     //PQueue.pop();
     //PQueue.print();
     //PQueue.pop();
-   //PQueue.print();
+    //PQueue.print();
     return 0;
 }
