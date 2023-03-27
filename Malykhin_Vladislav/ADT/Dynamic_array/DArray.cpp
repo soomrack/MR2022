@@ -2,15 +2,17 @@
 #include "DArray.h"
 
 
-
 template <typename T>
-DArray<T>::DArray(const std::vector<T> in_vector) {
-    size = in_vector.size();
-    data = new T [size];
-    for(int id = 0; id < size; ++id)
-        data[id] = in_vector[id];
+DArray<T>::DArray(const std::list<T> in_list,int new_cache_size) {
+    auto iter = in_list.begin(); // typename std::list<T>::iterator iter = in_list.begin();
+    size = in_list.size();
+    cache_size = new_cache_size;
+    data = new T [size + cache_size];
+    for(int id = 0; id < size; ++id) {
+        data[id] = *iter;
+        iter++;
+    }
 }
-
 
 template <typename T>
 DArray<T>::~DArray() noexcept{
@@ -19,58 +21,33 @@ DArray<T>::~DArray() noexcept{
 }
 
 
-template <typename T>
-DArray<T>::DArray(const DArray<T> &other){
-    size = other.size;
-    data = new T [size];
-    std::memcpy(data, other.data, sizeof(T)* size);
-}
-
-
-template <typename T>
-DArray<T>::DArray(DArray<T> &&other) noexcept {
-    size = other.size;
-    data = other.data;
-    other.size = 0;
-    other.data = nullptr;
-}
-
 
 template <typename T>
 unsigned int DArray<T>::get_size() const {
     return size;
 }
 
+
 template <typename T>
-void DArray<T>::set(unsigned int id, T element) {
-    data[id] = element;
+T& DArray<T>::operator[] (unsigned int idx){
+return data[idx];
 }
 
 
 template <typename T>
-void DArray<T>::resize(unsigned int new_size){
-    T buffer[new_size];
-    std::memcpy(buffer, data, sizeof(T) * size);
-    delete(data);
+void DArray<T>::resize(unsigned int new_size) {
+    if (new_size <= size + cache_size) {
+        cache_size -= new_size - size;
+        size = new_size;
+        return ;
+    }
+    T *new_data = new T[new_size];
+    std::memcpy(new_data, data, sizeof(T) * size); //умножать на std::minimum(new_data, data)
     size = new_size;
-    data = new T[size];
-    std::memcpy(data, buffer, sizeof(T) * size);
+    delete (data);
+    data = new_data;
 }
 
-
-template<typename T>
-T DArray<T>::get_data(unsigned int id) const {
-    return data[id];
-}
-
-
-template<typename T>
-void DArray<T>::print() const {
-    std::cout << "{";
-    for (int id = 0; id < size; ++id)
-        std::cout << data[id] << ", ";
-    std::cout << "}" << "\n" << std::endl;
-}
 
 template class DArray<int>;
 template class DArray<double>;

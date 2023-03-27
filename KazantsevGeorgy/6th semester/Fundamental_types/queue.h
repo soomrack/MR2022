@@ -19,6 +19,7 @@ class Queue{
     int rear; //последний элемент
 public:
     // конструктор
+    // исправить нвзвания _size
     Queue(int _size);
     // деструктор
     ~Queue();
@@ -38,14 +39,12 @@ Queue::Queue(int _size) {
     size = _size;
     tempsize = 0;
     front = 0;
-    rear = - 1;
+    rear = -1;
 }
 
 Queue::~Queue() {
     delete [] values;
 }
-
-// Вспомогательная функция для удаления переднего элемента из очереди
 double Queue::RemoveFromQueue()
 {
     if (IsEmpty())
@@ -53,7 +52,7 @@ double Queue::RemoveFromQueue()
         cout << "Underflow";
     }
     double x = values[front];
-    front = (front + 1) % size; // остаток от деления
+    front = (front + 1) % size;
     tempsize--;
     return x;
 }

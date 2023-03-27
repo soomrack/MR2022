@@ -1,0 +1,5 @@
+#ifndef ATD_BINARY_TREE_H
+#define ATD_BINARY_TREE_H
+
+
+#endif //ATD_BINARY_TREE_H

@@ -1,351 +1,287 @@
 #include <iostream>
+#include <cmath>
+//#include <exception>
 
 const double COMPARATION_CONST = 0.0001;
 
 
-class item {
+class QItem {
 
 protected:
-    int priority;  // наивысший приоритет есть минимальное число
-    item *next;   // next последнего указывает на начало
-    item *previous;
+    int item_prtet;
+    QItem* next_item;
+    QItem* prev_item;
 
 public:
     double value;
 
-    item();
-    item(const double x);
-    item(const double x, const int p);
-    item(const item& x);
-    item(item&& x);
-    ~item();
+    QItem();
+    QItem(const double x, const int prtet = 0);
+    QItem(const double val,const int prtet, QItem* his_next, QItem* his_prev);
+    QItem(const QItem& x);
+    QItem(QItem&& x);
+    ~QItem();
 
-    item& operator=(const double& x);
-    item& operator=(const item& x);
+    QItem& operator=(const QItem& x);
 
-    friend std::ostream& operator<<(std::ostream& out, item x);
+    void push_next(QItem* x);
+    void push_prev(QItem* x);
 
-    void setNext(item* x);
-    void setPrevios(item* x);
-
-    int getPriority();
-    item* getNext();
-    item* getPrevios();
+    int priority();
+    QItem* next();
+    QItem* prev();
 
 };
 
-const item NULL_ITEM = item(0.0);
 
-
-class Priority_queue {
+class PriorityQueue {
 
 protected:
 
-    unsigned int size;
-    item *head;
+    QItem *pq_head;
+    QItem *pq_tail;
+
 
 public:
 
-    Priority_queue();
-    Priority_queue(const double head_vle, const int prtet = 0);
-    Priority_queue(const Priority_queue& x);
-    Priority_queue(Priority_queue&& x);
-    ~Priority_queue();
+    PriorityQueue();
+    PriorityQueue(double head_val, int head_prtet = 0);
+    ~PriorityQueue();
 
-    Priority_queue& operator=(const Priority_queue& x);
+    void push(double val, int prtet = 0);
 
-    void add_head(const double vle, const int prtet = 0);
-    void add_tail(const double vle, const int prtet = 0);
-    void add(const double vle, const int prtet = 0);
+    QItem* find_first(double val, int prtet);
+    QItem pop();
 
-    unsigned int contains(const double vle, const int prtet);
-    void del(const double vle, const int prtet);  // вычленяет head, сокращая size на 1
-    item get();
-
-    item get_head();
-    void output(bool show_data = false);
+    QItem* head();
+    QItem* tail();
+    void print(bool show_data = false);
 
 };
 
 
 
-item::item() {  // is undefinded item;
+QItem::QItem() {
     value = 0.0;
-    next = nullptr;
-    previous = nullptr;
-    priority = 0;
+    item_prtet = 7;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item::item(const double x) {
+QItem::QItem(const double x, const int prtet) {
     value = x;
-    next = nullptr;
-    previous = nullptr;
-    priority = 0;
+    item_prtet = prtet;
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item::item(const double x, const int p) {
-    value = x;
-    priority = p;
-    previous = nullptr;
-    next = nullptr;
+QItem::QItem(const double val, const int prtet, QItem *his_next, QItem *his_prev) {
+    value = val;
+    item_prtet = prtet;
+    next_item = his_next;
+    prev_item = his_prev;
 }
 
 
-item::item(const item &x) {
+QItem::QItem(const QItem &x) {
     value = x.value;
-    priority = x.priority;
-    next = x.next;
-    previous = x.previous;
+    item_prtet = x.item_prtet;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 }
 
 
-item::item(item &&x) {
+QItem::QItem(QItem &&x) {
     value = x.value;
-    priority = x.priority;
-    next = x.next;
-    previous = x.previous;
+    item_prtet = x.item_prtet;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 
     x.value = 0.0;
-    x.priority = 0;
-    x.next = nullptr;
-    x.previous = nullptr;
+    x.item_prtet = 0;
+    x.next_item = nullptr;
+    x.prev_item = nullptr;
 }
 
 
-item::~item() {
-    next = nullptr;
-    previous = nullptr;
+QItem::~QItem() {
+    next_item = nullptr;
+    prev_item = nullptr;
 }
 
 
-item& item::operator=(const double &x) {
-    value = x;
-    priority = 0;
-    next = this;
-    previous = this;
-}
-
-
-item& item::operator=(const item &x) {
+QItem& QItem::operator=(const QItem &x) {
     value = x.value;
-    priority =  x.priority;
-    next = x.next;
-    previous = x.previous;
+    item_prtet = x.item_prtet;
+    next_item = x.next_item;
+    prev_item = x.prev_item;
 }
 
 
-std::ostream& operator<<(std::ostream& out, item x) {
-    out << x.value << "[" << x.getPriority() <<  "]\n\n";
-    return (out);
+int QItem::priority() {
+    return item_prtet;
 }
 
 
-int item::getPriority() {
-    return priority;
+QItem* QItem::next() {
+    return next_item;
 }
 
 
-item* item::getNext() {
-    return next;
+QItem* QItem::prev() {
+    return prev_item;
 }
 
 
-item* item::getPrevios() {
-    return previous;
+void QItem::push_next(QItem *x) {
+    next_item = x;
 }
 
 
-void item::setNext(item *x) {
-    next = x;
+void QItem::push_prev(QItem *x) {
+    prev_item = x;
 }
 
 
-void item::setPrevios(item *x) {
-    previous = x;
+PriorityQueue::PriorityQueue() {
+    pq_head = nullptr;
+    pq_tail = nullptr;
 }
 
 
-Priority_queue::Priority_queue() {
-    head = nullptr;
-    size = 0;
+PriorityQueue::PriorityQueue(double head_value, int head_prtet) {
+    pq_head = nullptr;
+    pq_tail = nullptr;
+    push(head_value, head_prtet);
 }
 
 
-Priority_queue::Priority_queue(const double head_value, const int prtet) {
-    size = 0;
-    add_head(head_value, prtet);
+PriorityQueue::~PriorityQueue() {
+    pq_head = nullptr;
+    pq_tail = nullptr;
 }
 
 
-Priority_queue::~Priority_queue() {
-    head = nullptr;
-}
-
-
-Priority_queue &Priority_queue::operator=(const Priority_queue &x) {
-    head = x.head;
-    size = x.size;
-}
-
-
-void Priority_queue::add_head(const double vle, const int prtet) {  // не добавит элемент с приоритетом, равным головному
-    item* elm = new item(vle, prtet);
-    if (size == 0){
-        elm->setNext(elm);
-        elm->setPrevios(elm);
-        head = elm;
-    } else {
-        if (head->getPriority() >= prtet) return;
-
-        head->getPrevios()->setNext(elm);
-        elm->setNext(head);
-        elm->setPrevios(head->getPrevios());
-        head->setPrevios(elm);
-        head = elm;
-    }
-    size++;
-}
-
-
-void Priority_queue::add_tail(const double vle, const int prtet) {
-    item* elm = new item(vle, prtet);
-    if (size == 0){
-        elm->setNext(elm);
-        elm->setPrevios(elm);
-        head = elm;
-    } else {
-        if (head->getPrevios()->getPriority() > prtet) return;
-
-        elm->setPrevios(head->getPrevios());
-        elm->setNext(head);
-        head->getPrevios()->setNext(elm);
-        head->setPrevios(elm);
-    }
-    size++;
-}
-
-
-void Priority_queue::add(const double vle, const int prtet) {
-    if (size == 0){
-        add_head(vle, prtet);
+void PriorityQueue::push(double val, int prtet) {
+    QItem* elm = new QItem(val, prtet);
+    if (pq_head == nullptr){
+        pq_head = elm;
+        pq_tail = elm;
         return;
     }
-    item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if (elm->getPriority() > prtet) break;
-        elm = elm->getNext();
+
+    if (pq_head->priority() > prtet){
+        elm->push_next(pq_head);
+        pq_head->push_prev(elm);
+        pq_head = elm;
     }
-    if (elm == head) {
-        add_tail(vle, prtet);
-        return;
-    }
-    item* new_elm = new item(vle, prtet);
 
-    elm->getPrevios()->setNext(new_elm);
-    new_elm->setPrevios(elm->getPrevios());
-    elm->setPrevios(new_elm);
-    new_elm->setNext(elm);
-
-    size++;
-}
-
-
-unsigned int Priority_queue::contains(const double vle, const int prtet) {
-    if (size == 0) return 0;
-
-    item* elm = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        if ((abs(elm->value - vle) < COMPARATION_CONST) && (elm->getPriority() == prtet)){
-            return idx + 1;
+    QItem* current = pq_head;
+    while (current != nullptr){
+        if (current->priority() <= prtet) {
+            current = current->next();
+            continue;
         }
-        elm = elm->getNext();
-    }
-    return 0;
-}
 
-
-void Priority_queue::del(const double vle, const int prtet) {
-    unsigned int point = contains(vle, prtet);
-    if (point == 0) return;
-
-    item* elm = head;
-    for (unsigned int idx = 1; idx < point; idx++){
-        elm = elm->getNext();
+        current->prev()->push_next(elm);
+        elm->push_prev(current->prev());
+        elm->push_next(current);
+        current->push_prev(elm);
+        return;
     }
 
-    elm->getPrevios()->setNext(elm->getNext());
-    elm->getNext()->setPrevios(elm->getPrevios());
-    if (point == 1) head = elm->getNext();
-    size--;
+    pq_tail->push_next(elm);
+    elm->push_prev(pq_tail);
+    pq_tail = elm;
 }
 
 
-item Priority_queue::get() {
-    if (size == 0) return item();
-
-    item* rez = head;
-    head->getPrevios()->setNext(head->getNext());
-    head->getNext()->setPrevios(head->getPrevios());
-
-    head = rez->getNext();
-    size--;
-
-    rez->setPrevios(nullptr);
-    rez->setNext(nullptr);
-    return *rez;
-}
-
-
- item Priority_queue::get_head() {
-    return *head;
-}
-
-
-void Priority_queue::output(bool show_data) {
-    if (show_data){
-        std::cout << "The chain's length: " << size << "\n";
+QItem* PriorityQueue::find_first(double val, int prtet) {
+    QItem* item_idx = pq_head;
+    while (item_idx != nullptr){
+        if ((fabs(item_idx->value - val) < COMPARATION_CONST) && (prtet == item_idx->priority())) return item_idx;
+        item_idx = item_idx->next();
     }
-    if (size == 0) return;
+    if (item_idx == nullptr) item_idx = new QItem();
+    return item_idx;
+}
 
-    item* current = head;
-    for (unsigned int idx = 0; idx < size; idx++){
-        std::cout << current->value << "[" << current->getPriority() << "]   ";
+
+QItem PriorityQueue::pop() {
+    if (pq_head == nullptr){
+        //throw exception("Nothing to pop");
+        return QItem();
+    }
+
+    QItem ans = *pq_head;
+
+    if (ans.next() != nullptr) ans.next()->push_prev(nullptr);
+    pq_head = ans.next();
+
+    return ans;
+}
+
+
+QItem* PriorityQueue::head() {
+    return pq_head;
+}
+
+
+QItem* PriorityQueue::tail() {
+    return pq_tail;
+}
+
+
+void PriorityQueue::print(bool show_data) {
+
+    if (head() == nullptr) return;
+    std::cout << "The pq_head is " << pq_head->value << "[" << pq_head->priority() << "]" <<
+              ";  the pq_tail is " << pq_tail->value << "[" << pq_tail->priority() << "]\n";
+
+    QItem* current = pq_head;
+    while (current != nullptr){
+        std::cout << current->value << "[" << current->priority() << "]  ";
         if (show_data){
-            std::cout << "his previous is " << current->getPrevios()->value << "  and " <<
-                         "his next is " << current->getNext()->value << "\n";
+            if (current->prev() != nullptr) std::cout << "his prev is " << current->prev()->value << "[" << current->prev()->priority() << "]  ";
+            if (current->prev() != nullptr && current->next() != nullptr) std::cout << "and ";
+            if (current->next() != nullptr) std::cout << "his next is " << current->next()->value << "[" << current->next()->priority() << "]";
+            std::cout << "\n";
         }
-        current = current->getNext();
+        current = current->next();
     }
+    if (!show_data) std::cout << "\n";
     std::cout << "\n";
 }
 
 
 int main() {
 
-    Priority_queue A = Priority_queue();
-    A.add_head(10.1, 1);
-    A.output(true);
+    PriorityQueue A = PriorityQueue();
+    A.push(0.1);
+    A.print(true);
 
+    A.push(1.2, 1);
+    A.push(2.3, 1);
+    A.push(3.4, 0);
+    A.push(4.5, -1);
+    A.print();
 
-    Priority_queue B = Priority_queue(0.1);
-    B.output(true);
+    A.pop();
+    A.print(true);
 
-    B.add(1.2, 1);
-    B.add(2.3, 0);
-    B.add_tail(3.4, 0);
-    B.output(true);
+    PriorityQueue B = PriorityQueue(9.9, 1);
+    B.print(true);
+    QItem v = B.pop();
+    B.print(true);
+    B.pop();
 
-    std::cout << B.get();
-    B.output(true);
+    B.push(8.8, 1);
+    B.print(true);
 
-    B.add(4.5, 2);
-    B.add(5.6, 1);
-    B.output(true);
-
-    B.del(2.3, 0);
-    B.output(true);
+    std::cout << v.value << "\n";
+    std::cout << A.find_first(3.40001, 0)->value << "\n";
 
     return 0;
 }
