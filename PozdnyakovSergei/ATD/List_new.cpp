@@ -17,7 +17,7 @@ private:
     Node *tail;
 public:
     List();
-//    ~List();
+    ~List();
     void push_head (int value);
     void push_tail (int value);
     void delete_head ();
@@ -41,6 +41,11 @@ List_Exceptions IS_EMPTY ("Error: List is empty");
 List::List() {
     head = nullptr;
     tail = nullptr;
+}
+
+
+List::~List() {
+    clean();
 }
 
 
@@ -152,7 +157,7 @@ int main () {
     L.print();
 
     L.delete_head();
-    L.delete_tail();    
+    L.delete_tail();
     L.print();
 
 //    L.delete_pos(4);
