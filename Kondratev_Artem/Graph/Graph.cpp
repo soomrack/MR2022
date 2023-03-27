@@ -10,26 +10,26 @@ Graph::Graph() {
 }
 
 
-void Graph::createVertex(int data) {
+void Graph::addVertex(int data) {
     auto* vertex = new Vertex(data);
     list.push(vertex);
     size++;
 }
 
 
-bool Graph::createEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_bidirectional) {
+bool Graph::addEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_directed) {
     if (!from_vertex || !to_vertex) {
         return false;
     }
 
-    auto* edge = new Edge(from_vertex, to_vertex, is_bidirectional);
+    auto* edge = new Edge(from_vertex, to_vertex, is_directed);
     from_vertex->appendEdge(edge);
     to_vertex->appendEdge(edge);
     return true;
 }
 
 
-bool Graph::createEdge(int from_data, int to_data, bool is_bidirectional) {
+bool Graph::addEdge(int from_data, int to_data, bool is_directed) {
     Vertex* from_vertex = GraphIterator(this).find(from_data);
     Vertex* to_vertex = GraphIterator(this).find(to_data);
 
@@ -37,16 +37,16 @@ bool Graph::createEdge(int from_data, int to_data, bool is_bidirectional) {
         return false;
     }
 
-    return createEdge(from_vertex, to_vertex, is_bidirectional);
+    return addEdge(from_vertex, to_vertex, is_directed);
 }
 
 
-uint64_t Graph::getSize() const {
+uint64_t Graph::getVertexNumber() const {
     return size;
 }
 
 
-void Graph::getVertices() {
+void Graph::printVertices() {
     auto* node = list.getHead();
     while (node != list.getTail()) {
         std::cout << node->getNodeObject()->get() << ", ";
@@ -56,7 +56,7 @@ void Graph::getVertices() {
 }
 
 
-void Graph::getEdges() {
+void Graph::printEdges() {
     GraphIterator iterator(this, list.getHead()->getNodeObject());
 
     while (iterator.getVertex()) {
@@ -66,9 +66,9 @@ void Graph::getEdges() {
         ListIterator<Edge*> edge_iterator(&vertex->edge_list, vertex->edge_list.getHead());
         for (int i = 0; i < vertex->edge_list.getSize(); i++) {
             std::cout << "    " << edge_iterator.get()->getStart()->get();
-            (edge_iterator.get()->getIsBidirectional()) ? std::cout << " <--> " : std::cout << "  --> ";
+            (edge_iterator.get()->getIsDirected()) ? std::cout << " <--> " : std::cout << "  --> ";
             std::cout << edge_iterator.get()->getEnd()->get() << std::endl;
-            edge_iterator.shiftToTail();
+            edge_iterator.end();
         }
         iterator.shiftToTail();
     }
@@ -80,7 +80,7 @@ Vertex* Graph::find(int data) {
 }
 
 
-void Graph::deleteVertex(int data) {
+void Graph::delVertex(int data) {
     GraphIterator iterator(this);
 
     if (iterator.find(data) == nullptr) {
@@ -91,7 +91,7 @@ void Graph::deleteVertex(int data) {
 }
 
 
-void Graph::deleteEdge(Vertex* vertex1, Vertex* vertex2) {
+void Graph::delEdge(Vertex* vertex1, Vertex* vertex2) {
     if (!vertex1 || !vertex2) {
         return;
     }
@@ -101,9 +101,9 @@ void Graph::deleteEdge(Vertex* vertex1, Vertex* vertex2) {
 }
 
 
-void Graph::deleteEdge(int data1, int data2) {
+void Graph::delEdge(int data1, int data2) {
     Vertex* vertex1 = GraphIterator(this).find(data1);
     Vertex* vertex2 = GraphIterator(this).find(data2);
 
-    deleteEdge(vertex1, vertex2);
+    delEdge(vertex1, vertex2);
 }

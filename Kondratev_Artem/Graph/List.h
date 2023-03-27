@@ -4,7 +4,7 @@
 
 #ifndef HELLO_WORLD_LIST_H
 #define HELLO_WORLD_LIST_H
-
+// create begin end in ListIterator;
 
 #include <cstdint>
 #include <iostream>
@@ -98,8 +98,8 @@ public:
     T popThis();
     void find(T data);
     T get();
-    void shiftToHead();
-    void shiftToTail();
+    void begin();
+    void end();
     bool isHead();
     bool isTail();
 };
@@ -516,7 +516,7 @@ T ListIterator<T>::get() {
 
 
 template<typename T>
-void ListIterator<T>::shiftToHead() {
+void ListIterator<T>::begin() {
     if (iterator) {
         iterator = iterator->prev;
     }
@@ -524,7 +524,7 @@ void ListIterator<T>::shiftToHead() {
 
 
 template<typename T>
-void ListIterator<T>::shiftToTail() {
+void ListIterator<T>::end() {
     if (iterator) {
         iterator = iterator->next;
     }

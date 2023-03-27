@@ -26,16 +26,16 @@ uint64_t Vertex::getEdgesNumber() {
 
 
 void Vertex::deleteEdge(Vertex* other) {
-    if (getEdgesNumber() == 0) {
+    if (edge_list.isEmpty()) {
         return;
     }
 
     ListIterator<Edge*> list_iterator(&edge_list, edge_list.getHead());
-    while (true) {
+    while (true) {  //  delete true
         if (list_iterator.get()->getStart() == other || list_iterator.get()->getEnd() == other) {
             list_iterator.popThis();
             return;
         }
-        list_iterator.shiftToTail();
+        list_iterator.end();
     }
 }

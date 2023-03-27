@@ -16,14 +16,14 @@ class Edge {
 private:
     Vertex* start;
     Vertex* end;
-    bool is_bidirectional;
+    bool is_directed;
 
 public:
-    Edge(Vertex* _start, Vertex* _end, bool _is_bidirectional);
+    Edge(Vertex* _start, Vertex* _end, bool _is_directed);
 
     Vertex* getStart();
     Vertex* getEnd();
-    bool getIsBidirectional() const;
+    bool getIsDirected() const;
 };
 
 

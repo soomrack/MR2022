@@ -19,10 +19,11 @@ class Vertex {
     friend class Graph;
 
 private:
-    int data;
     List<Edge*> edge_list;
 
 public:
+    int data;
+
     explicit Vertex(int _data);
 
     void appendEdge(Edge* edge);
