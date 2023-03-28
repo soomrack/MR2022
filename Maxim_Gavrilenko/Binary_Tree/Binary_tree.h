@@ -1,206 +1,157 @@
-
+#include "Stack.h"
 #ifndef MR2022_BINARY_TREE_H
 #define MR2022_BINARY_TREE_H
 
-class Node
+struct Node
 {
 public:
     double data;
     Node* left;
     Node* right;
-    Node(double);
-    Node();
+    explicit Node(const double& value, Node* left = nullptr, Node* right = nullptr): data(value), left(left), right(right) {}
 };
 
-Node::Node(double value)
-{
-    data = value;
-    left = nullptr;
-    right = nullptr;
-}
 
-
-Node::Node()
-{
-    data = NULL;
-    left = nullptr;
-    right = nullptr;
-}
 
 class BinaryTree
 {
 public:
     BinaryTree();
     ~BinaryTree();
-    void add_node(double);
+    void add(double);
     void remove(double);
     void print();
     bool search(double);
-    double get_max();
-    double get_min();
+
 private:
     Node* root;
-    Node* delete_node(Node*, double);
-    void delete_tree(Node*);
-    bool search_node(Node* node, double data);
-    void print_node(Node* node);
-    Node* find_min(Node* node);
-    Node* find_max(Node* node);
+    void add(Node**, double);
+    void remove(Node**, double);
+    void remove_tree(Node**);
+    void print(Node** node);
+    bool search(Node** node, double data);
 };
 
-double BinaryTree::get_max()
-{
-    Node* temp;
-    temp = find_max(root);
-    return temp->data;
-}
-
-double BinaryTree::get_min()
-{
-    Node* temp;
-    temp = find_min(root);
-    return temp->data;
-}
-
-void BinaryTree::print()
-{
-    print_node(root);
-    std:: cout << std:: endl;
-}
-void BinaryTree::print_node(Node* node)
-{
-    if (node == nullptr) return;
-
-    print_node(node->left); // рекурсивно обрабатываем левое поддерево
-    std::cout << node->data << " "; // выводим значение текущего узла
-    print_node(node->right); // рекурсивно обрабатываем правое поддерево
-}
-void BinaryTree::remove(double data)
-{
-    root = delete_node(root,data);
-}
 
 BinaryTree::BinaryTree()
 {
     root = nullptr;
 }
 
-void BinaryTree::delete_tree(Node* node)
-{
-    if (node != nullptr) {
-        delete_tree(node->left);
-        delete_tree(node->right);
-        delete node;
-    }
-}
-
-Node* BinaryTree::find_min(Node *node)
-{
-    while (node->left != nullptr) {
-        node = node->left;
-    }
-    return node;
-}
-
-Node* BinaryTree::find_max(Node *node)
-{
-    while (node->right != nullptr) {
-        node = node->right;
-    }
-    return node;
-}
 
 BinaryTree::~BinaryTree()
 {
-    delete_tree(root);
+    remove_tree(&root);
 }
 
-void BinaryTree::add_node(double val)
+
+void BinaryTree::remove_tree(Node** node)
 {
-    Node* newNode = new Node(val);
     if (root == nullptr) {
-        root = newNode;
-    } else
-    {
-        Node* current = root;
-        while (true)
-        {
-            if (val < current->data)
-            {
-                if (current->left == nullptr)
-                {
-                    current->left = newNode;
-                    break;
-                }
-                else current = current->left;
-            }
-                else
-                {
-                if (current->right == nullptr) {
-                    current->right = newNode;
-                    break;
-                }
-                else current = current->right;
-            }
+        return;
+    }
+    stack<Node*> nodes(100);
+    nodes.push(root);
+
+    while (!nodes.is_empty()) {
+        Node* current = nodes.pop();
+
+        if (current->right != nullptr) {
+            nodes.push(current->right);
         }
+
+        if (current->left != nullptr) {
+            nodes.push(current->left);
+        }
+
+        delete current;
     }
 }
 
-Node* BinaryTree::delete_node(Node* node, double value)
-{
-    if (node == nullptr) {
-        return node;
-    } else if (value < node->data) {
-        node->left = delete_node(node->left, value);
-    } else if (value > node->data) {
-        node->right = delete_node(node->right, value);
-    } else {
-        // Узел со значением val найден
-        if (node->left == nullptr && node->right == nullptr) {
-            // Узел - лист, можно просто удалить
-            delete node;
-            node = nullptr;
-        } else if (node->left == nullptr) {
-            // У узла есть только правый потомок
-            Node* temp = node;
-            node = node->right;
-            delete temp;
-        } else if (node->right == nullptr) {
-            // У узла есть только левый потомок
-            Node* temp = node;
-            node = node->left;
-            delete temp;
-        } else {
-            // У узла есть и левый, и правый потомок
-            // Найдем самый левый узел в правом поддереве
-            Node* temp = find_min(node->right);
-            // Заменим значение удаляемого узла на значение temp
-            node->data = temp->data;
-            // Удалим узел с найденным значением из правого поддерева
-            node->right = delete_node(node->right, temp->data);
-        }
-    }
-    return node;
+void BinaryTree::add(double value) {
+    add(&root, value);
 }
 
-bool BinaryTree::search_node(Node *node, double data)
-{
-    if (node == nullptr) {
+
+void BinaryTree::print() {
+    print(&root);
+}
+
+void BinaryTree::add(Node** node, double value) {
+    if (*node == nullptr) {
+        *node = new Node(value, nullptr, nullptr);
+        return;
+    }
+    if (value < (*node)->data) {
+        add(&(*node)->left, value);
+        return;
+    }
+    add(&(*node)->right, value);
+}
+
+
+void BinaryTree::print(Node** node) {
+    if ((*node) == nullptr) return;
+
+    print(&(*node)->left); // рекурсивно обрабатываем левое поддерево
+    std::cout << (*node)->data << " "; // выводим значение текущего узла
+    print(&(*node)->right); // рекурсивно обрабатываем правое поддерево
+}
+
+void BinaryTree::remove(double value) {
+    remove(&root, value);
+}
+
+
+void BinaryTree::remove(Node ** node, double value) {
+    Node **current = node;
+    while (*current && (*current)->data != value) {
+        if (value < (*current)->data)
+            current = &((*current)->left);
+        else
+            current = &((*current)->right);
+    }
+    if (!*current) return; // элемент не найден
+
+    Node *temp = *current;
+    if (!(*current)->left) { //Если правый потомок
+        *current = (*current)->right;
+        delete temp;
+        return;
+    }
+    if (!(*current)->right) { //Если левый потомок
+        *current = (*current)->left;
+        delete temp;
+        return;
+    }
+        Node **successor = &((*current)->left); //Если оба, то родителем становится правый потомок самого левого
+        while ((*successor)->right) {
+            successor = &((*successor)->right);
+        }
+        (*current)->data = (*successor)->data;
+        temp = *successor;
+        *successor = (*successor)->left;
+        delete temp;
+    }
+
+
+bool BinaryTree::search(double value) {
+    return search(&root, value);
+}
+
+
+bool BinaryTree::search(Node **node, double data) {
+    if ((*node) == nullptr) {
         return false;
     }
-    if (data < node->data) {
-        return search_node(node->left, data);
+    if (data < (*node)->data) {
+        return search(&(*node)->left, data);
     }
-    else if (data > node->data) {
-        return search_node(node->right, data);
+    if (data > (*node)->data) {
+        return search(&(*node)->right, data);
     }
-    else {
-        return true;
-    }
+    return true; //В случае, если искомый элемент это корень дерева
 }
 
-bool BinaryTree::search(double data)
-{
-    return search_node(root,data);
-}
+
 #endif //MR2022_BINARY_TREE_H
