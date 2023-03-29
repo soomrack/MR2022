@@ -21,6 +21,7 @@ class Stack
 
     Node() = delete;
     explicit Node(T data);
+    ~Node() = default;
   };
 
   Node* tail;
