@@ -3,4 +3,4 @@ project(hello_world)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(hello_world main.cpp StateMachine.cpp StateMachine.h)
+add_executable(hello_world main.cpp FSM.h)
