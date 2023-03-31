@@ -15,21 +15,21 @@ class Queue {
 protected:
 	unsigned int size;
 	T* values;
-	unsigned int head_idx;
-	unsigned int tail_idx;
+	int head_idx;
+	int tail_idx;
 
 
 public:
 	Queue(unsigned int size);
-	Queue(const Queue& stack);
-	Queue(Queue&& stack) noexcept;
+	//Queue(const Queue& stack);
+	//Queue(Queue&& stack) noexcept;
 
 	~Queue();
 
 	bool is_empty();
 	bool is_full();
 
-	unsigned int size_full();
+	unsigned int size_engaged();  // возвращает количество занятых ячеек
 
 	void push(T value);
 	void pop();
@@ -46,26 +46,26 @@ Queue<T>::Queue(unsigned int size) {
 	tail_idx = -1;
 }
 
-template <typename T>
-Queue<T>::Queue(const Queue& queue) {
-	values = new T[queue.size];
-	memcpy(values, queue.values, size * sizeof(T));
-	head_idx = queue.head_idx;
-	tail_idx = queue.tail_idx;
-}
-
-template <typename T>
-Queue<T>::Queue(Queue&& queue) noexcept {
-	size = queue.size;
-	values = queue.values;
-	head_idx = queue.head_idx;
-	tail_idx = queue.tail_idx;
-
-	queue.size = 0;
-	queue.head_idx = -1;
-	queue.tail_idx = -1;
-	queue.values = nullptr;
-}
+//template <typename T>
+//Queue<T>::Queue(const Queue& queue) {
+//	values = new T[queue.size];
+//	memcpy(values, queue.values, size * sizeof(T));
+//	head_idx = queue.head_idx;
+//	tail_idx = queue.tail_idx;
+//}
+//
+//template <typename T>
+//Queue<T>::Queue(Queue&& queue) noexcept {
+//	size = queue.size;
+//	values = queue.values;
+//	head_idx = queue.head_idx;
+//	tail_idx = queue.tail_idx;
+//
+//	queue.size = 0;
+//	queue.head_idx = -1;
+//	queue.tail_idx = -1;
+//	queue.values = nullptr;
+//}
 
 template <typename T>
 Queue<T>::~Queue() {
@@ -80,12 +80,12 @@ bool Queue<T>::is_empty() {
 
 template <typename T>
 bool Queue<T>::is_full() {
-	return size_full() == size ? 1 : 0;
+	return size_engaged() == size ? 1 : 0;
 }
 
 
 template <typename T>
-unsigned int Queue<T>::size_full() {
+unsigned int Queue<T>::size_engaged() {
 	return head_idx > tail_idx ? head_idx - tail_idx + 1 : tail_idx - head_idx + 1;
 }
 
@@ -97,7 +97,6 @@ void Queue<T>::push(T value) {
 	if (is_empty()) {
 		head_idx = 0;
 		tail_idx = 0;
-
 	}
 	else {
 		if (head_idx == size - 1) head_idx = 0;
@@ -119,72 +118,70 @@ void Queue<T>::pop() {
 
 template <typename T>
 void Queue<T>::print_queue() {
-	std::cout << "Place left: " << size - size_full() + 1 << std::endl;
+	std::cout << "Place left: " << size - size_engaged() + 1 << std::endl;
 	if (is_empty()) {
 		std::cout << "Queue is empty" << std::endl;
+		return;
 	}
-	else {
-		for (unsigned int idx = tail_idx; idx <= head_idx; ++idx) {
-			std::cout << values[idx] << " ";
-			if (tail_idx > head_idx && idx == size - 1) idx = -1;
-
-		}
-		std::cout << "\n\n";
+	for (unsigned int idx = tail_idx; idx <= head_idx; ++idx) {
+		std::cout << values[idx] << " ";
+		if (tail_idx > head_idx && idx == size - 1) idx = -1;
 	}
+	std::cout << "\n\n";
 }
 
 
-int main() {
-	Queue<> A(2);
-	A.print_queue();
-
-	try {
-		A.pop();
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		A.push(5);
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		A.push(5);
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		A.pop();
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		A.push(5);
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	try {
-		A.push(5);
-		A.print_queue();
-	}
-	catch (const Queue_Exception& e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	return 0;
-}
+//int main() {
+//	Queue<> A(2);
+//	A.print_queue();
+//
+//	try {
+//		A.pop();
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	try {
+//		A.push(5);
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	try {
+//		A.push(5);
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	try {
+//		A.pop();
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	try {
+//		A.push(5);
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	try {
+//		A.push(5);
+//		A.print_queue();
+//	}
+//	catch (const Queue_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//
+//	return 0;
+//}
