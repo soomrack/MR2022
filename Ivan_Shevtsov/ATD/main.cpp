@@ -30,14 +30,39 @@ void sep(const char* massege= "")
 
 void test_lits(bool test_visible = true)
 {
+    sep("QUEUE TEST STARTED");
+    using namespace list_names;
     list<int> lst1;
-    lst1.TEST();
+    lst1.insert_after(0, 0);
+    lst1.push(1);
+    lst1.push(2);
+    lst1.push(3);
+    lst1.push(4);
+    lst1.push(5);
+    lst1.show();
+    sep("pop");
+    lst1.pop();
+    lst1.pop();
+    lst1.show();
+    sep("insert");
+    lst1.insert_after(100, 3);
+    lst1.show();
+    sep("del after");
+    lst1.delete_after(3);
+    lst1.show();
+    std::cout << lst1[1] << "\n";
+    sep("list 2");
+    list<int> lst2(lst1);
+    lst2.show();
+    if (lst1 == lst2)
+        std::cout << "equal!\n";
 
 
 
-    for (int i = 0; i < lst1.lenght(); i++)
+
+/*    for (int i = 0; i < lst1.lenght(); i++)
         std::cout << lst1[i] << std::endl;
-    std::cout << lst1.lenght() << " nodes in list" << std::endl;
+    std::cout << lst1.lenght() << " nodes in list" << std::endl;*/
 
 /*    sep("pop_back");
     for (int i = 0; i < lst1.lenght(); i++)
@@ -144,10 +169,10 @@ int main() {
 
     try
     {
-        //test_lits(); //#TODO write tests normaly
+        test_lits(); //#TODO написать нормально тесты  // Q: как запушить коммит, в определенную папку не клонируюя репозиторий
         //test_stack();
         //test_dynamic_array();
-        test_queue();
+        //test_queue();
 
     }
     catch (const common_exc& err)  // does`t work. why??
