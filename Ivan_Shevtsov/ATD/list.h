@@ -4,6 +4,18 @@
 
 #ifndef ATD_LIST_H
 #define ATD_LIST_H
+#include "iostream"
+
+#ifndef exceptions  // Q: how to dell this shit
+#define exceptions
+class common_exc: public std::domain_error{
+public:
+    common_exc(const char* massage): std::domain_error(massage){}
+};
+common_exc LIST_ZERO_SIZE("zero size error");
+common_exc OUT_OF_TRE_RANGE_1("index out of the range(operator [])");
+common_exc CANT_ADD_ELEMENT("can`t add element in empty list");
+#endif
 
 template<typename T>
 class Node{
@@ -11,49 +23,81 @@ public:
     T data;
     Node* p_next;
 
+    void add_next(T data, Node* head);
+    void del_next();
+
     Node(T data = T(), Node* p_next = nullptr)
     {
         this->data =  data;
         this->p_next = p_next;
     }
-
-    void add_next(T data){
-        p_next = new Node<T>(data, *p_next);
-    };
-    void del_next(){
-        Node<T> del_node = *p_next; //#TODO
-        p_next = del_node.p_next;
-
-        delete del_node;
-    }
 };
 
 template<typename T>
 class list {
+private:
+    unsigned int size;
+    Node<T>* head;
+
 public:
     list();
     list(list& other);
+    list(T* array, unsigned array_length);
 
     void clear();
     void push_front(T data);
     void pop_front();
     int lenght(){ return size; }
 
-    void push_back(T data);
-    void removeEl(int idx);
-    void pop_back();
-    void insert(T value, int idx);
-
-    T& operator[] (const int idx);
+    T& operator[] (const unsigned num);
     bool operator==(const list& other);
     bool operator!=(const list& other);
 
+    void TEST();
+
+
+
     ~list();
-private:
-    int size;
-    Node<T>* head;
+
 };
 
+template<typename T>
+void list<T>::TEST() {
+    head->add_next(10, head);
+
+    size++;
+    //#TODO
+    /*head->p_next->add_next(100, head);
+    size++;*/
+    std::cout << "TEST WORK\n";
+}
+
+template<typename T>
+void Node<T>::del_next() {
+    Node* tmp = this->p_next;
+    delete this->p_next;
+    this->p_next = tmp;
+}
+
+template<typename T>
+void Node<T>::add_next(T data, Node* head) {
+    if (head == nullptr)
+    {
+        Node<T>* new_node = new Node<T>(data, head);
+        head = new_node;
+    }
+    else{
+        Node<T>* new_node = new Node<T>(data, this->p_next);
+        this->p_next = new_node;
+    }
+
+
+}
+
+template<typename T>
+list<T>::list(T *array, unsigned int array_length) {
+
+}
 
 
 template<class T>
@@ -69,40 +113,21 @@ list<T>::~list()
     clear();
 }
 
-
 template<typename T>
-void list<T>::push_back(T data) {
-    if (head == nullptr)
-    {
-        head = new Node<T>(data);
-    }
-    else
-    {
-        Node<T>* current_node = head;
-        while (current_node->p_next != nullptr)
-        {
-            current_node = current_node->p_next;
-        }
-        current_node->p_next = new Node<T>(data);
-    }
-    size++;
-}
-
-template<typename T>
-T& list<T>::operator[] (const int idx)
+T& list<T>::operator[] (const unsigned num)
 {
     if (size == 0)
-        throw ZERO_SIZE;
-    else if (idx >= size)
+        throw LIST_ZERO_SIZE;
+    else if (num >= size)
         throw OUT_OF_TRE_RANGE_1;
-    else if (idx < 0)
+    else if (num < 0)
         throw std::runtime_error("index can`t be less zero");
 
     Node<T>* current_node = head;
     int counter = 0;
     while (current_node != nullptr)
     {
-        if (counter == idx)
+        if (counter == num)
             return current_node->data;
         current_node = current_node->p_next;
         counter++;
@@ -137,37 +162,6 @@ void list<T>::push_front(T data) {
 }
 
 template<typename T>
-void list<T>::pop_back() {
-    if (head == nullptr)
-        throw std::runtime_error("can`t pop zero size list");
-    Node<T>* current_node = head;
-    for(int idx = 1; idx < size; idx++)
-        current_node = current_node->p_next;
-    delete current_node;
-    size--;
-}
-
-template<typename T>
-void list<T>::insert(T value, int idx) {
-    if (size == 0)  // i know, that it contained in next con
-        throw std::runtime_error("can`t insert from zero size list");
-    else if (idx > size or idx < 0)
-        throw std::runtime_error("index out of the range(insert)");
-    else if (idx == 0)
-        push_front(value);
-    else {
-        Node<T> *current_node = head;
-        for (int cur_idx = 0; cur_idx != idx - 1; cur_idx++)  // move to [idx - 1] node (prev)
-        {
-            current_node = current_node->p_next;
-        }
-
-        current_node->p_next = new Node<T>(value, current_node->p_next);
-    }
-    size++;
-}
-
-template<typename T>
 list<T>::list(list &other) {
     this->size = other.size;
     if (other.head == nullptr)
@@ -178,33 +172,10 @@ list<T>::list(list &other) {
         head = new Node<T>(other.head->data);
 
         Node<T> *current_node = head;
-        for (int idx = 1; idx < other.size; idx++) {
+        for (unsigned idx = 1; idx < other.size; idx++) {
             current_node->p_next = new Node<T>(other[idx]);
             current_node = current_node->p_next;
         }
-    }
-}
-
-template<typename T>
-void list<T>::removeEl(int idx) {
-    if (size == 0)  // i know, that it contained in next con
-        throw std::runtime_error("can`t remove from zero size list");
-    else if (idx > size or idx < 0)
-        throw std::runtime_error("index out of the range(remove)");
-    else if (idx == 0)
-
-        pop_front();
-    else {
-        Node<T>* prev = head;
-        for (int cur_idx = 0; cur_idx != idx - 1; cur_idx++)  // move to [idx - 1] node (prev)
-        {
-            prev = prev->p_next;
-        }
-
-        Node<T>* del_node = prev->p_next;
-        prev->p_next = del_node->p_next;
-        delete del_node;
-        size--;
     }
 }
 
@@ -216,7 +187,7 @@ bool list<T>::operator==(const list &other) {
     Node<T>* first_current = this->head;
     Node<T>* second_current = this->head;
 
-    for (int idx = 0; idx < size; idx++) {
+    for (unsigned idx = 0; idx < size; idx++) {
         if (first_current->data != second_current->data)
             return false;
         first_current = first_current->p_next;
@@ -230,7 +201,6 @@ template<typename T>
 bool list<T>::operator!=(const list &other) {
     return !(this == other);
 }
-
 
 
 
