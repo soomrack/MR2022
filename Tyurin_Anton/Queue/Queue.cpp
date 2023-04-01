@@ -4,11 +4,12 @@ class Queue;
 
 class Node {
     friend class Queue;
+
 protected:
     Node *next;
     std::string data;
 public:
-    Node(std::string data) : data(data), next(nullptr){}
+    Node(std::string data) : data(data), next(nullptr) {}
 };
 
 class Queue {
@@ -18,11 +19,17 @@ protected:
     unsigned int size;
 public:
     Queue() : head(nullptr), tail(nullptr), size(0) {}
+
     bool is_empty();
+
     void push(std::string _data);
+
     void print();
+
     void pop();
+
     void remove_first();
+
     unsigned int get_size();
 };
 
@@ -30,7 +37,7 @@ bool Queue::is_empty() {
     return head == nullptr;
 }
 
-void Queue::push(std::string data){
+void Queue::push(std::string data) {
     Node *local = new Node(data);
     if (is_empty()) {
         head = local;
@@ -44,7 +51,7 @@ void Queue::push(std::string data){
 }
 
 void Queue::print() {
-    if (is_empty()) {return;}
+    if (is_empty()) { return; }
     Node *local = head;
     while (local) {
         std::cout << local->data << " ";
@@ -55,8 +62,8 @@ void Queue::print() {
 
 void Queue::pop() {
     if (is_empty()) return;
-    Node* local = head;
-    if (local == tail){ tail = nullptr;}
+    Node *local = head;
+    if (local == tail) { tail = nullptr; }
     head = local->next;
     delete local;
     size--;
@@ -67,7 +74,7 @@ unsigned int Queue::get_size() {
 }
 
 
-int main(){
+int main() {
     Queue Queue;
     Queue.print();
     Queue.push("he");
