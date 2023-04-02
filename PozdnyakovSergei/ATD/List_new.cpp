@@ -2,9 +2,7 @@
 #include <ctime>
 #include <cstdlib>
 
-
 using namespace std;
-
 
 struct Node {
     int data;
