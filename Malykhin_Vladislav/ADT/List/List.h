@@ -7,7 +7,7 @@
 
 
 #include "Node.h"
-
+#include "Iterator.h"
 
 class List {
 protected:
@@ -19,10 +19,10 @@ public:
     unsigned int size();
     void push_head(int in);
     void pop_head();
-    void push_tail(int in);
-    void pop_tail();
-    void push(int in, unsigned int in_idx);
-    void pop(unsigned int in_idx); // удаление произвольного
+    void push_tail(int in); // убрать
+    void pop_tail(); // убрать
+    void push(int in, Iterator in_idx);
+    void pop(Iterator in_idx); // удаление произвольного
     bool is_empty();
 
 };
