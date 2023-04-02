@@ -1,73 +1,97 @@
 #include <iostream>
 #include <algorithm>
-#include <stdlib.h>
 #include <exception>
 
 double E =0.00000001;
 
-class Dynamic_array {
+
+class DynamicArrayException {
+public:
+    int kod_mistake;
+    DynamicArrayException();
+    DynamicArrayException(int kod_mistake);
+
+};
+
+DynamicArrayException Negative = 1;
+
+
+DynamicArrayException:: DynamicArrayException(){
+    kod_mistake = 999;
+}
+
+DynamicArrayException:: DynamicArrayException(int kod){
+    kod_mistake = kod;
+}
+
+
+
+
+class DynamicArray {
 protected:
-    unsigned int size;
+    int size;
     double* line;
+    int sp;
 
 
 public:
-
-    Dynamic_array();
-    Dynamic_array( const unsigned int number);
-    Dynamic_array(const Dynamic_array& A);
-    Dynamic_array(Dynamic_array&& A);
-    ~Dynamic_array();
-
-
+    int RESERVE = 2;
+    DynamicArray();
+    DynamicArray( const int size_massive);
+    DynamicArray(const DynamicArray& A);
+    DynamicArray(DynamicArray&& A);
+    ~DynamicArray();
 
     void print();
-    void searchAndReplace (double, double);
-    void delet (double);
-    void PushMove (double, int);
-    bool search (double);
+    void pop (double);
+    void insert (double, unsigned int);
+    void push (double);
+    unsigned int search(double);
+    inline bool is_full ();
+    inline bool is_empty ();
+    void dop();
 
-
-    Dynamic_array& operator=(const Dynamic_array &x);
+    DynamicArray& operator=(const DynamicArray &x);
 };
 
 
-Dynamic_array::Dynamic_array() {
-    size = 0;
-    line = nullptr;
+DynamicArray::DynamicArray() {
+    size = RESERVE;
+    line = new double[ size ];
+    sp = -1;
 }
 
 
-Dynamic_array::Dynamic_array(const unsigned int number) {
-    size = number;
+DynamicArray::DynamicArray(const int size_massive) {
+    if (size_massive < 0 || RESERVE < 0) throw Negative;
+    size = size_massive + RESERVE;
     line = new double[size];
+    sp = -1;
 }
 
 
-Dynamic_array& Dynamic_array::operator=(const Dynamic_array &x) {
-    if (this != &x){
-        if (!line)
-            delete[] line;
-        size = x.size;
-        this->line = new double[size];
-        for (unsigned int number = 0; number < size; number++){
-            line[number] = x.line[number];
-        }
-    }
-    return *this;
-}
 
-
-Dynamic_array::Dynamic_array(const Dynamic_array& x) {
+DynamicArray& DynamicArray::operator=(const DynamicArray &x) {
+    if (this == &x) return *this;
+    if (!line) delete[] line;
     size = x.size;
-    line = new double[size];
-    for (unsigned int number = 0; number < x.size; number++){
+    this->line = new double[size + RESERVE];
+    for (unsigned int number = 0; number < size + RESERVE; number++){
+        line[number] = x.line[number];
+        }
+}
+
+
+DynamicArray::DynamicArray(const DynamicArray& x) {
+    size = x.size;
+    line = new double[size  + RESERVE];
+    for (unsigned int number = 0; number < x.size + RESERVE; number++){
         line[number] = x.line[number];
     }
 }
 
 
-Dynamic_array::Dynamic_array(Dynamic_array &&x) {
+DynamicArray::DynamicArray(DynamicArray &&x) {
     size = x.size;
     line = x.line;
     x.size = 0;
@@ -75,105 +99,123 @@ Dynamic_array::Dynamic_array(Dynamic_array &&x) {
 }
 
 
-Dynamic_array::~Dynamic_array() {
+DynamicArray::~DynamicArray() {
     delete[] line;
 }
 
 
-void Dynamic_array::PushMove(double X, int place) {
-    if ( size == 0){
-        line = new double [size + 1];
-        line[size] = X;
-        size++;
-        return;
-    }
-    if ( place >= size) return;
-    double* help = new double[size + 1];
-    int t=0;
-    for (unsigned int number = 0; number <= size  ; number ++){
-        if ( number == place ){
-            t=1;
-            help[number] = X;
-            continue;
-        }
-        help[number ] = line [number-t];
-    }
-    line = help;
-    size++;
+inline bool DynamicArray:: is_empty (){
+    return sp == -1;
+}
+
+inline bool DynamicArray:: is_full (){
+    return sp == size - 1;
 }
 
 
-void Dynamic_array:: searchAndReplace (double search, double replace){
-    for (unsigned int number = 0; number <= size  ; number ++){
-        if ( abs( line[number] - search) < E ){
-            line[number] = replace;
-            return;
-        }
+/*
+void DynamicArray::push(double X, unsigned int  place) {
+
+   if (is_full());
+  double help, help2 = line[place];
+  for (unsigned int num_1 = place +1 ; num_1 < (size); num_1 ++) {
+        help = line[num_1];
+        line[num_1] = help2;
+        help2 = help;
     }
+    line[place] = X;
+}
+*/
+void DynamicArray:: dop(){
+    double* massive = new double[size + RESERVE];
+    for (int number = 0; number < size; number++){
+        massive[number] = line[number];
+    }
+    line = massive;
+    size = size + RESERVE;
+
+}
+
+void DynamicArray::insert(double item, unsigned int  place) {
+    line[place] = item;
 }
 
 
-bool Dynamic_array:: search (double X){
-    for (unsigned int number = 0; number <= size  ; number ++){
-        if ( abs( line[number] - X) < E ){
-            return false;
-        }
-    }
-    return true;
+void DynamicArray::push(double item) {
+    if (is_full()) dop();
+    line[++sp] = item;
 }
 
 
-void Dynamic_array:: delet (double X) {
-    if (size == 0) return;
-    if (search(X)) return;
-    Dynamic_array help = {size - 1};
-    int t=0;
-    for (unsigned int number = 0; number < size  ; number ++){
-        if ( abs(line[number] - X) < E){
-            if (number == size -1) t-=1;
-            t+=1;
+unsigned int DynamicArray:: search (double item){
+    for ( int number = 0; number <= sp  ; number ++){
+        if (  abs(line[number] - item) < E ){
+            return number;
         }
-        help.line[number] = line [number+t];
-
     }
-    line =help.line;
-    size--;
+    return size + 1;
 }
 
 
-void Dynamic_array::print (){
-    for (unsigned int number = 0; number < size; number++){
+void DynamicArray:: pop (double item) {
+    unsigned int place = search(item);
+    if ( place > size) return;
+    double help, help2= line[place+1];
+    for (unsigned int num_1 = place+1  ; num_1 <= (sp); num_1 ++) {
+        help = line[num_1+1];
+        line[num_1-1] = help2;
+        help2 = help;
+    }
+    sp--;
+}
+
+
+void DynamicArray::print (){
+    for (unsigned int number = 0; number <= sp; number++){
         std::cout << line[number] << "  ";
     }
     std::cout << "\n";
 }
 
 
+
 int main() {
-    Dynamic_array A;
-    A.PushMove(1.90, 1);
-    A.PushMove(2.032, 0);
-    A.PushMove(6.011, 1);
-    A.PushMove(34.05, 1);
-    A.PushMove(7.04, 3);
-    A.PushMove(98.06, 0);
-    A.PushMove(4.08, 5);
+    DynamicArray A = DynamicArray{4};
+
+    A.push(111.00);
+    A.push(2.00);
+    A.push(3.00);
+    A.push(44.00);
+    A.push(555.00);
+    A.push(6.00);
     A.print();
 
-    A.delet(1.90);
-    A.delet(2.032);
-    A.delet(6.011);
+
+    A.insert(4.00, 3);
+    A.insert(5.00, 4);
+    A.insert(1.00, 0);
     A.print();
 
-    A.searchAndReplace(98.06, 1.00);
-    A.searchAndReplace(34.05, 2.00);
-    A.searchAndReplace(7.04, 3.00);
-    A.searchAndReplace(4.08, 4.00);
+    A.pop (1.00);
+    A.pop (4.00);
+    A.pop (6.00);
     A.print();
 
-    A.delet(2.032);
+    A.pop (6.00);
+    A.pop (1.00);
+    A.pop (4.00);
+    A.pop (3.00);
     A.print();
 
+    A.push(6.00);
+    A.push(7.00);
+    A.push(8.00);
+    A.push(9.00);
+    A.print();
+
+    A.push(999.00);
+    A.push(999.00);
+    A.print();
 
     return 0;
 }

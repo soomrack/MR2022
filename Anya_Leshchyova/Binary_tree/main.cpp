@@ -1,178 +1,275 @@
 #include <iostream>
+#include <stack>
+
+
 
 struct Node {
     int data;  // хранит ключ - число
-    Node *parent;  // родитель
-    Node *left;  // левый ребенок
-    Node *right;  // правый ребенок
+   // Node *parent;
+    Node *left;
+    Node *right;
 
 };
 typedef Node *NodePtr;
 
-class Tree{
-private:
-    NodePtr root; // корень
-    NodePtr TNULL; // лист
-    NodePtr searchTreeHelper(NodePtr node, int key);
-    void printHelper(NodePtr root, std::string indent, bool last);
-    void deleteNodeHelper(NodePtr node, int key);
-    void rbTransplant(NodePtr u, NodePtr v);
-    void searchTreeHelperPrint(NodePtr node);
+std::stack <int> steck;
+std::stack <NodePtr> ST_left;
+std::stack <NodePtr> ST_right;
+std::stack <NodePtr> Pst;
 
+class Tree{
 public:
     Tree();
-    Tree(NodePtr node, NodePtr parent);
-    NodePtr searchTree(int k) ;
-    void deleteNode(int data);
-    void printTree();
+ //   Tree(double data = double(), Node *left = nullptr, Node *right = nullptr);
+    int search(int k) ;
+    void del(int data);
+    void print();
     void insert(int key);
-    NodePtr minimum(NodePtr node);
 
+private:
+    int height;
+    NodePtr root;
+    NodePtr TNULL;
+    NodePtr search(NodePtr node, int key);
+    void print(NodePtr root, std::string indent, bool last);
+    void del(NodePtr node, int key);
+    NodePtr min(NodePtr node);
+    void transplant (NodePtr , NodePtr, bool);
 };
 
 
 Tree:: Tree(){
+    height = 0;
     TNULL = new Node;
     TNULL->left = nullptr;
     TNULL->right = nullptr;
     root = TNULL;
 }
-
-Tree:: Tree(NodePtr node, NodePtr parent){
-    node->data = 0;
-    node->parent = parent;
-    node->left = nullptr;
-    node->right = nullptr;
+/*
+Tree:: Tree(double data,Node *left , Node *right ){
+    TNULL->data = data;
+    TNULL-> right = right;
+    TNULL->left = left;
 }
 
-// Вставка узла
+*/
+
 void Tree:: insert(int key) {
-    NodePtr node = new Node;  // создаём новый узел, у него всё ноль, цвет красный
-    node->parent = nullptr;
+    NodePtr node = new Node;
     node->data = key;
     node->left = TNULL;
     node->right = TNULL;
-    NodePtr y = nullptr;  // пусть  у - лист
-    NodePtr x = this->root;  // пусть х - корень
-    while (x != TNULL) {  // пока х не доберется до листа
-        y = x;  // сохранит последний не нулевой лист
-        if (node->data <  x->data) {  // если узел дерева меньше нового узла с Х
-            x = x->left;  // кладем х влево
-        } else {
-            x = x->right; // иначе кладем вправо
-        }
+    NodePtr last_leaf = nullptr;
+    NodePtr root_help = this->root;
+
+    while (root_help != TNULL) {
+        last_leaf = root_help;
+       (node->data <  root_help->data) ?  root_help = root_help->left : root_help = root_help->right;
     }
-    node->parent = y;   // так как У это последний ненулевой лист, то делаем его родителем для нового узла
-    if (y == nullptr) {
-        root = node;   // если дерева не существовало - то Х становится корнем
-    } else if (node->data <  y->data) {   // дерево было, сравниваем если узел больше У ( родителя)
-        y->left = node;  // кладем влево
+
+    if (last_leaf == nullptr) { // можно написать в начале
+        root = node;
+    } else if (node->data <  last_leaf->data) {
+        last_leaf->left = node;
     } else {
-        y->right = node;
+        last_leaf->right = node;
     }
     return;
 
 }
 
 
-void Tree:: rbTransplant(NodePtr u, NodePtr v) {  // спасает ребенка (правого/ левого) удаляемого родителя
-    if (u->parent == nullptr) {
-        root = v;
-    } else if (u == u->parent->left) { // если у U есть родитель и  U это его левый ребенок
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    v->parent = u->parent;
-}
 
-
-void Tree:: searchTreeHelperPrint(NodePtr node){
-
-    if ( node == root) {
-        std:: cout << "Element is root = "<< node->data<< "\n";
-        return;
-    }
-    if (node != TNULL){
-        std:: cout << "Element  = "<< node->data<< "\n";
-        std:: cout << "     "<< node->parent->data<< "\n";
-        std:: cout << "   |    |   "<<  "\n";
-        std:: cout<<"  " << node->parent->left->data<< "    " << node->parent->right->data << "\n";
-        return;
-    }
-    std:: cout << "Element  = "<< node->data<< "\n";
-}
-
-
-NodePtr Tree:: minimum(NodePtr node) { // помогает при удалении, отдает последний левый узел
+NodePtr Tree:: min(NodePtr node) {
     while (node->left != TNULL) {
         node = node->left;
     }
-
     return node;
 }
 
-
-void Tree:: deleteNodeHelper(NodePtr node, int key) {  //удаление узла
-    // Z - будет потом тем узлом, который нужно будет удалить
-    NodePtr z = TNULL; // создаем лист
-
-    NodePtr x, y; // и два узла
-
-    while (node != TNULL) { // пока нужный узел не дойдет до конца дерева
-        if (node->data == key) { // если это то число, которое нужно удалить
-            z = node;  // сохраняем узел
-        }
-        if (node->data <= key) {  // если число больше либо  рравен корневого узла идем вправо
-            node = node->right;
-        } else {
-            node = node->left;
-        }
-    }
-
-    if (z == TNULL) { // если узел не был равен  -- то такого числа в дереве нет
-        std::cout << "Key not found in the tree" << "\n";
+void Tree::transplant(NodePtr Ptr_node, NodePtr Ptr_child, bool left_child_null) {
+    /*
+    if (Ptr_node == nullptr) { // Если ссылки на удаляемый узел нет - то он корень
+        root = Ptr_child;
         return;
     }
-    y = z;
-    if (z->left == TNULL) { // если узел не имеет левого ребенка
-        x = z->right;  //сохряняем правого ребенка этого узла
-        rbTransplant(z, z->right); //
-    } else if (z->right == TNULL) { // аналогично наоборот
-        x = z->left;
-        rbTransplant(z, z->left);
-    } else {  // если есть и правый и левый ребенок
-        y = minimum(z->right); // находим минимум в правом поддереве (В левой ветке )
+     */
+    std::cout << "Ptr_node = " << Ptr_node << "    "<<Ptr_node ->data <<"\n";
+    std::cout << "Ptr_child = " << Ptr_child << "    "<<Ptr_child ->data <<"\n";
+    std::cout << "ST_right.top() = " << ST_right.top() << "    "<<ST_right.top() ->data <<"\n";
+    std::cout << "ST_left.top = " << ST_left.top() << "    "<<ST_left.top() ->data <<"\n";
+    std::cout << "=============== " << Pst.top() << "    "<<Pst.top() ->data <<"\n";
+    std::cout <<  "\n";
+    std::cout <<  "\n";
+    if (Ptr_node == ST_right.top() and left_child_null == true) {
+        std::cout <<  "DAAAAAAAAAAAAA\n";
 
-        x = y->right;
-        if (y->parent == z) {  // если родитель минимума равен этому узлу
-            x->parent = y;
-        } else {
-            rbTransplant(y, y->right);
-            y->right = z->right;
-            y->right->parent = y;
+        if (Pst.top() == root and Pst.top()->left == Ptr_node) {
+            Pst.top()->left = ST_right.top()->right;
+            Ptr_node->right = TNULL;
+            std::cout << " shag 1 " << "\n";
+            return;
         }
-        rbTransplant(z, y);
-        y->left = z->left;
-        y->left->parent = y;
+            Pst.top()->right = ST_right.top()->right;
+            Ptr_node->right = TNULL;
+            std::cout << " shag 3 " << "\n";
+        }
+        if (Ptr_node == ST_right.top() and left_child_null == false) {
+            if (Pst.top() == root and Pst.top()->right == Ptr_node) {
+                Pst.top()->right = ST_right.top()->left;
+                Ptr_node->left = TNULL;
+                std::cout << " shag 5 " << "\n";
+                return;
+            }
+
+            Pst.top()->left = ST_right.top()->left;
+            Ptr_node->left = TNULL;
+            std::cout << " shag 4 " << "\n";
+        }
+        std::cout << "ST_right.top() = " << ST_right.top() << "    " << ST_right.top()->data << "\n";
+        std::cout << "ST_left.top = " << ST_left.top() << "    " << ST_left.top()->data << "\n";
+        std::cout << "Ptr_node = " << Ptr_node << "    " << Ptr_node->data << "\n";
+        std::cout << "Ptr_child = " << Ptr_child << "    " << Ptr_child->data << "\n";
+
+
+
+
+
+
+        //  if (Ptr_node == )
+
+
+}
+void Tree:: del(NodePtr node, int key) {
+    NodePtr node_to_del = TNULL;
+
+    int k = 1;
+    while (node != TNULL) {
+
+        if (node->data == key) {
+            node_to_del = node;
+            k = 0;
+        }
+        if(k == 1){
+            steck.push(node->data);
+            Pst.push(node);
+        }
+        if (node->data <= key){
+            ST_right.push(node);
+            node = node->right;
+        } else {
+            ST_left.push(node);
+            node = node->left;
+        }
+        //(node->data <= key) ? node = node->right: node = node->left;
+
     }
+    if (node_to_del == TNULL) {
+        return;
+    }
+
+    if (node_to_del->left == TNULL and node_to_del->right == TNULL){
+        Pst.top()->left = TNULL;
+        Pst.top()->right = TNULL;
+        delete node_to_del; //ЕСЛИ ЛОМАЕТСЯ ПРОВЕРЬ ЭТО
+        return;
+    }
+
+    NodePtr buffer;
+    if (node_to_del->left == TNULL){
+        buffer = node_to_del->right;
+        transplant(node_to_del,buffer, true);
+         delete node_to_del; //ЕСЛИ ЛОМАЕТСЯ ПРОВЕРЬ ЭТО
+         return;
+    }
+    if (node_to_del->right == TNULL){
+        buffer = node_to_del->left;
+        transplant(node_to_del,buffer,false);
+        delete node_to_del; //ЕСЛИ ЛОМАЕТСЯ ПРОВЕРЬ ЭТО
+        return;
+    }
+
+    NodePtr minimum = min(node_to_del->right);
+    ST_left.pop();
+    //NodePtr minimum_child_right = minimum->right; // 91
+   // buffer = ST_right.top();
+    std::cout << "buffer = " << ST_left.top() << "    "<<buffer ->data <<"\n";
+if (root->data < node_to_del->data){
+    ST_right.push(ST_left.top()->left);
+    if (minimum->right != TNULL)
+    ST_left.top()->left = minimum->right;
+    node_to_del->data = minimum->data;
+} else{ //ЛОМАЕТСЯ
+    ST_right.push(ST_left.top()->left);
+    if (minimum->right != TNULL)
+        ST_left.top()->left = minimum->right;
+    node_to_del->left=minimum->left;
+    node_to_del->data = minimum->data;
+
 }
 
 
-NodePtr Tree:: searchTreeHelper(NodePtr node, int key) {
+
+
+
+
+
+
+   // ST_right.top()->data =minimum->data;
+
+   // minimum->right=ST_right.top()->right;
+   // Pst.top()->right =ST_left.top()->left;
+   // ST_left.top()->left ->right = ST_right.top()->right;
+   // ST_left.top()->left ->left = ST_right.top()->left;
+
+
+    std::cout << "ST_right.top() = " << ST_right.top() << "    "<<ST_right.top() ->data <<"\n";
+    std::cout << "ST_left.top = " << ST_left.top() << "    "<<ST_left.top() ->data <<"\n";
+    std::cout << "=============== " << Pst.top() << "    "<<Pst.top() ->data <<"\n";
+    std::cout << "minimum=  " << minimum << "    "<<minimum ->data <<"\n";
+
+
+    /*
+    if (node_to_del->right == TNULL){
+        node_to_del->data = node_to_del->left->data;
+        delete node_to_del->left; // случай когда у левого ребенка есть левый ребенок и ссылка на него пропадет.
+        node_to_del->left = TNULL;
+
+    } else if (node_to_del->left == TNULL) {
+        node_to_del->data = node_to_del->right->data; // можно работать с указателем при удалении узла
+        delete node_to_del->right;
+        node_to_del->right = TNULL;
+
+    } else {
+        an1 = min(node_to_del->right);
+        node_to_del->data = an1->data;
+        if (an1->right == TNULL){
+            delete an1;
+            an1 = TNULL;
+            return;
+        }
+        an1->data = an1->right->data;
+        delete an1->right;
+        an1->right = TNULL;
+    }
+*/
+    std::cout << "buffer = " << ST_left.top() << "    "<<buffer ->data <<"\n";
+}
+
+
+NodePtr Tree:: search(NodePtr node, int key) {
+
     if (node == TNULL || key == node->data) {
-        searchTreeHelperPrint(node);
         return node;
     }
-
     if (key < node->data) {
-        return searchTreeHelper(node->left, key);
+        return search(node->left, key);
     }
-    return searchTreeHelper(node->right, key);
+    return search(node->right, key);
 }
 
 
-void Tree::printHelper(NodePtr root, std::string indent, bool last) {
+void Tree::print(NodePtr root, std::string indent, bool last) {
     if (root != TNULL) {
         std::cout << indent;
         if (last) {
@@ -183,50 +280,60 @@ void Tree::printHelper(NodePtr root, std::string indent, bool last) {
             indent += "|  ";
         }
         std::cout << root->data  << "\n";
-        printHelper(root->left, indent, false);
-        printHelper(root->right, indent, true);
+        print(root->left, indent, false);
+        print(root->right, indent, true);
     }
 }
-
-
-NodePtr Tree:: searchTree(int k) {
-    return searchTreeHelper(this->root, k);
+int Tree:: search(int k) {
+    NodePtr help =search(this->root, k);
+    return help ->data;
 }
 
-void  Tree:: deleteNode(int data) {  // удаление узла, публичное
-    deleteNodeHelper(this->root, data);
+void  Tree:: del(int data) {
+    del(this->root, data);
 }
 
-
-void Tree:: printTree() {
+void Tree:: print() {
     if (root) {
-        printHelper(this->root, "", true);
+        print(this->root, "", true);
     }
 }
-
 
 int main () {
 
     Tree bst;
-    NodePtr  a;
+    int a;
     bst.insert(55);
     bst.insert(40);
     bst.insert(65);
     bst.insert(60);
     bst.insert(75);
     bst.insert(56);
-    bst.insert(5);
+    bst.insert(41);
     bst.insert(555);
+    bst.insert(42);
+    bst.insert(57);
+    bst.insert(5);
+    bst.insert(1);
+    bst.insert(69);
+    bst.insert(90);
+    bst.insert(91);
 
 
-    bst.printTree();
+
+
+    bst.print();
 
     std::cout << "\n"
-         << "After deleting" << "\n";bst.deleteNode(55);
-    bst.printTree();
-
-    a = bst.searchTree(65);
-
+         << "After deleting" << "\n";
+         bst.del(65);
+    bst.print();
+/*
+    a = bst.search(75);
+    std::cout << "\n"
+              << a << "\n";
+*/
 
     return 0;
 }
+
