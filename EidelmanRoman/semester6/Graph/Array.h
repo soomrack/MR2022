@@ -1,14 +1,49 @@
+#ifndef MR2022_ARRAY_H
+#define MR2022_ARRAY_H
+
+
+#include <iostream>
 #include <cstring>
-#include "array.h"
 
 
-array::array(unsigned int len) {
+class Array {
+private:
+    double* data;
+    unsigned int size;
+public:
+    Array() = default;
+    Array(unsigned int len);
+    Array(unsigned int len, double x);
+    Array(const Array& arr);
+    Array(Array&& arr) noexcept;
+    ~Array();
+
+    double operator[](unsigned int index);
+    Array& operator=(const Array& arr);
+    Array& operator=(Array&& arr) noexcept;
+
+    void add(double x);
+    void add(double x, unsigned int to);
+    unsigned int arr_size();
+    double back();
+    void fill(double x);
+    double front();
+    double* get(unsigned int index);
+    void output();
+    void rm();
+    void rm(unsigned int from);
+    void sort();
+    void swap(Array arr);
+};
+
+
+Array::Array(unsigned int len) {
     size = len;
     data = new double[size];
 }
 
 
-array::array(unsigned int len, double x) {
+Array::Array(unsigned int len, double x) {
     size = len;
     data = new double[size];
     for (int i = 0; i < size; ++i)
@@ -16,14 +51,14 @@ array::array(unsigned int len, double x) {
 }
 
 
-array::array(const array& arr) {
+Array::Array(const Array& arr) {
     size = arr.size;
     data = new double[size];
     memcpy(data, arr.data, size * sizeof(unsigned int));
 }
 
 
-array::array(array&& arr) noexcept {
+Array::Array(Array&& arr) noexcept {
     size = arr.size;
     data = new double[size];
     arr.data = nullptr;
@@ -31,17 +66,17 @@ array::array(array&& arr) noexcept {
 }
 
 
-array::~array() {
+Array::~Array() {
     delete[] data;
 }
 
 
-double array::operator[](unsigned int index) {
+double Array::operator[](unsigned int index) {
     return data[index];
 }
 
 
-array& array::operator=(const array& arr) {
+Array& Array::operator=(const Array& arr) {
     if (this == &arr) {
         return *this;
     }
@@ -53,7 +88,7 @@ array& array::operator=(const array& arr) {
 }
 
 
-array& array::operator=(array&& arr) noexcept {
+Array& Array::operator=(Array&& arr) noexcept {
     if (this == &arr) {
         return *this;
     }
@@ -64,12 +99,12 @@ array& array::operator=(array&& arr) noexcept {
 }
 
 
-unsigned int array::arr_size() {
+unsigned int Array::arr_size() {
     return size;
 }
 
 
-void array::add(double x) {
+void Array::add(double x) {
     ++size;
     double* newdata;
     newdata = new double[size];
@@ -82,14 +117,14 @@ void array::add(double x) {
 }
 
 
-void array::add(double x, unsigned int to) {
+void Array::add(double x, unsigned int to) {
     ++size;
     double* newdata;
     newdata = new double[size];
     for (int i = 0; i < size; ++i) {
         if (i == to)
             newdata[i] = x;
-            continue;
+        continue;
         newdata[i] = data[i];
     }
     delete[] data;
@@ -97,28 +132,28 @@ void array::add(double x, unsigned int to) {
 }
 
 
-double array::back() {
+double Array::back() {
     return data[size - 1];
 }
 
 
-void array::fill(double x) {
+void Array::fill(double x) {
     for (int i = 0; i < size; ++i)
         data[i] = x;
 }
 
 
-double array::front() {
+double Array::front() {
     return data[0];
 }
 
 
-double* array::get(unsigned int index) {
+double* Array::get(unsigned int index) {
     return &data[index];
 }
 
 
-void array::output() {
+void Array::output() {
     std::cout << "[";
     for (int i = 0; i < size - 1; ++i)
         std::cout << data[i] << ", ";
@@ -126,7 +161,7 @@ void array::output() {
 }
 
 
-void array::rm() {
+void Array::rm() {
     --size;
     double* newdata;
     newdata = new double[size];
@@ -138,7 +173,7 @@ void array::rm() {
 }
 
 
-void array::rm(unsigned int from) {
+void Array::rm(unsigned int from) {
     --size;
     double* newdata;
     newdata = new double[size];
@@ -160,6 +195,7 @@ void array::rm(unsigned int from) {
 //}
 
 
-void array::swap(array arr) {
+void Array::swap(Array arr) {
 
 }
+#endif //MR2022_ARRAY_H

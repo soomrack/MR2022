@@ -20,6 +20,8 @@ public:
     void print();
     void clean();
     void resize(int num);
+    unsigned int get(unsigned int number);
+    void set(unsigned int number, unsigned int item);
 };
 
 
@@ -34,6 +36,7 @@ DynArray::~DynArray() {
     size = 0;
 }
 
+
 void DynArray::fill_random(int num) {
     cout << "Fill randomly" << "\n";
     srand(time(NULL));
@@ -43,6 +46,7 @@ void DynArray::fill_random(int num) {
     }
     size = num;
 }
+
 
 void DynArray::add(int value, int idx) {
     cout << "Adding an " << value << " on place " << idx << "\n";
@@ -59,6 +63,7 @@ void DynArray::add(int value, int idx) {
     size++;
 }
 
+
 void DynArray::remove(int idx) {
     cout << "Remove element on place " << idx << "\n";
     int *temp = new int[size - 1];
@@ -73,6 +78,7 @@ void DynArray::remove(int idx) {
     size--;
 }
 
+
 void DynArray::print() {
     for (int i = 0; i < size; ++i) {
         cout << array[i] << " ";
@@ -80,11 +86,13 @@ void DynArray::print() {
     cout << "\n";
 }
 
+
 void DynArray::clean() {
     delete[] array;
     array = nullptr;
     size = NULL;
 }
+
 
 void DynArray::resize(int num) {
     cout << "Size changed to " << num << "\n";
@@ -99,6 +107,16 @@ void DynArray::resize(int num) {
 }
 
 
+unsigned int DynArray::get(unsigned int number) {
+    return array[number];
+}
+
+
+void DynArray::set(unsigned int number, unsigned int item) {
+    array[number] = item;
+}
+
+
 int main() {
     DynArray DA;
 
@@ -110,6 +128,9 @@ int main() {
 
     DA.add(18, 2);
     DA.print();
+
+    DA.get(3);
+    DA.set(1, 0);
 
     DA.resize(8);
     DA.print();

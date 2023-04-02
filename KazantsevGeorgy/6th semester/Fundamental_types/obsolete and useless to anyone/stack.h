@@ -2,19 +2,22 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-using namespace std;
+#include "except.h"
 
-#define STACK_DEFAULT_SIZE 10;
+AtypesException STACKOVERFLOW("Trying to push into full stack!");
 
+
+
+template <typename Q>
 class Stack{
-    double *stackvalues;
-    unsigned int top; //вершина стека
+    Q *stackvalues;
+    unsigned int top;
     unsigned int stacksize;
 public:
     Stack();
     Stack(unsigned int size);
     ~Stack();
-    Stack& operator=(const Stack &stack);
+    template <typename R>Stack& operator=(const Stack<R> &stack);
 
     void StackPush(double new_value);
     void StackZering();
@@ -28,38 +31,45 @@ public:
     void size_output();
 
 };
-Stack::Stack() {
-    stacksize = STACK_DEFAULT_SIZE;
-    stackvalues = new double[stacksize];
+
+template <typename Q>
+Stack<Q>::Stack() {
+    stacksize = 10;
+    stackvalues = new Q[stacksize];
     top = 0;
 }
 
-Stack::Stack(unsigned int size) {
+template <typename Q>
+Stack<Q>::Stack(unsigned int size) {
     stackvalues = new double[size];
     stacksize = size;
     top = 0;
 }
 
-Stack::~Stack() {
+template <typename Q>
+Stack<Q>::~Stack() {
     delete[] stackvalues;
 }
 
-void Stack::StackPush(double new_value) {
-    if (IsFull())
-    {
-        cout << "Overflow";
+template <typename Q>
+void Stack<Q>::StackPush(double new_value) {
+    if (IsFull()) {
+        throw STACKOVERFLOW;
     }
-    else {stackvalues[top++] = new_value;}
+    else { stackvalues[top++] = new_value; }
 }
 
-void Stack::StackZering() {
+template <typename Q>
+void Stack<Q>::StackZering() {
     for (unsigned int i = 0; i < stacksize; i++) {
         stackvalues[i] = 0;
     }
 }
-void Stack::StackPop() {
+
+template <typename Q>
+void Stack<Q>::StackPop() {
     unsigned int k = top;
-    if (top == 0) throw OUTOFRANGE;
+    if (top == 0) throw ;
     else
     {
         stackvalues[--k] = 0;
@@ -68,30 +78,34 @@ void Stack::StackPop() {
     }
 }
 
-// Счет начинается с первой позиции
-double Stack::StackGet(int position) {
+template <typename Q>
+double Stack<Q>::StackGet(int position) {
     return stackvalues[--position];
 }
 
-
-double Stack::StackPeek() {
+template <typename Q>
+double Stack<Q>::StackPeek() {
     unsigned int k = top;
     return stackvalues[--k];
 }
 
-int Stack::StackSize() {
+template <typename Q>
+int Stack<Q>::StackSize() {
     return top;
 }
 
-bool Stack::IsEmpty() {
+template <typename Q>
+bool Stack<Q>::IsEmpty() {
     return top == -1;
 }
 
-bool Stack::IsFull() {
+template <typename Q>
+bool Stack<Q>::IsFull() {
     return top == stacksize - 1;
 }
 
-Stack &Stack::operator=(const Stack &stack) {
+template <class Q> template <typename R>
+Stack<Q>& Stack<Q>::operator=(const Stack<R> &stack) {
     if (this != &stack){
         if (!stackvalues)
             delete[] stackvalues;
@@ -107,7 +121,8 @@ Stack &Stack::operator=(const Stack &stack) {
     return *this;
 }
 
-void Stack::top_output() {
+template <typename Q>
+void Stack<Q>::top_output() {
     cout << "\n";
     for (unsigned int i = 0; i < top; i++){
 
@@ -115,7 +130,8 @@ void Stack::top_output() {
     }
 }
 
-void Stack::size_output() {
+template <typename Q>
+void Stack<Q>::size_output() {
     cout << "\n";
     for (unsigned int i = 0; i < stacksize; i++){
 
