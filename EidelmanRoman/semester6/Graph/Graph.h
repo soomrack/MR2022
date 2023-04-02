@@ -1,79 +1,78 @@
-#ifndef MR2022_QUEUE_H
-#define MR2022_QUEUE_H
+#ifndef MR2022_GRAPH_H
+#define MR2022_GRAPH_H
 
 
-class Queue {
+#include <cstdint>
+#include <vector>
+#include "Array.h"
+
+
+class Edge {
 private:
-    int size;
-    double* data;
-    int first;
-    int last;
-    int items;
+    double* previous_peak;
+    double* next_peak;
 public:
-    Queue(int size);
-    ~Queue();
+    Edge(double* previous_address, double* next_address);
+    ~Edge();
 
-    void insert(int value);
-    double remove();
-    double getFirst();
-    bool isEmpty();
-    bool isFull();
-    int getSize();
-
+    double* getPreviousPeak() {return previous_peak;};
+    double* getNextPeak() {return next_peak;};
 };
 
 
-Queue::Queue(int my_size) {
-    size = my_size;
-    data = new double[size];
-    first = 0;
-    last = -1;
-    items = 0;
-};
-
-
-Queue::~Queue() {
-    delete[] data;
-};
-
-
-void Queue::insert(int value) {
-    if (last == size - 1) {
-        last = -1;
-        items = 0;
-    }
-    data[++last] = value;
-    ++items;
+Edge::Edge(double* previous_address, double* next_address) {
+    previous_peak = previous_address;
+    next_peak = next_address;
 }
 
 
-double Queue::remove() {
-    double temp = data[++first];
-    if (first == size)
-        first == 0;
-    --items;
-    return temp;
+Edge::~Edge() {
+    previous_peak = nullptr;
+    next_peak = nullptr;
 }
 
 
-double Queue::getFirst() {
-    return data[first];
-}
+class Peak {
+public:
+    double value;
+    double* pvalue;
+    Peak(double item);
+    ~Peak();
 
-
-bool Queue::isEmpty() {
-    return (items == 0);
+    double getValue() {return value;}
+    double* getAddress() {return pvalue;}
 };
 
 
-bool Queue::isFull() {
-    return (items == size);
-};
-
-
-int Queue::getSize() {
-    return items;
+Peak::Peak(double item) {
+    value = item;
+    pvalue = new double[1];
+    pvalue[1] = value;  //?
 }
 
 
-#endif //MR2022_QUEUE_H
+Peak::~Peak() {
+    delete[] pvalue;
+}
+
+
+class Graph {
+private:
+    uint8_t peaks = 2;
+    Array edges();
+    void addEdge(Peak peak1, Peak peak2);
+public:
+    Graph() = default;
+    Graph(Peak peak1, Peak peak2);
+    ~Graph();
+
+    void addPeak(double new_item);
+    void deletePeak();
+};
+
+
+void Graph::addEdge(Peak peak1, Peak peak2) {
+    auto* edge = new Edge(peak1.pvalue, peak2.pvalue);  //???
+}
+
+#endif //MR2022_GRAPH_H
