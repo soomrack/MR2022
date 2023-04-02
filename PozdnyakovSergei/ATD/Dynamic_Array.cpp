@@ -20,6 +20,8 @@ public:
     void print();
     void clean();
     void resize(int num);
+    unsigned int get(unsigned int number);
+    void set(unsigned int number, unsigned int item);
 };
 
 
@@ -105,6 +107,16 @@ void DynArray::resize(int num) {
 }
 
 
+unsigned int DynArray::get(unsigned int number) {
+    return array[number];
+}
+
+
+void DynArray::set(unsigned int number, unsigned int item) {
+    array[number] = item;
+}
+
+
 int main() {
     DynArray DA;
 
@@ -116,6 +128,9 @@ int main() {
 
     DA.add(18, 2);
     DA.print();
+
+    DA.get(3);
+    DA.set(1, 0);
 
     DA.resize(8);
     DA.print();
