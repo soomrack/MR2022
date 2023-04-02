@@ -29,7 +29,8 @@ public:
     void appendEdge(Edge* edge);
     int get() const;
     uint64_t getEdgesNumber();
-    void deleteEdge(Vertex* other);
+    Edge* findEdge(Vertex* other);
+    void delEdge(Vertex* other);
 };
 
 

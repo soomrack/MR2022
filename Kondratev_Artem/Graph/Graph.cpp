@@ -11,6 +11,10 @@ Graph::Graph() {
 
 
 void Graph::addVertex(int data) {
+    if (GraphIterator(this).find(data)) {
+        return;
+    }
+
     auto* vertex = new Vertex(data);
     list.push(vertex);
     size++;
@@ -19,6 +23,10 @@ void Graph::addVertex(int data) {
 
 bool Graph::addEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_directed) {
     if (!from_vertex || !to_vertex) {
+        return false;
+    }
+
+    if (from_vertex->findEdge(to_vertex) || to_vertex->findEdge(from_vertex)) {
         return false;
     }
 
@@ -68,7 +76,7 @@ void Graph::printEdges() {
             std::cout << "    " << edge_iterator.get()->getStart()->get();
             (edge_iterator.get()->getIsDirected()) ? std::cout << " <--> " : std::cout << "  --> ";
             std::cout << edge_iterator.get()->getEnd()->get() << std::endl;
-            edge_iterator.end();
+            edge_iterator.shiftToTail();
         }
         iterator.shiftToTail();
     }
@@ -88,6 +96,7 @@ void Graph::delVertex(int data) {
     }
 
     iterator.deleteVertex();
+    size--;
 }
 
 
@@ -96,8 +105,8 @@ void Graph::delEdge(Vertex* vertex1, Vertex* vertex2) {
         return;
     }
 
-    vertex1->deleteEdge(vertex2);
-    vertex2->deleteEdge(vertex1);
+    vertex1->delEdge(vertex2);
+    vertex2->delEdge(vertex1);
 }
 
 

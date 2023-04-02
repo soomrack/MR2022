@@ -36,10 +36,22 @@ int main() {
     A.printEdges();
 
     A.addEdge(1, 4, true);
+    A.addEdge(1, 4, true);
+    A.addEdge(4, 1, true);
+    A.addEdge(1, 4, false);
+    A.addEdge(4, 1, false);
     A.addEdge(4, 2, true);
     A.addEdge(4, 0, true);
     A.addEdge(4, 3, true);
     std::cout << std::endl;
+    A.printEdges();
+
+
+    A.delEdge(5, 4);
+    //A.delEdge(1, 4);
+    A.delEdge(4, 2);
+    //A.delEdge(4, 0);
+    //A.delEdge(4, 3);
     A.printEdges();
 
 
