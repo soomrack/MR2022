@@ -167,8 +167,8 @@ public:
             return;
         }
         Node *new_node = new Node(in);
-        new_node->next_ptr = in_itr.node_ptr;
-        in_itr.node_ptr = new_node;
+        new_node->next_ptr = in_itr.node_ptr->next_ptr;
+        in_itr.node_ptr->next_ptr = new_node;
     };
 
 
@@ -186,7 +186,8 @@ public:
     void print(){
         if (is_empty()) return;
         for(Iterator iter = head; iter.node_ptr != nullptr; ++iter)
-            std::cout<<iter.node_ptr->data;
+            std::cout<<iter.node_ptr->data<<' ';
+        std::cout<<"\n";
     };
 };
 

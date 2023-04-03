@@ -7,7 +7,7 @@ int main(){
     new_list.print();
 
     List::Iterator iter = new_list.head;
-    new_list.push(2, ++iter);
+    new_list.push(2, iter);
     new_list.print();
 
     new_list.push(3, ++iter);
@@ -17,7 +17,7 @@ int main(){
     new_list.print();
 
     List::Iterator new_iter = new_list.head;
-    for(int a = 0; a < 3; a++)
+    for(int a = 0; a < 2; a++)
         ++new_iter;
     new_list.pop(new_iter);
     new_list.print();
