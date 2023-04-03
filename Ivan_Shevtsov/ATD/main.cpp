@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "dynamic_array.h"
 #include "queue.h"
+#include "tree.h"
 
 #ifndef exceptions
 #define exceptions
@@ -21,14 +22,20 @@ common_exc CANT_ADD_ELEMENT("can`t add element in empty list");  // #TODO: сд�
 
 #define DEBUG
 
-// enum: psstate #TODO
+enum test_state{
+    PASSED = 1,
+    FAILED = 0,
+    START = -1,
+    ALL_PASSED = 2,
+    MASKED = 3
+};
 
 void sep(const char* massege= "")
 {
     std::cout << "----------------------------" << massege << "----------------------------\n";
 }
 
-void test_lits(bool test_visible = true)
+void test_list(bool test_visible = true)
 {
     sep("QUEUE TEST STARTED");
     using namespace list_names;
@@ -56,28 +63,6 @@ void test_lits(bool test_visible = true)
     lst2.show();
     if (lst1 == lst2)
         std::cout << "equal!\n";
-
-
-
-
-/*    for (int i = 0; i < lst1.lenght(); i++)
-        std::cout << lst1[i] << std::endl;
-    std::cout << lst1.lenght() << " nodes in list" << std::endl;*/
-
-/*    sep("pop_back");
-    for (int i = 0; i < lst1.lenght(); i++)
-        std::cout << lst1[i] << std::endl;
-    std::cout << lst1.lenght() << " nodes in list" << std::endl;
-
-
-    list<int> lst2(lst1);
-    sep("list_2");
-    for (int i = 0; i < lst1.lenght(); i++)
-        std::cout << lst1[i] << std::endl;
-    std::cout << lst1.lenght() << " nodes in list" << std::endl;
-
-    if (lst1 == lst2)
-        std::cout << "equal" << std::endl;*/
 }
 
 void delay(){ int a; for (int i = 0; i < 1000000000; i++) {a = i;}}
@@ -91,6 +76,7 @@ void test_dynamic_array()
     delay();
 #endif
     DA2.fill_random();
+    sep("DA2");
     DA1.show();
     sep("DA2");
     DA2.show();
@@ -137,6 +123,10 @@ void test_stack()
 
 }
 
+void test_tree(){
+
+}
+
 void test_queue() {
     sep("QUEUE TEST STARTED");
     using namespace queue_names;
@@ -169,10 +159,11 @@ int main() {
 
     try
     {
-        test_lits(); //#TODO написать нормально тесты  // Q: как запушить коммит, в определенную папку не клонируюя репозиторий
+        //test_list(); //#TODO написать нормально тесты  // Q: как запушить коммит, в определенную папку не клонируюя репозиторий  Q: переменные, которые начинаются с нижнего подчёркивания, они для чего служат?
         //test_stack();
         //test_dynamic_array();
         //test_queue();
+        //test_tree();
 
     }
     catch (const common_exc& err)  // does`t work. why??

@@ -22,6 +22,8 @@ public:
     void resize(int num);
     unsigned int get(unsigned int number);
     void set(unsigned int number, unsigned int item);
+    unsigned int operator[] (unsigned int number);
+
 };
 
 
@@ -114,6 +116,11 @@ unsigned int DynArray::get(unsigned int number) {
 
 void DynArray::set(unsigned int number, unsigned int item) {
     array[number] = item;
+}
+
+
+unsigned int DynArray::operator[](unsigned int number) {
+    return array[number];
 }
 
 
