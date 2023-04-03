@@ -4,120 +4,117 @@
 
 
 #include "Config.h"
+//#include "FSM.h"
+#include "Joint.h"
 #include "Servo.h"
 
 
-typedef struct Command {
-    uint8_t id = 0;
-    uint8_t command = 0;
-    uint16_t value1 = 0;
-    uint16_t value2 = 0;
-    uint16_t value = 0;
-    uint16_t checksum = 0;
-} Command;
-
-
-typedef struct Message {
-    uint8_t id = 0;
-    uint16_t goal1 = 0;
-    uint16_t goal2 = 0;
-    uint16_t angle1 = 0;
-    uint16_t angle2 = 0;
-    uint16_t speed1 = 0;
-    uint16_t speed2 = 0;
-    uint16_t boost1 = 0;
-    uint16_t boost2 = 0;
-    uint16_t torque1 = 0;
-    uint16_t torque2 = 0;
-    uint8_t is_moving = 0;
-} Message;
-
-
-Command Cmd;
-Message Msg;
+char command[COMMAND_SIZE];
+char message[MESSAGE_SIZE];
 
 
 class Connection {
 private:
-    static uint16_t getCalc();
-    static uint16_t setCalc();
+    //static FSM Machine;
+
+public:
+    //static void initFSM();
+
+private:
+    static uint16_t calcCommandCheckSum();
+    static uint16_t calcMessageCheckSum();
     static void setMsgValues(uint8_t id);
-    static void setData(uint8_t id);
+    static void sendMessage(uint8_t id);
+    
 public:
     static void getData();
+    
 private:
     static void findCommand();
 };
 
 
-uint16_t Connection::getCalc() {
-    return (char(Cmd.id) + char(Cmd.command) + char(Cmd.value1) + char(Cmd.value2)) / 8;
+uint16_t Connection::calcCommandCheckSum() {
+    uint64_t sum = 0;
+    for (int i = COMMAND_START_BYTE1_CELL; i < COMMAND_CHECKSUM_CELL; i++) {
+        sum += (uint64_t)command[i];
+    }
+    return char(sum / 8);
+    //return (char(Cmd.id) + char(Cmd.command) + char(Cmd.value1) + char(Cmd.value2)) / 8;
 }
 
 
-uint16_t Connection::setCalc() {
-    return (char(Msg.id) + char(Msg.goal1) + char(Msg.goal2) + char(Msg.angle1) + char(Msg.angle2) + char(Msg.speed1) +
-            char(Msg.speed2) +
-            char(Msg.boost1) + char(Msg.boost2) + char(Msg.torque1) + char(Msg.torque2) + char(Msg.is_moving)) / 8;
+uint16_t Connection::calcMessageCheckSum() {
+    uint64_t sum = 0;
+    for (int i = MESSAGE_START_BYTE1_CELL; i < MESSAGE_CHECKSUM_CELL; i++) {
+        sum += (uint64_t)message[i];
+    }
+    return char(sum / 8);
 }
 
 
 void Connection::setMsgValues(uint8_t id) {
     Servo* servo = Servo::findServo(id);
-    Msg.id = servo->getDXL_ID();
-    Msg.goal1 = servo->getGoal() / 100;
-    Msg.goal2 = servo->getGoal() % 100;
-    Msg.angle1 = servo->getAngle() / 100;
-    Msg.angle2 = servo->getAngle() % 100;
-    Msg.speed1 = servo->getSpeed() / 100;
-    Msg.speed2 = servo->getSpeed() % 100;
-    Msg.boost1 = servo->getBoost() / 100;
-    Msg.boost2 = servo->getBoost() % 100;
-    Msg.torque1 = servo->getLoad() / 100;
-    Msg.torque2 = servo->getLoad() % 100;
-    Msg.is_moving = servo->isMoving();
+    
+    message[MESSAGE_START_BYTE1_CELL] = START_BYTE;
+    message[MESSAGE_START_BYTE2_CELL] = START_BYTE;
+    
+    message[MESSAGE_ID_CELL] = id;
+    
+    message[MESSAGE_GOAL1_CELL] = servo->getGoal() / 100;
+    message[MESSAGE_GOAL1_CELL] = servo->getGoal() % 100;
+    
+    message[MESSAGE_ANGLE1_CELL] = servo->getAngle() / 100;
+    message[MESSAGE_ANGLE2_CELL] = servo->getAngle() % 100;
+    
+    message[MESSAGE_SPEED1_CELL] = servo->getSpeed() / 100;
+    message[MESSAGE_SPEED2_CELL] = servo->getSpeed() % 100;
+    
+    message[MESSAGE_TORQUE1_CELL] = servo->getLoad() / 100;
+    message[MESSAGE_TORQUE2_CELL] = servo->getLoad() % 100;
+
+    message[MESSAGE_IS_MOVING_CELL] = servo->isMoving();
+
+    message[MESSAGE_TORQUE1_CELL] = servo->getLoad() / 100;
+
+    message[MESSAGE_X1_CELL] = 12;
+    message[MESSAGE_X2_CELL] = 13;
+    message[MESSAGE_Y1_CELL] = 14;
+    message[MESSAGE_Y2_CELL] = 15;
+    message[MESSAGE_Z1_CELL] = 16;
+    message[MESSAGE_Z2_CELL] = 17;
+
+    message[MESSAGE_CHECKSUM_CELL] = calcMessageCheckSum();
 }
 
 
-void Connection::setData(uint8_t id) {
+void Connection::sendMessage(uint8_t id) {
     setMsgValues(id);
 
     Serial.print(char(64));
     Serial.print(char(64));
 
-    Serial.print(char(Msg.id));
-    Serial.print(char(Msg.goal1));
-    Serial.print(char(Msg.goal2));
-    Serial.print(char(Msg.angle1));
-    Serial.print(char(Msg.angle2));
-    Serial.print(char(Msg.speed1));
-    Serial.print(char(Msg.speed2));
-    Serial.print(char(Msg.boost1));
-    Serial.print(char(Msg.boost2));
-    Serial.print(char(Msg.torque1));
-    Serial.print(char(Msg.torque2));
-    Serial.print(char(Msg.is_moving));
 
-    Serial.print(char(setCalc()));
+    for (int cell = MESSAGE_START_BYTE1_CELL; cell < MESSAGE_SIZE; cell++) {
+        Serial.print(char(message[cell]));
+    }
 }
 
 
 void Connection::getData() {
     if (Serial.available() >= 7) {
-        byte start1 = Serial.read();
-        byte start2 = Serial.read();
-        if (start1 + start2 == 128) {
-            Cmd.id = Serial.read();
-            Cmd.command = Serial.read();
-            Cmd.value1 = Serial.read();
-            Cmd.value2 = Serial.read();
-            Cmd.checksum = Serial.read();
-            if (getCalc() == Cmd.checksum) {
+        command[COMMAND_START_BYTE1_CELL] = Serial.read();
+        command[COMMAND_START_BYTE2_CELL] = Serial.read();
+        if (command[COMMAND_START_BYTE1_CELL] == START_BYTE && command[COMMAND_START_BYTE1_CELL] == START_BYTE) {
+            for (int cell = COMMAND_ID_CELL; cell < COMMAND_SIZE; cell++) {
+                command[cell] = Serial.read();
+            }
+            if (calcCommandCheckSum() == command[COMMAND_CHECKSUM_CELL]) {
                 findCommand();
-                setData(DXL_ID1);
-                setData(DXL_ID2);
-                setData(DXL_ID3);
-                setData(DXL_ID4);
+                sendMessage(DXL_ID1);
+                sendMessage(DXL_ID2);
+                sendMessage(DXL_ID3);
+                sendMessage(DXL_ID4);
             }
         }
     }
@@ -125,31 +122,39 @@ void Connection::getData() {
 
 
 void Connection::findCommand() {
-    Cmd.value = Cmd.value1 * 100 + Cmd.value2;
-    if (Cmd.command == 0) {
+    uint16_t value = command[COMMAND_VALUE1_CELL] * 100 + command[COMMAND_VALUE2_CELL];
+    if (command[COMMAND_TASK_CELL] == PING_TASK) {
         return;
     }
-    if (Cmd.command == SET_ANGLE_TASK) {
-        return Servo::setAngle(Cmd.value, Cmd.id);
+    if (command[COMMAND_TASK_CELL] == SET_ANGLE_TASK) {
+        return Servo::setAngle(value, command[COMMAND_ID_CELL]);
     }
-    if (Cmd.command == SET_SPEED_TASK) {
-        return Servo::setSpeed(Cmd.value, Cmd.id);
+    if (command[COMMAND_TASK_CELL] == SET_SPEED_TASK) {
+        return Servo::setSpeed(value, command[COMMAND_ID_CELL]);
     }
-    if (Cmd.command == SET_BOOST_TASK) {
-        return Servo::setBoost(Cmd.value, Cmd.id);
-    }
-    if (Cmd.command == TOOL_PUSH_TASK) {
+    if (command[COMMAND_TASK_CELL] == TOOL_PUSH_TASK) {
         return Servo::toolPush();
     }
-    if (Cmd.command == TOOL_POP_TASK) {
+    if (command[COMMAND_TASK_CELL] == TOOL_POP_TASK) {
         return Servo::toolPop();
     }
-
-    if (Cmd.command == REBOOT_TASK) {
+    if (command[COMMAND_TASK_CELL] == CALIBRATION_TASK) {
         return;
     }
-    if (Cmd.command == GET_ERROR_TASK) {
+    if (command[COMMAND_TASK_CELL] == REBOOT_TASK) {
         return;
+    }
+    if (command[COMMAND_TASK_CELL] == GET_ERROR_TASK) {
+        return;
+    }
+    if (command[COMMAND_TASK_CELL] == SET_X_TASK) {
+        return Joint::setX(value);
+    }
+    if (command[COMMAND_TASK_CELL] == SET_Y_TASK) {
+        return Joint::setY(value);
+    }
+    if (command[COMMAND_TASK_CELL] == SET_Z_TASK) {
+        return Joint::setZ(value);
     }
 }
 

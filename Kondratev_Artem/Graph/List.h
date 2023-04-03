@@ -4,7 +4,7 @@
 
 #ifndef HELLO_WORLD_LIST_H
 #define HELLO_WORLD_LIST_H
-
+// create shiftToHead shiftToTail in ListIterator;
 
 #include <cstdint>
 #include <iostream>
@@ -91,12 +91,14 @@ private:
 
 public:
     explicit ListIterator(List<T>* _list, Node<T>* _iterator=nullptr);
+    ListIterator(List<T>* _list, T data);
     void pushNext(T data);
     void pushPrev(T data);
     T popNext();
     T popPrev();
     T popThis();
-    void find(T data);
+    Node<T>* find(T data);
+    Node<T>* getIterator();
     T get();
     void shiftToHead();
     void shiftToTail();
@@ -392,6 +394,13 @@ ListIterator<T>::ListIterator(List<T>* _list, Node<T>* _iterator) {
 
 
 template<typename T>
+ListIterator<T>::ListIterator(List<T>* _list, T data) {
+    list = _list;
+    iterator = find(data);
+}
+
+
+template<typename T>
 void ListIterator<T>::pushNext(T data) {
     if (!iterator) {
         return;
@@ -496,16 +505,23 @@ T ListIterator<T>::popThis() {
 
 
 template<typename T>
-void ListIterator<T>::find(T data) {
+Node<T>* ListIterator<T>::find(T data) {
     Node<T>* node = list->head;
     while (node) {
         if (node->data == data) {
             iterator = node;
-            return;
+            return iterator;
         }
         node = node->next;
     }
     iterator = nullptr;
+    return iterator;
+}
+
+
+template<typename T>
+Node<T>* ListIterator<T>::getIterator() {
+    return iterator;
 }
 
 
