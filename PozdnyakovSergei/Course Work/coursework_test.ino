@@ -15,8 +15,9 @@
 
 bool is_on = false;  // для кнопки включения
 float time = 0.0;
-int soudn_time = 0;
-float filt_param = 0.2;
+int soudn_time = 0;  // время оповещения
+float filt_param = 0.2;  // параметр для фильтрации
+float dist_filt = 0;  // отфильтрованный выход
 
 
 void setup() {
@@ -41,7 +42,6 @@ void sound() {
 
 
 void start_motors () {
-
 }
 
 
@@ -59,13 +59,20 @@ float get_distance() {
   Serial.print(" sm");
   delay(100);
   sm = map(sm, 0, 350, 0, 255);
-  sound_time = map(sm, 0, 255, 700, 100);
+  //sound_time = map(sm, 0, 255, 700, 100);
   return (sm);
 }
 
 
+void sound() {
+  sm = dist_filtered();
+  sound_time = map(sm, 0, 255, 700, 100);
+  note_pin = analogWrite(sound_time);
+  //returm (sound_time);
+}
+
+
 void dist_filtered() {
-  float dist_filt = 0;
   float dist = get_distance();
   dist_filt += (dist - dist_filt) * filt_param;
   return (dist_filt);
