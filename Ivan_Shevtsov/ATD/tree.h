@@ -4,7 +4,22 @@
 
 #ifndef ATD_TREE_H
 #define ATD_TREE_H
+
+#include <iostream>
+// убрать this переделать под концевую рекурсию
+// if + return, убирать else, добавить цикл, в делит добавить удаление ноды и доступ по указаттелю
+
 namespace tree_names {
+    class tree_exceptions: public std::domain_error{
+    public:
+        tree_exceptions(const char* massage): std::domain_error(massage){}
+    };
+
+    tree_exceptions ZERO_SIZE("zero size error");
+    tree_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
+    tree_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
+    tree_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+
 
     class Node {
     public:
@@ -23,16 +38,20 @@ namespace tree_names {
     private:
         unsigned depth;
         Node* root;
+
+        Node* find(Node* node, int key);
+        Node* delete_node(Node* node, int key);
+        void insert(Node* node, int key, double value);
     public:
         tree();
         tree(double value, int key);
 
-        unsigned get_depth() {return depth;}
-        void push(double value);
-        void insert(Node* node, int key, double value);
-        Node* find(Node* node, int key);
-        Node* delete_node(Node* node, int key);
+        void add(int key, double value){ insert(root, key, value); }
+        void delete_node(int key, double value) { delete_node(root, key);}
+        double find (int key) { find(root, key);}
 
+
+        unsigned get_depth() {return depth;}
         Node* get_max(Node* node);
         //void clear();
         //void show();

@@ -1,24 +1,8 @@
-//
-// Created by ivan on 01/04/23.
-//
-
 #include "queue.h"
-#include "iostream"
+#include <iostream>
 
 
 using namespace queue_names;
-
-#ifndef exceptions  // Q: how to dell this shit
-#define exceptions
-class common_exc: public std::domain_error{
-public:
-    common_exc(const char* massage): std::domain_error(massage){}
-};
-common_exc QUEUE_POP_ERROR("can`t pop from empty queue");
-common_exc QUEUE_SHOW_ERROR("can`t show zero size queue");
-common_exc QUEUE_OUT_OF_TRE_RANGE("index out of the range (queue)");
-common_exc ZERO_SIZE("zero size error");
-#endif
 
 queue::queue() {
     size = 0;
@@ -39,19 +23,18 @@ queue::~queue() {
 void queue::pop() {
     if (p_head == nullptr)
         throw QUEUE_POP_ERROR;
-    else if (*(p_head->prev()) == nullptr)    {
+    if (*(p_head->prev()) == nullptr)    {
         delete p_head;
         p_head = nullptr;
         p_tail = nullptr;
         size--;
+        return;
     }
-    else {
-        p_head = *(p_head->prev());
-        delete *(p_head->next());
-        *(p_head->next()) = nullptr;
+    p_head = *(p_head->prev());
+    delete *(p_head->next());
+    *(p_head->next()) = nullptr;
 
-        size--;
-    }
+    size--;
 }
 
 void queue::push(double data) {
@@ -59,7 +42,7 @@ void queue::push(double data) {
         Node* first_node = new Node(data, nullptr, nullptr);
         p_head = first_node;
         p_tail = first_node;
-
+        return;
     } else{
         Node* new_node = new Node(data, p_tail, nullptr);
         p_tail->push_next(new_node);
@@ -104,7 +87,7 @@ Node::Node() {
 Node::Node(double data) {
     p_next = nullptr;
     p_prev = nullptr;
-    this->data = data;  //Q: нужно ли делать явное приведение const double
+    this->data = data;
 }
 
 void Node::push_next(Node *other) {

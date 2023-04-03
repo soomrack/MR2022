@@ -7,34 +7,45 @@
 #include "dynamic_array.h"
 #include <iostream>
 
-const int START_DEPTH = 50;
+namespace stack_names {
+    class stack_exceptions: public std::domain_error{
+    public:
+        stack_exceptions(const char* massage): std::domain_error(massage){}
+    };
 
-template <typename T>
-class stack {
-public:
-    stack();
-    stack(int depth);
-    stack(stack& other);
+    stack_exceptions ZERO_SIZE("zero size error");
+    stack_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
+    stack_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
+    stack_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
 
-    void push(T data);
-    void pop();
-    void clear();
-    T top();
-    inline int is_filled_size(){ return filled_size;}
-    void print();
+    const int START_DEPTH = 50;
 
-    bool operator==(stack& other);
-    bool operator!=(stack& other);
+    template<typename T>
+    class stack {
+    private:
+        int stack_size;
+        T *sp;
+        int filled_size;
+        T *bp;
+    public:
+        stack();
+        stack(int depth);
+        stack(stack &other);
+        ~stack();
 
-    ~stack();
-private:
-    int stack_size;
-    T* sp;
-    int filled_size;
-    T* bp;
+        void push(T data);
+        void pop();
 
+        void clear();
+        T top();
+        inline int is_filled_size() { return filled_size; }
+        void print();
 
-};
+        bool operator==(stack &other);
+        bool operator!=(stack &other);
+    };
+}
+using namespace stack_names;
 
 template<typename T>
 void stack<T>::clear() {

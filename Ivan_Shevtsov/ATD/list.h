@@ -1,23 +1,24 @@
-//
-// use try/catch for work with it
-//
-
 #ifndef ATD_LIST_H
 #define ATD_LIST_H
-#include "iostream"
-
-#ifndef exceptions  // Q: how to dell this shit
-#define exceptions
-class common_exc: public std::domain_error{
-public:
-    common_exc(const char* massage): std::domain_error(massage){}
-};
-common_exc LIST_ZERO_SIZE("zero size error");
-common_exc OUT_OF_TRE_RANGE_1("index out of the range(operator [])");
-common_exc CANT_ADD_ELEMENT("can`t add element in empty list");
-#endif
+#include <iostream>
 
 namespace list_names {
+    class list_exceptions: public std::domain_error{
+    public:
+        list_exceptions(const char* massage): std::domain_error(massage){}
+    };
+
+    list_exceptions ZERO_SIZE("zero size error");
+    list_exceptions OUT_OF_THE_RANGE("index out of the range(operator [])");
+    list_exceptions SHOW_ERROR("can`t show zero size list");
+    list_exceptions DELL_AFTER_OUT_OF_THE_RANGE("index out of the range(delete operation)");
+    list_exceptions DELL_AFTER_LAST("can`t delete after last element");
+    list_exceptions POP_ERROR("can`t pop from empty list");
+    list_exceptions INSERT_AFTER_OUT_OF_THE_RANGE("index out of the range(insert operation)");
+    list_exceptions INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element. "
+                                   "List was created and data pushed");
+
+
     template<typename T>
     class Node {
     protected:
@@ -27,11 +28,10 @@ namespace list_names {
 
         Node();
         Node(T data, Node<T> *p_next = nullptr);
+        ~Node() { p_next = nullptr; }
 
         void push_next(Node<T> *other) { p_next = other; };
         Node** next() {return &p_next;}
-
-        ~Node() { p_next = nullptr; }
     };
 
     template<typename T>
@@ -43,11 +43,12 @@ namespace list_names {
     public:
         list();
         list(list &other);
+        ~list();
 
         void clear();
         void show();
 
-        void insert_after(T data, unsigned element_number);
+        void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
         void push(T data);
         void pop();
@@ -57,8 +58,6 @@ namespace list_names {
         T &operator[](unsigned element_number);
         bool operator==(const list &other);
         bool operator!=(const list &other);
-
-        ~list();
     };
 
 
@@ -71,27 +70,25 @@ namespace list_names {
     template<typename T>
     bool list<T>::operator==(const list &other) {
         if (size != other.size)
-            throw "for comparison lists mast have equal length"; // #TODO
+            return false;
 
-        Node<T> *first_current = this->head;
-        Node<T> *second_current = this->head;
-
+        Node<T> *first_current = head;
+        Node<T> *second_current = head;
         for (unsigned idx = 0; idx < size; idx++) {
             if (first_current->data != second_current->data)
                 return false;
             first_current = *(first_current->next());
             second_current = *(second_current->next());
         }
-
         return true;
     }
 
     template<typename T>
     T &list<T>::operator[](unsigned int element_number) {
         if (size == 0)
-            throw LIST_ZERO_SIZE; //#TODO
+            throw ZERO_SIZE;
         else if (element_number >= size)
-            throw OUT_OF_TRE_RANGE_1; //#TODO
+            throw OUT_OF_THE_RANGE;
 
         Node<T> *current_node = head;
         int counter = 0;
@@ -126,7 +123,8 @@ namespace list_names {
 
     template<typename T>
     void list<T>::show() {
-        if (size == 0){ throw "LIST_SHOW_ERROR"; }  // #TODO
+        if (size == 0){ throw SHOW_ERROR; }
+
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < size; counter++){
             std::cout << running_pointer->data << "\t";
@@ -143,11 +141,11 @@ namespace list_names {
     template<typename T>
     void list<T>::delete_after(unsigned int element_number) {
         if (size == 0){
-            throw "LIST_CANT_DELL_IN_ZERO_SIZE";  // #TODO
+            throw ZERO_SIZE;
         } else if (element_number >= size) {
-            throw "LIST_INDEX_OUT_OF_THE_RANGE";  // #TODO
+            throw DELL_AFTER_OUT_OF_THE_RANGE;
         }else if (element_number == size - 1) {
-                throw "can`t delete after last element";     // #TODO
+                throw DELL_AFTER_LAST;
         } else {
             Node<T>* running_pointer = head;
             for (unsigned counter = 0; counter < element_number; counter++){
@@ -167,28 +165,28 @@ namespace list_names {
         if (size == 0){
             Node<T>* first_node = new Node<T>(data);
             head = first_node;
-        } else{
-            Node<T>* new_node = new Node<T>(data, head);
-            head = new_node;
+            size++;
+            return;
         }
+        Node<T>* new_node = new Node<T>(data, head);
+        head = new_node;
         size++;
     }
 
     template<typename T>
     void list<T>::pop() {
         if (head == nullptr)
-            throw "LIST_POP_ERROR";  // #TODO
+            throw POP_ERROR;
         else if (*(head->next()) == nullptr){
             delete head;
             head = nullptr;
             size--;
+            return;
         }
-        else {
             Node<T>* tmp = *(head->next());
             delete head;
             head = tmp;
             size--;
-        }
     }
 
     template<typename T>
@@ -198,11 +196,12 @@ namespace list_names {
     }
 
     template<typename T>
-    void list<T>::insert_after(T data, unsigned int element_number) {  // Q: как добавить документацию к функции
+    void list<T>::insert_after(T data, unsigned int element_number) {  // element number starts from 0
         if (size == 0 and element_number == 0){
-            push(data);  // Q: возможно ворнинг какой нибудь добавить
+            push(data);
+            throw INSERT_WARNING;
         } else if (element_number >= size){
-            throw "LIST_INDEX_OUT_OF_THE_RANGE";
+            throw INSERT_AFTER_OUT_OF_THE_RANGE;
         } else {
             Node<T>* new_node = new Node<T>(data);
             Node<T>* running_pointer = head;
@@ -226,8 +225,6 @@ namespace list_names {
         p_next = nullptr;
         data = T();
     }
-
-
 }
 
 #endif //ATD_LIST_H

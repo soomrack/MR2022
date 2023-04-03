@@ -5,20 +5,7 @@
 #include "dynamic_array.h"
 #include "queue.h"
 #include "tree.h"
-
-#ifndef exceptions
-#define exceptions
-class common_exc: public std::domain_error{
-public:
-    common_exc(const char* massage): std::domain_error(massage){}
-};
-
-common_exc ZERO_SIZE("zero size error");
-common_exc OUT_OF_TRE_RANGE_1("index out of the range(operator [])");
-common_exc QUEUE_POP_ERROR("can`t pop from empty queue");
-common_exc QUEUE_SHOW_ERROR("can`t show zero size queue");
-common_exc CANT_ADD_ELEMENT("can`t add element in empty list");  // #TODO: сделать в каждом типе данных класс исключений, проверять на повторное включение этого класса, добавить сообщения об ошибках в каждый файл
-#endif
+#include "graph.h"
 
 #define DEBUG
 
@@ -30,9 +17,9 @@ enum test_state{
     MASKED = 3
 };
 
-void sep(const char* massege= "")
+void sep(const char* message= "")
 {
-    std::cout << "----------------------------" << massege << "----------------------------\n";
+    std::cout << "----------------------------" << message << "----------------------------\n";
 }
 
 void test_list(bool test_visible = true)
@@ -69,6 +56,7 @@ void delay(){ int a; for (int i = 0; i < 1000000000; i++) {a = i;}}
 
 void test_dynamic_array()
 {
+    using namespace DynArr_names;
     dynamic_array DA1(10);
     dynamic_array DA2(10);
     DA1.fill_random();
@@ -98,6 +86,7 @@ void test_dynamic_array()
 
 void test_stack()
 {
+    using namespace stack_names;
     stack<int> st1(10);
     st1.push(10);
     st1.push(10312);
@@ -124,6 +113,8 @@ void test_stack()
 }
 
 void test_tree(){
+    using namespace tree_names;
+
 
 }
 
@@ -141,8 +132,6 @@ void test_queue() {
     que1.pop();
 
 
-
-
     sep("POP");
 
     que1.show();
@@ -154,22 +143,33 @@ void test_queue() {
 
 }
 
+void test_graph(){
+    using namespace graph_names;
+
+}
+
 int main() {
     using namespace std;
-
-    try
-    {
-        //test_list(); //#TODO написать нормально тесты  // Q: как запушить коммит, в определенную папку не клонируюя репозиторий  Q: переменные, которые начинаются с нижнего подчёркивания, они для чего служат?
+    try{
+        //test_list(); //#TODO написать нормально тесты
         //test_stack();
-        //test_dynamic_array();
+        test_dynamic_array();
         //test_queue();
         //test_tree();
-
+        //test_graph();
     }
-    catch (const common_exc& err)  // does`t work. why??
-    {
-        std::cerr << err.what() << std::endl;;
-    }
+    catch (const list_names::list_exceptions& err){
+        std::cerr << "List exception: " << err.what() << std::endl;;}
+    catch (const DynArr_names::dynamic_array_exceptions& err){
+        std::cerr << "Dynamic array exception: " << err.what() << std::endl;}
+    catch (const queue_names::queue_exceptions& err){
+        std::cerr << "Queue exception: " << err.what() << std::endl;}
+    catch (const tree_names::tree_exceptions& err){
+        std::cerr << "Tree exception: " << err.what() << std::endl;}
+    catch (const graph_names::graph_exceptions& err){
+        std::cerr << "Graph exception: " << err.what() << std::endl;}
+    catch (const stack_names::stack_exceptions& err){
+        std::cerr << "Stack exception: " << err.what() << std::endl;}
 
     return 0;
 }
