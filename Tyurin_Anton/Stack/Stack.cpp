@@ -6,9 +6,10 @@ class Node {
     friend class Stack;
 protected:
     Node *next;
+    Node *previous;
     std::string data;
 public:
-    Node(std::string data) : data(data), next(nullptr){}
+    Node(std::string data) : data(data), next(nullptr), previous(nullptr){}
 };
 
 class Stack {
@@ -37,6 +38,7 @@ void Stack::push(std::string data){
         size++;
         return;
     }
+    head->previous = local;
     local->next = head;
     head = local;
     size++;
@@ -55,17 +57,18 @@ void Stack::print() {
 std::string Stack::pop() {
     if (is_empty()) return "";
     if (head == tail) {
-        Node* local = head;
-        head = local->next;
-        delete local;
+        auto local = head->data;
+        delete head;
+        head = nullptr;
+        tail = nullptr;
         size--;
-        return head->data; // pop должен возвращать local->data, но мы должны чистить память local. Как быть?
+        return local;
     }
-    Node* local = head;
+    auto local = head->data;
+    delete head->previous;
     head = head->next;
-    delete local;
     size--;
-    return head->data;
+    return local;
 }
 
 unsigned int Stack::get_size() {
@@ -86,6 +89,8 @@ int main(){
     Stack.print();
 
     Stack.pop();
+    Stack.pop();
+
     Stack.print();
 
     return 0;

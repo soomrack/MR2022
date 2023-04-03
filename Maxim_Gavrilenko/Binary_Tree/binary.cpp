@@ -3,22 +3,24 @@
 
 int main() {
     BinaryTree A;
-    A.addNode(25);
-    A.addNode(5);
-    A.addNode(12);
-    A.addNode(18);
-    A.addNode(3);
-    A.addNode(18);
-    A.addNode(50);
-    A.addNode(99);
-
+    A.add(25);
+    A.add(5);
+    A.add(13);
+    A.add(18);
+    A.add(3);
+    A.add(16);
+    A.add(15);
+    A.add(17);
+    A.add(50);
+    A.add(99);
+    A.add(11);
+    A.add(10);
+    A.add(12);
     A.print();
-    std::cout << "Search 50" << std::endl;
-    A.search(50) ? std::cout << "yes": std::cout << "no"; std::cout<<std::endl;
-    std::cout << "Remove 12" << std::endl;
-    A.remove(12);
+    A.remove(13);
+    std::cout << std::endl;
     A.print();
-    std::cout << "Get_max " <<A.get_max()<< std::endl;
-    std::cout << "Get_min " <<A.get_min()<< std::endl;
+    std::cout << "Search 25" << std::endl;
+    A.search(25) ? std::cout << "yes": std::cout << "no"; std::cout<<std::endl;
     return 0;
 }
