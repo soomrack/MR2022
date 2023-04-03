@@ -1,145 +1,213 @@
-#include <iostream>
+#include <iostream> 
+#include <queue>
 
-template <typename T = double>
-class Node {
-protected:
-	T value = NULL;
-	Node* prev = nullptr;
-	Node* next = nullptr;
+class Tree_Exception : public std::exception
+{
+public:
+	Tree_Exception(const char* const& msg) : exception(msg)
+	{}
+};
+
+Tree_Exception ALREADY_EXISTS("Node with this value already exists\n");
+Tree_Exception DOES_NOT_EXISTS("Node does not exist\n");
+
+typedef double T;
+unsigned int GENKEY = 0;
+
+class NodeTree {
+protected: 
+	unsigned int key;
+	T value;
+	NodeTree* left_child;
+	NodeTree* right_child;
 
 public:
-	Node() = default;
-	Node(const Node& node);
-	~Node();
+	NodeTree(T value, NodeTree* left_child = nullptr, NodeTree* right_child = nullptr);
+	NodeTree(const NodeTree& node);
+	~NodeTree();
 
-	template <typename T = double> friend class LinkedList;
+	friend class Tree;
 };
 
 
-
-//template <typename T = double>
-//struct node {
-//	T value;
-//	node* next;
-//	node* prev;
-//};
-
-
-template <typename T = double>
-class LinkedList { 
+class Tree {
 protected:
-	Node<T>* head = nullptr;
-	Node<T>* tail = nullptr;
+	NodeTree* root = nullptr;
 
 public:
-	LinkedList() = default;
+	Tree() = default;
+	~Tree();
 
-	~LinkedList();
+	void add(T new_value);
 
-	void push_head(T value);
-	void push_tail(T value);
-	//T get_item(unsigned int k);
-	//void delete_item(unsigned int k);
+	void del_by_key(unsigned int del_key);
+	void del_by_value(T del_value);
 
-	void print_list();
+	unsigned int get_key(T value);
+	T get_value(unsigned int key);
+
+	void print_tree();
 };
 
+NodeTree::NodeTree(T value, NodeTree* left_child, NodeTree* right_child) {
 
-template <typename T>
-Node<T>::~Node() {
-	prev = nullptr;
-	next = nullptr;
+	this->key = GENKEY;
+	this->value = value;
+	this->left_child = left_child;
+	this->right_child = right_child;
+
+	++GENKEY;
 }
 
-template <typename T>
-Node<T>::Node(const Node& node) {
-	value = node->value;
-	prev = node->prev;
-	next = node->next;
+NodeTree::NodeTree(const NodeTree& node) {
+	key = node.key;
+	value = node.value;
+	left_child = node.left_child;
+	right_child = node.right_child;
+}
+
+NodeTree::~NodeTree() {
+	key = NULL;
+	left_child = nullptr;
+	right_child = nullptr;
 }
 
 
-template <typename T>
-LinkedList<T>::~LinkedList() { 
-	head = nullptr;
-	tail = nullptr;
+Tree::~Tree() {
+	root = nullptr;
 }
 
-template <typename T>
-void LinkedList<T>::push_head(T value) {
-	Node<T>* new_node = new Node<T>();
-	new_node->value = value;
-	new_node->prev = nullptr;
+void Tree::add(T new_value) {
+	NodeTree* new_node = new NodeTree(new_value);
+	NodeTree** temp = &root;
+	while(*temp != nullptr) {
+		if ((* temp)->value == new_value) throw ALREADY_EXISTS;
+		if ((*temp)->value > new_value) temp = &((*temp)->left_child);
+		else temp = &((*temp)->right_child);
+	} 
+	*temp = new_node;
+	}
 
-	if (head == nullptr) {
-		new_node->next = nullptr;
-		head = new_node;
-		tail = new_node;
+
+unsigned int Tree::get_key(T value) {
+	if (root == nullptr) throw DOES_NOT_EXISTS;
+	NodeTree* temp = root;
+	while (temp->value != value) {
+		if (temp->value > value) {
+			if (temp->left_child == nullptr) throw DOES_NOT_EXISTS;
+			temp = temp->left_child;
+		}
+		else {
+			if (temp->right_child == nullptr) throw DOES_NOT_EXISTS;
+			temp = temp->right_child;
+		}
+	}
+	return temp->key;
+}
+
+T Tree::get_value(unsigned int key) {
+	if (root == nullptr) throw DOES_NOT_EXISTS;
+	T result = NULL;
+	NodeTree* temp = root;
+	std::queue<NodeTree*> queue;
+	queue.push(temp);
+
+	while (!queue.empty()) {
+		temp = queue.front();
+		queue.pop();
+		if (temp->key == key) {
+			return temp->value;
+		}
+		if (temp->left_child != nullptr) queue.push(temp->left_child);
+		if (temp->right_child != nullptr) queue.push(temp->right_child);
+	}
+	throw DOES_NOT_EXISTS;
+}
+
+
+
+void Tree::del_by_value(T del_value) {
+	NodeTree** parent = nullptr;
+	NodeTree** temp = &root;
+	bool is_right_child = NULL;
+	while ((*temp)->value != del_value) {
+		if ((*temp)->value > del_value) {
+			if ((*temp)->left_child == nullptr) throw DOES_NOT_EXISTS;
+			parent = temp;
+			temp = &((*temp)->left_child);
+			is_right_child = 0;
+		}
+		if ((*temp)->value < del_value) {
+			if ((*temp)->right_child == nullptr) throw DOES_NOT_EXISTS;
+			parent = temp;
+			temp = &((*temp)->right_child);
+			is_right_child = 1;
+		}
+	}
+	if ((*temp)->left_child == nullptr && (*temp)->right_child == nullptr) {
+		if ((*temp) == root) {
+			root = nullptr;
+			return;
+		}
+		is_right_child ? (*parent)->right_child = nullptr : (*parent)->left_child = nullptr;
 		return;
 	}
-	
-	new_node->next = head;
-	head = new_node;
-	
-}
-
-template <typename T>
-void LinkedList<T>::push_tail(T value) {
-	Node<T>* new_node = new Node<T>();
-	new_node->value = value;
-	new_node->next = nullptr;
-
-	if (head == nullptr) {
-		new_node->prev = nullptr;
-		head = new_node;
-		tail = new_node;
+	// один ребенок - заменяем родителя на ребенка
+	if ((*temp)->left_child != nullptr && (*temp)->right_child == nullptr) {
+		if ((*temp) == root) {
+			root = (*temp)->left_child;
+			return;
+		}
+		is_right_child ? (*parent)->right_child = (*temp)->left_child : (*parent)->left_child = (*temp)->left_child;
 		return;
 	}
-	tail->next = new_node;
-	new_node->prev = tail;
-	tail = new_node;
+	if ((*temp)->right_child != nullptr && (*temp)->left_child == nullptr) {
+		if ((*temp) == root) {
+			root = (*temp)->right_child;
+			return;
+		}
+		is_right_child ? (*parent)->right_child = (*temp)->right_child : (*parent)->left_child = (*temp)->right_child;
+		return;
+	}
+	// 2 ребенка - заменяем на крайнего, заменяем значение и рекурсивно вызываем удаление
+	NodeTree* change = (*temp)->left_child;
+	while (change->right_child != nullptr) {
+		change = change->right_child;
+	}
+	T change_value = change->value;
+	unsigned int change_key = change->key;
+	del_by_value(change_value);
+	(*temp)->value = change_value;
+	(*temp)->key = change_key;
+	return;
 }
 
-//template <typename T>
-//T Linked_list<T>::get_item(unsigned int k) { //k>
-//	node<>* temp = head;
-//	for (unsigned int i = 1; i <= k; ++i) {
-//		temp = temp->next;
+void Tree::del_by_key(unsigned int del_key) {
+	del_by_value(get_value(del_key));
+}
+
+
+
+void Tree::print_tree() {
+	std::cout << root->value << std::endl;
+	std::cout << root->left_child->value << " " << root->right_child->value << std::endl;
+	std::cout << root->left_child->left_child->value << " " << root->left_child->right_child->value << " " << root->right_child->left_child->value << " " << root->right_child->right_child->value << std::endl;
+}
+
+
+//int main() {
+//	Tree A;
+//	A.add(5);
+//	A.add(3);
+//	A.add(7);
+//	A.add(1);
+//	try {
+//		A.del_by_key(0);
 //	}
-//	return temp->value;
-//}
+//	catch (const Tree_Exception& e) {
+//		std::cerr << e.what() << std::endl;
+//	}
+//	A.print_tree();
 //
-//template <typename T>
-//void Linked_list<T>::delete_item(unsigned int k) {
-//	node<>* delete_node = head;
-//	for (unsigned int i = 1; i <= k; ++i) {
-//		delete_node = delete_node->next;
-//	}
-//	delete_node->prev->next = delete_node->next;
-//	delete_node->next->prev = delete_node->prev;
-//	delete[] delete_node;
+//	return 0;
 //}
-
-template <typename T>
-void LinkedList<T>::print_list() {
-	Node<T>* temp = head;
-	while (temp != nullptr) {
-		std::cout << temp->value << " ";
-		temp = temp->next;
-	}
-	std::cout << "\n\n";
-}
-
-int main() {
-	LinkedList<> A;
-	A.push_tail(2);
-	A.print_list();
-	A.push_head(3.5);
-	A.print_list();
-	A.push_head(1);
-	A.print_list();
-	A.push_tail(4);
-	A.print_list();
-
-	return 0;
-}

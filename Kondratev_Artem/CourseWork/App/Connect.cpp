@@ -58,17 +58,20 @@ void Connect::disconnectArduino() {
 
 
 void Connect::calcCommandCheckSum() {
-    command[COMMAND_CHECKSUM_CELL] = char((command[2] + command[3] + command[4] + command[5]) / 8);
+    uint64_t sum = 0;
+    for (int i = COMMAND_START_BYTE1_CELL; i < COMMAND_CHECKSUM_CELL; i++) {
+        sum += command[i];
+    }
+    command[COMMAND_CHECKSUM_CELL] = char(sum / 8);
+    //command[COMMAND_CHECKSUM_CELL] = char((command[2] + command[3] + command[4] + command[5]) / 8);
 }
 
 
 char Connect::calcMessageCheckSum(const char buffer[]) {
     uint64_t sum = 0;
-    for (int i = 2; i < MESSAGE_CHECKSUM_CELL; i++) {
-        //std::cout << int(buffer[i]) << " ";
+    for (int i = MESSAGE_START_BYTE1_CELL; i < MESSAGE_CHECKSUM_CELL; i++) {
         sum += buffer[i];
     }
-    //std::cout << std::endl;
     return char(sum / 8);
 }
 
@@ -132,9 +135,11 @@ void Connect::decodeMessage() {
     gservo->setGoal(message[MESSAGE_GOAL1_CELL], message[MESSAGE_GOAL2_CELL]);
     gservo->setAngle(message[MESSAGE_ANGLE1_CELL], message[MESSAGE_ANGLE2_CELL]);
     gservo->setSpeed(message[MESSAGE_SPEED1_CELL], message[MESSAGE_SPEED2_CELL]);
-    gservo->setBoost(message[MESSAGE_BOOST1_CELL], message[MESSAGE_BOOST2_CELL]);
     gservo->setTorque(message[MESSAGE_TORQUE1_CELL], message[MESSAGE_TORQUE2_CELL]);
     gservo->setIsMoving(message[MESSAGE_IS_MOVING_CELL]);
+    gservo->setX(message[MESSAGE_X1_CELL], message[MESSAGE_X2_CELL]);
+    gservo->setX(message[MESSAGE_Y1_CELL], message[MESSAGE_Y2_CELL]);
+    gservo->setX(message[MESSAGE_Z1_CELL], message[MESSAGE_Z2_CELL]);
 }
 
 
@@ -180,7 +185,7 @@ void Connect::toolPush() {
 void Connect::toolPop() {
     clearCommand();
     command[COMMAND_ID_CELL] = DXL_ID4;
-    command[COMMAND_TASK_CELL] = TOOL_PUSH_TASK;
+    command[COMMAND_TASK_CELL] = TOOL_POP_TASK;
 }
 
 

@@ -52,8 +52,7 @@ int Queue::pop() {
         throw IS_EMPTY;
     }
     int element = array[first];
-    std::cout << "Remove: " << element << std::endl;
-    first = (first + 1);
+    first++;
     count--;
     return element;
 }
@@ -63,8 +62,6 @@ void Queue::push(int item) {
     if (is_full()){
         throw IS_FULL;
     }
-
-    std::cout << "Insert: " << item << std::endl;
     last = (last + 1);
     array[last] = item;
     count++;

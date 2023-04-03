@@ -1,9 +1,9 @@
-#include "array.h"
+#include "Array.h"
 
 
 int main() {
 
-    array myarr(5, 0);
+    Array myarr(5, 0);
     myarr.output();
     myarr.add(5);
     myarr.output();
