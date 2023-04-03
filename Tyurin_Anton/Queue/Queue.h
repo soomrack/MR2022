@@ -1,4 +1,8 @@
+#include <string>
 #include <iostream>
+
+#ifndef UNTITLED_QUEUE_H
+#define UNTITLED_QUEUE_H
 
 class Queue;
 
@@ -73,21 +77,4 @@ unsigned int Queue::get_size() {
     return size;
 }
 
-
-int main() {
-    Queue Queue;
-    Queue.print();
-    Queue.push("he");
-    Queue.push("ll");
-    Queue.push("ow");
-    Queue.push(" ");
-    Queue.push("wo");
-    Queue.push("rl");
-    Queue.push("d");
-    Queue.print();
-    Queue.pop();
-    Queue.pop();
-    Queue.pop();
-    Queue.print();
-    return 0;
-}
+#endif //UNTITLED_QUEUE_H
