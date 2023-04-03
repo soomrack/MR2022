@@ -4,13 +4,12 @@
 
 int main() {
 
-    Peak peak1(1);
-    Peak peak2(2);
-    Peak peak3(3);
-    Peak peak4(4);
+    Node node1(1);
+    Node peak2(2);
+    Node peak3(3);
+    Node peak4(4);
 
-    std::cout<<peak1.getValue()<<"\n";
-    std::cout<<peak1.getAddress()<<"\n";
+    std::cout<<node1.get_value()<<"\n";
 
     return 0;
 }
