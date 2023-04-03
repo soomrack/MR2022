@@ -1,0 +1,13 @@
+{
+  "C_Cpp.errorSquiggles": "enabled",
+  "cmake.sourceDirectory": "${workspaceFolder}/Maxim_Gavrilenko/Graph",
+  "cmake.configureOnOpen": false,
+  "editor.guides.bracketPairs": false,
+  "workbench.colorCustomizations": {
+    "bracketPairColorizer.color1": "#FF0000",
+    "bracketPairColorizer.color2": "#00FF00",
+    "bracketPairColorizer.color3": "#0000FF",
+    "bracketPairColorizer.unmatchedScopeColor": "#FF00FF",
+    "bracketPairColorizer.background": "#282C34"
+  }
+}

@@ -13,8 +13,8 @@ bool Connect::openArduino() {
         }
     }
     tcgetattr(Arduino, &SerialPortSettings);
-    cfsetispeed(&SerialPortSettings, 9600); //SERIAL_BAUDRATE
-    cfsetospeed(&SerialPortSettings, 9600); //SERIAL_BAUDRATE
+    cfsetispeed(&SerialPortSettings, SERIAL_BAUDRATE);
+    cfsetospeed(&SerialPortSettings, SERIAL_BAUDRATE);
     return true;
 }
 
@@ -58,17 +58,20 @@ void Connect::disconnectArduino() {
 
 
 void Connect::calcCommandCheckSum() {
-    command[COMMAND_CHECKSUM_CELL] = char((command[2] + command[3] + command[4] + command[5]) / 8);
+    uint64_t sum = 0;
+    for (int i = COMMAND_START_BYTE1_CELL; i < COMMAND_CHECKSUM_CELL; i++) {
+        sum += command[i];
+    }
+    command[COMMAND_CHECKSUM_CELL] = char(sum / 8);
+    //command[COMMAND_CHECKSUM_CELL] = char((command[2] + command[3] + command[4] + command[5]) / 8);
 }
 
 
 char Connect::calcMessageCheckSum(const char buffer[]) {
     uint64_t sum = 0;
-    for (int i = 2; i < MESSAGE_CHECKSUM_CELL; i++) {
-        //std::cout << int(buffer[i]) << " ";
+    for (int i = MESSAGE_START_BYTE1_CELL; i < MESSAGE_CHECKSUM_CELL; i++) {
         sum += buffer[i];
     }
-    //std::cout << std::endl;
     return char(sum / 8);
 }
 
@@ -111,24 +114,7 @@ void Connect::encodeCommand(uint64_t cmd) {
 }
 
 
-bool Connect::receiveMessage() {
-    if (!openArduino()) {
-        return false;
-    }
-
-    char buffer[MESSAGE_SIZE];
-    read(Arduino, buffer, MESSAGE_SIZE);
-
-    if (buffer[0] == 64 && buffer[1] == 64 && buffer[MESSAGE_CHECKSUM_CELL] == calcMessageCheckSum(buffer)) {
-        std::memcpy(message, buffer, sizeof(char) * MESSAGE_SIZE);
-        Connect::decodeMessage();
-        return true;
-    }
-    return false;
-}
-
-
-Gservo* findGservo(uint8_t id) {
+Gservo* Connect::findGservo(uint8_t id) {
     if (id == 1) {
         return &gservo1;
     }
@@ -149,12 +135,74 @@ void Connect::decodeMessage() {
     gservo->setGoal(message[MESSAGE_GOAL1_CELL], message[MESSAGE_GOAL2_CELL]);
     gservo->setAngle(message[MESSAGE_ANGLE1_CELL], message[MESSAGE_ANGLE2_CELL]);
     gservo->setSpeed(message[MESSAGE_SPEED1_CELL], message[MESSAGE_SPEED2_CELL]);
-    gservo->setBoost(message[MESSAGE_BOOST1_CELL], message[MESSAGE_BOOST2_CELL]);
     gservo->setTorque(message[MESSAGE_TORQUE1_CELL], message[MESSAGE_TORQUE2_CELL]);
-    gservo->setIsMoving(message[MESSAGE_IS_MOVING1_CELL], message[MESSAGE_IS_MOVING2_CELL]);
+    gservo->setIsMoving(message[MESSAGE_IS_MOVING_CELL]);
+    gservo->setX(message[MESSAGE_X1_CELL], message[MESSAGE_X2_CELL]);
+    gservo->setX(message[MESSAGE_Y1_CELL], message[MESSAGE_Y2_CELL]);
+    gservo->setX(message[MESSAGE_Z1_CELL], message[MESSAGE_Z2_CELL]);
 }
 
 
-void Connect::decodeKeyInput(const std::string& cmd) {
-    encodeCommand(stoi(cmd));
+bool Connect::receiveMessage() {
+    if (!openArduino()) {
+        return false;
+    }
+
+    char buf[MESSAGE_SIZE];
+    read(Arduino, buf, MESSAGE_SIZE);
+
+    if (buf[0] == START_BYTE && buf[1] == START_BYTE && buf[MESSAGE_CHECKSUM_CELL] == calcMessageCheckSum(buf)) {
+        std::memcpy(message, buf, sizeof(char) * MESSAGE_SIZE);
+        Connect::decodeMessage();
+        return true;
+    }
+    return false;
+}
+
+
+uint64_t Connect::checkNumberCommand() {
+    char numbers[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    uint64_t flag = 0;
+    for (int i = 0; i < key_cmd.size(); i++) {
+        for (char number: numbers) {
+            if (key_cmd.getStr()[i] == number) {
+                flag++;
+                break;
+            }
+        }
+    }
+    return flag;
+}
+
+
+void Connect::toolPush() {
+    clearCommand();
+    command[COMMAND_ID_CELL] = DXL_ID4;
+    command[COMMAND_TASK_CELL] = TOOL_PUSH_TASK;
+}
+
+
+void Connect::toolPop() {
+    clearCommand();
+    command[COMMAND_ID_CELL] = DXL_ID4;
+    command[COMMAND_TASK_CELL] = TOOL_POP_TASK;
+}
+
+
+void Connect::decodeKeyInput() {
+
+    if (checkNumberCommand() == key_cmd.size()) {
+        Connect::encodeCommand(stoi(key_cmd.getStr()));
+        return;
+    }
+    if (key_cmd.getStr() == "manipulate") {
+        manipulate_flag = true;
+        return;
+    }
+    if (key_cmd.getStr() == "push") {
+        return toolPush();
+    }
+    if (key_cmd.getStr() == "pop") {
+        return toolPop();
+    }
 }

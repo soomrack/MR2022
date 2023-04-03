@@ -1,3 +1,0 @@
-C:/Users/Саша/Documents/GitHub/MR2022/out/build/x64-Debug/CMakeFiles/Programming.dir
-C:/Users/Саша/Documents/GitHub/MR2022/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/Саша/Documents/GitHub/MR2022/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

@@ -1,8 +1,5 @@
 #include <cstring>
 #include "DArray.h"
-/* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса),
-заменить вектор на какое-нибудь заполнение из списка (зачем нужен наш класс, если есть вектор?),
-удалить не нужный buffer, копировать напрямую в "нововыделенную" память, можно перегрузить квадратные скобочки */
 
 
 template <typename T>
@@ -32,7 +29,7 @@ unsigned int DArray<T>::get_size() const {
 
 
 template <typename T>
-T& DArray<T>::operator[] (int idx){
+T& DArray<T>::operator[] (unsigned int idx){
 return data[idx];
 }
 
@@ -42,31 +39,14 @@ void DArray<T>::resize(unsigned int new_size) {
     if (new_size <= size + cache_size) {
         cache_size -= new_size - size;
         size = new_size;
-    } else {
-        cache_size = 5;
-        T *new_data = new T[new_size + cache_size];
-        std::memcpy(new_data, data, sizeof(T) * size);
-        size = new_size;
-        delete (data);
-        data = new_data;
+        return ;
     }
+    T *new_data = new T[new_size];
+    std::memcpy(new_data, data, sizeof(T) * size); //умножать на std::minimum(new_data, data)
+    size = new_size;
+    delete (data);
+    data = new_data;
 }
-
-
-template<typename T>
-T DArray<T>::get(unsigned int id) const {
-    return data[id];
-}
-
-
-template<typename T>
-void DArray<T>::print() const {
-    std::cout << "{";
-    for (int id = 0; id < size; ++id)
-        std::cout << data[id] << ", ";
-    std::cout << "}" << "\n" << std::endl;
-}
-
 
 
 template class DArray<int>;

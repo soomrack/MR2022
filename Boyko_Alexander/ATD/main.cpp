@@ -43,17 +43,9 @@ void check_DinArr(){
 	std::cout << std::endl;
 }
 
-void check_LinkList(){
-	ListMember<char> Member1;
-	ListMember<char> Member2;
+void check_LinkedList(){
+	LinkedList<char> List;
 
-	LinkList<char> List;
-
-	Member1.set_data('A');
-	Member2.set_data('B');
-	Member1.set_next(&Member2);
-
-	std::cout<< Member1.get_next()->get_data() <<std::endl;
 
 	List.push_tail('A');
 	List.push_tail('B');
@@ -69,6 +61,9 @@ void check_LinkList(){
 
 	List.push_head('0');
 
+	List[5]->push_next('5');
+	List[7]->pop_next();
+
 	List.pop_back();
 	List.pop_front();
 
@@ -76,19 +71,19 @@ void check_LinkList(){
 
 	std::cout << "\nSize = " << List.size() << std::endl;
 	for(int ind = 0; ind < List.size();ind++){
-		std::cout << List[ind]->get_data();
+		std::cout << List[ind]->data;
 	}
 	std::cout << std::endl;
 
-	std::cout << "\nHead = " << List.get_head()->get_data() << std::endl;
-	std::cout << "\nTail = " << List.get_tail()->get_data() << std::endl;
+	std::cout << "\nHead = " << List.get_head()->data << std::endl;
+	std::cout << "\nTail = " << List.get_tail()->data << std::endl;
 }
 
 int main() {
 
 	check_DinArr();
 
-	check_LinkList();
+	check_LinkedList();
 
 	return 0;
 

@@ -20,7 +20,7 @@ public:
     void pop();
     void clear();
     T top();
-    //int is_filled_size(){ return filled_size;}
+    inline int is_filled_size(){ return filled_size;}
     void print();
 
     bool operator==(stack& other);
@@ -35,11 +35,6 @@ private:
 
 
 };
-
-//-----------------------------------------//
-// don`t build with it in cpp file #TODO
-// i find, linking templates is magic, will write stack here and guess how list linked
-
 
 template<typename T>
 void stack<T>::clear() {

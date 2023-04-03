@@ -63,6 +63,8 @@ public:
     bool isEmpty();
     void push(T data);
     void push(T data, uint64_t index);
+    void pushHead(T data);
+    void pushTail(T data);
     T pop();
     T pop(uint64_t index);
     void print();
@@ -223,6 +225,18 @@ void List<T>::push(T data, uint64_t index) {
     }
     node->next = this->operator[](index);
     this->operator[](index - 1)->next = node;
+}
+
+
+template<typename T>
+void List<T>::pushHead(T data) {
+    push(data, 0);
+}
+
+
+template<typename T>
+void List<T>::pushTail(T data) {
+    push(data);
 }
 
 

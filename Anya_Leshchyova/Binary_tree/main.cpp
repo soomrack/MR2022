@@ -1,20 +1,23 @@
 #include <iostream>
 
 
+
+
 struct Node {
     int data;  // хранит ключ - число
-    // Node *parent;
     Node *left;
     Node *right;
 
 };
 typedef Node *NodePtr;
+typedef NodePtr *NodePtrPtr;
 
 
 class Tree{
 public:
     Tree();
-    int search(int k) ;
+
+    bool search(int k) ;
     void del(int data);
     void print();
     void insert(int key);
@@ -25,8 +28,9 @@ private:
     NodePtr search(NodePtr node, int key);
     void print(NodePtr root, std::string indent, bool last);
     void del(NodePtr node, int key);
-    void search(NodePtr node);
-    NodePtr min(NodePtr node);
+    NodePtr min(NodePtr node);  // node =! TNULL
+    NodePtr parent_min(NodePtr  node);  // node =! TNULL
+    NodePtrPtr max();
 };
 
 
@@ -38,7 +42,6 @@ Tree:: Tree(){
 }
 
 
-
 void Tree:: insert(int key) {
     NodePtr node = new Node;
     node->data = key;
@@ -47,35 +50,35 @@ void Tree:: insert(int key) {
     NodePtr last_leaf = nullptr;
     NodePtr root_help = this->root;
 
-
     while (root_help != TNULL) {
         last_leaf = root_help;
-        (node->data <  root_help->data) ?  root_help = root_help->left : root_help = root_help->right;
+       (node->data <  root_help->data) ?  root_help = root_help->left : root_help = root_help->right;
     }
 
-
-    if (last_leaf == nullptr) {
+    if (last_leaf == nullptr){
         root = node;
-    } else if (node->data <  last_leaf->data) {
-        last_leaf->left = node;
-    } else {
-        last_leaf->right = node;
-    }
-    return;
-
-}
-
-
-void Tree:: search(NodePtr node){
-
-    if ( node == root) {
-        std:: cout << "Element is root = "<< node->data<< "\n";
         return;
     }
 
-    std:: cout << "Element  = "<< node->data<< "\n";
+    (node->data <  last_leaf->data) ? last_leaf->left = node:  last_leaf->right = node;
 
+
+    return;
 }
+
+
+NodePtrPtr Tree:: max(){
+    NodePtrPtr buffer;
+    NodePtr node = root;
+    while (node ->right != TNULL){
+        node = node->right;
+        buffer ={&node};
+    }
+    return buffer;
+}
+
+
+
 NodePtr Tree:: min(NodePtr node) {
     while (node->left != TNULL) {
         node = node->left;
@@ -84,48 +87,130 @@ NodePtr Tree:: min(NodePtr node) {
 }
 
 
-void Tree:: del(NodePtr node, int key) {
-    NodePtr node_del = TNULL;
+NodePtr Tree:: parent_min(NodePtr  node) {
+    if (node->right->left == TNULL) return node;
+    node = node->right;
+    int count = 0;
+    NodePtr buffer = node;
     while (node != TNULL) {
-        if (node->data == key) {
-            node_del = node;
-        }
-        (node->data <= key) ? node = node->right: node = node->left;
-
+        node = node->left;
+        count++;
     }
-    if (node_del == TNULL) {
-        return;
-    }
-    NodePtr an1;
-    if (node_del->right == TNULL){
-        node_del->data = node_del->left->data;
-        delete node_del->left;
-        node_del->left = TNULL;
+   for (int number = 0; number < count-2; number++){
+       buffer = buffer->left;
+   }
 
-    } else if (node_del->left == TNULL) {
-        node_del->data = node_del->right->data;
-        delete node_del->right;
-        node_del->right = TNULL;
-
-    } else {
-        an1 = min(node_del->right);
-        node_del->data = an1->data;
-        if (an1->right == TNULL){
-            delete an1;
-            an1 = TNULL;
-            return;
-        }
-        an1->data = an1->right->data;
-        delete an1->right;
-        an1->right = TNULL;
-    }
-
+    return buffer;
 }
 
 
+
+void Tree:: del(NodePtr node, int key) {
+    NodePtr parent_node_to_del = TNULL;
+    NodePtr node_to_del = TNULL;
+    do {
+        if (node->right->data == key || node->left->data == key) {
+            parent_node_to_del = node;
+
+        }
+        if (node->data == key ) {
+            node_to_del = node;
+        }
+
+        if (node->data <= key) {
+            node = node->right;
+        } else {
+            node = node->left;
+
+
+        }
+
+
+    } while (node != TNULL);
+
+    NodePtrPtr parent_node_to_del_ptr{&(parent_node_to_del)};
+    NodePtrPtr node_to_del_ptr{&node_to_del};
+
+
+    if (node_to_del->left == TNULL and node_to_del->right == TNULL){
+        std:: cout << "                     Not children\n";
+        (parent_node_to_del->left->data == node_to_del->data) ?
+                (*parent_node_to_del_ptr)->left = TNULL:
+                (*parent_node_to_del_ptr)->right = TNULL;
+        return;
+    }
+
+
+
+    if (node_to_del->left == TNULL){
+        std:: cout << "                     Not left child\n";
+        NodePtrPtr child_node_to_del_ptr{&(node_to_del->right)};
+
+        if ((*parent_node_to_del_ptr)->left->data == (*node_to_del_ptr)->data) {
+            std:: cout <<"-----------------------I am left child\n";
+            (*parent_node_to_del_ptr)->left = *child_node_to_del_ptr;
+            return;
+        } else {
+            std:: cout <<"-----------------------I am right child\n";
+            (*parent_node_to_del_ptr)->right = *child_node_to_del_ptr;
+            return;
+        }
+    }
+
+
+
+    if (node_to_del->right == TNULL){
+        std:: cout << "                     Not right child\n";
+        NodePtrPtr child_node_to_del_ptr{&(node_to_del->left)};
+        if ((*parent_node_to_del_ptr)->left->data == (*node_to_del_ptr)->data) {
+            std:: cout <<"-----------------------I am left child\n";
+            (*parent_node_to_del_ptr)->left = *child_node_to_del_ptr;
+            return;
+        } else {
+            std:: cout <<"-----------------------I am right child\n";
+            (*parent_node_to_del_ptr)->right = *child_node_to_del_ptr;
+            return;
+        }
+    }
+    NodePtr minimum = min(node_to_del->right);
+    NodePtr parent_minimum = parent_min(node_to_del);
+    NodePtrPtr minimum_ptr = {&minimum};
+    NodePtrPtr parent_minimum_ptr = {&parent_minimum};
+
+
+    NodePtr buffer = minimum->right;
+
+
+if (node_to_del == root) {
+    NodePtrPtr root_ptr = {&root};
+    // (*parent_minimum_ptr)->left =TNULL;
+    (*parent_minimum_ptr)->left = buffer;
+    (*minimum_ptr)->left = (*node_to_del_ptr)->left;
+    (*minimum_ptr)->right = (*node_to_del_ptr)->right;
+    *root_ptr = *minimum_ptr;
+    return;
+}
+
+    NodePtrPtr parent_minimum_right_ptr = {&parent_minimum->right};
+    (*minimum_ptr)->left = (*node_to_del_ptr)->left;
+    (*minimum_ptr)->right = (*node_to_del_ptr)->right;
+    if((*parent_node_to_del_ptr)->left->data ==  (*node_to_del_ptr)->data ){
+        std:: cout <<"-----------------------I am left child\n";
+        (*parent_node_to_del_ptr)->left = *parent_minimum_right_ptr;
+        (*parent_minimum_right_ptr)->right = TNULL; ;
+    } else {
+        std:: cout <<"-----------------------I am right child\n";
+         (*parent_node_to_del_ptr)->right = (*parent_minimum_ptr)->left;
+        (*parent_minimum_ptr)->left = TNULL;
+    }
+
+    if (buffer != TNULL) (*parent_minimum_right_ptr)->right = buffer;
+
+}
+
 NodePtr Tree:: search(NodePtr node, int key) {
+
     if (node == TNULL || key == node->data) {
-        search(node);
         return node;
     }
     if (key < node->data) {
@@ -150,9 +235,9 @@ void Tree::print(NodePtr root, std::string indent, bool last) {
         print(root->right, indent, true);
     }
 }
-int Tree:: search(int k) {
-    NodePtr help =search(this->root, k);
-    return help ->data;
+bool Tree:: search(int k) {
+    NodePtr buffer =search(this->root, k);
+    return (buffer != TNULL);
 }
 
 void  Tree:: del(int data) {
@@ -175,22 +260,41 @@ int main () {
     bst.insert(60);
     bst.insert(75);
     bst.insert(56);
-    bst.insert(5);
+    bst.insert(41);
     bst.insert(555);
+    bst.insert(42);
+    bst.insert(57);
+    bst.insert(5);
+    bst.insert(1);
+    bst.insert(69);
+    bst.insert(90);
+    bst.insert(91);
+    bst.insert(68);
+    bst.insert(85);
+    bst.insert(86);
+    bst.insert(6);
+    bst.insert(6);
+
+
+
 
 
 
     bst.print();
 
     std::cout << "\n"
-              << "After deleting" << "\n";
-    bst.del(40);
+         << "After deleting" << "\n";
+         bst.del(40);
+
+
     bst.print();
 
-    a = bst.search(75);
+    a = bst.search(90);
     std::cout << "\n"
               << a << "\n";
 
 
     return 0;
 }
+
+

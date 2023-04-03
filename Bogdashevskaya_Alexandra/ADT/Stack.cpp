@@ -15,13 +15,13 @@ class Stack {
 protected:
 	unsigned int size;
 	T* values;
-	unsigned int top_idx;
+	int top_idx;
 
 
 public:
 	Stack(unsigned int size);
-	Stack(const Stack& stack);
-	Stack(Stack&& stack) noexcept;
+	//Stack(const Stack& stack);
+	//Stack(Stack&& stack) noexcept;
 
 	~Stack();
 
@@ -42,23 +42,23 @@ Stack<T>::Stack(unsigned int size) {
 	top_idx = -1;
 }
 
-template <typename T>
-Stack<T>::Stack(const Stack& stack) {
-	values = new T[stack.size];
-	memcpy(values, stack.values, size * sizeof(T));
-	top_idx = stack.top_idx;
-}
-
-template <typename T>
-Stack<T>::Stack(Stack&& stack) noexcept {
-	size = stack.size;
-	values = stack.values;
-	top_idx = stack.top_idx;
-
-	stack.size = 0;
-	stack.top_idx = -1;
-	stack.values = nullptr;
-}
+//template <typename T>
+//Stack<T>::Stack(const Stack& stack) {
+//	values = new T[stack.size];
+//	memcpy(values, stack.values, size * sizeof(T));
+//	top_idx = stack.top_idx;
+//}
+//
+//template <typename T>
+//Stack<T>::Stack(Stack&& stack) noexcept {
+//	size = stack.size;
+//	values = stack.values;
+//	top_idx = stack.top_idx;
+//
+//	stack.size = 0;
+//	stack.top_idx = -1;
+//	stack.values = nullptr;
+//}
 
 template <typename T>
 Stack<T>::~Stack() {
