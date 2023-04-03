@@ -3,11 +3,11 @@
 #define Servo_h
 
 
-#include "Config.h"
-#include "print.h"
-#include <DynamixelWorkbench.h>
 #include <stdint.h>
 #include <string>
+#include <DynamixelWorkbench.h>
+#include "Config.h"
+#include "print.h"
 
 
 DynamixelWorkbench servos;
@@ -22,7 +22,6 @@ private:
     bool inv;
     uint16_t new_angle;
     uint16_t speed;
-    uint16_t boost;
 
 public:
     Servo(uint8_t _DXL_ID, uint16_t _min_angle, uint16_t _max_angle, bool _inv = 0);
@@ -41,12 +40,11 @@ public:
     void setSpeed(uint16_t _speed);
     static void setSpeed(uint16_t _speed, uint8_t _DXL_ID);
 
-    void setBoost(uint16_t _boost);
-    static void setBoost(uint16_t _boost, uint8_t _DXL_ID);
-
-    void setMoveMode(uint16_t _speed, uint16_t _boost);
-
     void setTorque(bool status);
+
+    void setX(int32_t _x);
+    void setY(int32_t _y);
+    void setZ(int32_t _z);
 
     static void test(uint16_t msg);
     static bool talk(uint16_t _angle);
@@ -68,7 +66,6 @@ public:
     int32_t isMoving();
 
     uint16_t getSpeed();
-    uint16_t getBoost();
 
     static void toolPush();
     static void toolPop();
@@ -194,32 +191,13 @@ void Servo::setMinAngle(uint16_t _min_angle) {
 
 void Servo::setSpeed(uint16_t _speed) {
     speed = _speed;
-    servos.jointMode(DXL_ID, speed, boost);
+    servos.jointMode(DXL_ID, speed, DEFAULT_BOOST);
 }
 
 
 void Servo::setSpeed(uint16_t _speed, uint8_t _DXL_ID) {
     Servo* servo = findServo(_DXL_ID);
     servo->setSpeed(_speed);
-}
-
-
-void Servo::setBoost(uint16_t _boost) {
-    boost = _boost;
-    servos.jointMode(DXL_ID, speed, boost);
-}
-
-
-void Servo::setBoost(uint16_t _boost, uint8_t _DXL_ID) {
-    Servo* servo = findServo(_DXL_ID);
-    servo->setBoost(_boost);
-}
-
-
-void Servo::setMoveMode(uint16_t _speed, uint16_t _boost) {
-    speed = _speed;
-    boost = _boost;
-    servos.jointMode(DXL_ID, speed, boost);
 }
 
 
@@ -497,11 +475,6 @@ int32_t Servo::isMoving() {
 
 uint16_t Servo::getSpeed() {
     return speed;
-}
-
-
-uint16_t Servo::getBoost() {
-    return boost;
 }
 
 
