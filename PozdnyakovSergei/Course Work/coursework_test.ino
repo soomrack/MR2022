@@ -1,4 +1,6 @@
 #include <Servo.h>
+#include <Ultrasonik.h>
+
 
 #define echoPin = 19  // приемник
 #define trigPin = 18  // источник
@@ -14,6 +16,7 @@
 bool is_on = false;  // для кнопки включения
 float time = 0.0;
 int soudn_time = 0;
+float filt_param = 0.2;
 
 
 void setup() {
@@ -42,7 +45,7 @@ void start_motors () {
 }
 
 
-void sensor() {
+float get_distance() {
   int dur;
   trigPin = digitalWrite(LOW);
   delayMicroseconds(2);
@@ -57,6 +60,15 @@ void sensor() {
   delay(100);
   sm = map(sm, 0, 350, 0, 255);
   sound_time = map(sm, 0, 255, 700, 100);
+  return (sm);
+}
+
+
+void dist_filtered() {
+  float dist_filt = 0;
+  float dist = get_distance();
+  dist_filt += (dist - dist_filt) * filt_param;
+  return (dist_filt);
 }
 
 
@@ -66,11 +78,13 @@ void loop() {
     current mode = 0;
     delay(1000);
   }
+
   if (is_on) {
     start;
   }
+  
   else {
-    digitalWrite (5, LOW);
-    digitalWrite (6, LOW);
+    speed_pin_r = digitalWrite(LOW);
+    speed_pin_l = digitalWrite(LOW);
   }
 }
