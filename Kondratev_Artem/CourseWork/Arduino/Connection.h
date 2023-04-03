@@ -4,98 +4,157 @@
 
 
 #include "Config.h"
+//#include "FSM.h"
+#include "Joint.h"
 #include "Servo.h"
 
 
-uint8_t id = 0;
-uint8_t command = 0;
-uint16_t value1 = 0;
-uint16_t value2 = 0;
-uint16_t value = 0;
-uint16_t checksum = 0;
-
-uint16_t goal = 0;
-uint16_t angle = 0;
-uint16_t speed = 0;
-uint16_t boost = 0;
-uint16_t torque = 0;
-uint16_t is_moving = 0;
+char command[COMMAND_SIZE];
+char message[MESSAGE_SIZE];
 
 
 class Connection {
+private:
+    //static FSM Machine;
+
 public:
-    static uint16_t calc();
-    static void setData(Servo servo);
-    static void setData();
+    //static void initFSM();
+
+private:
+    static uint16_t calcCommandCheckSum();
+    static uint16_t calcMessageCheckSum();
+    static void setMsgValues(uint8_t id);
+    static void sendMessage(uint8_t id);
+    
+public:
     static void getData();
+    
+private:
     static void findCommand();
 };
 
 
-uint16_t Connection::calc() {
-    return (char(id) + char(command) + char(value1) + char(value2)) / 8;
+uint16_t Connection::calcCommandCheckSum() {
+    uint64_t sum = 0;
+    for (int i = COMMAND_START_BYTE1_CELL; i < COMMAND_CHECKSUM_CELL; i++) {
+        sum += (uint64_t)command[i];
+    }
+    return char(sum / 8);
+    //return (char(Cmd.id) + char(Cmd.command) + char(Cmd.value1) + char(Cmd.value2)) / 8;
 }
 
 
-void Connection::setData(Servo servo) {
-    id = servo.getDXL_ID();
-    goal = servo.getGoal();
-    angle = servo.getAngle();
-    speed = servo.getSpeed();
-    boost = servo.getBoost();
-    torque = servo.getLoad();
-    is_moving = servo.isMoving();
-    
-    Serial.print(char(64));
-    Serial.print(char(64));
-    
-    Serial.print(char(id));
-    Serial.print(char(goal));
-    Serial.print(char(angle));
-    Serial.print(char(speed));
-    Serial.print(char(boost));
-    Serial.print(char(torque));
-    Serial.print(char(is_moving));
-
-    Serial.print(char(calc()));
+uint16_t Connection::calcMessageCheckSum() {
+    uint64_t sum = 0;
+    for (int i = MESSAGE_START_BYTE1_CELL; i < MESSAGE_CHECKSUM_CELL; i++) {
+        sum += (uint64_t)message[i];
+    }
+    return char(sum / 8);
 }
 
 
-void Connection::setData() {
-    //add change flag
-    setData(servo1);
-    //setData(servo2);
-    //setData(servo3);
-    //setData(servo4);
+void Connection::setMsgValues(uint8_t id) {
+    Servo* servo = Servo::findServo(id);
+    
+    message[MESSAGE_START_BYTE1_CELL] = START_BYTE;
+    message[MESSAGE_START_BYTE2_CELL] = START_BYTE;
+    
+    message[MESSAGE_ID_CELL] = id;
+    
+    message[MESSAGE_GOAL1_CELL] = servo->getGoal() / 100;
+    message[MESSAGE_GOAL1_CELL] = servo->getGoal() % 100;
+    
+    message[MESSAGE_ANGLE1_CELL] = servo->getAngle() / 100;
+    message[MESSAGE_ANGLE2_CELL] = servo->getAngle() % 100;
+    
+    message[MESSAGE_SPEED1_CELL] = servo->getSpeed() / 100;
+    message[MESSAGE_SPEED2_CELL] = servo->getSpeed() % 100;
+    
+    message[MESSAGE_TORQUE1_CELL] = servo->getLoad() / 100;
+    message[MESSAGE_TORQUE2_CELL] = servo->getLoad() % 100;
+
+    message[MESSAGE_IS_MOVING_CELL] = servo->isMoving();
+
+    message[MESSAGE_TORQUE1_CELL] = servo->getLoad() / 100;
+
+    message[MESSAGE_X1_CELL] = 12;
+    message[MESSAGE_X2_CELL] = 13;
+    message[MESSAGE_Y1_CELL] = 14;
+    message[MESSAGE_Y2_CELL] = 15;
+    message[MESSAGE_Z1_CELL] = 16;
+    message[MESSAGE_Z2_CELL] = 17;
+
+    message[MESSAGE_CHECKSUM_CELL] = calcMessageCheckSum();
+}
+
+
+void Connection::sendMessage(uint8_t id) {
+    setMsgValues(id);
+
+    Serial.print(char(64));
+    Serial.print(char(64));
+
+
+    for (int cell = MESSAGE_START_BYTE1_CELL; cell < MESSAGE_SIZE; cell++) {
+        Serial.print(char(message[cell]));
+    }
 }
 
 
 void Connection::getData() {
-  if (Serial.available() >= 7) {
-      byte start1 = Serial.read();
-      byte start2 = Serial.read();
-      if (start1 + start2 == 128) {
-          id = Serial.read();
-          command = Serial.read();
-          value1 = Serial.read();
-          value2 = Serial.read();
-          checksum = Serial.read();
-      if (calc() == checksum) {
-          findCommand();
-          setData();
-      }
+    if (Serial.available() >= 7) {
+        command[COMMAND_START_BYTE1_CELL] = Serial.read();
+        command[COMMAND_START_BYTE2_CELL] = Serial.read();
+        if (command[COMMAND_START_BYTE1_CELL] == START_BYTE && command[COMMAND_START_BYTE1_CELL] == START_BYTE) {
+            for (int cell = COMMAND_ID_CELL; cell < COMMAND_SIZE; cell++) {
+                command[cell] = Serial.read();
+            }
+            if (calcCommandCheckSum() == command[COMMAND_CHECKSUM_CELL]) {
+                findCommand();
+                sendMessage(DXL_ID1);
+                sendMessage(DXL_ID2);
+                sendMessage(DXL_ID3);
+                sendMessage(DXL_ID4);
+            }
+        }
     }
-  }
 }
 
 
 void Connection::findCommand() {
-    value = value1 * 100 + value2;
-    if (command == 0) {
-        
+    uint16_t value = command[COMMAND_VALUE1_CELL] * 100 + command[COMMAND_VALUE2_CELL];
+    if (command[COMMAND_TASK_CELL] == PING_TASK) {
+        return;
     }
-    if (command == 1) {
-        Servo::setAngle(value, id);
+    if (command[COMMAND_TASK_CELL] == SET_ANGLE_TASK) {
+        return Servo::setAngle(value, command[COMMAND_ID_CELL]);
+    }
+    if (command[COMMAND_TASK_CELL] == SET_SPEED_TASK) {
+        return Servo::setSpeed(value, command[COMMAND_ID_CELL]);
+    }
+    if (command[COMMAND_TASK_CELL] == TOOL_PUSH_TASK) {
+        return Servo::toolPush();
+    }
+    if (command[COMMAND_TASK_CELL] == TOOL_POP_TASK) {
+        return Servo::toolPop();
+    }
+    if (command[COMMAND_TASK_CELL] == CALIBRATION_TASK) {
+        return;
+    }
+    if (command[COMMAND_TASK_CELL] == REBOOT_TASK) {
+        return;
+    }
+    if (command[COMMAND_TASK_CELL] == GET_ERROR_TASK) {
+        return;
+    }
+    if (command[COMMAND_TASK_CELL] == SET_X_TASK) {
+        return Joint::setX(value);
+    }
+    if (command[COMMAND_TASK_CELL] == SET_Y_TASK) {
+        return Joint::setY(value);
+    }
+    if (command[COMMAND_TASK_CELL] == SET_Z_TASK) {
+        return Joint::setZ(value);
     }
 }
 

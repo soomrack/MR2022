@@ -9,7 +9,7 @@ void print(queue<T>& A) {
     std::cout << std::endl;
 }
 int main() {
-    queue<int> q(8);
+    queue<int> q(5);
     queue<int> z(5);
     try {
         q.push(10);
@@ -17,9 +17,6 @@ int main() {
         q.push(30);
         q.push(40);
         q.push(50);
-        q.push(80);
-        q.push(90);
-        q.push(100);
         z.push(30);
         z.push(20);
         z.push(1000);
@@ -36,9 +33,8 @@ int main() {
         q.swap(z);
         std::cout << "Print q:";
         print(q);
-        std::cout << "Print z:";
-        print(z);
-        q.clear();
+        queue<int>ab(std::move(q));
+        print(ab);
     }
     catch (std::domain_error& e) {
         std::cerr << "Caught: " << e.what() << std::endl;

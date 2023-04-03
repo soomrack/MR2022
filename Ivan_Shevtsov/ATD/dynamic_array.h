@@ -9,21 +9,22 @@
 class dynamic_array
 {
 private:
-    int size; // unsignint
+    unsigned size;
     int* data;
 public:
-    int buf_size;
+    unsigned buf_size;
+    unsigned filled_size;
 
-    dynamic_array();
-    dynamic_array(const int size);
+    inline dynamic_array();
+    dynamic_array(const unsigned size, unsigned buf_size = 50);
     dynamic_array(const dynamic_array &other);
     dynamic_array(dynamic_array &&other);
 
     dynamic_array& operator=(const dynamic_array &other);
     bool operator==(const dynamic_array& other);
     bool operator!=(dynamic_array& other);
-    int& operator[](int idx);
-    void resize(int new_size);
+    int& operator[](unsigned idx);
+    void resize(unsigned new_size);
 
     //resize #TODO
     dynamic_array& resize();

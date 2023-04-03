@@ -1,8 +1,9 @@
 
 #include <DynamixelWorkbench.h>
+#include "Calibration.h"
+#include "Connection.h"
 #include "Config.h"
 #include "Servo.h"
-#include "Connection.h"
 
 
 void setup() {
@@ -10,13 +11,15 @@ void setup() {
     Serial.begin(SERIAL_BAUDRATE);
     Serial.setTimeout(0);
 
+    //Connection::initFSM();
+
     Servo::init();
     Servo::pingServos();
 
-    servo1.setMoveMode(100, 40);
-    servo2.setMoveMode(40, 40);
-    servo3.setMoveMode(40, 40);
-    servo4.setMoveMode(100, 40);
+    servo1.setSpeed(DEFAULT_SPEED);
+    servo2.setSpeed(DEFAULT_SPEED);
+    servo3.setSpeed(DEFAULT_SPEED);
+    servo4.setSpeed(DEFAULT_SPEED);
 
     Servo::getStartPosition();
     //Servo::Calibration_setup();

@@ -4,7 +4,7 @@
 
 class QUEUE_ERROR: public std:: domain_error {
 public:
-    QUEUE_ERROR(const char *const str) : std::domain_error(str) {};
+   explicit QUEUE_ERROR(const char *const str) : std::domain_error(str) {};
 };
 QUEUE_ERROR OVERFLOWED("Out of range");
 QUEUE_ERROR EMPTY("Queue is empty");
@@ -13,15 +13,19 @@ QUEUE_ERROR BADALLOC("Memory has not been allocated");
 template <typename T>
 class queue {
 private:
-    T *arr;
+    T *data;
     int top;
     int tail;
-    unsigned int maxSize;
-    unsigned int size;
+    size_t capacity;
+    size_t size;
 
 public:
+    explicit queue(size_t);
+    queue(const queue&);
+    queue(queue&&) noexcept;
 
-    queue(int);
+    queue& operator=(const queue&);
+    queue& operator=(queue&&) noexcept;
     ~queue();
 
     bool is_full();
@@ -39,23 +43,24 @@ public:
 
 
 template <typename T>
-queue<T>::queue(int num) {
-    arr = new T[num];
-    if (!arr) throw BADALLOC;
+queue<T>::queue(size_t num) {
+    capacity = num;
+    data = new T[capacity];
+    if (!data) throw BADALLOC;
     top = -1;
     tail = -1;
     size = 0;
-    maxSize = num;
+
 }
 
 template <typename T>
 queue<T>::~queue() {
-    delete[] arr;
+    delete[] data;
 }
 
 template <typename T>
 bool queue<T>::is_full() {
-    return tail == maxSize - 1;
+    return tail == capacity - 1;
 }
 
 template <typename T>
@@ -66,7 +71,7 @@ bool queue<T>::is_empty() {
 template <typename T>
 void queue<T>::push(T num) {
     if (is_full()) throw OVERFLOWED;
-    arr[++tail] = num;
+    data[++tail] = num;
     size++;
     if (top == -1) top = 0;
 }
@@ -75,19 +80,19 @@ template <typename T>
 T queue<T>::pop() {
     if (is_empty()) throw EMPTY;
     size--;
-    return arr[top++];
+    return data[top++];
 }
 
 template <typename T>
 T queue<T>::get_top() {
     if (is_empty()) throw EMPTY;
-    return arr[top];
+    return data[top];
 }
 
 template <typename T>
 T queue<T>::get_tail() {
     if (is_empty()) throw EMPTY;
-    return arr[tail];
+    return data[tail];
 }
 
 template <typename T>
@@ -110,14 +115,62 @@ template <typename T>
 void queue<T>::swap(queue<T> & A) {
     if (A.size != size) throw std::domain_error("queue size is not equal");
     queue<T> temp(size);
-    memcpy(temp.arr,A.arr,sizeof(T) * size);
-    memcpy(A.arr,arr,sizeof(T) * A.size);
-    memcpy(arr,temp.arr, sizeof(T) * size);
+    memcpy(temp.data,A.data,sizeof(T) * size);
+    memcpy(A.data,data,sizeof(T) * A.size);
+    memcpy(data,temp.data, sizeof(T) * size);
 }
 
 template<typename T>
 T& queue<T>::operator[](unsigned int idx)
 {
-    return arr[idx];
+    if (idx > size) throw OVERFLOWED;
+    return data[idx];
 }
+
+template<typename T>
+queue<T>::queue(const queue<T> &q) : top(q.top), tail(q.tail), size(q.size), capacity(q.capacity) {
+    data = new T[capacity];
+    if (!data) throw BADALLOC;
+    memcpy(data,q.data,sizeof(capacity));
+}
+
+template<typename T>
+queue<T>& queue<T>::operator=(const queue<T> &q) {
+    if (this == &q) return *this;
+    top = q.top;
+    tail = q.tail;
+    size = q.size;
+    capacity = q.capacity;
+    data = new T[capacity];
+    if (!data) throw BADALLOC;
+    memcpy(data,q.data,sizeof(capacity));
+    return  *this;
+}
+
+template<typename T>
+queue<T>::queue(queue<T> &&q) noexcept :top(q.top) ,tail(q.tail), size(q.size), capacity(q.capacity) {
+    data = q.data;
+    q.top = -1;
+    q.tail = -1;
+    q.size = NULL;
+    q.capacity =NULL;
+    q.data = nullptr;
+}
+
+template<typename T>
+queue<T>& queue<T>::operator=(queue<T> &&q) noexcept {
+    if (this == &q) return *this;
+    top = q.top;
+    tail = q.tail;
+    size = q.size;
+    capacity = q.capacity;
+    data = q.data;
+    q.top = -1;
+    q.tail = -1;
+    q.size = NULL;
+    q.capacity =NULL;
+    q.data = nullptr;
+    return *this;
+}
+
 #endif //MR2022_QUEUE_H

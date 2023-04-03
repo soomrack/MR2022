@@ -10,13 +10,14 @@
 #include <iostream>
 
 
-class Exception: std::exception {
+class Exception : std::exception {
 private:
     std::string message;
 public:
-    explicit Exception(std::string _message) {message = std::move(_message);};
+    explicit Exception(std::string _message) { message = std::move(_message); };
 
-    std::string getMessage() const {return message;};
+
+    std::string getMessage() const { return message; };
 };
 
 
@@ -27,21 +28,16 @@ class PriorityQueue;
 template<typename T>
 class Node {
     friend class PriorityQueue<T>;
+
+
 private:
     T data;
     uint64_t priority;
     Node<T>* next;
+    Node<T>* prev;
 public:
     Node(T _object, uint64_t _priority);
 };
-
-
-template<typename T>
-Node<T>::Node(T _object, uint64_t _priority) {
-    data = _object;
-    priority = _priority;
-    next = nullptr;
-}
 
 
 template<typename T>
@@ -50,15 +46,25 @@ private:
     uint64_t size;
     Node<T>* head;
     Node<T>* tail;
+
 public:
     PriorityQueue();
 
     bool isEmpty();
-    void append(T object, uint64_t priority);
+    void push(T object, uint64_t priority);
     T pop();
     void print();
     uint64_t getSize();
 };
+
+
+template<typename T>
+Node<T>::Node(T _object, uint64_t _priority) {
+    data = _object;
+    priority = _priority;
+    next = nullptr;
+    prev = nullptr;
+}
 
 
 template<typename T>
@@ -76,16 +82,43 @@ bool PriorityQueue<T>::isEmpty() {
 
 
 template<typename T>
-void PriorityQueue<T>::append(T object, uint64_t priority) {
-    auto*  new_object = new Node<T>(object, priority);
+void PriorityQueue<T>::push(T object, uint64_t priority) {
+    auto* new_node = new Node<T>(object, priority);
+
     if (isEmpty()) {
-        head = new_object;
-        tail = new_object;
+        head = new_node;
+        tail = new_node;
         size++;
         return;
     }
-    tail->next = new_object;
-    tail = new_object;
+
+    Node<T>* node = head;
+
+    while (node) {
+        if (node->priority < new_node->priority) {
+            new_node->next = node;
+            if (head == node) {
+                head = new_node;
+                node->prev = head;
+            }
+            else {
+                node->prev->next = new_node;
+                new_node->prev = node->prev;
+                node->prev = new_node;
+            }
+            size++;
+            return;
+        }
+        if (node->next != nullptr) {
+            node = node->next;
+            continue;
+        }
+        break;
+    }
+
+    tail->next = new_node;
+    new_node->prev = tail;
+    tail = new_node;
     size++;
 }
 
@@ -95,21 +128,16 @@ T PriorityQueue<T>::pop() {
     if (isEmpty()) {
         throw Exception("error: queue is empty");
     }
-    Node<T>* node = head;
-    Node<T>* target = head;
-    while(node->next) {
-        if (node->next->priority > target->priority) {
-            target = node->next;
-        }
-        node = node->next;
-    }
-    return target->data;
+    size--;
+    T data = head->data;
+    head = head->next;
+    return data;
 }
 
 
 template<typename T>
 void PriorityQueue<T>::print() {
-    if(isEmpty()) {
+    if (isEmpty()) {
         return;
     }
     std::cout << "[";
