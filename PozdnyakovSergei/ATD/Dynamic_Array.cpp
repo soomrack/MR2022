@@ -118,6 +118,7 @@ void DynArray::set(unsigned int number, unsigned int item) {
     array[number] = item;
 }
 
+
 unsigned int DynArray::operator[](unsigned int number) {
     return array[number];
 }
