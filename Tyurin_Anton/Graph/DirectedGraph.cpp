@@ -22,6 +22,13 @@ class Graph {
     findNode(int *data);
 };
 
+int Graph::addNode(int data) {
+    Head *newNode = new Head;
+
+}
+
+}
+
 
 int main() {
 
