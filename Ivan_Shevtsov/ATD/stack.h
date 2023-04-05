@@ -13,12 +13,12 @@ namespace stack_names {
         stack_exceptions(const char* massage): std::domain_error(massage){}
     };
 
-    stack_exceptions ZERO_SIZE("zero size error");
-    stack_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
-    stack_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
-    stack_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+/*    stack_exceptions STACK_FILLED_WARNING("[WARNING] stack is filled. Last element was added.");
+    stack_exceptions ALREADY_CLEAR("stack is already clear");
+    stack_exceptions STACK_EMPTY("stack is empty, can`t return return top");
+    stack_exceptions STACK_OVERFLOW("stack overflow");*/
 
-    const int START_DEPTH = 50;
+    const int START_SIZE = 50;
 
     template<typename T>
     class stack {
@@ -29,7 +29,7 @@ namespace stack_names {
         T *bp;
     public:
         stack();
-        stack(int depth);
+        stack(int size);
         stack(stack &other);
         ~stack();
 
@@ -55,43 +55,45 @@ void stack<T>::clear() {
 
 template<typename T>
 void stack<T>::pop() {
-    if (filled_size == 0)
-        throw std::runtime_error("stack is already clear");
+    if (filled_size == 0) {
+        stack_exceptions ALREADY_CLEAR("stack is already clear");
+        throw ALREADY_CLEAR;}  // THIS}
     filled_size--;
     sp -= sizeof(T);
 }
 
 template<typename T>
 void stack<T>::print() {
-    for (int idx = 0; idx < filled_size; idx++)
-    {
-        std::cout << *sp << std::endl;
-        this->sp -= sizeof(T);
+    if (filled_size == 0) {
+        stack_exceptions EMPTY("stack is empty");
+        throw EMPTY;}  // THIS
+
+    T* running_pointer = sp;
+    for (int idx = 0; idx < filled_size; idx++){
+        std::cout << *running_pointer << std::endl;
+        running_pointer -= sizeof (T);
     }
-    this->sp = bp + filled_size * sizeof(T);
 }
 
 template<typename T>
 stack<T>::stack(stack &other) {
-    // #TODO сделать сравнения по типу данных
-
-    this->stack_size = other.stack_size;
-    this->filled_size = other.filled_size;
+    stack_size = other.stack_size;
+    filled_size = other.filled_size;
     if (other.sp == nullptr)
-        this->sp = nullptr;
-    this->bp = new T[stack_size];
+        { sp = nullptr; }
+    bp = new T[stack_size];
 
     for (int idx = 0; idx < filled_size; idx++)
     {
-        this->sp = this->bp + idx * sizeof(T);
-        *this->sp = *(other.bp + idx * sizeof(T));
+        sp = bp + idx * sizeof(T);
+        *sp = *(other.bp + idx * sizeof(T));
     }
 }
 
 
 template<typename T>
 bool stack<T>::operator==(stack &other) {
-    if (this->filled_size != other.filled_size or this->stack_size != other.stack_size)
+    if (filled_size != other.filled_size or stack_size != other.stack_size)
         return false;
     else
     {
@@ -119,40 +121,50 @@ bool stack<T>::operator!=(stack &other) {
 
 template<typename T>
 T stack<T>::top() {
-    if (sp == nullptr)
-        throw std::runtime_error("stack is empty, can`t return top");
+    if (sp == nullptr) {
+        stack_exceptions STACK_EMPTY ("stack is empty, can`t return return top");
+        throw STACK_EMPTY;
+    } // THIS
     return (*sp);
 }
 
 template<typename T>
 stack<T>::~stack() {
     delete[] bp;
+    sp = nullptr;
+    filled_size = 0;
+    stack_size = 0;
 }
 
 template<typename T>
 stack<T>::stack() {
     filled_size = 0;
-    stack_size = START_DEPTH;
+    stack_size = START_SIZE;
     bp = new T[stack_size];
-    sp = bp;
+    sp = nullptr;
 }
 
 template<typename T>
-stack<T>::stack(int depth) {
-    filled_size = 0;
-    stack_size = depth;
-    bp = new T[depth];
+stack<T>::stack(int size):stack() {
+    stack_size = size;
+    bp = new T[size];
 }
 
 template <typename T>
 void stack<T>::push(T data) {
-    if (filled_size == stack_size)
-        throw std::runtime_error("stack overflow");
-    else{
-        sp = bp + filled_size * sizeof (T);
-        *sp = data;
-        filled_size++;
+    if (filled_size == stack_size) {
+        stack_exceptions STACK_OVERFLOW("stack overflow");
+        throw STACK_OVERFLOW; } // THIS}
+    if (filled_size == stack_size - 1) {
+        stack_exceptions STACK_FILLED_WARNING("[WARNING] stack is filled. Last element was added.");
+        throw STACK_FILLED_WARNING;  }// THIS}
+    if (sp == nullptr){
+
     }
+    sp = bp + filled_size * sizeof (T);
+    *sp = data;
+    filled_size++;
+
     //std::cout << "push " << bp[filled_size] << " sp: " << *sp << std::endl; //del #TODO ????
 }
 

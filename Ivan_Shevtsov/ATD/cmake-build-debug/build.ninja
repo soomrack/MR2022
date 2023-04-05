@@ -55,12 +55,6 @@ build CMakeFiles/ATD.dir/main.cpp.o: CXX_COMPILER__ATD_Debug /home/ivan/CLionPro
   OBJECT_DIR = CMakeFiles/ATD.dir
   OBJECT_FILE_DIR = CMakeFiles/ATD.dir
 
-build CMakeFiles/ATD.dir/stack.cpp.o: CXX_COMPILER__ATD_Debug /home/ivan/CLionProjects/ATD/MR2022/Ivan_Shevtsov/ATD/stack.cpp || cmake_object_order_depends_target_ATD
-  DEP_FILE = CMakeFiles/ATD.dir/stack.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles/ATD.dir
-  OBJECT_FILE_DIR = CMakeFiles/ATD.dir
-
 build CMakeFiles/ATD.dir/dynamic_array.cpp.o: CXX_COMPILER__ATD_Debug /home/ivan/CLionProjects/ATD/MR2022/Ivan_Shevtsov/ATD/dynamic_array.cpp || cmake_object_order_depends_target_ATD
   DEP_FILE = CMakeFiles/ATD.dir/dynamic_array.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
@@ -93,7 +87,7 @@ build CMakeFiles/ATD.dir/graph.cpp.o: CXX_COMPILER__ATD_Debug /home/ivan/CLionPr
 #############################################
 # Link the executable ATD
 
-build ATD: CXX_EXECUTABLE_LINKER__ATD_Debug CMakeFiles/ATD.dir/main.cpp.o CMakeFiles/ATD.dir/stack.cpp.o CMakeFiles/ATD.dir/dynamic_array.cpp.o CMakeFiles/ATD.dir/queue.cpp.o CMakeFiles/ATD.dir/tree.cpp.o CMakeFiles/ATD.dir/graph.cpp.o
+build ATD: CXX_EXECUTABLE_LINKER__ATD_Debug CMakeFiles/ATD.dir/main.cpp.o CMakeFiles/ATD.dir/dynamic_array.cpp.o CMakeFiles/ATD.dir/queue.cpp.o CMakeFiles/ATD.dir/tree.cpp.o CMakeFiles/ATD.dir/graph.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/ATD.dir
   POST_BUILD = :

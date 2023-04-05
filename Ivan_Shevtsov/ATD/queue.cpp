@@ -21,8 +21,10 @@ queue::~queue() {
 }
 
 void queue::pop() {
-    if (p_head == nullptr)
+    if (p_head == nullptr) {
+        queue_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
         throw QUEUE_POP_ERROR;
+    }
     if (*(p_head->prev()) == nullptr)    {
         delete p_head;
         p_head = nullptr;
@@ -42,20 +44,19 @@ void queue::push(double data) {
         Node* first_node = new Node(data, nullptr, nullptr);
         p_head = first_node;
         p_tail = first_node;
+        size++;
         return;
-    } else{
-        Node* new_node = new Node(data, p_tail, nullptr);
-        p_tail->push_next(new_node);
-        p_tail = new_node;
-
     }
-
+    Node* new_node = new Node(data, p_tail, nullptr);
+    p_tail->push_next(new_node);
+    p_tail = new_node;
     size++;
 }
 
 void queue::show() {
-    if (p_head == nullptr)
-        throw QUEUE_SHOW_ERROR;
+    if (p_head == nullptr) {
+        queue_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+        throw QUEUE_SHOW_ERROR; }
     Node* running_pointer = p_head;
     while (running_pointer != nullptr){
         std::cout << running_pointer->data << "\t";
@@ -66,10 +67,12 @@ void queue::show() {
 }
 
 double queue::get_element(unsigned int element_number) {
-    if (element_number >= size)
-        throw QUEUE_OUT_OF_TRE_RANGE;
-    if (size == 0)
-        throw ZERO_SIZE;
+    if (element_number >= size) {
+        queue_exceptions QUEUE_OUT_OF_THE_RANGE("index out of the range");
+        throw QUEUE_OUT_OF_THE_RANGE; }
+    if (size == 0) {
+        queue_exceptions ZERO_SIZE("zero size error");
+        throw ZERO_SIZE; }
 
     Node* running_pointer = p_head;
     for (unsigned counter = 1; counter <= element_number; counter++){

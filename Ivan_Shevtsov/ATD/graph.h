@@ -14,10 +14,10 @@ namespace graph_names {
         graph_exceptions(const char* massage): std::domain_error(massage){}
     };
 
-    graph_exceptions ZERO_SIZE("zero size error");
+/*    graph_exceptions ZERO_SIZE("zero size error");
     graph_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
     graph_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
-    graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+    graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
     class Node{
     public:

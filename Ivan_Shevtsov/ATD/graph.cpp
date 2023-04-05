@@ -4,9 +4,4 @@
 
 #include "graph.h"
 
-namespace graph_names {
-    graph::~graph() {
-        clear();
-
-    }
-} // graph_names
+using namespace graph_names;

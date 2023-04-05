@@ -2,6 +2,7 @@
 #define ATD_DYNAMIC_ARRAY_H
 
 #include <iostream>
+//#include <memory>
 
 namespace DynArr_names {
     class dynamic_array_exceptions : public std::domain_error {
@@ -9,17 +10,19 @@ namespace DynArr_names {
         dynamic_array_exceptions(const char *massage) : std::domain_error(massage) {}
     };
 
-    dynamic_array_exceptions OUT_OF_THE_RANGE("index out of the range");
+    /*dynamic_array_exceptions OUT_OF_THE_RANGE("index out of the range");
     dynamic_array_exceptions ARRAY_EMPTY("array is empty");
     dynamic_array_exceptions FILL_EMPTY("can`t fill zero size array");
     dynamic_array_exceptions FILLED_WARNING("[WARNING] array is filled. Last value was added. "
-                                            "If you want to add more value use resize(new_size).");
+                                            "If you want to add more value use resize(new_size).");*/
 
     class dynamic_array {
     private:
         unsigned size;
         int *data;
         unsigned filled_size;
+
+        //std::unique_ptr<int[]> data_test;
     public:
         unsigned buf_size;
 
@@ -28,6 +31,14 @@ namespace DynArr_names {
         dynamic_array(const dynamic_array &other);
         dynamic_array(dynamic_array &&other) noexcept ;
         ~dynamic_array();
+
+        /*typedef dynamic_array iterator;
+        typedef dynamic_array const_iterator;
+        dynamic_array(std::initializer_list<int> values);
+        iterator begin();
+        iterator end();
+        const_iterator begin() const;
+        const_iterator end() const;*/
 
         void push_back(const int value);
         void pop_back();

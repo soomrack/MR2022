@@ -7,7 +7,7 @@
 #include "tree.h"
 #include "graph.h"
 
-#define DEBUG
+//#define DEBUG
 
 enum test_state{
     PASSED = 1,
@@ -24,10 +24,14 @@ void sep(const char* message= "")
 
 void test_list(bool test_visible = true)
 {
-    sep("QUEUE TEST STARTED");
+    sep("LIST TEST STARTED");
     using namespace list_names;
     list<int> lst1;
-    lst1.insert_after(0, 0);
+    try {
+        lst1.insert_after(0, 0);
+    }
+    catch (list_exceptions& ex){
+        std::cerr << "List exception: " << ex.what() << std::endl;}
     lst1.push(1);
     lst1.push(2);
     lst1.push(3);
@@ -50,12 +54,15 @@ void test_list(bool test_visible = true)
     lst2.show();
     if (lst1 == lst2)
         std::cout << "equal!\n";
+    sep("LIST TEST ENDED");
 }
 
 void delay(){ int a; for (int i = 0; i < 1000000000; i++) {a = i;}}
 
 void test_dynamic_array()
 {
+    sep("ARRAY TEST STARTED");
+
     using namespace DynArr_names;
     dynamic_array DA1(10);
     dynamic_array DA2(10);
@@ -64,7 +71,7 @@ void test_dynamic_array()
     delay();
 #endif
     DA2.fill_random();
-    sep("DA2");
+    sep("DA1");
     DA1.show();
     sep("DA2");
     DA2.show();
@@ -80,35 +87,52 @@ void test_dynamic_array()
         std::cout << "is equal" << std::endl;
     else if (DA1 != DA2)
         std::cout << "is`t equal" << std::endl;
-
-
+    sep("ARRAY TEST ENDED");
 }
 
 void test_stack()
 {
+    sep("STACK TEST STARTED");
     using namespace stack_names;
-    stack<int> st1(10);
+    stack<int> st1(50);
+    st1.push(1);
+    st1.push(2);
+    st1.push(3);
+    st1.push(4);
+    st1.push(5);
+    st1.push(6);
+    st1.push(7);
+    st1.push(8);
+    st1.push(9);
     st1.push(10);
-    st1.push(10312);
-    st1.push(13230);
-    st1.push(1230);
-    st1.push(101322);
-
-
-/*    st1.print();
+    st1.push(11);
+    st1.push(12);
+    st1.push(13);
+    st1.push(14);
+    st1.push(15);
+    st1.push(16);
+    st1.push(17);
+    st1.push(18);
+    //st1.print();
     st1.clear();
-    st1.print();  // terminal must be empty
-
-    stack<int> st2(st1);
-
-    sep();
-    if (st1 == st2)
-        std::cout << "equal \n";
-    sep();*/
-
-
-
-
+    stack<char>st2(50);
+    st2.push('i');
+    st2.push('v');
+    st2.push('a');
+    st2.push('n');
+    st2.print();
+    sep("pop");
+    st2.pop();
+    st2.push('N');
+    st2.print();
+    auto a = st2.top();
+    std::cout <<"TOP: " << a << "\n";
+    stack st3(st2);
+    if (st3 == st2){
+        sep("equal");
+    }
+    else sep("not equal");
+    sep("STACK TEST ENDED");
 
 }
 
@@ -129,17 +153,26 @@ void test_queue() {
     sep("QUEUE1");
     que1.show();
     que1.pop();
-    que1.pop();
-
 
     sep("POP");
 
     que1.show();
+    sep("PRINT VALUE");
     std::cout << que1.get_element(0) << std::endl;
     std::cout << que1.get_element(1) << std::endl;
-    std::cout << que1.get_element(2) << std::endl;  // error
+    std::cout << que1.get_element(2) << std::endl;
+    std::cout << "NOW MAST BE EXCEPTION: \n";
+    std::cout << que1.get_element(3) << std::endl;  // error
 
 
+    queue que2;
+    que2.push(1);
+    que2.push(2);
+    que2.push(3);
+    que2.push(4);
+    sep("QUEUE2");
+
+    sep("QUEUE TEST ENDED");
 
 }
 
@@ -159,7 +192,7 @@ int main() {
         //test_graph();
     }
     catch (const list_names::list_exceptions& err){
-        std::cerr << "List exception: " << err.what() << std::endl;;}
+        std::cerr << "List exception: " << err.what() << std::endl;}
     catch (const DynArr_names::dynamic_array_exceptions& err){
         std::cerr << "Dynamic array exception: " << err.what() << std::endl;}
     catch (const queue_names::queue_exceptions& err){

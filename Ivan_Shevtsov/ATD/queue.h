@@ -10,10 +10,10 @@ namespace queue_names {
         queue_exceptions(const char* massage): std::domain_error(massage){}
     };
 
-    queue_exceptions ZERO_SIZE("zero size error");
+/*    queue_exceptions ZERO_SIZE("zero size error");
     queue_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
     queue_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
-    queue_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+    queue_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
     class Node {
     protected:

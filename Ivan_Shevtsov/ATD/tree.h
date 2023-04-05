@@ -15,10 +15,10 @@ namespace tree_names {
         tree_exceptions(const char* massage): std::domain_error(massage){}
     };
 
-    tree_exceptions ZERO_SIZE("zero size error");
+/*    tree_exceptions ZERO_SIZE("zero size error");
     tree_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
     tree_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
-    tree_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");
+    tree_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
 
     class Node {
@@ -48,7 +48,7 @@ namespace tree_names {
 
         void add(int key, double value){ insert(root, key, value); }
         void delete_node(int key, double value) { delete_node(root, key);}
-        double find (int key) { find(root, key);}
+        double find (int key) { Node* found = find(root, key); return found->value;}
 
 
         unsigned get_depth() {return depth;}
