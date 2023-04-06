@@ -90,6 +90,7 @@ tree_names::Node *tree_names::tree::get_max(tree_names::Node *node) {
 
 
 
+
 /*tree_names::tree::~tree() {
     clear();
     depth = 0;

@@ -1,8 +1,15 @@
-// �������� ������� �������
+// функторы массивы функций
 #include <iostream> 
 #include <list>
 
+class Graph_Exception : public std::exception
+{
+public:
+	Graph_Exception(const char* const& msg) : exception(msg)
+	{}
+};
 
+Graph_Exception ALREADY_EXISTS("Node with this value already exists\n");
 
 typedef double T;
 unsigned int KEY = 0;
@@ -37,6 +44,7 @@ public:
 	void add_edge(NodeGraph* from, NodeGraph* to, bool two_sides = 1);
 	void add_edge(unsigned int key_from, unsigned int key_to, bool two_sides = 1);
 	void del_node(unsigned int key);
+	void del_edge(unsigned int key_from, unsigned int key_to, bool two_sides = 1);
 
 
 	NodeGraph* find_by_key(unsigned int key);
@@ -82,9 +90,9 @@ Graph::~Graph() {
 	nodes.clear();
 }
 
-void Graph::add_node(T value) { // ��������� �� �������
+void Graph::add_node(T value) { 
 	for (NodeGraph* temp : nodes) {
-		if (temp->value == value) return; // ������
+		if (temp->value == value) throw ALREADY_EXISTS;
 	}
 	NodeGraph* new_node = new NodeGraph(value);
 	nodes.push_back(new_node);
@@ -105,7 +113,7 @@ NodeGraph* Graph::find_by_key(unsigned int key) {
 	for (NodeGraph* temp : nodes) {
 		if (temp->key == key) return temp;
 	}
-	// �������� ������
+	// добавить ошибку
 }
 
 void Graph::del_node(unsigned int key) {
@@ -129,6 +137,35 @@ void Graph::del_node(unsigned int key) {
 	nodes.erase(idx_to_del);
 }
 
+void Graph::del_edge(unsigned int key_from, unsigned int key_to, bool two_sides) {
+	NodeGraph* from = find_by_key(key_from);
+	NodeGraph* to = find_by_key(key_to);
+	std::list<NodeGraph*>::iterator idx;
+	bool from_done = 0;
+	bool to_done;
+	two_sides ? to_done = 0 : 1;
+	for (NodeGraph* temp : nodes) {
+		idx = temp->edges.begin();
+		if (temp == from) {
+			for (NodeGraph* check : temp->edges) {
+				if (check == to) {
+					temp->edges.erase(idx);
+					break;
+				}
+			}		
+		}
+		if (two_sides and temp == to) {
+			for (NodeGraph* check : temp->edges) {
+				if (check == to) {
+					temp->edges.erase(idx);
+					break;
+				}
+			}
+		}
+		if (from_done and to_done) break;
+	}
+}
+
 void Graph::print_graph() {
 	for (NodeGraph* temp : nodes) {
 		temp->print_node();
@@ -143,11 +180,20 @@ int main() {
 	A.add_node(33);
 	A.add_node(98);
 
+	try {
+		A.add_node(5);
+	}
+	catch (const Graph_Exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
 	A.add_edge(1, 2);
-	A.add_edge(1, 0);
+	A.add_edge(1, 0, 0);
+	A.add_edge(2, 0);
 	A.add_edge(1, 3);
 
 	A.del_node(0);
+	A.del_edge(1, 2, 0);
 
 	A.print_graph();
 
