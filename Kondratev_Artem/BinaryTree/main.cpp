@@ -2,36 +2,40 @@
 #include "BinaryTree.h"
 
 
+typedef struct Matrix {
+    char a;
+    int b;
+} Matrix;
+
+
 int main() {
 
-    /*BinaryTree A;
+    BinaryTree A;
 
-    A.append(4);
-    A.append(5);
-    A.append(7);
-    A.append(2);
-    A.append(1);
-    A.append(3);
-    A.append(6);
+    Matrix matrix;
+    matrix.a = 5;
+    matrix.b = 8;
 
-    std::cout << A.getHeight() << std::endl;*/
+    Matrix matrix2;
+    matrix2.a = 5;
+    matrix2.b = -5;
 
-    BinaryTree B;
-    B.getHeight();
+    A.append(4, nullptr);
+    A.append(5, nullptr);
+    A.append(7, &matrix2);
+    A.append(2, nullptr);
+    A.append(1, nullptr);
+    A.append(3, nullptr);
+    A.append(6, &matrix);
+    A.append(8,  nullptr);
 
-    B.append(5);
-    B.append(3);
-    B.append(8);
-    B.append(2);
-    B.append(4);
-    B.append(7);
-    B.append(10);
-    B.append(1);
-    B.append(6);
-    B.append(9);
-    B.append(11);
+    auto* new_matrix = static_cast<Matrix*> (A.find(6));
+    std::cout << new_matrix->b << std::endl;
 
+    auto* pop_matrix = static_cast<Matrix*> (A.pop(7));
+    std::cout << pop_matrix->b << std::endl;
 
+    std::cout << "height: " << A.get_height() << std::endl;
 
     return 0;
 }
