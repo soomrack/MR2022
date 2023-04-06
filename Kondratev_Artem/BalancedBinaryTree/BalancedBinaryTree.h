@@ -13,12 +13,14 @@ private:
     Node* parent;
     Node* left;
     Node* right;
+    void* data;
 
 public:
-    int data;
+    unsigned int key;
 
 public:
-    explicit Node(int _data);
+    explicit Node(unsigned int _key, void* _data);
+    void* get_data();
 };
 
 
@@ -35,16 +37,16 @@ private:
     void append(Node* new_node, Node* node);
 
 public:
-    void append(int data);
-    int pop(int data);
+    void append(unsigned int key, void* data=nullptr);
+    int pop(int key);
     unsigned int getHeight() const;
 
 private:
     static unsigned int findHeight(Node* node);
-    Node* find(Node* node, int data);
+    Node* find(Node* node, unsigned int key);
 
 public:
-    Node* find(int data);
+    Node* find(unsigned int key);
 
 private:
     void LLTurn(Node* node);
@@ -55,11 +57,17 @@ private:
 };
 
 
-Node::Node(int _data) {
+Node::Node(unsigned int _key, void* _data) {
+    key = _key;
     data = _data;
     parent = nullptr;
     left = nullptr;
     right = nullptr;
+}
+
+
+void* Node::get_data() {
+    return data;
 }
 
 
@@ -82,7 +90,7 @@ void BalancedBinaryTree::changeHeight(Node* node) {
 
 void BalancedBinaryTree::append(Node* new_node, Node* node) {
 
-    if (new_node->data < node->data) {
+    if (new_node->key < node->key) {
         if (!node->left) {
             node->left = new_node;
             new_node->parent = node;
@@ -103,12 +111,12 @@ void BalancedBinaryTree::append(Node* new_node, Node* node) {
 }
 
 
-void BalancedBinaryTree::append(int data) {
-    if (find(data)) {
+void BalancedBinaryTree::append(unsigned int key, void* data) {
+    if (find(key)) {
         return;
     }
 
-    auto* new_node = new Node(data);
+    auto* new_node = new Node(key, data);
 
     if (!root) {
         root = new_node;
@@ -120,6 +128,11 @@ void BalancedBinaryTree::append(int data) {
     changeHeight(new_node);
     balance(new_node->parent, new_node);
     height = findHeight(root);
+}
+
+
+int BalancedBinaryTree::pop(int key) {
+
 }
 
 
@@ -142,27 +155,27 @@ unsigned int BalancedBinaryTree::findHeight(Node* node) {
 }
 
 
-Node* BalancedBinaryTree::find(Node* node, int data) {
-    if (!node || node->data == data) {
+Node* BalancedBinaryTree::find(Node* node, unsigned int key) {
+    if (!node || node->key == key) {
         return node;
     }
-    if (node->data > data) {
+    if (node->key > key) {
         if (!node->left) {
             return node->left;
         }
-        return find(node->left, data);
+        return find(node->left, key);
     }
     else {
         if (!node->right) {
             return node->right;
         }
-        return find(node->right, data);
+        return find(node->right, key);
     }
 }
 
 
-Node* BalancedBinaryTree::find(int data) {
-    return find(root, data);
+Node* BalancedBinaryTree::find(unsigned int key) {
+    return find(root, key);
 }
 
 
