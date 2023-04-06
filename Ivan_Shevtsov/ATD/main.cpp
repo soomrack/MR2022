@@ -81,12 +81,24 @@ void test_dynamic_array()
     sep("push_100");
     DA1.push_back(100);
     DA1.show();
-    sep("comaration");
+    sep("comparison");
     std::cout << DA1[1] << " is in array in " << DA1.find(DA1[1]) << " pos" << std::endl;
     if (DA1 == DA2)
         std::cout << "is equal" << std::endl;
     else if (DA1 != DA2)
         std::cout << "is`t equal" << std::endl;
+    sep("test transfer constructor");
+    dynamic_array DA3(10);
+    DA3.fill_random();
+    DA3.show();
+    dynamic_array DA4(DA3);  // Q: how to call transfer constructor?
+    DA4.show();
+
+    for (auto value : DA4){
+        std::cout << value << std::endl;
+    }
+
+
     sep("ARRAY TEST ENDED");
 }
 
@@ -105,15 +117,17 @@ void test_stack()
     st1.push(8);
     st1.push(9);
     st1.push(10);
-    st1.push(11);
-    st1.push(12);
-    st1.push(13);
-    st1.push(14);
-    st1.push(15);
-    st1.push(16);
-    st1.push(17);
-    st1.push(18);
-    //st1.print();
+    st1.push(43);
+    st1.push(2);
+    st1.push(3);
+    st1.push(42);
+    st1.push(5);
+    st1.push(6);
+    st1.push(7);
+    st1.push(8);
+    st1.push(9);
+    st1.push(10);
+    st1.print();
     st1.clear();
     stack<char>st2(50);
     st2.push('i');
@@ -185,8 +199,8 @@ int main() {
     using namespace std;
     try{
         //test_list(); //#TODO написать нормально тесты
-        //test_stack();
-        test_dynamic_array();
+        test_stack();
+        //test_dynamic_array();
         //test_queue();
         //test_tree();
         //test_graph();
