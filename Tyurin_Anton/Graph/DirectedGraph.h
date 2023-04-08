@@ -1,15 +1,11 @@
 #ifndef UNTITLED_DIRECTEDGRAPH_H
 #define UNTITLED_DIRECTEDGRAPH_H
 
-#include "List.h"
 #include "Head.h"
-#include "Edge.h"
 
-class Edge;
-class Head;
 
 class Graph {
-    List<Head *> node_list;
+    List<Head*> node_list;
 
     //deleteNode(int *data);
 
