@@ -19,16 +19,18 @@ class Vertex {
     friend class Graph;
 
 private:
-    int data;
     List<Edge*> edge_list;
 
 public:
+    int data;
+
     explicit Vertex(int _data);
 
     void appendEdge(Edge* edge);
     int get() const;
     uint64_t getEdgesNumber();
-    void deleteEdge(Vertex* other);
+    Edge* findEdge(Vertex* other);
+    void delEdge(Vertex* other);
 };
 
 

@@ -1,75 +1,198 @@
 //
-// Created by user on 3/19/23.
+// Created by user on 4/6/23.
 //
 
 #ifndef HELLO_WORLD_BINARYTREE_H
 #define HELLO_WORLD_BINARYTREE_H
 
 
-#include <cstdint>
-
-
-template<typename T>
-class BinaryTree;
-
-
-template<typename T>
 class Node {
-    friend class BinaryTree<T>;
+    friend class BinaryTree;
+
 private:
-    T data;
-    Node<T>* parent;
-    Node<T>* left;
-    Node<T>* right;
+    Node* left;
+    Node* right;
+    void* data;
+
 public:
-    Node(T _data, Node<T>* _parent, Node<T>* _left, Node<T>* _right);
+    unsigned int key;
+
+public:
+    explicit Node(unsigned int key_, void* data_=nullptr);
+
+    void* get_data();
 };
 
 
-template<typename T>
 class BinaryTree {
 private:
-    uint64_t level;
+    Node* root;
+    unsigned int height;
 
 public:
     BinaryTree();
-    void append();
-    T pop();
-    void find(T data);
-    void go();
+
+    void append(unsigned int key_, void* data_);
+    void* find(unsigned int key_);
+    void* pop(unsigned int key_);
+
+private:
+    static unsigned int findHeight(Node* node);
+
+public:
+    unsigned int get_height() const;
 };
 
 
-template<typename T>
-Node<T>::Node(T _data, Node<T>* _parent, Node<T>* _left, Node<T>* _right) {
-    parent = _parent;
-    left = _left;
-    right = _right;
-    data = _data;
+Node::Node(unsigned int key_, void* data_) {
+    key = key_;
+    data = data_;
+    left = nullptr;
+    right = nullptr;
 }
 
 
-template<typename T>
-BinaryTree<T>::BinaryTree() {
-    level = 0;
+void* Node::get_data() {
+    return data;
 }
 
 
-template<typename T>
-void BinaryTree<T>::append() {
-
+BinaryTree::BinaryTree() {
+    root = nullptr;
+    height = 0;
 }
 
 
-template<typename T>
-T BinaryTree<T>::pop() {
+void BinaryTree::append(unsigned int key_, void* data_) {
+    auto* new_node = new Node(key_, data_);
+
+    if (!root) {
+        root = new_node;
+        height = 1;
+        return;
+    }
+
+    Node* node = root;
+    while (node) {
+        if (node->key > new_node->key) {
+            if (node->left) {
+                node = node->left;
+            }
+            else {
+                node->left = new_node;
+                height = findHeight(root);
+                return;
+            }
+        }
+        else {
+            if (node->right) {
+                node = node->right;
+            }
+            else {
+                node->right = new_node;
+                height = findHeight(root);
+                return;
+            }
+        }
+    }
+}
+
+
+void* BinaryTree::find(unsigned int key_) {
+    Node* node = root;
+    while (node) {
+        if (node->key == key_) {
+            return node->data;
+        }
+        else {
+            node = (node->key > key_) ? node->left : node->right;
+        }
+    }
     return nullptr;
 }
 
 
-template<typename T>
-void BinaryTree<T>::find(T data) {
+void* BinaryTree::pop(unsigned int key_) {
+    Node* prev_node = nullptr;
+    Node* node = root;
+    while (node) {
+        if (node->key != key_) {
+            prev_node = node;
+            node = (node->key > key_) ? node->left : node->right;
+            continue;
+        }
 
+        if (!node->right && !node->left) {
+            if (prev_node->left == node) {
+                prev_node->left = nullptr;
+            }
+            else {
+                prev_node->right = nullptr;
+            }
+            return node->data;
+        }
+
+        if (node->left && !node->right) {
+            if (prev_node->left == node) {
+                prev_node->left = node->left;
+            }
+            else {
+                prev_node->right = node->left;
+            }
+            node->left->right = node->right;
+            return node->data;
+        }
+
+        if (!node->left && node->right) {
+            if (prev_node->left == node) {
+                prev_node->left = node->right;
+            }
+            else {
+                prev_node->right = node->right;
+            }
+            node->right->left = node->left;
+            return node->data;
+        }
+
+        if (node->left && node->right) {
+            Node* min_node = node->right;
+            while (min_node->left) {
+                if (min_node->key < min_node->left->key) {
+                    min_node = min_node->left;
+                }
+            }
+            if (prev_node->left == node) {
+                prev_node->left = min_node;
+            }
+            else {
+                prev_node->right = min_node;
+            }
+            if (min_node != node->right) {
+                min_node->right = node->right;
+            }
+            min_node->left = node->left;
+            return node->data;
+        }
+    }
+    return nullptr;
+}
+
+
+unsigned int BinaryTree::findHeight(Node* node) {
+    if (!node) {
+        return 0;
+    }
+    if (!node->left && !node->right) {
+        return 1;
+    }
+    unsigned int left_height = findHeight(node->left);
+    unsigned int right_height = findHeight(node->right);
+    return (left_height > right_height) ? left_height + 1 : right_height + 1;
+}
+
+
+unsigned int BinaryTree::get_height() const {
+    return height;
 }
 
 

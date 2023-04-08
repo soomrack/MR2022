@@ -6,41 +6,53 @@ int main() {
 
     Graph A;
 
-    A.createVertex(0);
-    A.createVertex(1);
-    A.createVertex(2);
-    A.createVertex(3);
-    A.createVertex(4);
-    A.createVertex(5);
-    A.getVertices();
-    A.deleteVertex(4);
-    A.getVertices();
-    A.createVertex(4);
-    A.getVertices();
+    A.addVertex(0);
+    A.addVertex(1);
+    A.addVertex(2);
+    A.addVertex(3);
+    A.addVertex(4);
+    A.addVertex(5);
+    A.printVertices();
+    A.delVertex(4);
+    A.printVertices();
+    A.addVertex(4);
+    A.printVertices();
 
     Vertex* v1 = A.find(2);
     Vertex* v2 = A.find(5);
 
-    A.createEdge(v1, v2, true);
-    A.createEdge(0, 3, false);
-    A.createEdge(2, 1, false);
-    A.createEdge(4, 0, false);
-    A.createEdge(5, 3, false);
-    A.createEdge(1, 4, false);
+    A.addEdge(v1, v2, true);
+    A.addEdge(0, 3, false);
+    A.addEdge(2, 1, false);
+    A.addEdge(4, 0, false);
+    A.addEdge(5, 3, false);
+    A.addEdge(1, 4, false);
 
     std::cout << std::endl;
-    A.getEdges();
+    A.printEdges();
 
-    A.deleteEdge(0, 4);
+    A.delEdge(0, 4);
     std::cout << std::endl;
-    A.getEdges();
+    A.printEdges();
 
-    A.createEdge(1, 4, true);
-    A.createEdge(4, 2, true);
-    A.createEdge(4, 0, true);
-    A.createEdge(4, 3, true);
+    A.addEdge(1, 4, true);
+    A.addEdge(1, 4, true);
+    A.addEdge(4, 1, true);
+    A.addEdge(1, 4, false);
+    A.addEdge(4, 1, false);
+    A.addEdge(4, 2, true);
+    A.addEdge(4, 0, true);
+    A.addEdge(4, 3, true);
     std::cout << std::endl;
-    A.getEdges();
+    A.printEdges();
+
+
+    A.delEdge(5, 4);
+    //A.delEdge(1, 4);
+    A.delEdge(4, 2);
+    //A.delEdge(4, 0);
+    //A.delEdge(4, 3);
+    A.printEdges();
 
 
 /*

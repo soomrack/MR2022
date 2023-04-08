@@ -1,79 +1,65 @@
-#ifndef MR2022_QUEUE_H
-#define MR2022_QUEUE_H
+#ifndef MR2022_GRAPH_H
+#define MR2022_GRAPH_H
 
 
-class Queue {
+#include <cstdint>
+#include <vector>
+#include "Array.h"
+
+
+class Edge {
 private:
-    int size;
-    double* data;
-    int first;
-    int last;
-    int items;
+    double* source;
+    double* target;
 public:
-    Queue(int size);
-    ~Queue();
+    Edge(double* node1, double* node2);
+    ~Edge();
 
-    void insert(int value);
-    double remove();
-    double getFirst();
-    bool isEmpty();
-    bool isFull();
-    int getSize();
-
+    double get_source() {return *source;};
+    double get_target() {return *target;};
 };
 
 
-Queue::Queue(int my_size) {
-    size = my_size;
-    data = new double[size];
-    first = 0;
-    last = -1;
-    items = 0;
-};
-
-
-Queue::~Queue() {
-    delete[] data;
-};
-
-
-void Queue::insert(int value) {
-    if (last == size - 1) {
-        last = -1;
-        items = 0;
-    }
-    data[++last] = value;
-    ++items;
+Edge::Edge(double* previous_node, double* next_node) {
+    source = previous_node;
+    target = next_node;
 }
 
 
-double Queue::remove() {
-    double temp = data[++first];
-    if (first == size)
-        first == 0;
-    --items;
-    return temp;
+Edge::~Edge() {
+    source = nullptr;
+    target = nullptr;
 }
 
 
-double Queue::getFirst() {
-    return data[first];
-}
+class Node {
+private:
+    double value;
+public:
+    Node(double item) {value = item;};
+    ~Node();
 
-
-bool Queue::isEmpty() {
-    return (items == 0);
+    double get_value() {return value;};
+    double set_value(double item) {value = item;};
 };
 
 
-bool Queue::isFull() {
-    return (items == size);
+class Graph {
+private:
+
+public:
+    Graph() = default;
+    Graph(Node peak1, Node peak2);
+    ~Graph();
+
+    void addEdge(Node peak1, Node peak2);
+    void addPeak(double new_item);
+    void deletePeak();
 };
 
 
-int Queue::getSize() {
-    return items;
+void Graph::addEdge(Node peak1, Node peak2) {
+    auto* edge = new Edge(peak1.pvalue, peak2.pvalue);  //???
 }
 
-
-#endif //MR2022_QUEUE_H
+#endif //MR2022_GRAPH_H

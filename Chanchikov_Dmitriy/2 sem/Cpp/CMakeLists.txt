@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 
 add_executable(Cpp1 "Dynamic Array.cpp")
+add_executable(Cpp2 "Linked List.cpp")
 add_executable(Cpp "test dm.cpp")

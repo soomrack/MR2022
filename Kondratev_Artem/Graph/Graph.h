@@ -26,20 +26,20 @@ private:
 public:
     Graph();
 
-    void createVertex(int data);
-    bool createEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_bidirectional);
-    bool createEdge(int from_data, int to_data, bool is_bidirectional);
+    void addVertex(int data);
+    bool addEdge(Vertex* from_vertex, Vertex* to_vertex, bool is_directed);
+    bool addEdge(int from_data, int to_data, bool is_directed);
 
-    uint64_t getSize() const;
+    uint64_t getVertexNumber() const;
 
-    void getVertices();
-    void getEdges();
+    void printVertices();
+    void printEdges();
 
     Vertex* find(int data);
 
-    void deleteVertex(int data);
-    void deleteEdge(Vertex* vertex1, Vertex* vertex2);
-    void deleteEdge(int data1, int data2);
+    void delVertex(int data);
+    void delEdge(Vertex* vertex1, Vertex* vertex2);
+    void delEdge(int data1, int data2);
 };
 
 
