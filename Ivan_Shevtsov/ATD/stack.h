@@ -164,8 +164,6 @@ void stack<T>::push(T data) {
     sp = bp + filled_size * sizeof (T);
     *sp = data;
     filled_size++;
-
-    //std::cout << "push " << bp[filled_size] << " sp: " << *sp << std::endl; //del #TODO ????
 }
 
 #endif //ATD_STACK_H
