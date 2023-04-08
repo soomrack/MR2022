@@ -1,0 +1,155 @@
+Index: Maxim_Gavrilenko/Coursework/server.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include <cstring>\r\n#include <iostream>\r\n#include <WinSock2.h>\r\n#include <Ws2tcpip.h>\r\n\r\n#define DEFAULT_PORT 1600\r\n#define ERROR_S \"SERVER ERROR: \"\r\n#define CONNECTION_BREAK_SYMBOL '*'\r\n\r\nbool is_connection_close(char* message)\r\n{\r\n    char* ptr = std::strchr(message, CONNECTION_BREAK_SYMBOL);\r\n    if (ptr != nullptr) return true;\r\n    return false;\r\n}\r\n\r\nint main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {\r\n    int client;\r\n    int server;\r\n\r\n    struct sockaddr_in server_address;\r\n    client = socket(AF_INET, SOCK_STREAM, 0);\r\n    if (client == -1)\r\n    {\r\n        std::cerr << ERROR_S << \"establishing socket error\"<< std::endl; // Ошибка установки сокета\r\n        perror(\"socket\");\r\n        exit(EXIT_FAILURE);\r\n    }\r\n\r\n    std::cout << \"Server: Socket for server was successfully estalished\" << std::endl;\r\n\r\n    server_address.sin_port = htons(DEFAULT_PORT);\r\n    server_address.sin_family = AF_INET; // Семейство портов IPV4\r\n    server_address.sin_addr.s_addr = htons(INADDR_ANY);\r\n\r\n    // sin_port Хранит номер порта структуры,\r\n    // htons_ -эта функция преобразует 16-битные (2-байтовые) величины из порядка байтов хоста в порядок байтов сети.\r\n    // sin_addr.s_addr - поле хранит в себе IP адрес в сетевом порядке байтов\r\n\r\n    int ret = (bind(client, (sockaddr*) (&server_address),sizeof(server_address)));\r\n    if (ret < 0)\r\n    {\r\n        std::cerr << ERROR_S << \"Binding connection. Socket has been already established\";\r\n        return -1; // Окончание программы, сервер не был поднят\r\n    }\r\n\r\n    socklen_t size = sizeof(server_address);\r\n    std::cout << \"Server: \" << \"It is listening for clients... \" << std::endl;\r\n    int Listen = listen(client, 1);\r\n    server = accept(client, (sockaddr*) &server_address, &size);\r\n    if (server == 0)\r\n    {\r\n        std::cerr << ERROR_S << \"Can't accepting a client \\n\";\r\n        return -1;\r\n    }\r\n    char buffer[4096];\r\n    bool isExit = false;\r\n    while (server > 0) {\r\n        strcpy(buffer, \"=> Server connected\\n\");\r\n        send(server,buffer, 4096,0);\r\n        std::cerr << \"=> Connected to the client\" << std:: endl;\r\n        std::cerr << \"Enter \" << CONNECTION_BREAK_SYMBOL << \"to end the connection\" << std:: endl;\r\n\r\n        std::cerr << \"Client :\";\r\n        recv(server, buffer, 4096, 0);\r\n        std::cerr << buffer << std::endl;\r\n        if(is_connection_close(buffer)) {\r\n            isExit = true;\r\n        }\r\n        while (isExit) {\r\n            std::cerr << \"Server: \";\r\n            std::cin.getline(buffer, 4096);\r\n            send(server,buffer,4096,0);\r\n            if(is_connection_close(buffer))\r\n            {\r\n                break;\r\n            }\r\n            std::cerr << \"Client: \";\r\n            recv(server,buffer, 4096, 0);\r\n            std::cout << buffer << std::endl;\r\n            if(is_connection_close(buffer))\r\n            {\r\n                break;\r\n            }\r\n        }\r\n        std::cout << \"Goodbye \" << std::endl;\r\n        isExit = false;\r\n        exit(1);\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Maxim_Gavrilenko/Coursework/server.cpp b/Maxim_Gavrilenko/Coursework/server.cpp
+--- a/Maxim_Gavrilenko/Coursework/server.cpp	(revision d7b4a0cd23994137854efb226b4ccb9c3b0fb1ec)
++++ b/Maxim_Gavrilenko/Coursework/server.cpp	(date 1679585645240)
+@@ -1,90 +1,60 @@
+-#include <cstring>
+ #include <iostream>
++#include <thread>
+ #include <WinSock2.h>
+-#include <Ws2tcpip.h>
+-
+-#define DEFAULT_PORT 1600
+-#define ERROR_S "SERVER ERROR: "
+-#define CONNECTION_BREAK_SYMBOL '*'
+-
+-bool is_connection_close(char* message)
+-{
+-    char* ptr = std::strchr(message, CONNECTION_BREAK_SYMBOL);
+-    if (ptr != nullptr) return true;
+-    return false;
+-}
+-
+-int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
+-    int client;
+-    int server;
+-
+-    struct sockaddr_in server_address;
+-    client = socket(AF_INET, SOCK_STREAM, 0);
+-    if (client == -1)
+-    {
+-        std::cerr << ERROR_S << "establishing socket error"<< std::endl; // Ошибка установки сокета
+-        perror("socket");
+-        exit(EXIT_FAILURE);
++#include <WS2tcpip.h>
++#include <vector>
++#pragma comment(lib,"Ws2_32.lib")
++#pragma warning(disable: 4996)
++int counter = 0;
++using namespace std;
++vector<char*> names;
++std::vector<SOCKET> Connections;
++void sendAll(char a[256], int ID) {
++    for (int i = 0; i < counter; ++i) {
++        if (i != ID) {
++            send(Connections[i], a, 256, 0);
++        }
+     }
+-
+-    std::cout << "Server: Socket for server was successfully estalished" << std::endl;
+-
+-    server_address.sin_port = htons(DEFAULT_PORT);
+-    server_address.sin_family = AF_INET; // Семейство портов IPV4
+-    server_address.sin_addr.s_addr = htons(INADDR_ANY);
+-
+-    // sin_port Хранит номер порта структуры,
+-    // htons_ -эта функция преобразует 16-битные (2-байтовые) величины из порядка байтов хоста в порядок байтов сети.
+-    // sin_addr.s_addr - поле хранит в себе IP адрес в сетевом порядке байтов
+-
+-    int ret = (bind(client, (sockaddr*) (&server_address),sizeof(server_address)));
+-    if (ret < 0)
+-    {
+-        std::cerr << ERROR_S << "Binding connection. Socket has been already established";
+-        return -1; // Окончание программы, сервер не был поднят
+-    }
+-
+-    socklen_t size = sizeof(server_address);
+-    std::cout << "Server: " << "It is listening for clients... " << std::endl;
+-    int Listen = listen(client, 1);
+-    server = accept(client, (sockaddr*) &server_address, &size);
+-    if (server == 0)
+-    {
+-        std::cerr << ERROR_S << "Can't accepting a client \n";
+-        return -1;
++}
++void waitMessage(int ID) {
++    for (;; Sleep(75)) {
++        char buffer[256];
++        memset(buffer, 0, sizeof(buffer));
++        recv(Connections[ID], buffer, sizeof(buffer), NULL);
++        std::cout << buffer;
++        sendAll(buffer, ID);
+     }
+-    char buffer[4096];
+-    bool isExit = false;
+-    while (server > 0) {
+-        strcpy(buffer, "=> Server connected\n");
+-        send(server,buffer, 4096,0);
+-        std::cerr << "=> Connected to the client" << std:: endl;
+-        std::cerr << "Enter " << CONNECTION_BREAK_SYMBOL << "to end the connection" << std:: endl;
+-
+-        std::cerr << "Client :";
+-        recv(server, buffer, 4096, 0);
+-        std::cerr << buffer << std::endl;
+-        if(is_connection_close(buffer)) {
+-            isExit = true;
+-        }
+-        while (isExit) {
+-            std::cerr << "Server: ";
+-            std::cin.getline(buffer, 4096);
+-            send(server,buffer,4096,0);
+-            if(is_connection_close(buffer))
+-            {
+-                break;
+-            }
+-            std::cerr << "Client: ";
+-            recv(server,buffer, 4096, 0);
+-            std::cout << buffer << std::endl;
+-            if(is_connection_close(buffer))
+-            {
+-                break;
+-            }
++}
++int main()
++{
++    WSAData data;
++    if (0 != WSAStartup(MAKEWORD(2, 1), &data)) {
++        return 0;
++    }
++
++    SOCKADDR_IN addr;
++    socklen_t size = sizeof(addr);
++    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
++    addr.sin_port = htons(1111);
++    addr.sin_family = AF_INET;
++    int sListen = socket(AF_INET, SOCK_STREAM, NULL);
++    if (sListen == -1) throw out_of_range("SOCKET ERROR");
++    bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
++    for (;; Sleep(75)) {
++        listen(sListen, SOMAXCONN);
++        SOCKET temp;
++        temp = accept(sListen, (SOCKADDR*)&addr, &size);
++        if (!temp) {
++            std::cout << "client ahuel";
++        }
++        else {
++            std::cout << "+chelik" << std::endl;
+         }
+-        std::cout << "Goodbye " << std::endl;
+-        isExit = false;
+-        exit(1);
++        Connections.push_back(temp);
++        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)waitMessage, (LPVOID)(counter), NULL, NULL);
++        ++counter;
+     }
++    /*char msg[256];
++    recv(newConnection, msg, 256, NULL);
++    std::cout << msg << std::endl;*/
+ }
+\ No newline at end of file

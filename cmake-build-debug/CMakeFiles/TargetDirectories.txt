@@ -1,0 +1,3 @@
+C:/Users/El1x3r7714/CLionProjects/MR2022/cmake-build-debug/CMakeFiles/MR2022.dir
+C:/Users/El1x3r7714/CLionProjects/MR2022/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/El1x3r7714/CLionProjects/MR2022/cmake-build-debug/CMakeFiles/rebuild_cache.dir

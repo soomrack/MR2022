@@ -77,7 +77,7 @@ void BinaryTree::print() {
     print(&root);
 }
 
-void BinaryTree::add(Node** node, double value) {
+void BinaryTree::add(Node** node, double value) { // СДЕЛАТЬ ХВОСТОВОЙ РЕКУРСИЕЙ
     if (*node == nullptr) {
         *node = new Node(value, nullptr, nullptr);
         return;
@@ -114,24 +114,24 @@ void BinaryTree::remove(Node ** node, double value) {
     if (!*current) return; // элемент не найден
 
     Node *temp = *current;
-    if (!(*current)->left) { //Если правый потомок
+    if (!(*current)->left) { //Если существует левый потомок
         *current = (*current)->right;
         delete temp;
         return;
     }
-    if (!(*current)->right) { //Если левый потомок
+    if (!(*current)->right) { //Если существует правый потомок
         *current = (*current)->left;
         delete temp;
         return;
     }
-        Node **successor = &((*current)->left); //Если оба, то родителем становится правый потомок самого левого
-        while ((*successor)->right) {
-            successor = &((*successor)->right);
-        }
-        (*current)->data = (*successor)->data;
-        temp = *successor;
-        *successor = (*successor)->left;
-        delete temp;
+    Node **successor = &((*current)->left); //Если оба, то родителем становится самый правый левого потомка
+    while ((*successor)->right) {
+        successor = &((*successor)->right);
+    }
+    (*current)->data = (*successor)->data; //Должен заменять ноду а не данные
+    temp = *successor;
+    *successor = (*successor)->left;
+    delete temp;
     }
 
 
@@ -140,7 +140,7 @@ bool BinaryTree::search(double value) {
 }
 
 
-bool BinaryTree::search(Node **node, double data) {
+bool BinaryTree::search(Node **node, double data) { //Хвостовая рекурсия
     if ((*node) == nullptr) {
         return false;
     }

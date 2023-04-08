@@ -14,6 +14,7 @@ int main() {
     A.add(50);
     A.add(99);
     A.add(11);
+    A.add(9);
     A.add(10);
     A.add(12);
     A.print();
