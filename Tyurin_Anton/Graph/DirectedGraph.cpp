@@ -11,7 +11,7 @@ struct Edge {
 class Graph {
     List edgelist;
 
-    addNode(int data);
+    void addNode(int data);
 
     deleteNode(int *data);
 
@@ -22,12 +22,13 @@ class Graph {
     findNode(int *data);
 };
 
-int Graph::addNode(int data) {
+void Graph::addNode(int data) {
     Head *newNode = new Head;
+    newNode->data = data;
 
 }
 
-}
+
 
 
 int main() {
