@@ -9,69 +9,56 @@
 
 class Edge {
 private:
-    double* previous_peak;
-    double* next_peak;
+    double* source;
+    double* target;
 public:
-    Edge(double* previous_address, double* next_address);
+    Edge(double* node1, double* node2);
     ~Edge();
 
-    double* getPreviousPeak() {return previous_peak;};
-    double* getNextPeak() {return next_peak;};
+    double get_source() {return *source;};
+    double get_target() {return *target;};
 };
 
 
-Edge::Edge(double* previous_address, double* next_address) {
-    previous_peak = previous_address;
-    next_peak = next_address;
+Edge::Edge(double* previous_node, double* next_node) {
+    source = previous_node;
+    target = next_node;
 }
 
 
 Edge::~Edge() {
-    previous_peak = nullptr;
-    next_peak = nullptr;
+    source = nullptr;
+    target = nullptr;
 }
 
 
-class Peak {
-public:
+class Node {
+private:
     double value;
-    double* pvalue;
-    Peak(double item);
-    ~Peak();
+public:
+    Node(double item) {value = item;};
+    ~Node();
 
-    double getValue() {return value;}
-    double* getAddress() {return pvalue;}
+    double get_value() {return value;};
+    double set_value(double item) {value = item;};
 };
-
-
-Peak::Peak(double item) {
-    value = item;
-    pvalue = new double[1];
-    pvalue[1] = value;  //?
-}
-
-
-Peak::~Peak() {
-    delete[] pvalue;
-}
 
 
 class Graph {
 private:
-    uint8_t peaks = 2;
-    Array edges();
-    void addEdge(Peak peak1, Peak peak2);
+
 public:
     Graph() = default;
-    Graph(Peak peak1, Peak peak2);
+    Graph(Node peak1, Node peak2);
     ~Graph();
 
+    void addEdge(Node peak1, Node peak2);
     void addPeak(double new_item);
     void deletePeak();
 };
 
 
-void Graph::addEdge(Peak peak1, Peak peak2) {
+void Graph::addEdge(Node peak1, Node peak2) {
     auto* edge = new Edge(peak1.pvalue, peak2.pvalue);  //???
 }
 
