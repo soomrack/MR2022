@@ -5,7 +5,6 @@ class Stack{
     int *array;
     int stp;
     int capacity;
-
 public:
     Stack (int size);  // Конструктор
     ~Stack();  // Деструктор
@@ -13,7 +12,6 @@ public:
     int pop();
     int upper();
     int size();
-
     bool is_empty();
     bool is_full();
 };
@@ -24,7 +22,6 @@ public:
     Stack_exceptions(const char* const error) : std::domain_error(error) {
     }
 };
-
 
 Stack_exceptions IS_EMPTY ("Error: Stack is empty, you can't pop anything");
 Stack_exceptions IS_FULL ("Error: Stack is full, you can't push anything");
