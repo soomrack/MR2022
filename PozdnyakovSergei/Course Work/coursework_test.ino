@@ -33,15 +33,8 @@ void setup() {
 }
 
 
-void sound() {
-  note_pin = analogWrite(200);
-  delay(sound_time);
-  note_pin = analogWrite(0);
-  delay(sound_time);
-}
-
-
 void start_motors () {
+  
 }
 
 
@@ -64,12 +57,21 @@ float get_distance() {
 }
 
 
-void sound() {
+void sound_tim() {
   sm = dist_filtered();
   sound_time = map(sm, 0, 255, 700, 100);
   note_pin = analogWrite(sound_time);
   //returm (sound_time);
 }
+
+
+void sound() {
+  note_pin = analogWrite(200);
+  delay(sound_time);
+  note_pin = analogWrite(0);
+  delay(sound_time);
+}
+
 
 
 void dist_filtered() {
@@ -87,7 +89,7 @@ void loop() {
   }
 
   if (is_on) {
-    start;
+    start_motors();
   }
   
   else {
