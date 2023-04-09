@@ -2,7 +2,7 @@
 #define UNTITLED_DIRECTEDGRAPH_H
 
 #include "Head.h"
-
+#include "Edge.h"
 
 class Graph {
     List<Head*> node_list;
@@ -16,9 +16,9 @@ class Graph {
 public:
     void addNode(int data);
 
-    int noDestination(Head *dest);
+    static int noDestination(Head *dest);
 
-    void addEdge(Head *loc, Head *dest);
+    static void addEdge(Head *loc, Head *dest);
 
     void addEdge(int loc_data, int dest_data);
 

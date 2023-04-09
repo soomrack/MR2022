@@ -1,39 +1,4 @@
-
-#ifndef UNTITLED_LIST_H
-#define UNTITLED_LIST_H
-
-#include <string>
-#include "DirectedGraph.cpp"
-
-template <typename T>
-class Node {
-public:
-    Node(T data) : data(data), next(nullptr){}
-
-    Node *next;
-    T data;
-};
-template <typename T>
-class List {
-    friend class Node<T>;
-protected:
-    Node<T> *head; // head
-    Node<T> *tail;  // tail
-    unsigned int size;
-public:
-    List() : head(nullptr), tail(nullptr), size(0) {}
-    bool is_empty();
-    void push_tail(T data);
-    void print();
-    void push_head(T data);
-    T find(unsigned int id);
-    void pop(unsigned int id);
-    Node<T> loop(unsigned int id, auto *local);
-    Node<T> *operator[](const int index);
-    void remove_first();
-    void remove_last();
-    unsigned int get_size();
-};
+#include "List.h"
 
 
 template<typename T>
@@ -85,9 +50,9 @@ T List<T>::find(unsigned int id) {
     if (is_empty()) { return nullptr; }
     auto *local = head;
     for (unsigned int idx; idx < id; idx++) {
-        local = local->next;
+        if (local->data == id){ return local->data;};
     }
-    return local->data;
+    return nullptr;
 }
 
 template<typename T>
@@ -137,5 +102,3 @@ template<typename T>
 unsigned int List<T>::get_size() {
     return size;
 }
-
-#endif //UNTITLED_LIST_H
