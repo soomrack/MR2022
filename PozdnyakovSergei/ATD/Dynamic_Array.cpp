@@ -9,6 +9,14 @@
 using namespace std;
 
 
+class Array_Exceptions: public std::domain_error {
+public:
+    Array_Exceptions(const char* const error) : std::domain_error(error) {}
+};
+
+Array_Exceptions IS_EMPTY ("Error: Array is empty");
+
+
 class DynArray {
 private:
     unsigned int *array;
@@ -27,7 +35,7 @@ public:
     unsigned int get(unsigned int number);
     void set(unsigned int number, unsigned int item);
     unsigned int operator[] (unsigned int number);
-
+    bool is_empty();
 };
 
 
@@ -85,6 +93,9 @@ void DynArray::remove(int idx) {
     delete array;
     array = temp;
     size--;
+    if (size = 0) {
+        throw IS_EMPTY;
+    }
 }
 
 
@@ -136,6 +147,11 @@ void DynArray::set(unsigned int number, unsigned int item) {
 
 unsigned int DynArray::operator[](unsigned int number) {
     return array[number];
+}
+
+
+bool DynArray::is_empty() {
+    return size == 0;
 }
 
 
