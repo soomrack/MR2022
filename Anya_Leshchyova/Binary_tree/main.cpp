@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <stack>
 
 
 
@@ -9,14 +9,13 @@ struct Node {
     Node *right;
 
 };
-typedef Node *NodePtr;
-typedef NodePtr *NodePtrPtr;
+typedef Node* NodePtr;
+typedef NodePtr* NodePtrPtr;
 
 
 class Tree{
 public:
     Tree();
-
     bool search(int k) ;
     void del(int data);
     void print();
@@ -30,7 +29,6 @@ private:
     void del(NodePtr node, int key);
     NodePtr min(NodePtr node);  // node =! TNULL
     NodePtr parent_min(NodePtr  node);  // node =! TNULL
-    NodePtrPtr max();
 };
 
 
@@ -52,55 +50,31 @@ void Tree:: insert(int key) {
 
     while (root_help != TNULL) {
         last_leaf = root_help;
-       (node->data <  root_help->data) ?  root_help = root_help->left : root_help = root_help->right;
+        root_help = (node->data <  root_help->data) ?  root_help->left :  root_help->right;
     }
 
     if (last_leaf == nullptr){
         root = node;
         return;
     }
-
     (node->data <  last_leaf->data) ? last_leaf->left = node:  last_leaf->right = node;
-
-
     return;
 }
 
 
-NodePtrPtr Tree:: max(){
-    NodePtrPtr buffer;
-    NodePtr node = root;
-    while (node ->right != TNULL){
-        node = node->right;
-        buffer ={&node};
-    }
-    return buffer;
-}
-
 
 
 NodePtr Tree:: min(NodePtr node) {
-    while (node->left != TNULL) {
+    while (node->left != TNULL)
         node = node->left;
-    }
     return node;
 }
 
 
 NodePtr Tree:: parent_min(NodePtr  node) {
-    if (node->right->left == TNULL) return node;
-    node = node->right;
-    int count = 0;
-    NodePtr buffer = node;
-    while (node != TNULL) {
-        node = node->left;
-        count++;
-    }
-   for (int number = 0; number < count-2; number++){
-       buffer = buffer->left;
-   }
-
-    return buffer;
+    do  node = node->left;
+    while (node->left->left != TNULL);
+    return node;
 }
 
 
@@ -108,115 +82,67 @@ NodePtr Tree:: parent_min(NodePtr  node) {
 void Tree:: del(NodePtr node, int key) {
     NodePtr parent_node_to_del = TNULL;
     NodePtr node_to_del = TNULL;
+    NodePtrPtr buffer;
     do {
         if (node->right->data == key || node->left->data == key) {
             parent_node_to_del = node;
-
         }
         if (node->data == key ) {
             node_to_del = node;
         }
-
-        if (node->data <= key) {
-            node = node->right;
-        } else {
-            node = node->left;
-
-
-        }
-
+        node = (node->data <= key) ? node->right: node->left;
 
     } while (node != TNULL);
 
     NodePtrPtr parent_node_to_del_ptr{&(parent_node_to_del)};
     NodePtrPtr node_to_del_ptr{&node_to_del};
+    if ((*node_to_del_ptr)->right == TNULL){
+        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->left:
+                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->left;
 
-
-    if (node_to_del->left == TNULL and node_to_del->right == TNULL){
-        std:: cout << "                     Not children\n";
-        (parent_node_to_del->left->data == node_to_del->data) ?
-                (*parent_node_to_del_ptr)->left = TNULL:
-                (*parent_node_to_del_ptr)->right = TNULL;
+        return;
+    }
+    if ((*node_to_del_ptr)->left == TNULL){
+        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->right:
+                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->right;
         return;
     }
 
-
-
-    if (node_to_del->left == TNULL){
-        std:: cout << "                     Not left child\n";
-        NodePtrPtr child_node_to_del_ptr{&(node_to_del->right)};
-
-        if ((*parent_node_to_del_ptr)->left->data == (*node_to_del_ptr)->data) {
-            std:: cout <<"-----------------------I am left child\n";
-            (*parent_node_to_del_ptr)->left = *child_node_to_del_ptr;
-            return;
-        } else {
-            std:: cout <<"-----------------------I am right child\n";
-            (*parent_node_to_del_ptr)->right = *child_node_to_del_ptr;
-            return;
-        }
+    if ((*node_to_del_ptr)->right->left == TNULL){  // ОСОБЫЙ СЛУЧАЙ
+        //      A
+        //    /    \
+        //   E       B
+        //         /   \
+        //      TNULL    C
+        buffer = node_to_del_ptr;  // = A
+        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->right :
+                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->right; // A=B
+        ((*buffer)->right->left) = ((*buffer)->left); // TNULL = Е
+        return;
     }
+    //      A
+    //    /    \
+    //   E       B
+    //         /   \
+    //        D     C
+    //          \
+    //            N
 
-
-
-    if (node_to_del->right == TNULL){
-        std:: cout << "                     Not right child\n";
-        NodePtrPtr child_node_to_del_ptr{&(node_to_del->left)};
-        if ((*parent_node_to_del_ptr)->left->data == (*node_to_del_ptr)->data) {
-            std:: cout <<"-----------------------I am left child\n";
-            (*parent_node_to_del_ptr)->left = *child_node_to_del_ptr;
-            return;
-        } else {
-            std:: cout <<"-----------------------I am right child\n";
-            (*parent_node_to_del_ptr)->right = *child_node_to_del_ptr;
-            return;
-        }
-    }
-    NodePtr minimum = min(node_to_del->right);
-    NodePtr parent_minimum = parent_min(node_to_del);
-    NodePtrPtr minimum_ptr = {&minimum};
-    NodePtrPtr parent_minimum_ptr = {&parent_minimum};
-
-
-    NodePtr buffer = minimum->right;
-
-
-if (node_to_del == root) {
-    NodePtrPtr root_ptr = {&root};
-    // (*parent_minimum_ptr)->left =TNULL;
-    (*parent_minimum_ptr)->left = buffer;
-    (*minimum_ptr)->left = (*node_to_del_ptr)->left;
-    (*minimum_ptr)->right = (*node_to_del_ptr)->right;
-    *root_ptr = *minimum_ptr;
-    return;
-}
-
-    NodePtrPtr parent_minimum_right_ptr = {&parent_minimum->right};
-    (*minimum_ptr)->left = (*node_to_del_ptr)->left;
-    (*minimum_ptr)->right = (*node_to_del_ptr)->right;
-    if((*parent_node_to_del_ptr)->left->data ==  (*node_to_del_ptr)->data ){
-        std:: cout <<"-----------------------I am left child\n";
-        (*parent_node_to_del_ptr)->left = *parent_minimum_right_ptr;
-        (*parent_minimum_right_ptr)->right = TNULL; ;
-    } else {
-        std:: cout <<"-----------------------I am right child\n";
-         (*parent_node_to_del_ptr)->right = (*parent_minimum_ptr)->left;
-        (*parent_minimum_ptr)->left = TNULL;
-    }
-
-    if (buffer != TNULL) (*parent_minimum_right_ptr)->right = buffer;
-
+    NodePtr rrr= min(node_to_del->right);
+    NodePtrPtr  minimum = {&rrr};
+    buffer = &((*minimum)->right); // = N
+    ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = parent_min( node_to_del ->right)->left:
+            (*parent_node_to_del_ptr)->right =  parent_min( node_to_del ->right)->left; // А = D
+    parent_min( node_to_del ->right)->left = (*buffer); // D=N
+    (*minimum)->left =(*node_to_del_ptr)->left; // E становится ребенком D ( который стал А)
+    (*minimum)->right =(*node_to_del_ptr)->right; // B становится ребенком D ( который стал А)
+    delete node_to_del;
 }
 
 NodePtr Tree:: search(NodePtr node, int key) {
-
-    if (node == TNULL || key == node->data) {
-        return node;
-    }
-    if (key < node->data) {
-        return search(node->left, key);
-    }
-    return search(node->right, key);
+    while (node != TNULL and key != node->data)
+        node = (node->data <= key) ? node->right: node->left;
+    return node;
 }
 
 
@@ -272,7 +198,7 @@ int main () {
     bst.insert(68);
     bst.insert(85);
     bst.insert(86);
-    bst.insert(6);
+    bst.insert(7);
     bst.insert(6);
 
 
@@ -283,18 +209,16 @@ int main () {
     bst.print();
 
     std::cout << "\n"
-         << "After deleting" << "\n";
-         bst.del(40);
+              << "After deleting" << "\n";
+    bst.del(555);
 
 
     bst.print();
 
-    a = bst.search(90);
+    a = bst.search(960);
     std::cout << "\n"
               << a << "\n";
 
 
     return 0;
 }
-
-
