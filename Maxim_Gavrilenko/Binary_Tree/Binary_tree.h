@@ -30,9 +30,19 @@ private:
     void remove_tree(Node**);
     void print(Node** node);
     bool search(Node** node, double data);
+    void replaceNode(Node** node, Node* oldNode, Node* newNode);
+
 };
 
-
+void BinaryTree::replaceNode(Node **node, Node *oldNode, Node *newNode) {
+    if (*node == oldNode) {
+        *node = newNode;
+    } else if (oldNode->data < (*node)->data) {
+        replaceNode(&(*node)->left, oldNode, newNode);
+    } else {
+        replaceNode(&(*node)->right, oldNode, newNode);
+    }
+}
 BinaryTree::BinaryTree()
 {
     root = nullptr;
@@ -77,16 +87,13 @@ void BinaryTree::print() {
     print(&root);
 }
 
-void BinaryTree::add(Node** node, double value) { // СДЕЛАТЬ ХВОСТОВОЙ РЕКУРСИЕЙ
+void BinaryTree::add(Node** node, double value) {
     if (*node == nullptr) {
-        *node = new Node(value, nullptr, nullptr);
+        *node = new Node(value);
         return;
     }
-    if (value < (*node)->data) {
-        add(&(*node)->left, value);
-        return;
-    }
-    add(&(*node)->right, value);
+    Node** next_node = value < (*node)->data ? &(*node)->left : &(*node)->right;
+    return add(next_node, value);
 }
 
 
@@ -114,21 +121,21 @@ void BinaryTree::remove(Node ** node, double value) {
     if (!*current) return; // элемент не найден
 
     Node *temp = *current;
-    if (!(*current)->left) { //Если существует левый потомок
+    if (!(*current)->left) { //Если правый потомок
         *current = (*current)->right;
         delete temp;
         return;
     }
-    if (!(*current)->right) { //Если существует правый потомок
+    if (!(*current)->right) { //Если левый потомок
         *current = (*current)->left;
         delete temp;
         return;
     }
-    Node **successor = &((*current)->left); //Если оба, то родителем становится самый правый левого потомка
-    while ((*successor)->right) {
-        successor = &((*successor)->right);
-    }
-    (*current)->data = (*successor)->data; //Должен заменять ноду а не данные
+        Node **successor = &((*current)->left); //Если оба, то родителем становится правый потомок самого левого
+        while ((*successor)->right) {
+            successor = &((*successor)->right);
+        }
+    (*current)->data = (*successor)->data;
     temp = *successor;
     *successor = (*successor)->left;
     delete temp;
@@ -140,17 +147,11 @@ bool BinaryTree::search(double value) {
 }
 
 
-bool BinaryTree::search(Node **node, double data) { //Хвостовая рекурсия
-    if ((*node) == nullptr) {
-        return false;
-    }
-    if (data < (*node)->data) {
-        return search(&(*node)->left, data);
-    }
-    if (data > (*node)->data) {
-        return search(&(*node)->right, data);
-    }
-    return true; //В случае, если искомый элемент это корень дерева
+bool BinaryTree::search(Node **node, double value) {
+    if ((*node) == nullptr) return false;
+    if ((*node)->data == value) return true;
+    Node** next_node = value < (*node)->data ? &(*node)->left : &(*node)->right;
+    return search(next_node, value);
 }
 
 
