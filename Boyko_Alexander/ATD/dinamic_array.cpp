@@ -9,22 +9,22 @@ int DinArray<Type>::size() const{
 }
 
 template<class Type>
-void DinArray<Type>::append(Type new_member) {
+void DinArray<Type>::append(Type new_data) {
 	arr_size += 1;
 	if(arr_size >= data_size){
 		resize(arr_size+10);
 	}
-	data[arr_size-1] = new_member;
+	data[arr_size-1] = new_data;
 }
 
 template<class Type>
-void DinArray<Type>::append_at(Type new_member, int ind) {
+void DinArray<Type>::append_at(Type new_data, int ind) {
 	arr_size += 1;
 	if(arr_size >= data_size){
 		resize(arr_size+10);
 	}
 	memcpy(data + ind + 1, data + ind, (arr_size - ind - 1)  * sizeof(Type));
-	data[ind] = new_member;
+	data[ind] = new_data;
 }
 
 template<class Type>
@@ -131,22 +131,22 @@ bool DinArray<Type>::operator!=(const DinArray<Type> &other) {
 }
 
 template<class Type>
-void DinArray<Type>::append(DinArray<Type> &new_members) {
-	int new_size = arr_size + new_members.size();
+void DinArray<Type>::append(DinArray<Type> &new_datas) {
+	int new_size = arr_size + new_datas.size();
 	int old_size = arr_size;
 	arr_size = new_size;
 	resize(new_size+10);
-	memcpy(data + old_size,new_members.data,new_members.size() * sizeof(Type));
+	memcpy(data + old_size,new_datas.data,new_datas.size() * sizeof(Type));
 }
 
 template<class Type>
-void DinArray<Type>::append_at(DinArray<Type> &new_members, int ind) {
-	int new_size = arr_size + new_members.size();
+void DinArray<Type>::append_at(DinArray<Type> &new_datas, int ind) {
+	int new_size = arr_size + new_datas.size();
 	int old_size = arr_size;
 	resize(new_size+10);
 	arr_size = new_size;
-	memcpy(data + ind + new_members.size(), data + ind, (old_size - ind) * sizeof(Type));
-	memcpy(data + ind,new_members.data,new_members.size() * sizeof(Type));
+	memcpy(data + ind + new_datas.size(), data + ind, (old_size - ind) * sizeof(Type));
+	memcpy(data + ind,new_datas.data,new_datas.size() * sizeof(Type));
 }
 
 
