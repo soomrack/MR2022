@@ -37,11 +37,11 @@ public:
 
     void push_head(T data);
 
-    Node<T>* find(T f_data);
+    Node<T> *find(T f_data);
 
-    GraphNode* find(unsigned int f_data);
+    GraphNode *find(unsigned int f_data);
 
-    void pop(unsigned int id);
+    void pop(T d_data);
 
     Node<T> loop(unsigned int id, auto *local);
 
@@ -54,6 +54,10 @@ public:
     unsigned int get_size();
 
     Node<T> *getHead();
+
+    void popAll();
+
+    int find(GraphNode *f_node);
 };
 
 #include "List.h"
@@ -104,11 +108,11 @@ void List<T>::print() {
 }
 
 template<typename T>
-Node<T>* List<T>::find(T f_data) {
+Node<T> *List<T>::find(T f_data) {
     if (is_empty()) { return nullptr; }
     Node<T> *local = head;
-    while(local) {
-        if (local->data == f_data){ return local;}
+    while (local) {
+        if (local->data == f_data) { return local; }
         local = local->next;
     }
     return nullptr;
@@ -139,23 +143,27 @@ void List<T>::remove_last() {
 }
 
 template<typename T>
-void List<T>::pop(unsigned int id) {
+void List<T>::pop(T d_data) {
     if (is_empty()) return;
-    if (id > size) return;
-    if (0 == id) {
-        remove_first();
-        return;
-    } else if (id + 1 == size) {
-        remove_last();
-        return;
-    }
     auto *local = head;
-    for (int idx = 0; idx < id - 1; idx++) {
+    while (local) {
+        if (d_data == local->data) {
+            local->next = local->next->next;
+            delete local->data;
+            size--;
+        }
         local = local->next;
     }
-    local->next = local->next->next;
-    size--;
 }
+
+template<typename T>
+void List<T>::popAll() {
+    if (is_empty()) return;
+    head = nullptr;
+    tail = nullptr;
+    size = 0;
+}
+
 
 template<typename T>
 unsigned int List<T>::get_size() {
@@ -164,7 +172,7 @@ unsigned int List<T>::get_size() {
 
 
 template<typename T>
-Node<T>* List<T>::getHead() {
+Node<T> *List<T>::getHead() {
     return head;
 }
 
@@ -174,7 +182,7 @@ T Node<T>::getNodeData() {
 }
 
 template<typename T>
-Node<T>* Node<T>::getNext() {
+Node<T> *Node<T>::getNext() {
     return next;
 }
 

@@ -8,8 +8,11 @@ int main() {
     graph.addNode(22);
 
     graph.addEdge(0, 1);
-    graph.addEdge(22, 1);
+    //graph.addEdge(0, 22);
 
+    graph.deleteNode(0);
+    //graph.deleteNode(1);
+    //graph.deleteNode(22);
 
     return 0;
 }
