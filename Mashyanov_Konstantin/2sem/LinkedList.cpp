@@ -2,34 +2,57 @@
 #include <string>
 using namespace std;
 
-template<class T>  //  Шаблон Клаcc List
-class List
-{
-	class Node  //  Класс узла
-	{
-	public:
-		T data;  //  Реализация объекта (без привязки к типу данных) 
-		Node *next;
-
-		Node(T t = T(), Node *n = nullptr);  //  Конструктор Класса 
-		};
-	Node *head;  //  Голова списка
-	
+typedef double MyData;
+class ListNode {
 public:
-	List();  //  Конструктор 
-	~List();  //  Деструктор
-	void push_tail(T value);  //  Метод добавления элемента в конец списка 
-	void push_head(T value);  //  Метод добавления элемента в начало списка
-	void pop_tail();  //  Метод удаления первого элемента
-	void pop_head();   //  Метод удаления последнего элемента
-	void delete_head();  //  Удаление первого
-        void delete_tail();  //  Удаление последнего 
-	void clear();  //  Метод очистки данных 
-        void delete_position(int pos);
+	MyData data;
+private:
+	Node* next;
+public:
+	Node() = delete;
+	Node(const MyData data, const Node* next = nullptr);
+public: 
+	void add_next(const MyData value);
+	void del_next();
+	Node* get_next();
 };
 
-template<class T>
-void show(List<T>&);
+class List {
+private:
+	Node *head;
+public:
+	List();
+	~List(); 
+public:
+	void add_head(const MyData value);  
+	void del_head();  
+	Node* get_head();  
+	void clear();  
+    
+};
+
+// реализовать верхнюю часть!
+
+List::List(){
+        head = nullptr;
+        tail = nullptr;
+    }
+
+void List::add_head(){
+        Node *temp = new Node;
+        temp->data = value;
+        temp->next = head;
+        head = temp;
+    }
+
+void List::del_head(){
+        Node *temp = new Node;
+        temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+
 
 int main()
 {
@@ -44,27 +67,27 @@ int main()
 	system("pause");
 }
 
-template <class T>
+
 List<T>::Node::Node(T t, Node* n)
 {
 	data = t;
 	next = n;
 }
 
-template<class T>
+
 List<T>::List()
 {
 	size = 0;
 	head = nullptr;
 }
 
-template<class T>
+
 List<T>::~List()
 {
 	clear();  //  Очистка всех элементов
 }
 
-template<class T>
+//template<class T>
 void List<T>::push_tail(T value)
 {
 	if (head == nullptr)  //  Проверка вершины на null 
@@ -79,7 +102,7 @@ void List<T>::push_tail(T value)
 			}
 	}
 	size++;
-}
+}//
 
 template<class T>
 void List<T>::push_head(T value)
@@ -89,67 +112,13 @@ void List<T>::push_head(T value)
 }
 
 
-template<class T>
-void List<T>::pop_head()
-{
-	if (size <= 0) return;
-	Node *temp = head;  //  Временная переменная temp
-	head = head->next;
-	delete temp;
-	size--;  //  Декремент размера списка
-}
 
-template<class T>
-void List<T>::pop_tail()
-{
-	removeAt(size - 1);
-}
-
-template<class T>
-void List<T>::clear()
-{
-	while (size) pop_head();
-}
-
-  void List::delete_head(){
+    void List::display(){  // Вывод списка
         Node *temp = new Node;
         temp = head;
-        head = head->next;
-        delete temp;
-    }
-
-    void List::delete_tail()
-    {
-        Node *current = new Node;
-        Node *previous = new Node;
-        current = head;
-        while(current->next != nullptr)
+        while(temp != nullptr)
         {
-            previous = current;
-            current = current->next;
+            cout << temp->data << "\t";
+            temp = temp->next;
         }
-        tail = previous;
-        previous->next = NULL;
-        delete current;
     }
-
-    void List::delete_position(int pos){
-        Node *current = new Node;
-        Node *previous = new Node;
-        current = head;
-        for(int i=1;i<pos;i++)
-        {
-            previous = current;
-            current = current->next;
-        }
-        previous->next = current->next;
-    }
-
-
-template<class T>
-void show(List<T>& list)
-{
-	cout << "size = " << list.getSize() << endl;
-	for (int i = 0; i < list.getSize(); i++) cout << list[i] << "  ";
-	cout << endl;
-}
