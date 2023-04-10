@@ -11,14 +11,12 @@ class Edge{
     Head* loc;
     Head* dest;
 public:
-    Edge(Head* loc_, Head* dest_);
+    Edge(Head* loc_, Head* dest_){
+        loc = loc_;
+        dest = dest_;
+    };
 };
 
-
-Edge::Edge(Head* loc_, Head* dest_){
-    loc = loc_;
-    dest = dest_;
-}
 
 
 #endif //UNTITLED_EDGE_H

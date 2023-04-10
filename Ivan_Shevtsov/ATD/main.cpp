@@ -91,12 +91,15 @@ void test_dynamic_array()
     dynamic_array DA3(10);
     DA3.fill_random();
     DA3.show();
-    dynamic_array DA4(DA3);  // Q: how to call transfer constructor?
+
+    auto DA4 = std::move(DA3);
     DA4.show();
 
+/*
     for (auto value : DA4){
         std::cout << value << std::endl;
     }
+*/
 
 
     sep("ARRAY TEST ENDED");
@@ -192,6 +195,7 @@ void test_queue() {
 
 void test_graph(){
     using namespace graph_names;
+    Graph grahp1;
 
 }
 
@@ -199,11 +203,11 @@ int main() {
     using namespace std;
     try{
         //test_list(); //#TODO написать нормально тесты
-        test_stack();
+        //test_stack();
         //test_dynamic_array();
         //test_queue();
         //test_tree();
-        //test_graph();
+        test_graph();
     }
     catch (const list_names::list_exceptions& err){
         std::cerr << "List exception: " << err.what() << std::endl;}

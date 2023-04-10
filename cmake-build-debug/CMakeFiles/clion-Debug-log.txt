@@ -1,1 +1,0 @@
-CMakeLists.txt not found in C:\Users\El1x3r7714\CLionProjects\MR2022 Select CMakeLists.txt

@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 class Queue {
     int *array;
     int capacity;

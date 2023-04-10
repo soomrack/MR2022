@@ -1,61 +1,3 @@
-#ifndef HELLO_WORLD_LIST_H
-#define HELLO_WORLD_LIST_H
-
-#include <string>
-#include <iostream>
-#include "Head.h"
-
-template<typename T>
-class Node {
-public:
-    Node(T data) : data(data), next(nullptr) {}
-
-    Node *next;
-    T data;
-
-    T getNodeData();
-
-    Node<T> *getNext();
-};
-
-template<typename T>
-class List {
-    friend class Node<T>;
-
-protected:
-    Node<T> *head; // head
-    Node<T> *tail;  // tail
-    unsigned int size;
-public:
-    List() : head(nullptr), tail(nullptr), size(0) {}
-
-    bool is_empty();
-
-    void push_tail(T data);
-
-    void print();
-
-    void push_head(T data);
-
-    Node<T>* find(T f_data);
-    Head* find(unsigned int f_data);
-
-    void pop(unsigned int id);
-
-    Node<T> loop(unsigned int id, auto *local);
-
-    Node<T> *operator[](const int index);
-
-    void remove_first();
-
-    void remove_last();
-
-    unsigned int get_size();
-
-    Node<T> *getHead();
-};
-
-#include "List.h"
 
 
 template<typename T>
@@ -103,12 +45,11 @@ void List<T>::print() {
 }
 
 template<typename T>
-Node<T>* List<T>::find(T f_data) {
+T List<T>::find(unsigned int id) {
     if (is_empty()) { return nullptr; }
-    Node<T> *local = head;
-    while(local) {
-        if (local->data == f_data){ return local;}
-        local = local->next;
+    auto *local = head;
+    for (unsigned int idx; idx < id; idx++) {
+        if (local->data == id){ return local->data;};
     }
     return nullptr;
 }
@@ -160,21 +101,3 @@ template<typename T>
 unsigned int List<T>::get_size() {
     return size;
 }
-
-
-template<typename T>
-Node<T>* List<T>::getHead() {
-    return head;
-}
-
-template<typename T>
-T Node<T>::getNodeData() {
-    return data;
-}
-
-template<typename T>
-Node<T>* Node<T>::getNext() {
-    return next;
-}
-
-#endif //HELLO_WORLD_LIST_H
