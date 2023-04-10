@@ -101,5 +101,7 @@ void loop() {
   else {
     speed_pin_r = digitalWrite(LOW);
     speed_pin_l = digitalWrite(LOW);
+    dur_pin_r = digitalWrite(LOW);
+    dur_pin_l = digitalWrite(LOW);
   }
 }
