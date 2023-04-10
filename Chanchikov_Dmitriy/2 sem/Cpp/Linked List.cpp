@@ -232,7 +232,3 @@ int main() {
 
     return 0;
 }
-
-
-
-// open1004
