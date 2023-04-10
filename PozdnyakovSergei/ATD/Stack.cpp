@@ -1,11 +1,9 @@
 #include <iostream>
-#include <cstdlib>
 
 class Stack{
     int *array;
     int stp;
     int capacity;
-
 public:
     Stack (int size);  // Конструктор
     ~Stack();  // Деструктор
@@ -13,7 +11,6 @@ public:
     int pop();
     int upper();
     int size();
-
     bool is_empty();
     bool is_full();
 };
@@ -25,7 +22,6 @@ public:
     }
 };
 
-
 Stack_exceptions IS_EMPTY ("Error: Stack is empty, you can't pop anything");
 Stack_exceptions IS_FULL ("Error: Stack is full, you can't push anything");
 
@@ -36,27 +32,29 @@ Stack::Stack(int size) {
     stp = -1;
 }
 
+
 Stack::~Stack() {
     delete[] array;
 }
+
 
 void Stack::push(int item) {  // Проверка на заполненность и если не полный то пушится элемент
     if (is_full()) {
         throw IS_FULL;
     }
-    std::cout << "Push: " << item << std::endl;
-    stp = stp + 1;
+    stp++;
     array[stp] = item;
 }
 
+
 int Stack::pop() {  // Проверка на пустоту, если не пустой то вынимается элемент, уменьшается на 1 верхний элемент
     if (is_empty()) {
-        std::cout << "Stack is empty " <<  std::endl;
+        throw IS_EMPTY;
     }
-    std::cout << "Pop " << upper() << std::endl;
-    stp = stp - 1;
+    stp--;
     return array[stp];
 }
+
 
 int Stack::upper() {  // Для возврата верхнего элемента
     if (!is_empty()) {
@@ -67,17 +65,21 @@ int Stack::upper() {  // Для возврата верхнего элемент
     }
 }
 
+
 int Stack::size() { // Для определения размера стека
     return stp + 1;
 }
+
 
 bool Stack::is_full() {  // Для проверки заполненности стека
     return size() == capacity;
 }
 
+
 bool Stack::is_empty() {  // Для проверки пустоты стека
     return size() == 0;
 }
+
 
 int main () {
     Stack st(5);
