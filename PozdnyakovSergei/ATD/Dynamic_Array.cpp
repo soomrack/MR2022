@@ -55,7 +55,6 @@ DynArray::~DynArray() {
 
 
 void DynArray::fill_random(int num) {
-    cout << "Fill randomly" << "\n";
     srand(time(NULL));
     array = new unsigned int[num];
     for (int i = 0; i < num - 1; ++i) {
@@ -65,14 +64,13 @@ void DynArray::fill_random(int num) {
 }
 
 
-void DynArray::add(int value, int idx) {
-    cout << "Adding an " << value << " on place " << idx << "\n";
+void DynArray::add(int value, int number) {
     unsigned int *temp = new unsigned int[size + 1];
-    for (int i = 0; i < idx; ++i) {
+    for (int i = 0; i < number; ++i) {
         temp[i] = array[i];
     }
-    temp[idx] = value;
-    for (int i = idx; i < size; ++i) {
+    temp[number] = value;
+    for (int i = number; i < size; ++i) {
         temp[i + 1] = array[i];
     }
     delete array;
@@ -81,13 +79,12 @@ void DynArray::add(int value, int idx) {
 }
 
 
-void DynArray::remove(int idx) {
-    cout << "Remove element on place " << idx << "\n";
+void DynArray::remove(int number) {
     unsigned int *temp = new unsigned int[size - 1];
-    for (int i = 0; i < idx; ++i) {
+    for (int i = 0; i < number; ++i) {
         temp[i] = array[i];
     }
-    for (int i = idx + 1; i < size; ++i) {
+    for (int i = number + 1; i < size; ++i) {
         temp[i - 1] = array[i];
     }
     delete array;
@@ -140,7 +137,7 @@ unsigned int DynArray::get(unsigned int number) {
 }
 
 
-void DynArray::set(unsigned int number, unsigned int item) {
+void DynArray::set(unsigned int item, unsigned int number) {
     array[number] = item;
 }
 
@@ -168,7 +165,7 @@ int main() {
     DA.print();
 
     DA.get(3);
-    DA.set(1, 0);
+    DA.set(1, 1);
 
     DA.resize(8);
     DA.print();
