@@ -16,7 +16,7 @@
 bool is_on = false;  // для кнопки включения
 bool button_state = false;
 float time = 0.0;
-int soudn_time = 0;  // время оповещения
+int sound_time = 0;  // время оповещения
 float filt_param = 0.2;  // параметр для фильтрации
 float dist_filt = 0;  // отфильтрованный выход
 float dur_param = 29.1;
