@@ -5,7 +5,7 @@ const double COMPARATION_CONST = 0.0001;
 
 
 double abs(double x){
-    if (x < COMPARATION_CONST) return x;
+    if (x < COMPARATION_CONST) return -x;
     return x;
 }
 
@@ -29,7 +29,7 @@ public:
     Item* next();
     Item* prev();
 
-    void del_current(Item *list_head, Item *list_tail);
+    void del_current(Item *&list_head, Item *&list_tail);
 
 };
 
@@ -105,7 +105,7 @@ void Item::push_prev(Item *x) {
 }
 
 
-void Item::del_current(Item *list_head, Item *list_tail) {
+void Item::del_current(Item *&list_head, Item *&list_tail) {
     if (prev_Item != nullptr) {
         prev_Item->next_Item = next_Item;
     }
@@ -145,6 +145,7 @@ LinkedList::~LinkedList() {
 
 void LinkedList::push_head(double val) {
     Item* elm = new Item(val);
+    if (elm == nullptr) return;
     if (list_head == nullptr){
         list_head = elm;
         list_tail = elm;
