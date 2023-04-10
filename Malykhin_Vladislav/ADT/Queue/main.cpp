@@ -31,7 +31,7 @@ int main(){
     std::cout<<"\n";
 
     std::cout<<"push test\n";
-    for( double val : filler_array1){
+    for(int i = 0; i < 6; ++i){
         std::cout << "удаление элемента:" << queue->get() <<"\n";
         queue->pop();
     }

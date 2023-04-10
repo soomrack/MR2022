@@ -23,11 +23,11 @@ void  Queue::push(double in_val) {
 }
 
 void Queue::pop() {
-    list->pop(list->tail());
+    list->pop_tail();
 }
 
 double Queue::get() {
-    return list->tail().node_ptr->data;
+    return list->get_tail().data;
 }
 
 
