@@ -52,7 +52,7 @@ void printList(Node *ptr) {  // Функция для печати всех со
     }
     cout << endl;
 }
-
+/*
 int main() {
     // массив ребер Graph согласно схеме выше
     Edge edges[] =
@@ -84,3 +84,4 @@ int main() {
 
     return 0;
 }
+*/

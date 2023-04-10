@@ -19,10 +19,10 @@ public:
 	bool operator==(const DinArray<Type>& other);
 	bool operator!=(const DinArray<Type>& other);
 	int size() const;
-	void append(Type new_member);
-	void append(DinArray<Type>& new_members);
-	void append_at(Type new_member, int ind);
-	void append_at(DinArray<Type>& new_members, int ind);
+	void append(Type new_data);
+	void append(DinArray<Type>& new_datas);
+	void append_at(Type new_data, int ind);
+	void append_at(DinArray<Type>& new_datas, int ind);
 	void pop_front();
 	void pop_back();
 	void pop_at(int ind);

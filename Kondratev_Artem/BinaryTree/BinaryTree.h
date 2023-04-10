@@ -129,6 +129,7 @@ void* BinaryTree::pop(unsigned int key_) {
             else {
                 prev_node->right = nullptr;
             }
+            height = findHeight(root);
             return node->data;
         }
 
@@ -140,6 +141,7 @@ void* BinaryTree::pop(unsigned int key_) {
                 prev_node->right = node->left;
             }
             node->left->right = node->right;
+            height = findHeight(root);
             return node->data;
         }
 
@@ -151,6 +153,7 @@ void* BinaryTree::pop(unsigned int key_) {
                 prev_node->right = node->right;
             }
             node->right->left = node->left;
+            height = findHeight(root);
             return node->data;
         }
 
@@ -171,6 +174,7 @@ void* BinaryTree::pop(unsigned int key_) {
                 min_node->right = node->right;
             }
             min_node->left = node->left;
+            height = findHeight(root);
             return node->data;
         }
     }

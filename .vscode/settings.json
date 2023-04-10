@@ -9,5 +9,8 @@
     "bracketPairColorizer.color3": "#0000FF",
     "bracketPairColorizer.unmatchedScopeColor": "#FF00FF",
     "bracketPairColorizer.background": "#282C34"
+  },
+  "files.associations": {
+    "stdexcept": "cpp"
   }
 }

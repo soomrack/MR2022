@@ -1,307 +1,183 @@
 #include <iostream>
+#include "algorithm"
+#include "dynamic_array.h"
 
 
-const unsigned int BASE_GRAPH_SIZE = 10;
-const double COMPARATION_CONST = 0.0001;
-const unsigned int MAX_WEIGHT = 4000000000;
+const int MAX_COUNT = 999999;
 
 
-double abs(double x){
-    if (x < 0) return -x;
-    return x;
-}
+
+class Node {
+
+public:
+    unsigned int value;
+
+    Dynamic_array<Node*> neighbors;
+    Dynamic_array<int> weights;
 
 
-struct item {
-    double go_to;
-    unsigned int weight;
 
-    item();
-    item(const double new_direction, const unsigned int new_weight);
-};
+public:
+
+    Node();
+    Node(const unsigned int x);
+    Node(const Node& x);
+
+    Node& operator=(const Node& x);
+    friend bool operator== (const Node &x, const Node &y);
 
 
-struct node {
-    double value;
-    unsigned int amount;  // их количество
-    item* data;  // список доступных для перемещения вершин
+    void push_next(Node* x);
+    void push_prev(Node* x);
 
-    node();
-    node(const double vle);
-    ~node();
+    Node* next();
+    Node* prev();
 
-    void add_item(const double new_direction, const unsigned int new_weight);
-    unsigned int contain(const double to_go);
+
 };
 
 
 class Graph {
 
-protected:
-    unsigned int length;  // количество занятых мест
-    node* Adjacency_list;  // места
-    unsigned int size;  // количество всего мест
+private:
+    Dynamic_array<Node> vertexs;
 
 
 public:
-    Graph();
-    Graph(const double first_node);
-    Graph(const unsigned int n, const double* names, const unsigned int* all_weights);
-    ~Graph();
 
-    node operator[](const double vle);
+    void add_node(const unsigned int new_name);
+    void add_path(const unsigned int from, const unsigned int to, const int cost, const bool add_reverse = false);
 
-    void add_node(const double vle);
-    void add_link_between(const double from, const double to, const unsigned int new_weight = 1, bool double_direction = false);
+    bool contains(const unsigned int node_name);
 
-    unsigned int contains(const double vle);
     void output();
 
-    unsigned int path_between(const double from, const double to);
+
+private:
+
+    Node* get(const unsigned int node_name);
+
 };
 
 
-item::item() {
-    go_to = NULL;
-    weight = NULL;
+Node::Node() {
+    value = 0;
+    neighbors = Dynamic_array<Node*>();
+    weights = Dynamic_array<int>();
 }
 
 
-item::item(const double new_direction, const unsigned int new_weight) {
-    go_to = new_direction;
-    weight = new_weight;
+Node::Node(const unsigned int x) {
+    value = x;
+    neighbors = Dynamic_array<Node*>();
+    weights = Dynamic_array<int>();
 }
 
 
-node::node() {
-    value = NULL;
-    amount = 0;
-    data = nullptr;
+Node::Node(const Node &x) {
+    value = x.value;
+    neighbors = x.neighbors;
+    weights = x.weights;
 }
 
 
-node::node(const double vle) {
-    value = vle;
-    amount = 0;
-    data = nullptr;
+Node& Node::operator=(const Node &x) {
+    value = x.value;
+    neighbors = x.neighbors;
+    weights = x.weights;
 }
 
 
-node::~node() {
-    data = nullptr;
+bool operator==(const Node &x, const Node &y) {
+    if (x.value == y.value) return true;
+    return false;
 }
 
 
-void node::add_item(const double new_direction, const unsigned int new_weight) {
-    item* temp = new item[amount + 1];
-    for (unsigned int idx = 0; idx < amount; idx++){
-        temp[idx] = data[idx];
-    }
-    temp[amount++] = item(new_direction, new_weight);
-    data = nullptr;
-    data = temp;
+void Graph::add_node(const unsigned int new_name) {
+    vertexs.push_back(Node(new_name));
 }
 
 
-unsigned int node::contain(const double to_go) {
-    for (unsigned int idx = 0; idx < amount; idx++){
-        if (abs(data[idx].go_to - to_go) < COMPARATION_CONST) return idx + 1;
-    }
-    return 0;
-}
+void Graph::add_path(const unsigned int from, const unsigned int to, const int cost, const bool add_reverse) {
+    if (!contains(from)) add_node(from);
+    if (!contains(to)) add_node(to);
 
+    Node* node_from = get(from);
+    Node* node_to = get(to);
 
-Graph::Graph() {
-    length = 0;
-    size = 0;
-    Adjacency_list = nullptr;
-}
-
-
-Graph::Graph(const double first_node) {
-    length = 0;
-    size = 0;
-    Adjacency_list = nullptr;
-    add_node(first_node);
-}
-
-
-Graph::Graph(const unsigned int n, const double *names, const unsigned int *weights) {
-    // гарантируется, что размер names соответствует n, а weights - n * n;
-
-    size = std::max(n, BASE_GRAPH_SIZE);
-    length = 0;
-    Adjacency_list = new node[size];
-
-    for (unsigned int idx = 0; idx < n; idx++){
-        add_node(names[idx]);
-    }
-    for (unsigned int idx = 0; idx < n; idx++) {
-        for (unsigned int jdx = 0; jdx < n; jdx++) {
-            if (weights[idx * n + jdx] == 0) continue;
-            this->add_link_between(names[idx], names[jdx], weights[idx * n + jdx], false);
-        }
-    }
-
-}
-
-
-Graph::~Graph() {
-    Adjacency_list = nullptr;
-}
-
-
-node Graph::operator[](const double vle) {
-    for (unsigned int idx = 0; idx < length; idx++){
-        if (abs(Adjacency_list[idx].value - vle) < COMPARATION_CONST) return Adjacency_list[idx];
-    }
-    return node();
-}
-
-
-void Graph::add_node(const double vle) {
-    node new_node = node(vle);
-    if (size == 0) {
-        size = BASE_GRAPH_SIZE;
-        Adjacency_list = new node[size];
+    unsigned int pos_of_to = node_from->neighbors.position(node_to);
+    if (pos_of_to == 0) {
+        node_from->neighbors.push_back(node_to);
+        node_from->weights.push_back(cost);
     } else {
-        if (length == size){
-            size += BASE_GRAPH_SIZE;
-            node* temp = new node[size];
-            for (unsigned int idx = 0; idx < length; idx++){
-                temp[idx] = Adjacency_list[idx];
-            }
-            Adjacency_list = nullptr;
-            Adjacency_list = temp;
-        }
-
+        node_from->weights[pos_of_to - 1] = std::min(node_from->weights[pos_of_to - 1], cost);
     }
-    Adjacency_list[length++] = new_node;
+
+    if (add_reverse){
+        add_path(to, from, cost, false);
+    }
 
 }
 
 
-void Graph::add_link_between(const double from, const double to, const unsigned int new_weight, bool double_direction) {
-    if (contains(from) == 0){
-        add_node(from);
-    }
-    if (contains(to) == 0){
-        add_node(to);
-    }
+bool Graph::contains(const unsigned int node_name) {
+    if (vertexs.length() == 0) return false;
 
-    // позволяет строить кратные грани
-    Adjacency_list[contains(from) - 1].add_item(to, new_weight);
-    if (double_direction) Adjacency_list[contains(to) - 1].add_item(from, new_weight);
-}
-
-
-unsigned int Graph::contains(const double vle) {
-    for (unsigned int idx = 0; idx < length; idx++){
-        if (abs(Adjacency_list[idx].value - vle) < COMPARATION_CONST) return idx + 1;
+    for (unsigned int idx = 0; idx < vertexs.length(); idx++){
+        if (vertexs[idx].value == node_name) return true;
     }
-    return 0;
+    return false;
 }
 
 
 void Graph::output() {
-    std::cout << "\nThe graph's size = " << size;
-    if (size == 0){
-        std::cout << "\n";
+    if (vertexs.length() == 0) {
+        std::cout << "There is no elements in this graph\n\n";
         return;
     }
 
-    for (unsigned int idx = 0; idx < length; idx++){
-        std::cout << "\nThe node " << Adjacency_list[idx].value;
-        if (Adjacency_list[idx].amount == 0) continue;
-        std::cout << " can goes to: ";
-        for (unsigned int jdx = 0; jdx < Adjacency_list[idx].amount; jdx++){
-            std::cout << Adjacency_list[idx].data[jdx].go_to << "(" << Adjacency_list[idx].data[jdx].weight << ") ";
-        }
+    for (unsigned int idx = 0; idx < vertexs.length(); idx++){
+        std::cout << vertexs[idx].value << "   [";
 
-    }
-    std::cout << "\nThus, graph includes " << length << "  item(s)\n";
-
-}
-
-
-unsigned int Graph::path_between(const double from, const double to) {
-    unsigned int base_point = contains(from);
-    if (base_point == 0) return 0;
-    unsigned int final_point = contains(to);
-    if (final_point == 0) return MAX_WEIGHT;
-
-    // алгоритм Дейкстры
-
-    bool* marked = new bool[length];
-    for (unsigned int idx = 0; idx < length; idx++){
-        marked[idx] = false;
-    }
-    marked[base_point - 1] = true;
-
-    unsigned int* weights = new unsigned int [length];
-    for (unsigned int idx = 0; idx < length; idx++){
-        weights[idx] = MAX_WEIGHT;
-    }
-    for (unsigned int idx = 0; idx < Adjacency_list[base_point - 1].amount; idx++){
-        weights[contains(Adjacency_list[base_point - 1].data[idx].go_to) - 1] = Adjacency_list[base_point - 1].data[idx].weight;
-    }
-    weights[base_point - 1] = 0;
-
-    for (unsigned int loop = 0; loop < length; loop++){
-
-        // поиск минимального непосещенного
-        unsigned int min_of_wghts = MAX_WEIGHT;
-        unsigned int idx_of_min = length;
-        for (unsigned int idx = 0; idx < length; idx++){
-            if (min_of_wghts > weights[idx] && !marked[idx]){
-                min_of_wghts = weights[idx];
-                idx_of_min = idx;
+        if (vertexs[idx].neighbors.length() != 0){
+            for (unsigned int jdx = 0; jdx < vertexs[idx].neighbors.length(); jdx++){
+                std::cout << " " << vertexs[idx].neighbors[jdx]->value << "{" << vertexs[idx].weights[jdx] << "} ";
             }
         }
 
-        marked[idx_of_min] = true;
-        // нанесение новых весов
-        for (unsigned int idx = 0; idx < Adjacency_list[idx_of_min].amount; idx++){
-            if (marked[contains(Adjacency_list[idx_of_min].data[idx].go_to) - 1]) continue;
+        std::cout << "]\n";
+    }
+    std::cout << "\n";
+}
 
-            weights[contains(Adjacency_list[idx_of_min].data[idx].go_to) - 1] = std::min(min_of_wghts + Adjacency_list[idx_of_min].data[idx].weight,
-                                                                                         weights[contains(Adjacency_list[idx_of_min].data[idx].go_to) - 1]);
-        }
 
+Node* Graph::get(const unsigned int node_name) {
+    if (!contains(node_name)) return nullptr;
+
+    for (unsigned int idx = 0; idx < vertexs.length(); idx++){
+        if (vertexs[idx].value == node_name) return &vertexs[idx];
     }
 
-
-    return weights[final_point - 1];
+    return nullptr;
 }
+
 
 
 int main() {
 
-    Graph A = Graph();
+    Graph A;
+    A.add_node(5);
+    A.add_node(4);
+
+    A.add_path(2, 3, 6);
+    A.add_path(3, 5, 1);
+
     A.output();
 
-    Graph B = Graph(0.1);
-    B.output();
+    A.add_path(3, 2, 5, true);
+    A.output();
 
-    B.add_node(1.2);
-    B.output();
-
-    std::cout << "\n" << B.contains(1.2) << "\n";
-
-    B.add_link_between(1.2, 2.3, 5, true);
-    B.output();
-
-    unsigned int n = 5;
-    double c_nodes[5] = {0.1, 1.2, 2.3, 3.4, 4.5};
-    unsigned int c_weights[25] = {0, 50, 0, 0, 90,
-                                  50, 0, 90, 0, 0,
-                                  0, 90, 0, 80, 60,
-                                  0, 0, 80, 0, 70,
-                                  90, 0, 60, 70, 0};
-    Graph C = Graph(n, c_nodes, c_weights);
-    C.output();
-
-    std::cout << "\n" << C.path_between(1.2, 4.5) << "\n";
 
     return 0;
 }
