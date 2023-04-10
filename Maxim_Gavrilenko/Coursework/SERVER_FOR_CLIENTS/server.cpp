@@ -35,7 +35,7 @@ void handle_client(int client_socket) {
     }
 }
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
+int main() {
     int server_socket, client_socket;
     WSADATA data;
     if(0 != WSAStartup(MAKEWORD(2,1), &data)) return 101;

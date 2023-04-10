@@ -4,18 +4,17 @@
 int main() {
     BinaryTree A;
     A.add(25);
-    A.add(5);
     A.add(13);
-    A.add(18);
     A.add(3);
-    A.add(16);
+    A.add(32);
+    A.add(7);
+    A.add(36);
+    A.add(28);
+    A.add(26);
+
     A.add(15);
-    A.add(17);
-    A.add(50);
-    A.add(99);
-    A.add(11);
-    A.add(10);
-    A.add(12);
+    A.add(2);
+    A.add(91);
     A.print();
     A.remove(13);
     std::cout << std::endl;

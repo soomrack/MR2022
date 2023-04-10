@@ -49,11 +49,11 @@ cmake_ninja_workdir = C$:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko
 
 build cmake_object_order_depends_target_MR2022: phony || CMakeFiles/MR2022.dir
 
-build CMakeFiles/MR2022.dir/server.cpp.obj: CXX_COMPILER__MR2022_Debug C$:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/SERVER_FOR_CLIENTS/server.cpp || cmake_object_order_depends_target_MR2022
-  DEP_FILE = CMakeFiles\MR2022.dir\server.cpp.obj.d
+build CMakeFiles/MR2022.dir/C_/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Binary_Tree/binary.cpp.obj: CXX_COMPILER__MR2022_Debug C$:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Binary_Tree/binary.cpp || cmake_object_order_depends_target_MR2022
+  DEP_FILE = CMakeFiles\MR2022.dir\C_\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Binary_Tree\binary.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\MR2022.dir
-  OBJECT_FILE_DIR = CMakeFiles\MR2022.dir
+  OBJECT_FILE_DIR = CMakeFiles\MR2022.dir\C_\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Binary_Tree
 
 
 # =============================================================================
@@ -63,7 +63,7 @@ build CMakeFiles/MR2022.dir/server.cpp.obj: CXX_COMPILER__MR2022_Debug C$:/Users
 #############################################
 # Link the executable MR2022.exe
 
-build MR2022.exe: CXX_EXECUTABLE_LINKER__MR2022_Debug CMakeFiles/MR2022.dir/server.cpp.obj
+build MR2022.exe: CXX_EXECUTABLE_LINKER__MR2022_Debug CMakeFiles/MR2022.dir/C_/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Binary_Tree/binary.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lws2_32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\MR2022.dir
