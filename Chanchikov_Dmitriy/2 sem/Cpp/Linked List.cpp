@@ -5,7 +5,7 @@ const double COMPARATION_CONST = 0.0001;
 
 
 double abs(double x){
-    if (x < COMPARATION_CONST) return -x;
+    if (x < COMPARATION_CONST) return x;
     return x;
 }
 
@@ -13,8 +13,8 @@ double abs(double x){
 class Item {
 
 protected:
-    Item* next_item;
-    Item* prev_item;
+    Item* next_Item;
+    Item* prev_Item;
 
 public:
     double value;
@@ -23,16 +23,13 @@ public:
     explicit Item(double x);
     ~Item();
 
-    Item& operator=(const double& x);
-    Item& operator=(const Item& x);
-
     void push_next(Item* x);
     void push_prev(Item* x);
 
     Item* next();
     Item* prev();
 
-    void del_current();
+    void del_current(Item *list_head, Item *list_tail);
 
 };
 
@@ -40,10 +37,12 @@ public:
 class LinkedList {
 
 protected:
+
+
+public:
     Item* list_head;
     Item* list_tail;
 
-public:
     LinkedList();
     explicit LinkedList(double list_head_val);
     ~LinkedList();
@@ -51,7 +50,6 @@ public:
     void push_head(double val);
     void push_tail(double val);
 
-    Item* find_first(double val);
     Item* pop(double val);
 
     Item* head();
@@ -65,62 +63,64 @@ public:
 
 Item::Item() {
     value = double(NULL);
-    next_item = nullptr;
-    prev_item = nullptr;
+    next_Item = nullptr;
+    prev_Item = nullptr;
 }
 
 
 Item::Item(const double x) {
     value = x;
-    next_item = nullptr;
-    prev_item = nullptr;
+    next_Item = nullptr;
+    prev_Item = nullptr;
 }
 
 
 Item::~Item() {
-    next_item = nullptr;
-    prev_item = nullptr;
+    next_Item = nullptr;
+    prev_Item = nullptr;
 }
-
-
-Item& Item::operator=(const double &x) {
-    value = x;
-    next_item = this;
-    prev_item = this;
-    return *this;
-}
-
-
-Item& Item::operator=(const Item &x) = default;
 
 
 Item* Item::next() {
-    return next_item;
+    return next_Item;
 }
 
 
 Item* Item::prev() {
-    return prev_item;
+    return prev_Item;
 }
 
 
 void Item::push_next(Item *x) {
-    next_item = x;
+    if (x == nullptr) return;
+    next_Item = x;
+    x->prev_Item = this;
 }
 
 
 void Item::push_prev(Item *x) {
-    prev_item = x;
+    if (x == nullptr) return;
+    prev_Item = x;
+    x->next_Item = this;
 }
 
 
-void Item::del_current() {
-    if (prev_item != nullptr)
-        prev_item->push_next(next_item);
-    if (next_item != nullptr)
-        next_item->push_prev(prev_item);
-    push_next(nullptr);
-    push_prev(nullptr);
+void Item::del_current(Item *list_head, Item *list_tail) {
+    if (prev_Item != nullptr) {
+        prev_Item->next_Item = next_Item;
+    }
+    if (next_Item != nullptr) {
+        next_Item->prev_Item = prev_Item;
+    }
+    if (this == list_head) {
+        list_head = next_Item;
+    }
+    if (this == list_tail) {
+        list_tail = prev_Item;
+    }
+    prev_Item = nullptr;
+    next_Item = nullptr;
+    delete this;
 }
 
 
@@ -170,16 +170,6 @@ void LinkedList::push_tail(double val) {
 }
 
 
-Item* LinkedList::find_first(double val) {
-    Item* item_idx = list_head;
-    while (item_idx != nullptr){
-        if (abs(item_idx->value - val) < COMPARATION_CONST) return item_idx;
-        item_idx = item_idx->next();
-    }
-    return item_idx;
-}
-
-
 Item* LinkedList::pop(double val) {
     if (list_head == nullptr) return nullptr;
     Item* current = list_head;
@@ -187,7 +177,7 @@ Item* LinkedList::pop(double val) {
         if (abs(current->value - val) < COMPARATION_CONST){
             if (current == list_head) list_head = current->next();
             if (current == list_tail) list_tail = current->prev();
-            current->del_current();
+            current->del_current(list_head, list_tail);
             return current;
         }
         current = current->next();
@@ -235,9 +225,6 @@ int main() {
     B.push_tail(2.3);
     B.print();
 
-    if (B.find_first(0.1) != nullptr)
-        std::cout << B.find_first(0.1)->value << "\n\n";
-
     B.pop(2.3);
     B.print();
 
@@ -245,3 +232,7 @@ int main() {
 
     return 0;
 }
+
+
+
+// open1004
