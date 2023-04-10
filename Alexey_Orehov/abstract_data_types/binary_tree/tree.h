@@ -18,7 +18,8 @@ struct TreeNode {
     T element = {};
     int hash = 0;
 
-    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
+    TreeNode(const T& element, const std::hash<T> &hash_fn);
+//    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
 
     TreeNode(TreeNode<T>* right, TreeNode<T>* left): right(right), left(left) {}
 };
@@ -30,8 +31,8 @@ private:
     TreeNode<T>* root;
     unsigned long long int size;
 
-//    std::hash<T> hash_fn;
-    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+    std::hash<T> hash_fn;
+//    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
 
     void insert(TreeNode<T>* subtree, const T& element);
     bool find(TreeNode<T>* subtree, const T& element);
@@ -58,8 +59,12 @@ Tree<T>::Tree() {
 }
 
 
+//template<typename T>
+//TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+//        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
+
 template<typename T>
-TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+TreeNode<T>::TreeNode(const T &element, const std::hash<T> &hash_fn)
         : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
 
 
