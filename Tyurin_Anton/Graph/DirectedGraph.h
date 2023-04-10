@@ -22,7 +22,9 @@ public:
 
     void addEdge(int loc_data, int dest_data);
 
-    Head *findFromList(int data);
+    Head *findFromList(unsigned int data);
+
+    Head *findGraphNode(unsigned int findData);
 };
 
 #endif //UNTITLED_DIRECTEDGRAPH_H

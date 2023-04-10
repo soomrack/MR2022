@@ -9,14 +9,17 @@ class Edge;
 class Head {
 
 public:
-    explicit Head(int _data);
+    explicit Head(int _data){
+        data = _data;
+    };
 
     int data;
-    List<Edge *> edge_list;
-};
 
-Head::Head(int _data) {
-    data = _data;
-}
+    List<Edge *> edge_list;
+
+    int get() const{
+        return data;
+    };
+};
 
 #endif //UNTITLED_HEAD_H
