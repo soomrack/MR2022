@@ -2,16 +2,16 @@
 //#include <Ultrasonik.h>
 
 
-#define echoPin = 19  // приемник
-#define trigPin = 18  // источник
+#define echoPin 19  // приемник
+#define trigPin 18  // источник
 
-#define buttonPin = 8  // кнопка включения и отключения
-#define note_pin = 10  // оповещение о приближении
+#define buttonPin 8  // кнопка включения и отключения
+#define note_pin 10  // оповещение о приближении
 
-#define speed_pin_r = 5  // скорость правых моторов
-#define speed_pin_l = 6  // скорость левых моторов
-#define dur_pin_r = 4  // направление правых моторов
-#define dur_pin_l = 7  // направление левых моторов
+#define speed_pin_r 5  // скорость правых моторов
+#define speed_pin_l 6  // скорость левых моторов
+#define dur_pin_r 4  // направление правых моторов
+#define dur_pin_l 7  // направление левых моторов
 
 bool is_on = false;  // для кнопки включения
 bool button_state = false;
@@ -28,9 +28,9 @@ void setup() {
   pinMode(echoPin, INPUT);
   pinMode(buttonPin, INPUT);
 
-  note_pin = analogWrite(200);
+  analogWrite(note_pin, 200);
   delay(200);
-  note_pin = analogWrite(0);
+  analogWrite(note_pin, 0);
 
 }
 
@@ -42,11 +42,11 @@ void start_motors () {
 
 int get_distance() {
   long dur, sm;
-  trigPin = digitalWrite(LOW);
+  digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-  trigPin = digitalWrite(HIGH);
+  digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
-  trigPin = digitalWrite(LOW);
+  digitalWrite(trigPin, LOW);
   dur = pulseIn(echoPin, HIGH);
   sm = (dur / 2) / dur_param;  // перевод показаний датчика в сантиметры
   Serial.print("Distance is ");
@@ -66,19 +66,20 @@ int dist_filtered() {
 }
 
 
-void sound_tim() {
-  sm = dist_filtered();
-  sound_time = map(sm, 0, 255, 700, 100);
-  note_pin = analogWrite(sound_time);
-  //returm (sound_time);
+int sound_tim() {
+  int sound = dist_filtered();
+  int sound_time = map(sound, 0, 255, 700, 100);
+  analogWrite(note_pin, sound_time);
+  return (sound_time);
 }
 
 
 void sound() {
-  note_pin = analogWrite(200);
-  delay(sound_time);
-  note_pin = analogWrite(0);
-  delay(sound_time);
+  int tim = sound_tim();
+  analogWrite(note_pin, 200);
+  delay(tim);
+  analogWrite(note_pin, 0);
+  delay(tim);
 }
 
 
@@ -99,9 +100,9 @@ void loop() {
   }
   
   else {
-    speed_pin_r = digitalWrite(LOW);
-    speed_pin_l = digitalWrite(LOW);
-    dur_pin_r = digitalWrite(LOW);
-    dur_pin_l = digitalWrite(LOW);
-  }
+    digitalWrite(speed_pin_r, LOW);
+    digitalWrite(speed_pin_l, LOW);
+    digitalWrite(dur_pin_r, LOW);
+    digitalWrite(dur_pin_l, LOW);
+    }
 }
