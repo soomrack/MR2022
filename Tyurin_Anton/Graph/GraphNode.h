@@ -1,15 +1,15 @@
-#ifndef UNTITLED_HEAD_H
-#define UNTITLED_HEAD_H
+#ifndef UNTITLED_GRAPHNODE_H
+#define UNTITLED_GRAPHNODE_H
 
 #include "Edge.h"
 #include "List.h"
 
 class Edge;
 
-class Head {
+class GraphNode {
 
 public:
-    explicit Head(int _data){
+    explicit GraphNode(int _data){
         data = _data;
     };
 
@@ -22,4 +22,4 @@ public:
     };
 };
 
-#endif //UNTITLED_HEAD_H
+#endif //UNTITLED_GRAPHNODE_H

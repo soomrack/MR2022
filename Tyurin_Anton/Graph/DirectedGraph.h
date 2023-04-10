@@ -1,30 +1,28 @@
 #ifndef UNTITLED_DIRECTEDGRAPH_H
 #define UNTITLED_DIRECTEDGRAPH_H
 
-#include "Head.h"
+#include "GraphNode.h"
 #include "Edge.h"
 
 class Graph {
-    List<Head*> node_list;
+    List<GraphNode*> node_list;
 
     //deleteNode(int *data);
 
     //deleteEdge(Edge *loc, Edge *dest);
 
-    //findNode(int *data);
-
 public:
     void addNode(int data);
 
-    static int noDestination(Head *dest);
+    static int noDestination(GraphNode *dest);
 
-    static void addEdge(Head *loc, Head *dest);
+    static void addEdge(GraphNode *loc, GraphNode *dest);
 
     void addEdge(int loc_data, int dest_data);
 
-    Head *findFromList(unsigned int data);
+    GraphNode *findFromList(unsigned int data);
 
-    Head *findGraphNode(unsigned int findData);
+    GraphNode *findGraphNode(unsigned int findData);
 };
 
 #endif //UNTITLED_DIRECTEDGRAPH_H

@@ -2,17 +2,17 @@
 #include "List.h"
 
 void Graph::addNode(int data) {
-    Head *newHead = new Head(data);
+    GraphNode *newHead = new GraphNode(data);
     newHead->data = data;
     this->node_list.push_tail(newHead);
 }
 
-int Graph::noDestination(Head *dest) {
+int Graph::noDestination(GraphNode *dest) {
     if (dest == nullptr) { return 0; }
     return 1;
 }
 
-void Graph::addEdge(Head *loc, Head *dest) {
+void Graph::addEdge(GraphNode *loc, GraphNode *dest) {
     if (noDestination(dest)) { return; }
     Edge *newEdge = new Edge(loc, dest);
     loc->edge_list.push_tail(newEdge);
@@ -20,8 +20,8 @@ void Graph::addEdge(Head *loc, Head *dest) {
 }
 
 
-Head *Graph::findGraphNode(unsigned int findData) {
-    Node<Head *> *node = this->node_list.getHead();
+GraphNode *Graph::findGraphNode(unsigned int findData) {
+    Node<GraphNode *> *node = this->node_list.getHead();
     while (node) {
         if (node->getNodeData()->get() == findData) {
             return node->getNodeData();
@@ -33,8 +33,7 @@ Head *Graph::findGraphNode(unsigned int findData) {
 
 
 void Graph::addEdge(int loc_data, int dest_data) {
-    Head *loc = this->findGraphNode(loc_data);
-    Head *dest = this->findGraphNode(dest_data);
+    GraphNode *loc = this->findGraphNode(loc_data);
+    GraphNode *dest = this->findGraphNode(dest_data);
     addEdge(loc, dest);
 }
-

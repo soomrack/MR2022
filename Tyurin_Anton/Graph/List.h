@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-#include "Head.h"
+#include "GraphNode.h"
 
 template<typename T>
 class Node {
@@ -38,7 +38,8 @@ public:
     void push_head(T data);
 
     Node<T>* find(T f_data);
-    Head* find(unsigned int f_data);
+
+    GraphNode* find(unsigned int f_data);
 
     void pop(unsigned int id);
 
