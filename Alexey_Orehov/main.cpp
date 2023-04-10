@@ -52,5 +52,10 @@ int main() {
 
     tree.remove(6);
 
+    for (auto& element : data) {
+        if (tree.find(element)) std::cout << "Found element " << element << std::endl;
+        else std::cout << "Element " << element << " not found" << std::endl;
+    }
+
     return 0;
 }
