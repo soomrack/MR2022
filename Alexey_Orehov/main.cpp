@@ -43,19 +43,19 @@ void test_list() {
 
 
 int main() {
-    int data[10] = {5, 4, 6, 1, 2, 3, 10, 9, 8, 7};
+    int data[10] = {50, -4, 6, 1, 2, 3, -10, 9, -8, 7};
     Tree<int> tree;
 
     for (auto& element : data) {
         tree.insert(element);
     }
-    TreeNode<int>* root = tree.get_root();
 
-    auto smallest_left = tree.find_smallest(root->left);
-    auto smallest_right = tree.find_smallest(root->right);
+    tree.remove(6);
 
-    tree.find(4);
-    tree.find(12);
+    for (auto& element : data) {
+        if (tree.find(element)) std::cout << "Found element " << element << std::endl;
+        else std::cout << "Element " << element << " not found" << std::endl;
+    }
 
     return 0;
 }

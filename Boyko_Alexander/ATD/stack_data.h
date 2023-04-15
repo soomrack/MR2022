@@ -6,20 +6,31 @@
 typedef char Type;
 class Stack{
 public:
-	ListMember<Type>* top = nullptr;
+	Node<Type>* top = nullptr;
 	LinkedList<Type> StackList;
 	void push(Type new_item);
-	void pop();
+	Type pop();
+	int size();
+	Node<Type>* get(unsigned int ind);
 };
 
 void Stack::push(Type new_item) {
-	StackList.push_head(new_item);
-	top = StackList.get_head();
+	StackList.push_tail(new_item);
+	top = StackList.get_tail();
 }
 
-void Stack::pop() {
-	StackList.pop_front();
-	top = StackList.get_head();
+Type Stack::pop() {
+	Type pop_data = StackList.pop_tail();
+	top = StackList.get_tail();
+	return  pop_data;
+}
+
+int Stack::size() {
+	return StackList.size();
+}
+
+Node<Type>* Stack::get(unsigned int ind) {
+	return StackList.get(ind);
 }
 
 

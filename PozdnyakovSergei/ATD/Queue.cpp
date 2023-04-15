@@ -1,13 +1,11 @@
 #include <iostream>
 
-
 class Queue {
     int *array;
     int capacity;
     int first;
     int last;
     int count;
-
 
 public:
     Queue(int size);
@@ -92,20 +90,13 @@ bool Queue::is_full() {
 
 
 int main() {
-    Queue queue(10);
+    Queue queue(4);
 
     queue.push(1);
     queue.push(2);
-    queue.push(3);
-    queue.push(4);
-    queue.push(5);
 
     queue.pop();
     queue.pop();
-
-    queue.push(10);
-    queue.push(20);
-
 
     if (queue.is_empty()) {
         throw IS_EMPTY;
@@ -114,5 +105,4 @@ int main() {
     if (queue.is_full()) {
         throw IS_FULL;
     }
-
 }

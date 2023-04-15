@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(untitled List.cpp ../List/List.cpp../DirectedGraph/DirectedGraph.cpp)
+add_executable(untitled List.cpp ../List/List.h)

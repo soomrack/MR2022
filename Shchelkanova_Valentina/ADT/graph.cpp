@@ -1,70 +1,73 @@
 #include <iostream>
+#include <list>
 #include <vector>
-#include <cstdlib>
-#include <ctime>
+using namespace std;
 
-using namespace std; // все функции вынести из класса, имена функции сделать приличными, если аргументы не меняются то сделать их константой
-
-class Graph {
-private:
-    int size;
-    vector<vector<int>> adjMatrix;
-
+class Node { // класс Node
 public:
-    Graph(int s) : size(s) {
-        adjMatrix = vector<vector<int>>(size, vector<int>(size, 0));
-    }
-
-    void addEdge(int from, int to) {
-        adjMatrix[from][to] = 1;
-        adjMatrix[to][from] = 1;
-    }
-
-    void generateRandomEdges(float probability) {
-        srand(time(NULL));
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                float r = (float) rand() / RAND_MAX;
-                if (r < probability) {
-                    addEdge(i, j);
-                }
-            }
-        }
-    }
-
-    void dfs(int start) {
-        vector<bool> visited(size, false);
-        dfsHelper(start, visited);
-    }
-
-    void dfsHelper(int current, vector<bool> &visited) {
-        visited[current] = true;
-        cout << current << " ";
-        for (int i = 0; i < size; i++) {
-            if (adjMatrix[current][i] == 1 && !visited[i]) {
-                dfsHelper(i, visited);
-            }
-        }
-    }
-
-    void Matrix_print() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                cout << adjMatrix[i][j] << " ";
-            }
-            cout << endl;
-        }
+    int node;
+    vector<int> edges;
+    Node(int node) {
+        this->node = node;
     }
 };
-int main() {
-    int size = 5;
-    Graph g(size);
-    g.generateRandomEdges(0.5);
-    g.dfs(0);
-    cout << "\n";
-    g.Matrix_print();
-    return 0;
 
-} // не очень удобно использовать вектор векторов, уменьшается скорость работы;
-// добавить функцию "добавить узел";
-// лучше граф делать через отдельный класс "узел", внутри узла должна быть инфа  ребрах (например через список смежности или вектор)
+class Graph {
+    vector<Node> nodes; // список вершин
+public:
+    Graph();
+    void addNode(int node); // добавить вершину
+    void addEdge(int node1, int node2);
+    void DFS(int node, bool visited[]);
+    void DFS(int node);
+};
+
+
+Graph::Graph() {
+
+}
+
+void Graph::addNode(int node) { // функция добавления вершины
+    Node n(node);
+    nodes.push_back(n);
+}
+
+void Graph::addEdge(int node1, int node2) {
+    nodes[node1].edges.push_back(node2);
+    nodes[node2].edges.push_back(node1);
+}
+
+void Graph::DFS(int node, bool visited[]) {
+    visited[node] = true;
+    cout << node << " ";
+    vector<int>::iterator i;
+    for (i = nodes[node].edges.begin(); i != nodes[node].edges.end(); ++i)
+        if (!visited[*i])
+            DFS(*i, visited);
+}
+
+
+void Graph::DFS(int node) {
+    bool *visited = new bool[nodes.size()];
+    for (int i = 0; i < nodes.size(); i++)
+        visited[i] = false;
+    DFS(node, visited);
+}
+
+
+int main() {
+    Graph g;
+    g.addNode(0); // добавляем вершины
+    g.addNode(1);
+    g.addNode(2);
+    g.addNode(3);
+    g.addNode(4);
+    g.addEdge(1, 0);
+    g.addEdge(0, 2);
+    g.addEdge(2, 1);
+    g.addEdge(0, 3);
+    g.addEdge(1, 4);
+    cout << "DFS traversal starting from vertex 0: ";
+    g.DFS(0);
+    return 0;
+}

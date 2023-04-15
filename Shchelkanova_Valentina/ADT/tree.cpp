@@ -1,161 +1,181 @@
 #include <iostream>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
-int tabs = 0;
 
-
-struct Node {
-    int data;
-    Node* leftChild;
-    Node* rightChild;
-};
-
-class Tree {
-    Node* root;
+class Node {
 public:
-    Tree() {
-        root = 0;
-    }
+    int key;
+    Node *left;
+    Node *right;
 
-    void insert(int value) {
-        Node* newNode = new Node;
-        newNode->data = value;
-        newNode->leftChild = 0;
-        newNode->rightChild = 0;
-
-        if (root == 0) {
-            root = newNode;
-        }
-        else {
-            Node* tmp = root;
-            while (tmp != 0) {
-                if (value < tmp->data) {
-                    if (tmp->leftChild == 0) {
-                        tmp->leftChild = newNode;
-                        break;
-                    }
-                    else
-                        tmp = tmp->leftChild;
-                }
-                else {
-                    if (tmp->rightChild == 0) {
-                        tmp->rightChild = newNode;
-                        break;
-                    }
-                    else
-                        tmp = tmp->rightChild;
-                }
-            }
-        }
-    }
-
-    void deleteNode(int value) {
-        if (root == 0)
-            return;
-        else {
-            Node* currNode = root;
-            Node* parrentNode = 0;
-            while (currNode != 0 && currNode->data != value) {
-                parrentNode = currNode;
-                if (value < currNode->data)
-                    currNode = currNode->leftChild;
-                else
-                    currNode = currNode->rightChild;
-            }
-            if (currNode == 0)
-                return;
-            if (currNode->leftChild == 0 && currNode->rightChild == 0) {
-                if (parrentNode == 0)
-                    root = 0;
-                else {
-                    if (parrentNode->leftChild == currNode)
-                        parrentNode->leftChild = 0;
-                    else
-                        parrentNode->rightChild = 0;
-                }
-                delete currNode;
-            }
-            else if (currNode->leftChild == 0 || currNode->rightChild == 0) {
-                Node* tmp = 0;
-                if (currNode->leftChild == 0)
-                    tmp = currNode->rightChild;
-                else
-                    tmp = currNode->leftChild;
-                if (parrentNode == 0)
-                    root = tmp;
-                else {
-                    if (parrentNode->leftChild == currNode)
-                        parrentNode->leftChild = tmp;
-                    else
-                        parrentNode->rightChild = tmp;
-                }
-                delete currNode;
-            }
-            else {
-                Node* tmp = currNode->rightChild;
-                Node* tmpParrent = currNode;
-                while (tmp->leftChild != 0) {
-                    tmpParrent = tmp;
-                    tmp = tmp->leftChild;
-                }
-                currNode->data = tmp->data;
-                if (tmpParrent->leftChild == tmp)
-                    tmpParrent->leftChild = 0;
-                else
-                    tmpParrent->rightChild = 0;
-                delete tmp;
-            }
-        }
-    }
-
-    void randomFill(int size) {
-        srand(time(0));
-        for (int i = 0; i < size; i++)
-            insert(rand() % 100);
-    }
-
-    void print(Node* root) {
-        if (root != 0) {
-            tabs += 3;
-            print(root->leftChild);
-            for(int tab = 0; tab < tabs; tab++)cout << " ";
-            cout << root->data << endl;
-            print(root->rightChild);
-            tabs -= 3;
-            return;
-        }
-    }
-
-    void printTree() {
-        print(root);
-        cout << endl;
-    }
-
-    void deleteTree(Node* root) {
-        if (root != 0) {
-            deleteTree(root->leftChild);
-            deleteTree(root->rightChild);
-            delete root;
-        }
-    }
-
-    ~Tree() {
-        deleteTree(root);
+    Node(int k);
     }
 };
+Node::Node(int k) {
+    key = k;
+    left = right = NULL;
+}
+class BST {
+private:
+    Node *root;
+
+public:
+    BST();
+    ~BST();
+    void insert(int key);
+    void remove(int key);
+    bool search(int key);
+    void traverse();
+
+private:
+    Node* insert(Node* node, int key);
+    Node* remove(Node* node, int key);
+    Node* minValueNode(Node* node);
+    bool search(Node* node, int key) ;
+    void traverse(Node* node);
+    void destroy(Node *node);
+};
+
+
+BST::BST() {
+    root = NULL;
+}
+
+BST::~BST() {
+    destroy(root);
+}
+
+void BST::insert(int key) {
+    root = insert(root, key);
+}
+
+void BST::remove(int key) {
+    root = remove(root, key);
+}
+
+bool BST::search(int key) {
+    return search(root, key);
+}
+
+void BST::traverse() {
+    traverse(root);
+    cout << endl;
+}
+
+
+Node* BST::insert(Node* node, int key) {
+    if (node == NULL) {
+        return new Node(key);
+    }
+
+    if (key < node->key) {
+        node->left = insert(node->left, key);
+    } else if (key > node->key) {
+        node->right = insert(node->right, key);
+    }
+
+    return node;
+}
+
+
+Node* BST::remove(Node* node, int key) {
+    if (node == NULL) {
+        return NULL;
+    }
+
+    if (key < node->key) {
+        node->left = remove(node->left, key);
+    } else if (key > node->key) {
+        node->right = remove(node->right, key);
+    } else {
+        if (node->left == NULL && node->right == NULL) {
+            delete node;
+            node = NULL;
+        } else if (node->left == NULL) {
+            Node* tmp = node;
+            node = node->right;
+            delete tmp;
+        } else if (node->right == NULL) {
+            Node* tmp = node;
+            node = node->left;
+            delete tmp;
+        } else {
+            Node* tmp = minValueNode(node->right);
+            node->key = tmp->key;
+            node->right = remove(node->right, tmp->key);
+        }
+    }
+
+    return node;
+}
+
+Node* BST::minValueNode(Node* node) {
+    Node* current = node;
+
+    while (current->left != NULL) {
+        current = current->left;
+    }
+
+    return current;
+}
+
+bool BST::search(Node* node, int key) {
+    if (node == NULL) {
+        return false;
+    }
+
+    if (key < node->key) {
+        return search(node->left, key);
+    } else if (key > node->key) {
+        return search(node->right, key);
+    } else {
+        return true;
+    }
+}
+
+void BST::traverse(Node* node) {
+    if (node != NULL) {
+        traverse(node->left);
+        cout << node->key << " ";
+        traverse(node->right);
+    }
+}
+
+void BST::destroy(Node *node) {
+    if (node != NULL) {
+        destroy(node->left);
+        destroy(node->right);
+        delete node;
+    }
+}
+
 
 int main() {
-    Tree tree;
-    tree.randomFill(5);
-    tree.printTree();
-    cout << endl;
-    tree.insert(5);
-    tree.printTree();
-    int el;
-    cin >> el;
-    tree.deleteNode(el);
-    tree.printTree();
+    srand(time(NULL));
+
+    BST tree;
+
+    for (int i = 0; i < 10; i++) {
+        int key = rand() % 100;
+        tree.insert(key);
+    }
+
+    cout << "Initial tree: ";
+    tree.traverse();
+
+    int key = rand() % 100;
+    cout << "Search for key " << key << ": " << tree.search(key) << endl;
+
+    key = rand() % 100;
+    tree.remove(key);
+    cout << "After removing key " << key << ": ";
+    tree.traverse();
+
+    tree.~BST();
+    cout << "Tree destroyed." << endl;
+
+
     return 0;
 }
