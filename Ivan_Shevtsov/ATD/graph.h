@@ -29,8 +29,7 @@ namespace graph_names {
     graph_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
     graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
-    // CONSTANTS
-
+    // DECLARATION
 
     class Edge;
     class Node;
@@ -43,8 +42,12 @@ namespace graph_names {
         Node* target;
         int weight;
     public:
+        Edge() = delete;
+        Edge(const Edge&) = delete;
+        Edge& operator=(const Edge&) = delete;
+
         Edge(Node* source, Node* target, int weight);
-        ~Edge() = default;
+        ~Edge();
     public:
         friend Graph;
         friend Node;
@@ -58,13 +61,13 @@ namespace graph_names {
     public:
         double data;
     public:
-        Node()=default;
+        Node()=delete;
         explicit Node(double data = 0);
         Node(double data, Node* source, int weight);
         ~Node();
     public:
-        Node* add_edge(Node* target, int weight);
-        Node* del_edge(Node* target, int weight);
+        void add_edge(Node* target, int weight);
+        int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
     public:
         friend Graph;
     };
@@ -77,15 +80,17 @@ namespace graph_names {
         LISTOFNODES nodes;
         static const int INF = INT_MAX; // big const for Dijkstra`s algorithm
     public:
-        Graph();
-        Graph(Node* root);
-        Graph(double data);
-        ~Graph() {clear();};
+        Graph() = default;
+        explicit Graph(Node* root);
+        explicit Graph(double data);
+        Graph(const Graph&) = delete;
+        Graph& operator=(const Graph&) = delete;
+        ~Graph() {clear();}
     public:
-        bool add_node(double data);
-        bool add_edge(Node* link_from_this, Node* link_in_this, int weight);
-        bool del_node(double data);  // add bool FLAG_DELL_ALL_WITH_DATA = true #todo
-        bool del_edge(Node* first_node, Node* second_node);
+        void add_node(double data);
+        void add_edge(Node* source, Node* target, int weight);
+        int del_node(double data, bool delete_all_with_data_flag = false);
+        int del_edge(Node* source, Node* target, int weight, bool delete_only_one_flag = false);
 
         //void show();
         void clear();
@@ -93,8 +98,6 @@ namespace graph_names {
         Graph& dijkstra_algorithm(Node* start_node, Node* target_node);
 
     };
-
-
 
 } // graph_names
 

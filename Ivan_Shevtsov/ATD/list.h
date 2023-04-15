@@ -104,8 +104,10 @@ namespace list_names {
     public:
         void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
+        void delete_after(Node<T>* after_this);
         void push(T data);
         void pop();
+        void TEST();
 
         void clear();
         void show();  // Q: del it?
@@ -115,6 +117,18 @@ namespace list_names {
         bool operator!=(const list &other);
     };
 
+    template<typename T>
+    void list<T>::TEST() {
+        delete_after(head);
+    }
+
+    template<typename T>
+    void list<T>::delete_after(Node<T> *after_this) {
+       Node<T> *tmp = after_this->p_next->p_next;
+        delete after_this->p_next;
+       after_this->p_next = tmp;
+       size--;
+    }
 
 
     template<typename T>

@@ -37,6 +37,11 @@ void test_list(bool test_visible = true)
     for (auto &&node: lstTest){
         std::cout << node << std::endl;
     }
+    lstTest.TEST();
+    for (auto &&node: lstTest){
+        std::cout << node << std::endl;
+    }
+    std::cout << lstTest.lenght() << std::endl;
 /*    list<int> lst1;
     try {
         lst1.insert_after(0, 0);
