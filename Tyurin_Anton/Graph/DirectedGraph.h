@@ -5,7 +5,6 @@
 #include "Edge.h"
 
 class Graph {
-    List<GraphNode *> node_list;
 
 public:
     void addNode(int data);
@@ -24,6 +23,7 @@ public:
 
     //void deleteEdge(int loc_data, int dest_data);
 
+    List<GraphNode *> node_list;
 };
 
 #endif //UNTITLED_DIRECTEDGRAPH_H

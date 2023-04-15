@@ -20,6 +20,7 @@ public:
     int get() const{
         return data;
     };
+
 };
 
 #endif //UNTITLED_GRAPHNODE_H

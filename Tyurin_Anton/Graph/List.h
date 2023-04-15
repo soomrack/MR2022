@@ -8,7 +8,7 @@
 template<typename T>
 class Node {
 public:
-    Node(T data) : data(data), next(nullptr) {}
+    explicit Node(T data) : data(data), next(nullptr) {}
 
     Node *next;
     T data;
@@ -16,6 +16,7 @@ public:
     T getNodeData();
 
     Node<T> *getNext();
+
 };
 
 template<typename T>
@@ -39,13 +40,7 @@ public:
 
     Node<T> *find(T f_data);
 
-    GraphNode *find(unsigned int f_data);
-
     void pop(T d_data);
-
-    Node<T> loop(unsigned int id, auto *local);
-
-    Node<T> *operator[](const int index);
 
     void remove_first();
 
@@ -57,7 +52,6 @@ public:
 
     void popAll();
 
-    int find(GraphNode *f_node);
 };
 
 #include "List.h"
@@ -185,5 +179,6 @@ template<typename T>
 Node<T> *Node<T>::getNext() {
     return next;
 }
+
 
 #endif //HELLO_WORLD_LIST_H
