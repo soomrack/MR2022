@@ -31,7 +31,7 @@ Edge* Vertex::findEdge(Vertex* other) {
     }
 
     ListIterator<Edge*> list_iterator(&edge_list, edge_list.getHead());
-    while(list_iterator.getIterator()) {  //  delete true
+    while(list_iterator.getIterator()) {
         if (list_iterator.get()->getStart() == other || list_iterator.get()->getEnd() == other) {
             return list_iterator.get();
         }
