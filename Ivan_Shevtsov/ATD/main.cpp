@@ -5,7 +5,7 @@
 #include "dynamic_array.h"
 #include "queue.h"
 #include "tree.h"
-#include "graph.h"
+//#include "graph.h"
 
 //#define DEBUG
 
@@ -26,7 +26,18 @@ void test_list(bool test_visible = true)
 {
     sep("LIST TEST STARTED");
     using namespace list_names;
-    list<int> lst1;
+    list<int> lstTest;
+    lstTest.push(1);
+    lstTest.push(2);
+    lstTest.push(3);
+    lstTest.push(4);
+    lstTest.push(5);
+
+    //lstTest.iter_show();
+    for (auto &&node: lstTest){
+        std::cout << node << std::endl;
+    }
+/*    list<int> lst1;
     try {
         lst1.insert_after(0, 0);
     }
@@ -53,7 +64,7 @@ void test_list(bool test_visible = true)
     list<int> lst2(lst1);
     lst2.show();
     if (lst1 == lst2)
-        std::cout << "equal!\n";
+        std::cout << "equal!\n";*/
     sep("LIST TEST ENDED");
 }
 
@@ -194,20 +205,20 @@ void test_queue() {
 }
 
 void test_graph(){
-    using namespace graph_names;
-    Graph grahp1;
+    //using namespace graph_names;
+    //Graph graph1;
 
 }
 
 int main() {
     using namespace std;
     try{
-        //test_list(); //#TODO написать нормально тесты
+        test_list(); //#TODO написать нормально тесты
         //test_stack();
         //test_dynamic_array();
         //test_queue();
         //test_tree();
-        test_graph();
+        //test_graph();
     }
     catch (const list_names::list_exceptions& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
@@ -217,8 +228,8 @@ int main() {
         std::cerr << "Queue exception: " << err.what() << std::endl;}
     catch (const tree_names::tree_exceptions& err){
         std::cerr << "Tree exception: " << err.what() << std::endl;}
-    catch (const graph_names::graph_exceptions& err){
-        std::cerr << "Graph exception: " << err.what() << std::endl;}
+    //catch (const graph_names::graph_exceptions& err){
+    //    std::cerr << "Graph exception: " << err.what() << std::endl;}
     catch (const stack_names::stack_exceptions& err){
         std::cerr << "Stack exception: " << err.what() << std::endl;}
 

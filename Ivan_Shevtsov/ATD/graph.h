@@ -5,8 +5,9 @@
 #ifndef ATD_GRAPH_H
 #define ATD_GRAPH_H
 #include "iostream"
-#include <vector>
-#include <unordered_map>
+#include "list.h"
+#include <limits.h> // for int max func
+
 
 namespace graph_names {
 
@@ -28,97 +29,69 @@ namespace graph_names {
     graph_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
     graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
+    // CONSTANTS
 
-    // EDGE
-    enum edge_state{
-        DOUBLE_LINKED,
-        SINGLY_LINKED,
-        NOT_LINKED
-    };
 
-    class Node;
     class Edge;
+    class Node;
     class Graph;
 
-    typedef std::vector<Edge*> vector_edges;
-    typedef std::vector<Node*> vector_nodes_pointers;
-    int START_VECTOR_NODES_SIZE = 50;  // start for edge vector size and node vector size
-    int START_VECTOR_EDGES_SIZE = 10;
-    int INFINITY = 2147483640;  // big const for Dijkstra`s algorithm
-
+    // EDGE
     class Edge{
     private:
-        edge_state direction;
-        Node* from_node;
-        Node* in_node;
+        Node* source;
+        Node* target;
         int weight;
+    public:
+        Edge(Node* source, Node* target, int weight);
+        ~Edge() = default;
     public:
         friend Graph;
         friend Node;
-        Edge(edge_state state, Node* from, Node* in, int weight) {
-            direction = state;
-            from_node = from;
-            in_node = in;
-            this->weight = weight; }
-        ~Edge();
     };
 
 
     // NODE
     class Node{
     private:
-        vector_edges edges;
-        int node_id;
-
+        list_names::list<Edge*> edges;
+    public:
+        double data;
+    public:
+        Node()=default;
+        explicit Node(double data = 0);
+        Node(double data, Node* source, int weight);
+        ~Node();
+    public:
+        Node* add_edge(Node* target, int weight);
+        Node* del_edge(Node* target, int weight);
     public:
         friend Graph;
-        double data;
-        static int node_counter;  // for node id generator // todo: do it private
-
-        Node() ;
-
-        Node(const Node& other);
-        Node& operator=(const Node& other){}  //#todo
-        ~Node();
-
-        Node(double data);
-        Node(double data, Node* link_from_this, int edge_weight, edge_state state = SINGLY_LINKED);
-
-        static int get_node_count(){ return node_counter; }
-        int get_node_id() { return node_id; }
-        void push_edge(Edge* edge){ edges.push_back(edge);}
-        Node* add_edge(Node* link_from_this, int edge_weight, edge_state state = SINGLY_LINKED);
-        Node* delete_edge(Node* linked_node);
-
     };
-
-    int Node::node_counter = 0;
-
-
 
 
     //GRAPH
+    typedef list_names::list<Node*> LISTOFNODES;
     class Graph {
     private:
-        vector_nodes_pointers nodes;
-
+        LISTOFNODES nodes;
+        static const int INF = INT_MAX; // big const for Dijkstra`s algorithm
     public:
         Graph();
         Graph(Node* root);
         Graph(double data);
-
-        void add_node(double data);
-        void add_edge(Node* link_from_this, Node* link_in_this, int weight, edge_state state = SINGLY_LINKED);
-        void delete_node(double data);
-        void delete_edge(Node* first_node, Node* second_node);
-        int node_count() { return Node::get_node_count();}
-
-        Graph& dijkstra_algorithm(Node* start_node, Node* target_node);
+        ~Graph() {clear();};
+    public:
+        bool add_node(double data);
+        bool add_edge(Node* link_from_this, Node* link_in_this, int weight);
+        bool del_node(double data);  // add bool FLAG_DELL_ALL_WITH_DATA = true #todo
+        bool del_edge(Node* first_node, Node* second_node);
 
         //void show();
         void clear();
+    public:
+        Graph& dijkstra_algorithm(Node* start_node, Node* target_node);
 
-        ~Graph() {clear();};
     };
 
 

@@ -1,3 +1,4 @@
+/*
 //
 // Created by ivan on 03/04/23.
 //
@@ -6,19 +7,20 @@
 
 using namespace graph_names;
 
-
-Node::Node(double data, Node *link_from_this, int edge_weight, edge_state state) {
-    this->data = data;
-    Edge *newEdge = new Edge(state, link_from_this, this, edge_weight);
-    edges.resize(START_VECTOR_EDGES_SIZE);
-    edges.push_back(newEdge);
-
-    // id generator
-    node_counter++;
-    node_id = node_counter;
+Edge::Edge(Node* source, Node* target, int weight){
+    this->source = source;
+    this->target = target;
+    this->weight = weight;
 }
 
-Node *Node::add_edge(Node *link_from_this, int edge_weight, edge_state state) {
+
+Node::Node(double data, Node* source, int weight) {
+    this->data = data;
+    Edge *newEdge = new Edge(source, this, weight);
+    edges.push(newEdge);
+}
+
+Node *Node::add_edge(Node* target, int weight) {
     // relinking check
     for (int idx = 0; idx < edges.size(); idx++){
         if (edges[idx]->from_node == link_from_this){
@@ -55,21 +57,7 @@ Node *Node::delete_edge(Node *linked_node) {
 }
 
 
-Node::Node(){
-    data = 0;
-    edges.resize(START_VECTOR_EDGES_SIZE);
 
-    node_counter++;
-    node_id = node_counter;
-}
-
-Node::Node(const Node &other) {
-    data = other.data;
-    edges = other.edges;
-
-    node_counter++;
-    node_id = node_counter;
-}
 
 Graph::Graph() {
     nodes.resize(START_VECTOR_NODES_SIZE);
@@ -86,11 +74,6 @@ Node::~Node() {
 
 Node::Node(double data) {
     this->data = data;
-    edges.resize(START_VECTOR_EDGES_SIZE);
-
-    // id generator
-    node_counter++;
-    node_id = node_counter;
 }
 
 Graph::Graph(double data):Graph() {
@@ -109,8 +92,10 @@ void Graph::add_edge(Node *link_from_this, Node *link_in_this, int weight, edge_
 }
 
 void Graph::delete_node(double data) {
-    /**removes ALL nodes in which the data field is equal to the requested one
     */
+/**removes ALL nodes in which the data field is equal to the requested one
+    *//*
+
 
     for (auto running_node: nodes){
         if (running_node->data == data) {
@@ -173,14 +158,17 @@ Graph& Graph::dijkstra_algorithm(Node *start_node, Node *target_node) {
 
         if (change_flag){
             change_flag = false;
-            //
+
         }
 
         if (node_with_min_weight == nullptr){
+            // проверить, возможно мы посмотрили все связи уже
+
             auto tmp = min_weight;
             change_flag = true;
             node_with_min_weight.
         }
+
         Node *new_ans_node = new Node(node_with_min_weight->data);
         ans.add_node(new_ans_node->data);
         ans.add_edge(ans.nodes[ans.nodes.size()], new_ans_node, 0);
@@ -204,3 +192,14 @@ Edge::~Edge() {
     in_node = nullptr;
     weight = 0;
 }
+    Edge::Edge(edge_state
+    state, Node * from, Node * in, int
+    weight){
+
+    }
+    Edge::Edge(edge_state
+    state, Node * from, Node * in, int
+    weight){
+
+    }
+*/
