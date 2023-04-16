@@ -148,5 +148,59 @@ void Graph::show() {
     std::cout << "END OF GRAPH\n";
 }
 
+Path &Graph::dijkstra_algorithm(Node *start_node, Node *target_node) {
+    Path ans(start_node);
+    start_node->distance = 0;
+    start_node->visited = true;
 
+    Node* running_node = start_node;
+    while (running_node != target_node){
+        Node* min_dist_node = target_node;
+        for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
+            if (it.current_node->data->target->distance > it.current_node->data->weight +
+                                                          it.current_node->data->source->distance)
+                it.current_node->data->target->distance = it.current_node->data->weight +
+                                                          it.current_node->data->source->distance;
+            if (it.current_node->data->target->distance < min_dist_node->distance){
+                min_dist_node = it.current_node->data->target;
+                it.current_node->data->target->visited = true;
+            }
+        }
+        ans.add_node(min_dist_node);
+        running_node = min_dist_node;
+    }
 
+    for (auto &&node: nodes){
+        if (!node->visited){
+            running_node = node;
+            Node* min_dist_node = target_node;
+            for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
+                if (it.current_node->data->target->distance > it.current_node->data->weight +
+                                                              it.current_node->data->source->distance)
+                    it.current_node->data->target->distance = it.current_node->data->weight +
+                                                              it.current_node->data->source->distance;
+                if (it.current_node->data->target->distance < min_dist_node->distance){
+                    min_dist_node = it.current_node->data->target;
+                    it.current_node->data->target->visited = true;
+                }
+            }
+            ans.add_node(min_dist_node);  // del old
+        }
+
+    }
+
+    return ans;
+}
+
+Path::~Path() {
+    path_nodes.clear();
+}
+
+Path::Path(Node *root) {
+    path_nodes.push(root);
+
+}
+
+void Path::add_node(Node *target) {
+    path_nodes.push(target);
+}

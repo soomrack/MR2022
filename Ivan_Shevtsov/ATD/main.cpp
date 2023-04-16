@@ -33,21 +33,16 @@ void test_list(bool test_visible = true)
     lstTest.push(4);
     lstTest.push(5);
 
-    //lstTest.iter_show();
     for (auto &&node: lstTest){
         std::cout << node << std::endl;
     }
 
-    for (auto &&node: lstTest){
-        std::cout << node << std::endl;
-    }
-    std::cout << lstTest.lenght() << std::endl;
-/*    list<int> lst1;
+    list<int> lst1;
     try {
         lst1.insert_after(0, 0);
     }
     catch (list_exceptions& ex){
-        std::cerr << "List exception: " << ex.what() << std::endl;}
+        std::cerr << "List exception in func: " << ex.what() << std::endl;}
     lst1.push(1);
     lst1.push(2);
     lst1.push(3);
@@ -64,12 +59,13 @@ void test_list(bool test_visible = true)
     sep("del after");
     lst1.delete_after(3);
     lst1.show();
-    std::cout << lst1[1] << "\n";
+
     sep("list 2");
     list<int> lst2(lst1);
     lst2.show();
+    lst1.show();
     if (lst1 == lst2)
-        std::cout << "equal!\n";*/
+        std::cout << "equal!\n";
     sep("LIST TEST ENDED");
 }
 
@@ -223,6 +219,7 @@ void test_graph(){
     Node* node6 = new Node(6);
     Node* node7 = new Node(7);
 
+
     graph1.add_node(node1);
     graph1.add_node(node2);
     graph1.add_node(node3);
@@ -242,9 +239,19 @@ void test_graph(){
     graph1.add_edge(node5, node2, 6);
     graph1.add_edge(node4, node6, 7);
 
+    Node* delNode1 = new Node(2);
+    Node* delNode2 = new Node(2);
+    graph1.add_node(delNode1);
+    graph1.add_node(delNode2);
+    graph1.add_edge(delNode1, delNode2, 2);
+    graph1.add_edge(delNode2, delNode1, 3);
+    graph1.add_edge(node2, delNode2, 4);
+    graph1.add_edge(node1, delNode1, 4);
+
+
     graph1.show();
     sep();
-    graph1.del_node(2, true);
+    graph1.del_node(2, false);
     graph1.show();
     sep("GRAPH TEST ENDED");
 }
@@ -267,8 +274,8 @@ int main() {
         std::cerr << "Queue exception: " << err.what() << std::endl;}
     catch (const tree_names::tree_exceptions& err){
         std::cerr << "Tree exception: " << err.what() << std::endl;}
-    //catch (const graph_names::graph_exceptions& err){
-    //    std::cerr << "Graph exception: " << err.what() << std::endl;}
+    catch (const graph_names::graph_exceptions& err){
+        std::cerr << "Graph exception: " << err.what() << std::endl;}
     catch (const stack_names::stack_exceptions& err){
         std::cerr << "Stack exception: " << err.what() << std::endl;}
 

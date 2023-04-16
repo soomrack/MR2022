@@ -34,6 +34,7 @@ namespace graph_names {
     class Edge;
     class Node;
     class Graph;
+    class Path;
 
     // EDGE
     struct Edge{
@@ -55,6 +56,9 @@ namespace graph_names {
     class Node{
     private:
         list_names::list<Edge*> edges;
+
+        bool visited = false;  // for Dijkstra`s algorithm
+        int distance = INT_MAX;
     public:
         double data;
     public:
@@ -66,17 +70,16 @@ namespace graph_names {
         void add_edge(Node* target, int weight);
         int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
         bool operator==(Node const& other) const {return data == other.data;}
+        int get_distance() const{return distance;}
     public:
         friend Graph;
     };
 
 
     //GRAPH
-    typedef list_names::list<Node*> LISTOFNODES;
     class Graph {
     private:
-        LISTOFNODES nodes;
-        static const int INF = INT_MAX; // big const for Dijkstra`s algorithm
+        list_names::list<Node*> nodes;
     public:
         Graph() = default;
         explicit Graph(Node* root);
@@ -93,8 +96,21 @@ namespace graph_names {
         void show();
         void clear();
     public:
-        Graph& dijkstra_algorithm(Node* start_node, Node* target_node);
+        Path& dijkstra_algorithm(Node* source, Node* target);
 
+    };
+
+    class Path{
+        list_names::list<Node*> path_nodes;
+    public:
+        Path() = delete;
+        Path(Node* root);
+        Path(const Path&) = delete;
+        Path& operator=(const Path&) = delete;
+        ~Path();
+
+        void add_node(Node* target);
+        int lenght() {return path_nodes.begin().current_node->data->get_distance();}
     };
 
 } // graph_names

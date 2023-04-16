@@ -25,20 +25,21 @@ namespace list_names {
     list_exceptions INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element. "
                                    "List was created and data pushed");*/
 
+
     // NODE
     template<typename T>
-    struct Node {  //todo: правило трех: добавить конструктор копирования и оператор=
+    struct Node {
         T data;
         Node *p_next;
-
+    public:
         Node();
         Node(T data, Node<T> *p_next = nullptr): data(data), p_next(p_next){}
-        ~Node() { p_next = nullptr; }
+        ~Node() { p_next = nullptr;}
 
-        void push_next(Node<T> *other) { p_next = other; }
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
         bool operator==(Node<T> const& other) const {return data == other.data;}
     };
-
 
 
     // LIST
@@ -49,8 +50,8 @@ namespace list_names {
         Node<T> *head;
     public:
         list();
-        list( list &other);  //todo: const add
-        Node<T>& operator=(list & other);
+        list(const list &other);
+        list& operator=(list & other) = delete;
         ~list();
 
     public:
@@ -69,26 +70,10 @@ namespace list_names {
         private:
             ListIterator(p_node current_node) : current_node(current_node) {}
         public:
-            //ListIterator(const ListIterator& it): current_node(it.current_node){} todo fix it
-
-            bool operator!=(ListIterator const& other) const{
-                return current_node != other.current_node;
-            }
-            bool operator==(ListIterator const& other) const{
-                return current_node == other.current_node;
-            }
-
-            T operator*() const{
-
-                return current_node->data;
-            }
-
-            ListIterator& operator++(){
-
-                if (current_node == nullptr) { return *this; }
-                current_node = current_node->p_next;
-                return *this;
-            }
+            T operator*() const{ return current_node->data;}
+            ListIterator& operator++();
+            bool operator!=(ListIterator const& other) const{return current_node != other.current_node;}
+            bool operator==(ListIterator const& other) const{ return current_node == other.current_node;}
         };
 
         typedef ListIterator<Node<T>*> iterator;
@@ -107,7 +92,6 @@ namespace list_names {
         T front() { return head->data; }
         bool is_empty(){ return (head == nullptr); }
         int lenght() { return size; }
-
     public:
         void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
@@ -117,11 +101,19 @@ namespace list_names {
         void pop();
 
         void clear();
-        void show();  // Q: del it?
+        void show();  // old version without iterator
 
         bool operator==(const list &other);
         bool operator!=(const list &other);
     };
+
+    template<typename T>
+    template<class p_node>
+    list<T>::ListIterator<p_node> &list<T>::ListIterator<p_node>::operator++() {
+        if (current_node == nullptr) { return *this; }
+        current_node = current_node->p_next;
+        return *this;
+    }
 
     template<typename T>
     bool list<T>::find_and_delete(T data) {
@@ -153,29 +145,9 @@ namespace list_names {
        size--;
     }
 
-
-    template<typename T>
-    Node<T>& list<T>::operator=(list& other) {
-        this->size = other.size;
-        if (other.head == nullptr) {
-            this->head = nullptr;
-        } else {
-            head = new Node<T>(other.head->data);
-
-            Node<T> *current_node = head;
-            for (unsigned idx = 1; idx < other.size; idx++) {
-                current_node->p_next = new Node<T>(other[idx]);
-                current_node = current_node->p_next;
-            }
-
-        }
-        return *this;
-    }
-
-
     template<typename T>
     bool list<T>::operator!=(const list &other) {
-        return this != other;
+        return !(this == other);
     }
 
     template<typename T>
@@ -195,17 +167,19 @@ namespace list_names {
     }
 
     template<typename T>
-    list<T>::list( list &other) {
-        this->size = other.size;
+    list<T>::list(const list &other) {
+        size = other.size;
         if (other.head == nullptr) {
-            this->head = nullptr;
+            head = nullptr;
         } else {
             head = new Node<T>(other.head->data);
 
-            Node<T> *current_node = head;
+            Node<T> *first_running_node = head;
+            Node<T> *second_running_node = other.head;
             for (unsigned idx = 1; idx < other.size; idx++) {
-                current_node->p_next = new Node<T>(other[idx]);
-                current_node = current_node->p_next;
+                first_running_node->p_next = new Node<T>(second_running_node->p_next->data);
+                first_running_node =  first_running_node->p_next;
+                second_running_node = second_running_node->p_next;
             }
         }
     }
