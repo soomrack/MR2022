@@ -42,21 +42,20 @@ int Node::del_edge(Node *target, int weight, bool delete_only_one_flag) {
     /**
      * @return number of remotes edges
      */
+
     Edge* tmpEdge = new Edge(this, target, weight);
-    auto* tmpNode  = new list_names::Node<Edge*>(tmpEdge);
 
     int deleted_edges_counter = 0;
     if (delete_only_one_flag) {
-        if (edges.find_and_delete(tmpNode)){
+        if (edges.find_and_delete(tmpEdge)){
             return 1;
         } else { return 0; }
     }else {
-        while (edges.find_and_delete(tmpNode)){
+        while (edges.find_and_delete(tmpEdge)){
             deleted_edges_counter++;
         }
     }
 
-    delete tmpNode;
     delete tmpEdge;
     return deleted_edges_counter;
 }
@@ -72,45 +71,46 @@ Graph::Graph(double data) {
 }
 
 void Graph::add_node(Node* newNode) {
-    nodes.push(newNode); // todo: push all the nodes in root edges
+    nodes.push(newNode);
 }
 
 void Graph::add_edge(Node *source, Node *target, int weight) {
-    source->add_edge(target, weight); // todo: push all the nodes in root edges
+    source->add_edge(target, weight);
 }
 
-int Graph::del_node(double data, bool delete_all_with_data_flag) {
+int Graph::del_node(double data, bool delete_only_one_flag) {
     /**
     * @return number of remotes nodes in graph
     */
 
     int deleted_nodes_counter = 0;
-    auto it = nodes.begin();
-
-    // checks the head node of the list, if it is, then delete it and calls pop()
-    if (it.current_node->data->data == data){
-        nodes.pop();
-        delete it.current_node->data;
+    auto* tmpNode = new Node(data);
+    if (delete_only_one_flag){
+        if (!nodes.find_and_delete(tmpNode)) {return 0;}
         deleted_nodes_counter++;
-        if (!delete_all_with_data_flag) {return deleted_nodes_counter;}
-    }
+        for (auto &&node: nodes){  // Q: вот этот момент чую как то неправильно делаю, навероне можно без вложенного цикла
+                                            // можно попробовать заменить на пустую ноду, но тогда постоянное добавление и удаление будут засорять память
+            for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
 
-    // checks the other nodes of the list, if it is, then delete it and calls delete_after(node)
-    if (delete_all_with_data_flag) {
-        for (it = nodes.begin(); it != nodes.end(); ++it) {
-            if (it.current_node->p_next->data->data == data) {
-                nodes.delete_after(it.current_node);
-
-                deleted_nodes_counter++;
+                if (it.current_node->data->target->data == data){
+                    auto tmp = it.current_node->p_next;
+                    del_edge(node, it.current_node->data->target, it.current_node->data->weight);
+                    it.current_node = tmp;
+                }
             }
         }
     } else {
-        for (it = nodes.begin(); it != nodes.end(); ++it) {
-            if (it.current_node->p_next->data->data == data) {
-                auto tmpEdge = it.current_node->data;
-                nodes.delete_after(it.current_node);
-                delete it.current_node->data;
-                break;
+        while (nodes.find_and_delete(tmpNode)){
+            if (!nodes.find_and_delete(tmpNode)) {return 0;}
+            deleted_nodes_counter++;
+            for (auto &&node: nodes){  // Q: это вообще ужас! три уровня вложенности, но я не понимаю как иначе
+                for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
+                    if (it.current_node->data->target->data == data){
+                        auto tmp = it.current_node->p_next;
+                        del_edge(node, it.current_node->data->target, it.current_node->data->weight);
+                        it.current_node = tmp;
+                    }
+                }
             }
         }
     }

@@ -37,7 +37,7 @@ void test_list(bool test_visible = true)
     for (auto &&node: lstTest){
         std::cout << node << std::endl;
     }
-    lstTest.TEST();
+
     for (auto &&node: lstTest){
         std::cout << node << std::endl;
     }
@@ -235,6 +235,7 @@ void test_graph(){
     graph1.add_edge(node1, node4, 2);
     graph1.add_edge(node1, node4, 3);
     graph1.add_edge(node2, node3, 4);
+    graph1.add_edge(node1, node4, 3);
     graph1.add_edge(node2, node4, 5);
     graph1.add_edge(node3, node2, 6);
     graph1.add_edge(node4, node1, 1);
@@ -243,7 +244,7 @@ void test_graph(){
 
     graph1.show();
     sep();
-    graph1.del_edge(node1, node4, 2);
+    graph1.del_node(2, true);
     graph1.show();
     sep("GRAPH TEST ENDED");
 }

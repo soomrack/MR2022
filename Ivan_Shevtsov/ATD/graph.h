@@ -65,6 +65,7 @@ namespace graph_names {
     public:
         void add_edge(Node* target, int weight);
         int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
+        bool operator==(Node const& other) const {return data == other.data;}
     public:
         friend Graph;
     };
@@ -86,7 +87,7 @@ namespace graph_names {
     public:
         void add_node(Node* newNode);
         void add_edge(Node* source, Node* target, int weight);
-        int del_node(double data, bool delete_all_with_data_flag = false);
+        int del_node(double data, bool delete_only_one_flag = false); // Q: вот это сделано отвратительно!
         int del_edge(Node* source, Node* target, int weight, bool delete_only_one_flag = false);
 
         void show();
