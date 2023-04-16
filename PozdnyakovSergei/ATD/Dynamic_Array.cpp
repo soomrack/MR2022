@@ -55,7 +55,6 @@ DynArray::~DynArray() {
 
 
 void DynArray::fill_random(int num) {
-    cout << "Fill randomly" << "\n";
     srand(time(NULL));
     array = new unsigned int[num];
     for (int i = 0; i < num - 1; ++i) {
@@ -66,7 +65,6 @@ void DynArray::fill_random(int num) {
 
 
 void DynArray::add(int value, int number) {
-    cout << "Adding an " << value << " on place " << number << "\n";
     unsigned int *temp = new unsigned int[size + 1];
     for (int i = 0; i < number; ++i) {
         temp[i] = array[i];
@@ -82,7 +80,6 @@ void DynArray::add(int value, int number) {
 
 
 void DynArray::remove(int number) {
-    cout << "Remove element on place " << number << "\n";
     unsigned int *temp = new unsigned int[size - 1];
     for (int i = 0; i < number; ++i) {
         temp[i] = array[i];
