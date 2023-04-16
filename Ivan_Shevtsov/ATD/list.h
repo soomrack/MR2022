@@ -32,11 +32,14 @@ namespace list_names {
         Node *p_next;
 
         Node();
-        Node(T data, Node<T> *p_next = nullptr);
+        Node(T data, Node<T> *p_next = nullptr): data(data), p_next(p_next){}
         ~Node() { p_next = nullptr; }
+        bool operator==(Node<T> const& other) const;
 
         void push_next(Node<T> *other) { p_next = other; };
     };
+
+
 
     // LIST
     template<typename T>
@@ -70,6 +73,9 @@ namespace list_names {
 
             bool operator!=(ListIterator const& other) const{
                 return current_node != other.current_node;
+            }
+            bool operator==(ListIterator const& other) const{
+                return current_node == other.current_node;
             }
 
             T operator*() const{
@@ -105,6 +111,7 @@ namespace list_names {
         void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
         void delete_after(Node<T>* after_this);
+        bool find_and_delete(Node<T>* node);
         void push(T data);
         void pop();
         void TEST();
@@ -118,6 +125,25 @@ namespace list_names {
     };
 
     template<typename T>
+    bool list<T>::find_and_delete(Node<T> *node) {
+        /**
+         * @return true if node was find and deleted, else false
+         */
+        if ( head == node ){
+            pop();
+            return true;
+        }
+        for (iterator it = begin(); it != end(); ++it){
+            if (it.current_node->p_next == nullptr) {return false; }
+            if (*(it.current_node->p_next->data) == *(node->data)) {
+                delete_after(it.current_node);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<typename T>
     void list<T>::TEST() {
         delete_after(head);
     }
@@ -125,7 +151,7 @@ namespace list_names {
     template<typename T>
     void list<T>::delete_after(Node<T> *after_this) {
        Node<T> *tmp = after_this->p_next->p_next;
-        delete after_this->p_next;
+       delete after_this->p_next;
        after_this->p_next = tmp;
        size--;
     }
@@ -268,6 +294,11 @@ namespace list_names {
     }
 
     template<typename T>
+    bool Node<T>::operator==(const Node<T> &other) const {
+        return (data == other.data);
+    }
+
+    template<typename T>
     void list<T>::pop() {
         if (head == nullptr) {
             list_exceptions POP_ERROR("can`t pop from empty list");
@@ -282,12 +313,6 @@ namespace list_names {
         delete head;
         head = tmp;
         size--;
-    }
-
-    template<typename T>
-    Node<T>::Node(T data, Node<T> *p_next) {
-        this->data = data;
-        this->p_next = p_next;
     }
 
     template<typename T>

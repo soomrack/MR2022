@@ -36,21 +36,18 @@ namespace graph_names {
     class Graph;
 
     // EDGE
-    class Edge{
-    private:
+    struct Edge{
         Node* source;
         Node* target;
         int weight;
-    public:
-        Edge() = delete;
-        Edge(const Edge&) = delete;
-        Edge& operator=(const Edge&) = delete;
 
         Edge(Node* source, Node* target, int weight);
         ~Edge();
-    public:
-        friend Graph;
-        friend Node;
+
+        Edge() = delete;
+        Edge(const Edge&) = delete;
+        Edge& operator=(const Edge&) = delete;
+        bool operator==(Edge const& other) const;
     };
 
 
@@ -61,7 +58,7 @@ namespace graph_names {
     public:
         double data;
     public:
-        Node()=delete;
+        Node() = delete;
         explicit Node(double data = 0);
         Node(double data, Node* source, int weight);
         ~Node();
@@ -87,12 +84,12 @@ namespace graph_names {
         Graph& operator=(const Graph&) = delete;
         ~Graph() {clear();}
     public:
-        void add_node(double data);
+        void add_node(Node* newNode);
         void add_edge(Node* source, Node* target, int weight);
         int del_node(double data, bool delete_all_with_data_flag = false);
         int del_edge(Node* source, Node* target, int weight, bool delete_only_one_flag = false);
 
-        //void show();
+        void show();
         void clear();
     public:
         Graph& dijkstra_algorithm(Node* start_node, Node* target_node);

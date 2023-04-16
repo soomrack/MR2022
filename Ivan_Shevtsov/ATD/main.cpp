@@ -5,7 +5,7 @@
 #include "dynamic_array.h"
 #include "queue.h"
 #include "tree.h"
-//#include "graph.h"
+#include "graph.h"
 
 //#define DEBUG
 
@@ -210,20 +210,53 @@ void test_queue() {
 }
 
 void test_graph(){
-    //using namespace graph_names;
-    //Graph graph1;
+    using namespace graph_names;
+    Graph graph1;
+    sep("GRAPH TEST STARTED");
 
+    // input
+    Node* node1 = new Node(1);
+    Node* node2 = new Node(2);
+    Node* node3 = new Node(3);
+    Node* node4 = new Node(4);
+    Node* node5 = new Node(5);
+    Node* node6 = new Node(6);
+    Node* node7 = new Node(7);
+
+    graph1.add_node(node1);
+    graph1.add_node(node2);
+    graph1.add_node(node3);
+    graph1.add_node(node4);
+    graph1.add_node(node5);
+    graph1.add_node(node6);
+    graph1.add_node(node7);
+
+    graph1.add_edge(node1, node2, 1);
+    graph1.add_edge(node1, node4, 2);
+    graph1.add_edge(node1, node4, 3);
+    graph1.add_edge(node2, node3, 4);
+    graph1.add_edge(node2, node4, 5);
+    graph1.add_edge(node3, node2, 6);
+    graph1.add_edge(node4, node1, 1);
+    graph1.add_edge(node5, node2, 6);
+    graph1.add_edge(node4, node6, 7);
+
+    graph1.show();
+    sep();
+    graph1.del_edge(node1, node4, 2);
+    graph1.show();
+    sep("GRAPH TEST ENDED");
 }
 
 int main() {
     using namespace std;
     try{
-        test_list(); //#TODO написать нормально тесты
+        //test_list(); //#TODO написать нормально тесты
         //test_stack();
         //test_dynamic_array();
         //test_queue();
         //test_tree();
-        //test_graph();
+        test_graph();
     }
     catch (const list_names::list_exceptions& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
