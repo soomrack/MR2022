@@ -4,229 +4,171 @@
 #include <iostream>
 
 template<class T>
-class ListMember{
+class Node{
 public:
 	T data;
-	int* list_size = nullptr;
-	ListMember* next = NULL;
-	explicit ListMember(int* size = nullptr){ list_size = size;};
-	~ListMember(){};
-	ListMember(ListMember& other);
-	ListMember(ListMember&& other) noexcept;
-	ListMember<T>& operator=(const ListMember<T>& other);
-	ListMember<T>& operator=(ListMember<T>&& other) noexcept;
-	bool operator==(ListMember<T> other);
-	bool operator!=(ListMember<T> other);
-	void push_next(T new_member);
-	void pop_next();
+	Node* next;
+	void push_next(T new_data);
+	T pop_next();
+	explicit Node(T new_data){data = new_data; next = NULL;}
 };
 
+
 template<typename Type>
-ListMember<Type> empty;
+Node<Type> empty(0);
 
 template<class Type>
 class LinkedList{
 private:
-	ListMember<Type>* head;
-	ListMember<Type>* tail;
-	int list_size = 0;
+	Node<Type>* head;
 public:
 	LinkedList();
-	~LinkedList(){};
-	ListMember<Type>* operator[](int ind);
+	~LinkedList();
 	int size() const;
-	void push_head(Type new_member);
-	void push_tail(Type new_member);
-
-	void pop_front();
-	void pop_back();
-
-	void clear();
-	ListMember<Type>* get_head();
-	ListMember<Type>* get_tail();
+	void push_head(Type new_data);
+	void push_tail(Type new_data);
+	Type pop_head();
+	Type pop_tail();
+	Node<Type>* get_head();
+	Node<Type>* get_tail();
+	Node<Type>* get(unsigned int ind);
 };
 
-template<class T>
-ListMember<T> &ListMember<T>::operator=(const ListMember<T> &other) {
-	data = other.data;
-	if (other.next){
-		next = &other.next;
-	}
-	return *this;
-}
 
 template<class T>
-ListMember<T> &ListMember<T>::operator=(ListMember<T> &&other) noexcept {
-	data = other.data;
-	next = other.next;
-	return *this;
-}
-
-template<class T>
-ListMember<T>::ListMember(ListMember &other) {
-	*this = other;
-}
-
-template<class T>
-ListMember<T>::ListMember(ListMember &&other) noexcept {
-	*this = other;
-}
-
-template<class T>
-bool ListMember<T>::operator==(ListMember<T> other) {
-	if(data != other.data){
-		return false;
-	}
-	if(&next != &other.next){
-		return false;
-	}
-	return true;
-}
-
-
-template<class T>
-bool ListMember<T>::operator!=(ListMember<T> other) {
-	return !(*this==other);
-}
-
-template<class T>
-void ListMember<T>::push_next(T new_member) {
-	ListMember<T>* new_next = new ListMember<T>(list_size);
-	new_next->data = new_member;
+void Node<T>::push_next(T new_data) {
+	auto new_next = new Node<T>(new_data);
 	new_next->next = next;
 	next = new_next;
-	*list_size += 1;
 }
 
 template<class T>
-void ListMember<T>::pop_next() {
+T Node<T>::pop_next() {
 	if(next){
-		ListMember<T>* new_next = next->next;
-		next->next = NULL;
+		T pop_data = next->data;
+		Node<T>* new_next = next->next;
+		delete next;
 		next = new_next;
-		*list_size -= 1;
+		return pop_data;
+	}
+	else{
+		return NULL;
 	}
 }
+
 
 template<class Type>
 LinkedList<Type>::LinkedList() {
-	list_size = 0;
 	head = NULL;
-	tail = NULL;
 }
 
 template<class Type>
-void LinkedList<Type>::push_tail(Type new_member) {
-	list_size += 1;
-	if(list_size == 1){
-		head = new ListMember<Type>(&list_size);
-		head->data = new_member;
-		tail = head;
+LinkedList<Type>::~LinkedList() {
+	auto iter_member = head;
+	while (iter_member != NULL){
+		auto next_iter = iter_member->next;
+		delete iter_member;
+		iter_member = next_iter;
 	}
-	else{
-		ListMember<Type>* old_tail = tail;
-		tail = new ListMember<Type>(&list_size);
-		tail->data = new_member;
-		old_tail->next = tail;
-	}
-
-}
-
-template<class Type>
-void LinkedList<Type>::push_head(Type new_member) {
-	list_size += 1;
-
-	if (list_size == 1) {
-		head = new ListMember<Type>(&list_size);
-		head->data = new_member;
-		tail = head;
-	} else {
-		ListMember<Type> *old_head = head;
-		head = new ListMember<Type>(&list_size);
-		head->data = new_member;
-		head->next = old_head;
-	}
-
 }
 
 
 template<class Type>
-ListMember<Type>* LinkedList<Type>::operator[](int ind) {
-	ListMember<Type>* next_member = head;
-	if(ind > list_size - 1){
-		std::cout << "\nOut of bounds\n";
-		return &empty<Type>;
-	}
-
-	for(int i = 1; i <= ind; i++){
-		next_member = next_member->next;
-	}
-	return next_member;
+void LinkedList<Type>::push_head(Type new_data) {
+	Node<Type> *old_head = head;
+	head = new Node<Type>(new_data);
+	head->next = old_head;
 }
 
+template<class Type>
+void LinkedList<Type>::push_tail(Type new_data) {
+	auto tail = get_tail();
+	if(tail == NULL){
+		head = new Node<Type>(new_data);
+		return;
+	}
+	auto new_tail = new Node<Type>(new_data);
+	tail->next = new_tail;
+}
 
 
 template<class Type>
 int LinkedList<Type>::size() const {
+	int list_size = 0;
+	Node<Type>* iter_member = head;
+	while (iter_member != NULL){
+		list_size += 1;
+		iter_member = iter_member->next;
+	}
 	return list_size;
 }
 
+
 template<class Type>
-void LinkedList<Type>::pop_front() {
-	if(list_size < 1){
-		return;
+Type LinkedList<Type>::pop_head() {
+	if(head == NULL){
+		return NULL;
 	}
-	if(list_size == 1){
-		list_size = 0;
-		head->next = NULL;
-		head = NULL;
-		tail = NULL;
-		return;
-	}
-	ListMember<Type>* old_head = head;
+	Type pop_data = head->data;
+	Node<Type>* old_head = head;
 	head = old_head->next;
-	old_head->next = NULL;
-	list_size -= 1;
+	delete old_head;
+	return pop_data;
 }
 
+
 template<class Type>
-void LinkedList<Type>::pop_back() {
-	if(list_size < 1){
-		return;
+Type LinkedList<Type>::pop_tail() {
+	auto new_tail = head;
+	auto old_tail = get_tail();
+	if(new_tail == NULL) {
+		return NULL;
 	}
-	if(list_size == 1){
-		list_size = 0;
-		head->next = NULL;
+	if(new_tail == old_tail){
+		Type pop_data = old_tail->data;
+		delete old_tail;
 		head = NULL;
-		tail = NULL;
-		return;
+		return pop_data;
 	}
-	ListMember<Type>* old_tail = tail;
-	tail = head;
-	while(tail->next != old_tail){
-		tail = tail->next;
+	while (new_tail->next != old_tail) {
+		new_tail = new_tail->next;
 	}
-	tail->next = NULL;
-	list_size -= 1;
+	return new_tail->pop_next();
 }
 
-template<class Type>
-void LinkedList<Type>::clear() {
-	head = NULL;
-	tail = NULL;
-	list_size = 0;
-}
 
 template<class Type>
-ListMember<Type> *LinkedList<Type>::get_head() {
+Node<Type> *LinkedList<Type>::get_head() {
 	return head;
 }
 
+
 template<class Type>
-ListMember<Type> *LinkedList<Type>::get_tail() {
+Node<Type> *LinkedList<Type>::get_tail() {
+	Node<Type>* tail = head;
+	if(tail != NULL) {
+		while (tail->next != NULL) {
+			tail = tail->next;
+		}
+	}
 	return tail;
 }
 
+template<class Type>
+Node<Type> *LinkedList<Type>::get(unsigned int ind) {
+	auto NeedNode = head;
+	for(int i = 0; i < ind; i++){
+		if(NeedNode != NULL){
+			NeedNode = NeedNode->next;
+		}
+		else{
+			std::cout << "Out of bounds!";
+			NeedNode = &empty<Type>;
+			return NeedNode;
+		}
+	}
+	return NeedNode;
+}
 
 
 

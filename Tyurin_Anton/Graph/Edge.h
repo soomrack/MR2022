@@ -1,0 +1,30 @@
+#ifndef UNTITLED_EDGE_H
+#define UNTITLED_EDGE_H
+
+
+#include "GraphNode.h"
+
+
+class GraphNode;
+
+class Edge{
+    GraphNode* loc;
+    GraphNode* dest;
+public:
+    Edge(GraphNode* loc_, GraphNode* dest_){
+        loc = loc_;
+        dest = dest_;
+    };
+
+    GraphNode *getDest() {
+        return this->dest;
+    }
+
+    GraphNode *getLoc() {
+        return this->dest;
+    }
+};
+
+
+
+#endif //UNTITLED_EDGE_H

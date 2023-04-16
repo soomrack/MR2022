@@ -3,7 +3,7 @@
 #include "stack.h"
 #include "list.h"
 #include "tree.h"
-
+#include <unordered_map>
 
 void test_dynamic_array() {
     int A_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -38,22 +38,24 @@ void test_list() {
 
     A.head() = 100;
     A.tail() = 200;
-
 }
 
-#include <functional>
+
 
 int main() {
-    int data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int data[10] = {50, -4, 6, 1, 2, 3, -10, 9, -8, 7};
     Tree<int> tree;
 
     for (auto& element : data) {
         tree.insert(element);
     }
 
-    tree.find(4);
-    tree.find(12);
+    tree.remove(6);
 
+    for (auto& element : data) {
+        if (tree.find(element)) std::cout << "Found element " << element << std::endl;
+        else std::cout << "Element " << element << " not found" << std::endl;
+    }
 
     return 0;
 }
