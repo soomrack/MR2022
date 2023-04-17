@@ -61,7 +61,7 @@ void Stack::push(NodePtrPtr item) {
 
 void Stack::pop() {
     if (isEmpty()) exit(EXIT_FAILURE);
-     sp--;
+    sp--;
 }
 
 
@@ -123,7 +123,7 @@ private:
     void left_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr);
     NodePtrPtr min(NodePtrPtr node);  // node =! TNULL
     NodePtrPtr parent_min(NodePtrPtr  node);  // node =! TNULL
-   // void del_fix (NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) ;
+    // void del_fix (NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) ;
     void del_fix(NodePtr node_to_del, int key);
 };
 
@@ -145,16 +145,12 @@ int RedBlackTree:: hash (){
 
 
 void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) {
-    //std:: cout <<"\n";
-    //std:: cout <<"\n";
-  //  std:: cout <<"__________________BEGIN INSERT FIX____________________\n";
+
     NodePtr count = (*parent_node_ptr);
     while (count->color == 1) {
         PARENT_PTR.print();
         PARENT_PTR.pop();
-        //std:: cout << "node_ptr =  " <<  (*node_ptr)->data << "\n";
-        //std:: cout <<"parent_node_ptr->data =   " <<(*parent_node_ptr)->data <<"\n";
-        //std:: cout <<"parent_parent_node_ptr->data =   " <<(*PARENT_PTR.peek())->data <<"\n";
+
         if ((*PARENT_PTR.peek())->left == *parent_node_ptr) {
             std::cout << "-------MY PARENT IS LEFT-------\n";
             if ((*PARENT_PTR.peek())->right->color == 1) {
@@ -162,8 +158,6 @@ void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) 
                 (*PARENT_PTR.peek())->color = 1;
                 (*PARENT_PTR.peek())->right->color = 0;
                 (*parent_node_ptr)->color = 0;
-                //(*parent_node_ptr) = *PARENT_PTR.peek();
-              //  count = *PARENT_PTR.peek();
                 if ((*PARENT_PTR.peek()) != root) PARENT_PTR.pop();
             } else {
                 std::cout << "-------MY UNKLE IS BLACK-------\n";
@@ -173,7 +167,7 @@ void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) 
                 (*PARENT_PTR.peek())->color = 1;
                 (*parent_node_ptr)->color = 0;
                 right_rotate(node_ptr, parent_node_ptr, PARENT_PTR.peek());
-               break;
+                break;
             }
         } else {
             std::cout << "-------MY PARENT IS RIGHT-------\n";
@@ -183,32 +177,22 @@ void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) 
                 (*PARENT_PTR.peek())->color = 1;
                 (*PARENT_PTR.peek())->left->color = 0;
                 (*parent_node_ptr)->color = 0;
-               // count = *PARENT_PTR.peek();
+                // count = *PARENT_PTR.peek();
                 if ((*PARENT_PTR.peek()) != root) PARENT_PTR.pop();
 
 
             } else {
                 std::cout << "-------MY UNKLE IS BLACK-------\n";
-                /*
-                std:: cout << "node_ptr =  " <<  (*node_ptr)->data << "\n";
-                std:: cout <<"parent_node_ptr->data =   " <<(*parent_node_ptr)->data <<"\n";
-                std:: cout <<"parent_parent_node_ptr->data =   " <<(*PARENT_PTR.peek())->data <<"\n";
-                 */
+
                 if ((*parent_node_ptr)->left == *node_ptr) {
                     right_rotate(node_ptr, node_ptr, parent_node_ptr);
-                    std:: cout <<"PPPPPPPPPPP =   " <<(*PARENT_PTR.peek())->data <<"\n";
+
                 }
                 (*PARENT_PTR.peek())->color = 1;
                 (*parent_node_ptr)->color = 0;
-                    left_rotate(node_ptr, parent_node_ptr, PARENT_PTR.peek());
-                std:: cout << "WHAT\n";
-                PARENT_PTR.print();
-                /*
-                print();
-                std:: cout << "node_ptr =  " <<  (*node_ptr)->data << "\n";
-                std:: cout <<"parent_node_ptr->data =   " <<(*parent_node_ptr)->data <<"\n";
-                std:: cout <<"parent_parent_node_ptr->data =   " <<(*PARENT_PTR.peek())->data <<"\n";
-                 */
+                left_rotate(node_ptr, parent_node_ptr, PARENT_PTR.peek());
+
+
                 break;
 
             }
@@ -218,7 +202,7 @@ void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) 
         node_ptr = parent_node_ptr;
         parent_node_ptr = PARENT_PTR.peek();
         count = *PARENT_PTR.peek();
-       // std::cout <<"_______________________________________________________________________\n";
+        // std::cout <<"_______________________________________________________________________\n";
     }
 
 
@@ -233,8 +217,8 @@ void RedBlackTree:: insert(int key) {
     node->data = key;
     node->left = TNULL;
     node->right = TNULL;
-    NodePtr last_leaf = nullptr;
-    NodePtr root_help = this->root;
+    //  NodePtr last_leaf = nullptr;
+    //  NodePtr root_help = this->root;
     node->color = 1;
     node->key = hash();
     NodePtrPtr parent_new_node_ptr = &(this->root);
@@ -251,26 +235,21 @@ void RedBlackTree:: insert(int key) {
     }
     do {
         PARENT_PTR.push(&(*parent_new_node_ptr));
-if (((*parent_new_node_ptr)->data > key)){
-    if( (*parent_new_node_ptr)->left == TNULL) break;
-    parent_new_node_ptr = &((*parent_new_node_ptr)->left);
+        if (((*parent_new_node_ptr)->data > key)){
+            if( (*parent_new_node_ptr)->left == TNULL) break;
+            parent_new_node_ptr = &((*parent_new_node_ptr)->left);
+        } else {
 
-} else {
+            if( (*parent_new_node_ptr)->right == TNULL) break;
+            parent_new_node_ptr = &((*parent_new_node_ptr)->right);
 
-        if( (*parent_new_node_ptr)->right == TNULL) break;
-        parent_new_node_ptr = &((*parent_new_node_ptr)->right);
+        }
+    } while ((*parent_new_node_ptr) != TNULL );
 
-    }
-        std:: cout << "WHAT\n";
-        PARENT_PTR.print();
-} while ((*parent_new_node_ptr) != TNULL );
+    ((*parent_new_node_ptr)->data > key) ? &((*parent_new_node_ptr)->left = node) :
+    &((*parent_new_node_ptr)->right = node);
 
-   // std:: cout << "parent_new_node_ptr = " << (*parent_new_node_ptr)->data <<"\n";
- //   PARENT_PTR.print();
-     ((*parent_new_node_ptr)->data > key) ? &((*parent_new_node_ptr)->left = node) :
-                          &((*parent_new_node_ptr)->right = node);
-
-    NodePtrPtr  new_node_ptr = {&node};
+    NodePtrPtr  new_node_ptr = &node;
 
     insert_fix(parent_new_node_ptr, new_node_ptr);
     while (PARENT_PTR.isEmpty() != true){
@@ -285,7 +264,7 @@ if (((*parent_new_node_ptr)->data > key)){
 void RedBlackTree:: right_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr){
     // #1
 //сохраним ссылки для рекурсии
-NodePtrPtr child = node_ptr;
+    NodePtrPtr child = node_ptr;
 
     std:: cout << "R_ROTARY" << "\n";
     std:: cout << "node_ptr =  " <<  (*node_ptr)->data << "\n";
@@ -306,7 +285,7 @@ NodePtrPtr child = node_ptr;
     (*parent_parent_node_ptr) = *parent_node_ptr; // x= y
     (*parent_parent_node_ptr)->right = ded;
     ded->left= buffer;
-   // PARENT_PTR.peek() = child;
+    // PARENT_PTR.peek() = child;
     std:: cout << "node_ptr =  " <<  (*node_ptr)->data << "\n";
     std:: cout <<"parent_node_ptr->data =   " <<(*parent_node_ptr)->data <<"\n";
     std:: cout <<"parent_parent_node_ptr->data =   " <<(*parent_parent_node_ptr)->data <<"\n";
@@ -319,13 +298,13 @@ NodePtrPtr child = node_ptr;
 
 
 void RedBlackTree:: left_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr) {
-PARENT_PTR.print();
+    PARENT_PTR.print();
     NodePtrPtr child = node_ptr;
     std::cout << "L_ROTARY" << "\n";
     std::cout << "node_ptr =  " << (*node_ptr)->data << "\n";
     std::cout << "parent_node_ptr->data =   " << (*parent_node_ptr)->data << "\n";
     std::cout << "parent_parent_node_ptr->data =   " << (*parent_parent_node_ptr)->data << "\n";
-if ((*node_ptr)->data == 90) print();
+    if ((*node_ptr)->data == 90) print();
     if ((*parent_parent_node_ptr) == nullptr){
         //#1
         const NodePtr buffer = (*node_ptr)->left; // = a
@@ -389,14 +368,14 @@ void RedBlackTree:: del( int key) {
 
 
     if ((*node_to_del_ptr)->right == TNULL) {
-           if ((*node_to_del_ptr)->left == TNULL){
-               //#1
-               (*node_to_del_ptr)->color = color_node_to_del;
-               *node_to_del_ptr = (*node_to_del_ptr)->left;
-               //#2
-               if(color_node_to_del == 0) del_fix( (*node_to_del_ptr),  key);
-               return;
-           }
+        if ((*node_to_del_ptr)->left == TNULL){
+            //#1
+            (*node_to_del_ptr)->color = color_node_to_del;
+            *node_to_del_ptr = (*node_to_del_ptr)->left;
+            //#2
+            if(color_node_to_del == 0) del_fix( (*node_to_del_ptr),  key);
+            return;
+        }
         // #3
         (*node_to_del_ptr)->color = color_node_to_del;
         *node_to_del_ptr = (*node_to_del_ptr)->left;
@@ -460,23 +439,23 @@ void RedBlackTree:: del( int key) {
 
 
 void RedBlackTree::del_fix(NodePtr node_to_del, int key) {
-NodePtrPtr  node = {&this->root};
-while (*node != TNULL){
-    if (*node == node_to_del)break;
-    PARENT_PTR.push(node);
-    node = ((*node)->data > key) ? &((*node)->left) : &((*node)->right);
-}
-if (*node != TNULL) PARENT_PTR.push(node);
-std:: cout << "node = " << (*node)->data << "\n";
-PARENT_PTR.print();
+    NodePtrPtr  node = {&this->root};
+    while (*node != TNULL){
+        if (*node == node_to_del)break;
+        //PARENT_PTR.push(node);
+        node = ((*node)->data > key) ? &((*node)->left) : &((*node)->right);
+        PARENT_PTR.push(node);
+    }
+    if (*node != TNULL) PARENT_PTR.push(node);
 
-NodePtrPtr parent = PARENT_PTR.peek();
-PARENT_PTR.pop();
-    std:: cout << "parent = " << (*parent)->data << "\n";
-    std:: cout << "PARENT_PTR.peek() = " << (*PARENT_PTR.peek())->data << "\n";
-//node - TNULL!!!
-// в стеке родители по порядку
-    while ((*PARENT_PTR.peek()) != root ){
+
+
+    NodePtrPtr parent= node;
+
+    while ((*PARENT_PTR.peek()) != root && (*PARENT_PTR.peek())->color == 0){
+
+        if ((*PARENT_PTR.peek())= TNULL) PARENT_PTR.pop();
+
         if ( (*PARENT_PTR.peek())->left == *parent){
             std:: cout << "I AM LEFT\n";
             if ((*PARENT_PTR.peek())->right->color == 1){
@@ -484,41 +463,84 @@ PARENT_PTR.pop();
                 //#4
                 (*PARENT_PTR.peek())->right->color = 0;
                 (*PARENT_PTR.peek())->color = 1;
-                left_rotate(node, parent,PARENT_PTR.peek());
+                left_rotate(node, &((*PARENT_PTR.peek())->left),PARENT_PTR.peek());
+
             }
-            if ((*PARENT_PTR.peek())->right->right->color == 0 and  (*PARENT_PTR.peek())->right->left->color ) {
+
+            if ((*PARENT_PTR.peek())->right->right->color == 0 and  (*PARENT_PTR.peek())->right->left->color == 0) {
                 std::cout << "BOTH NEPHEWS ARE BLACK\n";
                 //#5
                 (*PARENT_PTR.peek())->right->color = 1;
                 (*PARENT_PTR.peek())->color = 0;
+
+                parent = PARENT_PTR.peek();
                 PARENT_PTR.pop();
+
+
             } else {
                 // у брата правый ребенок черный
                 //#6
+
                 if ( (*PARENT_PTR.peek())->right->right->color == 0){
+
+                    print();
                     std::cout << "RIGHT NEPHEWS is BLACK\n";
                     (*PARENT_PTR.peek())->right->left->color = 0;
                     (*PARENT_PTR.peek())->right->color = 1;
                     right_rotate(node,&((*PARENT_PTR.peek())->right->right),&((*PARENT_PTR.peek())->right) );
+
                 }
                 std::cout << "RIGHT NEPHEWS is RED\n";
                 (*PARENT_PTR.peek())->right->color =(*PARENT_PTR.peek())->color;
                 (*PARENT_PTR.peek())->right->right->color = 0;
                 (*PARENT_PTR.peek())->color = 0;
+
                 left_rotate(node,&((*PARENT_PTR.peek())->right),PARENT_PTR.peek() );
                 return;
+            }
 
+        } if ( (*PARENT_PTR.peek())->right== *parent) {
+            std:: cout << "I AM RIGHT\n";
 
+            if ((*PARENT_PTR.peek())->left->color == 1){
+                std::cout << "MY BROTHER IS RED\n";
+
+                (*PARENT_PTR.peek())->left->color = 0;
+                (*PARENT_PTR.peek())->color = 1;
+                right_rotate(node, &((*PARENT_PTR.peek())->right),PARENT_PTR.peek());
 
             }
 
+            if((*PARENT_PTR.peek())->left->left->color == 0 and (*PARENT_PTR.peek())->left->right->color == 0 ){
+                std::cout << "BOTH NEPHEWS ARE BLACK\n";
+                (*PARENT_PTR.peek())->left->color = 1;
+                (*PARENT_PTR.peek())->color = 0;
 
+                parent = PARENT_PTR.peek();
+                PARENT_PTR.pop();
 
+            } else {
+                if ((*PARENT_PTR.peek())->left->left->color == 0) {
+                    std::cout << "LEFT NEPHEWS is BLACK\n";
+                    (*PARENT_PTR.peek())->left->right->color = 0;
+
+                    (*PARENT_PTR.peek())->left->color = 1;
+                    left_rotate(node, &((*PARENT_PTR.peek())->right->right), &((*PARENT_PTR.peek())->right));
+                }
+                std::cout << "LEFT NEPHEWS is RED\n";
+                (*PARENT_PTR.peek())->left->color = (*PARENT_PTR.peek())->color;
+                (*PARENT_PTR.peek())->color = 0;
+                (*PARENT_PTR.peek())->left->left->color = 0;
+
+                right_rotate(node, &((*PARENT_PTR.peek())->left), PARENT_PTR.peek());
+                break;
+            }
         }
-break;
     }
 
 }
+
+
 
 
 
@@ -598,7 +620,7 @@ int main() {
     bst.insert(69);
     bst.print();
     bst.insert(90);
-   // bst.print();
+    // bst.print();
     bst.insert(91);
     bst.insert(68);
     bst.insert(85);
@@ -612,7 +634,7 @@ int main() {
 
     bst.print();
     std:: cout << "AFTER DELETE\n";
-    bst.del (86);
+    bst.del (1);
     bst.print();
     return 0;
 }
