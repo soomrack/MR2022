@@ -47,6 +47,7 @@ class Graph {
 public:
     int8_t items;
     std::vector<Edge> edge_list;
+    // vector<Node>
 
     Graph() = default;
     Graph(Node node1, Node node2);
@@ -76,5 +77,6 @@ Graph::Graph(Node node1, Node node2) {
 void Graph::add_node(Node graph_node, Node new_node) {
     add_edge(graph_node, new_node);
 };
+
 
 #endif //MR2022_GRAPH_H
