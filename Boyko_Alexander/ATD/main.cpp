@@ -1,8 +1,10 @@
 #include <iostream>
 #include "dinamic_array.cpp"
 #include "linked_list.h"
-
-
+#include "Stack"
+#include "Queue"
+#include "stack_data.h"
+#include "queue_data.h"
 
 void check_DinArr(){
 	DinArray<char> A;
@@ -53,30 +55,59 @@ void check_LinkedList(){
 	List.push_tail('D');
 	List.push_tail('E');
 	List.push_tail('F');
-	List.push_tail('G');
-	List.push_tail('H');
-	List.push_tail('I');
-	List.push_tail('J');
-	List.push_tail('K');
 
 	List.push_head('0');
 
-	List[5]->push_next('5');
-	List[7]->pop_next();
+	List.get(2)->push_next('2');
+	List.get(3)->pop_next();
 
-	List.pop_back();
-	List.pop_front();
+	List.get(10)->pop_next();
+
+	List.pop_head();
+	List.pop_tail();
 
 	List.push_tail('J');
 
 	std::cout << "\nSize = " << List.size() << std::endl;
 	for(int ind = 0; ind < List.size();ind++){
-		std::cout << List[ind]->data;
+		std::cout << List.get(ind)->data;
 	}
 	std::cout << std::endl;
 
-	std::cout << "\nHead = " << List.get_head()->data << std::endl;
+	std::cout << "\nHead = ";
+	std::cout << List.get_head()->data << std::endl;
 	std::cout << "\nTail = " << List.get_tail()->data << std::endl;
+}
+
+void check_Stack(){
+	Stack MyStack;
+	MyStack.push('A');
+	MyStack.push('B');
+	MyStack.push('C');
+	MyStack.push('D');
+	MyStack.pop();
+
+	std::cout << "\nSize = " << MyStack.size() << std::endl;
+	for(int ind = 0; ind < MyStack.size();ind++){
+		std::cout << MyStack.get(ind)->data;
+	}
+	std::cout << std::endl;
+}
+
+
+void check_Queue(){
+	Queue MyQueue;
+	MyQueue.push('A');
+	MyQueue.push('B');
+	MyQueue.push('C');
+	MyQueue.push('D');
+	MyQueue.pop();
+
+	std::cout << "\nSize = " << MyQueue.size() << std::endl;
+	for(int ind = 0; ind < MyQueue.size();ind++){
+		std::cout << MyQueue.get(ind)->data;
+	}
+	std::cout << std::endl;
 }
 
 int main() {
@@ -84,6 +115,10 @@ int main() {
 	check_DinArr();
 
 	check_LinkedList();
+
+	check_Stack();
+
+	check_Queue();
 
 	return 0;
 

@@ -6,21 +6,32 @@
 typedef char Type;
 class Queue{
 public:
-	ListMember<Type>* first = nullptr;
-	ListMember<Type>* last = nullptr;
-	LinkedList<Type> StackList;
+	Node<Type>* head = nullptr;
+	Node<Type>* tail = nullptr;
+	LinkedList<Type> QueueList;
 	void push(Type new_item);
-	void pop();
+	Type pop();
+	int size();
+	Node<Type>* get(unsigned int ind);
 };
 
 void Queue::push(Type new_item) {
-	StackList.push_tail(new_item);
-	last = StackList.get_tail();
+	QueueList.push_tail(new_item);
+	tail = QueueList.get_tail();
 }
 
-void Queue::pop() {
-	StackList.pop_front();
-	first = StackList.get_head();
+Type Queue::pop() {
+	Type data = QueueList.pop_head();
+	head = QueueList.get_head();
+	return data;
+}
+
+int Queue::size() {
+	return QueueList.size();
+}
+
+Node<Type> *Queue::get(unsigned int ind) {
+	return QueueList.get(ind);
 }
 
 #endif //ATD_QUEUE_DATA_H

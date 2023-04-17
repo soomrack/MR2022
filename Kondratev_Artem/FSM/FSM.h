@@ -8,14 +8,13 @@
 
 class FSM {
 private:
-    void (*active_state)();
+    double (*active_state)(double);
 
 public:
     FSM();
 
-    void setState(void state());
-    void delState();
-    void activeState();
+    void setState(double state(double));
+    double activeState(double u);
 };
 
 
@@ -24,19 +23,14 @@ FSM::FSM() {
 }
 
 
-void FSM::setState(void state()) {
+void FSM::setState(double state(double)) {
     active_state = state;
 }
 
 
-void FSM::delState() {
-    active_state = nullptr;
-}
-
-
-void FSM::activeState() {
+double FSM::activeState(double u) {
     if (active_state != nullptr) {
-        active_state();
+        return active_state(u);
     }
 }
 
