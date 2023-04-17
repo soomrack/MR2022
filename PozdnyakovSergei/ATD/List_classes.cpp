@@ -20,18 +20,18 @@ public:
     List();
     ~List();
 
-    void push_front(double key);
-    void push_back(double key);
+    void push_front(double item);
+    void push_back(double item);
     double& operator[] (const int num);
     void del(int );
     void clean();
     void delete_head();
-    void insert_item(double key, unsigned int number);
+    void insert_item(double item, unsigned int number);
     void print();
 private:
     Node *head;
     typedef Node *NodePtr;
-    NodePtr previous(int key);
+    NodePtr previous(int item);
 };
 
 
@@ -45,21 +45,21 @@ List::~List() {
 }
 
 
-void List::push_front(double key) {
-    head = new Node (key, head);
+void List::push_front(double item) {
+    head = new Node (item, head);
 }
 
 
-void List::push_back(double key) {
+void List::push_back(double item) {
     if (head == nullptr) {
-        head = new Node(key);
+        head = new Node(item);
         return;
     }
     Node *current = head;
     while (current->pNext != nullptr) {
-        current->pNext = new Node(key);
+        current->pNext = new Node(item);
     }
-    current->pNext = new Node(key);
+    current->pNext = new Node(item);
 }
 
 double &List::operator[](const int num) {
@@ -76,13 +76,13 @@ double &List::operator[](const int num) {
 }
 
 
-void List::insert_item(double key, unsigned int number) {
+void List::insert_item(double item, unsigned int number) {
     if (number == 0) {
-        push_front(key);
+        push_front(item);
         return;
     }
     Node *current = previous(number);
-    Node *insert_Node = new Node (key, current->pNext);
+    Node *insert_Node = new Node (item, current->pNext);
     current->pNext = insert_Node;
 }
 
@@ -101,22 +101,22 @@ void List::delete_head() {
 }
 
 
-void List::del(int key) {
+void List::del(int item) {
     Node* node_del = head;
-    while (node_del->value != key) {
+    while (node_del->value != item) {
         node_del = node_del->pNext;
     }
     Node *current;
-    current = previous(key);
+    current = previous(item);
     node_del = current->pNext;
     current->pNext = node_del->pNext;
     delete node_del;
 }
 
 
-List::NodePtr List::previous(int key) {
+List::NodePtr List::previous(int item) {
     Node *current = head;
-    while (current->pNext->value != key) {
+    while (current->pNext->value != item) {
         current = current->pNext;
     }
     return current;
