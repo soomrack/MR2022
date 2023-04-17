@@ -131,7 +131,7 @@ void Tree::del_by_key(int del_key) {
 	while (temp != nullptr) { 
 		if ((*temp)->key == del_key) {
 			if ((*temp)->left_child == nullptr && (*temp)->right_child == nullptr) {
-				temp = nullptr;
+				*temp = nullptr;
 				return;
 			}
 			// один ребенок - заменяем родителя на ребенка
