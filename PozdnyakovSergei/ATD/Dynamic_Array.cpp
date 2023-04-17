@@ -26,7 +26,7 @@ private:
 
 public:
     unsigned buffer;
-    inline DynArray();
+    DynArray();
     DynArray(unsigned int size, unsigned int buffer = 10);
     DynArray(const DynArray &other);
     ~DynArray();
