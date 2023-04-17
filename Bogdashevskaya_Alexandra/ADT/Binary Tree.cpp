@@ -12,7 +12,7 @@ Tree_Exception ALREADY_EXISTS("Node with this key already exists\n");
 Tree_Exception DOES_NOT_EXISTS("Node does not exist\n");
 
 typedef double T;
-unsigned int GENKEY = 0;
+double GENKEY = 0;
 
 class NodeTree {
 protected: 
