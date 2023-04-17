@@ -1,5 +1,6 @@
 #include <iostream>
 
+
 class Stack{
     int *array;
     int stp;

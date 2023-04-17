@@ -51,9 +51,10 @@ int GraphNode::find(GraphNode* f_node){
 
 void Graph::deleteNode(int data) {
     auto nodeDelete = this->findGraphNode(data);
+    /*
     //if (this->node_list.get_size() == 1) {this->node_list.pop(nodeDelete); return; }
-/*
     auto nodeForStep = this->node_list.getHead();
+
     auto edgeToDelete = nodeForStep->getNodeData();
     auto nodeForEdgeStep = edgeToDelete->edge_list.getHead();
     //for (unsigned int idx = 0; idx < this->node_list.get_size(); idx++) {
@@ -68,8 +69,9 @@ void Graph::deleteNode(int data) {
             nodeForEdgeStep = nodeForEdgeStep->next;
         }
         nodeForStep = nodeForStep->next;
-    }*/
-    this->node_list.pop(nodeDelete->data);
+    }
+     */
+    this->node_list.pop(nodeDelete);
 
 }
 
