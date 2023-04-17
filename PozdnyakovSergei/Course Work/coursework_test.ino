@@ -74,6 +74,13 @@ void detour() {
 }
 
 
+void stop() {
+  int value_right = 0;
+  int value_left = 0;
+  start_motors(value_right, value_left);
+}
+
+
 void start_motors (int value_right, int value_left) {
   int direction_left;
   int direction_right;
@@ -95,13 +102,6 @@ void start_motors (int value_right, int value_left) {
   analogWrite(speed_pin_r, value_right);
   analogWrite(speed_pin_l, value_left);
 
-}
-
-
-void stop() {
-  int value_right = 0;
-  int value_left = 0;
-  start_motors(value_right, value_left);
 }
 
 
