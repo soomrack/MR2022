@@ -1,43 +1,60 @@
-
-#ifndef UNTITLED_LIST_H
-#define UNTITLED_LIST_H
+#ifndef HELLO_WORLD_LIST_H
+#define HELLO_WORLD_LIST_H
 
 #include <string>
-#include "Head.h"
+#include <iostream>
+#include "GraphNode.h"
 
-template <typename T>
+template<typename T>
 class Node {
 public:
-    Node(T data) : data(data), next(nullptr){}
+    explicit Node(T data) : data(data), next(nullptr) {}
 
     Node *next;
     T data;
+
+    T getNodeData();
+
+    Node<T> *getNext();
+
 };
-template <typename T>
+
+template<typename T>
 class List {
     friend class Node<T>;
+
 protected:
     Node<T> *head; // head
     Node<T> *tail;  // tail
     unsigned int size;
 public:
     List() : head(nullptr), tail(nullptr), size(0) {}
+
     bool is_empty();
+
     void push_tail(T data);
+
     void print();
+
     void push_head(T data);
-    T find(unsigned int id);
-    void pop(unsigned int id);
-    Node<T> loop(unsigned int id, auto *local);
-    Node<T> *operator[](const int index);
+
+    Node<T> *find(T f_data);
+
+    void pop(T d_data);
+
     void remove_first();
+
     void remove_last();
+
     unsigned int get_size();
+
+    Node<T> *getHead();
+
+    void popAll();
+
 };
 
-
-#include <iostream>
-#include "../List/List.h"
+#include "List.h"
 
 
 template<typename T>
@@ -85,13 +102,14 @@ void List<T>::print() {
 }
 
 template<typename T>
-T List<T>::find(unsigned int id) {
-    //if (is_empty()) { return nullptr; }
-    auto *local = head;
-    for (unsigned int idx; idx < id; idx++) {
+Node<T> *List<T>::find(T f_data) {
+    if (is_empty()) { return nullptr; }
+    Node<T> *local = head;
+    while (local) {
+        if (local->data == f_data) { return local; }
         local = local->next;
     }
-    return local->data;
+    return nullptr;
 }
 
 template<typename T>
@@ -119,23 +137,27 @@ void List<T>::remove_last() {
 }
 
 template<typename T>
-void List<T>::pop(unsigned int id) {
+void List<T>::pop(T d_data) {
     if (is_empty()) return;
-    if (id > size) return;
-    if (0 == id) {
-        remove_first();
-        return;
-    } else if (id + 1 == size) {
-        remove_last();
-        return;
-    }
     auto *local = head;
-    for (int idx = 0; idx < id - 1; idx++) {
+    while (local) {
+        if (d_data == local->data) {
+            local->next = local->next->next;
+            delete local->data;
+            size--;
+        }
         local = local->next;
     }
-    local->next = local->next->next;
-    size--;
 }
+
+template<typename T>
+void List<T>::popAll() {
+    if (is_empty()) return;
+    head = nullptr;
+    tail = nullptr;
+    size = 0;
+}
+
 
 template<typename T>
 unsigned int List<T>::get_size() {
@@ -143,4 +165,20 @@ unsigned int List<T>::get_size() {
 }
 
 
-#endif //UNTITLED_LIST_H
+template<typename T>
+Node<T> *List<T>::getHead() {
+    return head;
+}
+
+template<typename T>
+T Node<T>::getNodeData() {
+    return data;
+}
+
+template<typename T>
+Node<T> *Node<T>::getNext() {
+    return next;
+}
+
+
+#endif //HELLO_WORLD_LIST_H

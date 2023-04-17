@@ -26,9 +26,8 @@ private:
     NodePtr TNULL;
     NodePtr search(NodePtr node, int key);
     void print(NodePtr root, std::string indent, bool last);
-    void del(NodePtr node, int key);
-    NodePtr min(NodePtr node);  // node =! TNULL
-    NodePtr parent_min(NodePtr  node);  // node =! TNULL
+    NodePtrPtr min(NodePtrPtr node);  // node =! TNULL
+    NodePtrPtr parent_min(NodePtrPtr  node);  // node =! TNULL
 };
 
 
@@ -57,86 +56,74 @@ void Tree:: insert(int key) {
         root = node;
         return;
     }
-    (node->data <  last_leaf->data) ? last_leaf->left = node:  last_leaf->right = node;
+    (node->data <  last_leaf->data) ? last_leaf->left = node :  last_leaf->right = node;
     return;
 }
 
 
 
 
-NodePtr Tree:: min(NodePtr node) {
-    while (node->left != TNULL)
-        node = node->left;
+NodePtrPtr Tree:: min(NodePtrPtr node) {
+    while ((*node)->left != TNULL)
+        node = &((*node)->left);
     return node;
 }
 
 
-NodePtr Tree:: parent_min(NodePtr  node) {
-    do  node = node->left;
-    while (node->left->left != TNULL);
+NodePtrPtr Tree:: parent_min(NodePtrPtr   node) {
+    while ((*node)->left->left != TNULL)
+        node = &((*node)->left);
     return node;
 }
 
 
 
-void Tree:: del(NodePtr node, int key) {
-    NodePtr parent_node_to_del = TNULL;
-    NodePtr node_to_del = TNULL;
-    NodePtrPtr buffer;
-    do {
-        if (node->right->data == key || node->left->data == key) {
-            parent_node_to_del = node;
-        }
-        if (node->data == key ) {
-            node_to_del = node;
-        }
-        node = (node->data <= key) ? node->right: node->left;
-
-    } while (node != TNULL);
-
-    NodePtrPtr parent_node_to_del_ptr{&(parent_node_to_del)};
-    NodePtrPtr node_to_del_ptr{&node_to_del};
-    if ((*node_to_del_ptr)->right == TNULL){
-        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->left:
-                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->left;
-
-        return;
-    }
-    if ((*node_to_del_ptr)->left == TNULL){
-        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->right:
-                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->right;
-        return;
+void Tree:: del( int key) {
+    NodePtrPtr node_to_del_ptr = &(this->root);
+    while ((*node_to_del_ptr) != TNULL){
+        if ((*node_to_del_ptr)->data == key) break;
+        node_to_del_ptr = ((*node_to_del_ptr)->data > key) ? &((*node_to_del_ptr)->left) : &((*node_to_del_ptr)->right);
     }
 
-    if ((*node_to_del_ptr)->right->left == TNULL){  // ОСОБЫЙ СЛУЧАЙ
-        //      A
-        //    /    \
-        //   E       B
-        //         /   \
-        //      TNULL    C
-        buffer = node_to_del_ptr;  // = A
-        ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = (*node_to_del_ptr)->right :
-                (*parent_node_to_del_ptr)->right = (*node_to_del_ptr)->right; // A=B
-        ((*buffer)->right->left) = ((*buffer)->left); // TNULL = Е
+    if ((*node_to_del_ptr) == TNULL) return;
+
+    if ((*node_to_del_ptr)->right == TNULL) {
+        *node_to_del_ptr = (*node_to_del_ptr)->left;
         return;
     }
-    //      A
-    //    /    \
-    //   E       B
-    //         /   \
-    //        D     C
-    //          \
-    //            N
+    if ((*node_to_del_ptr)->left == TNULL) {
+        *node_to_del_ptr = (*node_to_del_ptr)->right;
+        return;
+    }
+    if ((*node_to_del_ptr)->right->left == TNULL){  //ОСОБЫЙ СЛУЧАЙ
+        //          | ->A
+        //         N1
+        //    E<-/    \->B
+        //     N2      N3
+        //         R<-/   \
+        //         TNULL    N4
+        (*node_to_del_ptr)->right->left = (*node_to_del_ptr)->left; // R = E
+        (*node_to_del_ptr) = (*node_to_del_ptr)->right; //A = B
+        return;
+    }
 
-    NodePtr rrr= min(node_to_del->right);
-    NodePtrPtr  minimum = {&rrr};
-    buffer = &((*minimum)->right); // = N
-    ((*parent_node_to_del_ptr)->left == *node_to_del_ptr) ? (*parent_node_to_del_ptr)->left = parent_min( node_to_del ->right)->left:
-            (*parent_node_to_del_ptr)->right =  parent_min( node_to_del ->right)->left; // А = D
-    parent_min( node_to_del ->right)->left = (*buffer); // D=N
-    (*minimum)->left =(*node_to_del_ptr)->left; // E становится ребенком D ( который стал А)
-    (*minimum)->right =(*node_to_del_ptr)->right; // B становится ребенком D ( который стал А)
-    delete node_to_del;
+    NodePtrPtr minimum = (min(&((*node_to_del_ptr)->right)));
+    //          | ->A                                             A = R
+    //         N1                                                 D = E
+    //    E<-/    \->B                                            T = B
+    //     N2      N3                                             R = T
+    //         R<-/   \
+    //          MIN    N4
+    //      D <-/ \->T
+    //              N6
+    const NodePtr buffer = *node_to_del_ptr; // = A
+    const NodePtr buffer_min = (*minimum)->right; // = T
+    const NodePtrPtr parent_min_ptr = parent_min(&((*node_to_del_ptr)->right)); // = B
+    (*node_to_del_ptr) = *minimum; // A = R
+    (*minimum)->left = (buffer)->left; // D = E
+    (*minimum)->right = (buffer)->right; // T = B
+    (*parent_min_ptr)->left = buffer_min ; //R = T
+
 }
 
 NodePtr Tree:: search(NodePtr node, int key) {
@@ -166,9 +153,7 @@ bool Tree:: search(int k) {
     return (buffer != TNULL);
 }
 
-void  Tree:: del(int data) {
-    del(this->root, data);
-}
+
 
 void Tree:: print() {
     if (root) {
@@ -210,7 +195,7 @@ int main () {
 
     std::cout << "\n"
               << "After deleting" << "\n";
-    bst.del(555);
+    bst.del(75);
 
 
     bst.print();
