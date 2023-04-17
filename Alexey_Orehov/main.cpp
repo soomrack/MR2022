@@ -43,13 +43,13 @@ void test_list() {
 
 
 int main() {
-    int data[10] = {50, -4, 6, 1, 2, 3, -10, 9, -8, 7};
+    int data[15] = {50, -4, 6, 1, 2, 3, -10, 9, -8, 7, 10, 13, 15, -1, -2};
     Tree<int> tree;
 
     for (auto& element : data) {
         tree.insert(element);
     }
-
+    tree.remove(12345);
     tree.remove(6);
     tree.remove(3);
     tree.remove(-4);
