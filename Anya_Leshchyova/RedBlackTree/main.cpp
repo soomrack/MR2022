@@ -482,7 +482,7 @@ void RedBlackTree::del_fix(NodePtr node_to_del, int key) {
                 //#6
 
                 if ( (*PARENT_PTR.peek())->right->right->color == 0){
-                    k=1;
+
                     print();
                     std::cout << "RIGHT NEPHEWS is BLACK\n";
                     (*PARENT_PTR.peek())->right->left->color = 0;
