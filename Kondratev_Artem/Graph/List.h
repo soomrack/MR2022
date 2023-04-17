@@ -4,7 +4,7 @@
 
 #ifndef HELLO_WORLD_LIST_H
 #define HELLO_WORLD_LIST_H
-// create shiftToHead shiftToTail in ListIterator;
+
 
 #include <cstdint>
 #include <iostream>

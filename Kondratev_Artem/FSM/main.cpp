@@ -1,28 +1,27 @@
 #include <iostream>
+#include <cmath>
 #include "FSM.h"
 
 
-void print8() {
-    std::cout << "8" << std::endl;
+const double K = 2;
+
+
+double k(double u) {
+    return K * u;
 }
 
 
-void print9() {
-    std::cout << "9" << std::endl;
+double tg(double u) {
+    return tan(u);
 }
 
 
 int main() {
 
     FSM A;
+    A.setState(k);
 
-
-    A.setState(print8);
-    A.activeState();
-    A.setState(print9);
-    A.activeState();
-    A.delState();
-    A.activeState();
+    std::cout << A.activeState(5);
 
     return 0;
 }
