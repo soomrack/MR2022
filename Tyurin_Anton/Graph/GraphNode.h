@@ -20,6 +20,13 @@ public:
     int get() const{
         return data;
     };
+
+    bool operator==(const GraphNode& right) {
+        if (this->data == right.data) {return 1;}
+    return 0;
+    }
+
+
 };
 
 #endif //UNTITLED_GRAPHNODE_H

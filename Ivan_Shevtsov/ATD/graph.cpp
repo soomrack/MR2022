@@ -7,200 +7,200 @@
 using namespace graph_names;
 
 
-Node::Node(double data, Node *link_from_this, int edge_weight, edge_state state) {
+Edge::Edge(Node *source, Node *target, int weight): source(source), target(target)
+        , weight(weight){}
+
+Edge::~Edge() {
+    source = nullptr;
+    target = nullptr;
+    weight = 0;
+}
+
+bool Edge::operator==(const Edge &other) const {
+    return (weight == other.weight and target == other.target and source == other.source);
+}
+
+Node::Node(double data): data(data){}
+
+Node::Node(double data, Node *source, int weight) {
     this->data = data;
-    Edge *newEdge = new Edge(state, link_from_this, this, edge_weight);
-    edges.resize(START_VECTOR_EDGES_SIZE);
-    edges.push_back(newEdge);
-
-    // id generator
-    node_counter++;
-    node_id = node_counter;
-}
-
-Node *Node::add_edge(Node *link_from_this, int edge_weight, edge_state state) {
-    // relinking check
-    for (int idx = 0; idx < edges.size(); idx++){
-        if (edges[idx]->from_node == link_from_this){
-            graph_exceptions EDGE_ALREADY_EDGE("edge already exists");
-            throw EDGE_ALREADY_EDGE;
-        } else if (edges[idx]->in_node == link_from_this) {
-            edges[idx]->direction = DOUBLE_LINKED;
-            //Q: add warning
-        }
-    }
-
-    if (state == SINGLY_LINKED or state == DOUBLE_LINKED){
-        Edge *newEdge = new Edge(state, link_from_this, this, edge_weight);
-        link_from_this->push_edge(newEdge);
-        edges.push_back(newEdge);
-    } else {
-        graph_exceptions EDGE_ADD_ERROR("can`t link it");
-        throw (EDGE_ADD_ERROR);
-    }
-
-    return this;
-}
-
-Node *Node::delete_edge(Node *linked_node) {
-    for (auto running_edge: edges){
-        if (running_edge->from_node == linked_node or running_edge->in_node == linked_node) {
-            delete running_edge;
-            //nodes.erase(std::find(nodes.begin(), nodes.end(), *running_edge));  // Q: как удалить элемент из вектора по значению?
-
-        }
-    }
-
-    return this;
-}
-
-
-Node::Node(){
-    data = 0;
-    edges.resize(START_VECTOR_EDGES_SIZE);
-
-    node_counter++;
-    node_id = node_counter;
-}
-
-Node::Node(const Node &other) {
-    data = other.data;
-    edges = other.edges;
-
-    node_counter++;
-    node_id = node_counter;
-}
-
-Graph::Graph() {
-    nodes.resize(START_VECTOR_NODES_SIZE);
-
+    Edge *newEdge = new Edge(source, this, weight);
+    edges.push(newEdge);
 }
 
 Node::~Node() {
-    edges.clear();
-    data = 0.0;
-
-    node_counter--;
-    node_id = 0;
+    data = 0;
+    edges.clear();  // Q: вот тут же не нужно удалять каждую связь, для них же вызовется деструктор сам?
 }
 
-Node::Node(double data) {
-    this->data = data;
-    edges.resize(START_VECTOR_EDGES_SIZE);
-
-    // id generator
-    node_counter++;
-    node_id = node_counter;
+void Node::add_edge(Node *target, int weight) {
+    Edge *newEdge = new Edge(this, target, weight);
+    edges.push(newEdge);
 }
 
-Graph::Graph(double data):Graph() {
-    Node* newNode = new Node(data);
-    nodes.push_back(newNode);
-}
+int Node::del_edge(Node *target, int weight, bool delete_only_one_flag) {
+    /**
+     * @return number of remotes edges
+     */
 
-void Graph::add_node(double data) {
-    Node* newNode = new Node(data);
-    nodes.push_back(newNode);
+    Edge* tmpEdge = new Edge(this, target, weight);
 
-}
-
-void Graph::add_edge(Node *link_from_this, Node *link_in_this, int weight, edge_state state) {
-    link_in_this->add_edge(link_in_this, weight,state);
-}
-
-void Graph::delete_node(double data) {
-    /**removes ALL nodes in which the data field is equal to the requested one
-    */
-
-    for (auto running_node: nodes){
-        if (running_node->data == data) {
-            delete running_node;
-
-            //nodes.erase(std::find(nodes.begin(), nodes.end(), *running_node));  // Q: как удалить элемент из вектора по значению?
+    int deleted_edges_counter = 0;
+    if (delete_only_one_flag) {
+        if (edges.find_and_delete(tmpEdge)){
+            return 1;
+        } else { return 0; }
+    }else {
+        while (edges.find_and_delete(tmpEdge)){
+            deleted_edges_counter++;
         }
     }
 
+    delete tmpEdge;
+    return deleted_edges_counter;
 }
 
-void Graph::delete_edge(Node *first_node, Node *second_node) {
-    first_node->delete_edge(second_node);
+
+Graph::Graph(Node *root) {
+    nodes.push(root);  // todo: push all the nodes in root edges
+}
+
+Graph::Graph(double data) {
+    Node* newNode = new Node(data);
+    nodes.push(newNode);
+}
+
+void Graph::add_node(Node* newNode) {
+    nodes.push(newNode);
+}
+
+void Graph::add_edge(Node *source, Node *target, int weight) {
+    source->add_edge(target, weight);
+}
+
+int Graph::del_node(double data, bool delete_only_one_flag) {
+    /**
+    * @return number of remotes nodes in graph
+    */
+
+    int deleted_nodes_counter = 0;
+    auto* tmpNode = new Node(data);
+    if (delete_only_one_flag){
+        if (!nodes.find_and_delete(tmpNode)) {return 0;}
+        deleted_nodes_counter++;
+        for (auto &&node: nodes){  // Q: вот этот момент чую как то неправильно делаю, навероне можно без вложенного цикла
+                                            // можно попробовать заменить на пустую ноду, но тогда постоянное добавление и удаление будут засорять память
+            for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
+
+                if (it.current_node->data->target->data == data){
+                    auto tmp = it.current_node->p_next;
+                    del_edge(node, it.current_node->data->target, it.current_node->data->weight);
+                    it.current_node = tmp;
+                }
+            }
+        }
+    } else {
+        while (nodes.find_and_delete(tmpNode)){
+            if (!nodes.find_and_delete(tmpNode)) {return 0;}
+            deleted_nodes_counter++;
+            for (auto &&node: nodes){  // Q: это вообще ужас! три уровня вложенности, но я не понимаю как иначе
+                for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
+                    if (it.current_node->data->target->data == data){
+                        auto tmp = it.current_node->p_next;
+                        del_edge(node, it.current_node->data->target, it.current_node->data->weight);
+                        it.current_node = tmp;
+                    }
+                }
+            }
+        }
+    }
+    return deleted_nodes_counter;
+}
+
+int Graph::del_edge(Node *source, Node *target, int weight, bool delete_only_one_flag) {
+    return source->del_edge(target, weight, delete_only_one_flag);
 }
 
 void Graph::clear() {
-    for (auto node: nodes){
-        delete node;
-    }
     nodes.clear();
 }
 
+void Graph::show() {
+    unsigned idx = 0;
+    for (auto nodes_iterator = nodes.begin(); nodes_iterator != nodes.end(); ++nodes_iterator){
+        std::cout << idx << ". Data: " << nodes_iterator.current_node->data->data << "\n" << "EDGES TO NODE:\n";
 
-// TODO: set const sign of the weights
-Graph& Graph::dijkstra_algorithm(Node *start_node, Node *target_node) {
-    Graph ans(start_node->data);
-    if (start_node == target_node){
-        return ans;
+        // I understand that the loop in the loop is not good ( O(n^2) ),
+        // but I think in the output you can allow such a luxury
+
+        if (nodes_iterator.current_node->data->edges.is_empty()) {
+            std::cout << "\tEMPTY\n";
+            idx++;
+            continue;
+        }
+        for (auto edges_iterator = nodes_iterator.current_node->data->edges.begin();
+                edges_iterator != nodes_iterator.current_node->data->edges.end(); ++edges_iterator){
+            std::cout << "\tdata: " << edges_iterator.current_node->data->target->data;
+            std::cout << " weight: " << edges_iterator.current_node->data->weight << "\n";
+            idx++;
+        }
     }
+    std::cout << "END OF GRAPH\n";
+}
 
-      //todo: fix it
+Path &Graph::dijkstra_algorithm(Node *start_node, Node *target_node) {
+    Path ans(start_node);
+    start_node->distance = 0;
+    start_node->visited = true;
 
-    auto running_node = start_node;
-    bool change_flag = false;
-
-    while (running_node != target_node) {
-
-        // find node with min weight
-        Node* node_with_min_weight = nullptr;
-        int min_weight = INFINITY;
-        for (auto running_edge: running_node->edges) {
-            // if single linked edge
-            if (min_weight > running_edge->weight and  (running_edge->from_node == running_node)) {
-                min_weight = running_edge->weight;
-                node_with_min_weight = running_edge->in_node;
-
-            // if double linked edge
-            } else if (min_weight > running_edge->weight and (running_edge->direction == DOUBLE_LINKED)){
-                min_weight = running_edge->weight;
-                if (running_edge->in_node == running_node){
-                    node_with_min_weight = running_edge->from_node;
-                } else if (running_edge->from_node == running_node){
-                    node_with_min_weight = running_edge->in_node;
-                } else {// по идее это никогда не должно выполняться #todo delete after test}
-
-
-                node_with_min_weight = running_edge->in_node;
+    Node* running_node = start_node;
+    while (running_node != target_node){
+        Node* min_dist_node = target_node;
+        for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
+            if (it.current_node->data->target->distance > it.current_node->data->weight +
+                                                          it.current_node->data->source->distance)
+                it.current_node->data->target->distance = it.current_node->data->weight +
+                                                          it.current_node->data->source->distance;
+            if (it.current_node->data->target->distance < min_dist_node->distance){
+                min_dist_node = it.current_node->data->target;
+                it.current_node->data->target->visited = true;
             }
         }
-
-        if (change_flag){
-            change_flag = false;
-            //
-        }
-
-        if (node_with_min_weight == nullptr){
-            auto tmp = min_weight;
-            change_flag = true;
-            node_with_min_weight.
-        }
-        Node *new_ans_node = new Node(node_with_min_weight->data);
-        ans.add_node(new_ans_node->data);
-        ans.add_edge(ans.nodes[ans.nodes.size()], new_ans_node, 0);
-        running_node = node_with_min_weight;
+        ans.add_node(min_dist_node);
+        running_node = min_dist_node;
     }
 
-    ans.add_node(running_node->data);
-    ans.add_edge(ans.nodes[ans.nodes.size()], running_node, 0);
+    for (auto &&node: nodes){
+        if (!node->visited){
+            running_node = node;
+            Node* min_dist_node = target_node;
+            for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
+                if (it.current_node->data->target->distance > it.current_node->data->weight +
+                                                              it.current_node->data->source->distance)
+                    it.current_node->data->target->distance = it.current_node->data->weight +
+                                                              it.current_node->data->source->distance;
+                if (it.current_node->data->target->distance < min_dist_node->distance){
+                    min_dist_node = it.current_node->data->target;
+                    it.current_node->data->target->visited = true;
+                }
+            }
+            ans.add_node(min_dist_node);  // del old
+        }
+
+    }
 
     return ans;
 }
 
-Graph::Graph(Node *root):Graph() {
-    nodes.push_back(root);
+Path::~Path() {
+    path_nodes.clear();
 }
 
+Path::Path(Node *root) {
+    path_nodes.push(root);
 
-Edge::~Edge() {
-    direction = NOT_LINKED;
-    from_node = nullptr;
-    in_node = nullptr;
-    weight = 0;
+}
+
+void Path::add_node(Node *target) {
+    path_nodes.push(target);
 }

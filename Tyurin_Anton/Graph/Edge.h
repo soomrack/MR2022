@@ -15,6 +15,14 @@ public:
         loc = loc_;
         dest = dest_;
     };
+
+    GraphNode *getDest() {
+        return this->dest;
+    }
+
+    GraphNode *getLoc() {
+        return this->dest;
+    }
 };
 
 

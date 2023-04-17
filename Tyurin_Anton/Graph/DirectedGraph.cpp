@@ -2,9 +2,9 @@
 #include "List.h"
 
 void Graph::addNode(int data) {
-    auto *newHead = new GraphNode(data);
-    newHead->data = data;
-    this->node_list.push_tail(newHead);
+    auto *newNode = new GraphNode(data);
+    newNode->data = data;
+    this->node_list.push_tail(newNode);
 }
 
 int Graph::noDestination(GraphNode *dest) {
@@ -32,6 +32,7 @@ GraphNode *Graph::findGraphNode(unsigned int findData) {
 }
 
 
+
 void Graph::addEdge(int loc_data, int dest_data) {
     GraphNode *loc = this->findGraphNode(loc_data);
     GraphNode *dest = this->findGraphNode(dest_data);
@@ -49,15 +50,28 @@ int GraphNode::find(GraphNode* f_node){
 */
 
 void Graph::deleteNode(int data) {
-    GraphNode *nodeDelete = this->findGraphNode(data);
-    //nodeDelete->edge_list.popAll();
-    auto edgeToDelete = this->node_list.getHead()->getNodeData();
-    for (unsigned int idx = 0; idx < this->node_list.get_size(); idx++){
-        if (data == edgeToDelete->edge_list.){
-            // удалить все loc и dest равные data(для этого написать int find(GraphNode*)
+    auto nodeDelete = this->findGraphNode(data);
+    /*
+    //if (this->node_list.get_size() == 1) {this->node_list.pop(nodeDelete); return; }
+    auto nodeForStep = this->node_list.getHead();
+
+    auto edgeToDelete = nodeForStep->getNodeData();
+    auto nodeForEdgeStep = edgeToDelete->edge_list.getHead();
+    //for (unsigned int idx = 0; idx < this->node_list.get_size(); idx++) {
+        //for (unsigned int idx1 = 0; idx1 < edgeToDelete->edge_list.get_size(); idx1++) {
+    while (nodeForStep) {
+        while (nodeForEdgeStep) {
+            if ((data == nodeForEdgeStep->getNodeData()->getDest()->get()) ||
+                (data == nodeForEdgeStep->getNodeData()->getLoc()->get())) {
+                // удалить все loc и dest равные data
+                edgeToDelete->edge_list.pop(nodeForEdgeStep->getNodeData());
+            }
+            nodeForEdgeStep = nodeForEdgeStep->next;
         }
-        edgeToDelete = edgeToDelete->next;
+        nodeForStep = nodeForStep->next;
     }
+     */
     this->node_list.pop(nodeDelete);
+
 }
 

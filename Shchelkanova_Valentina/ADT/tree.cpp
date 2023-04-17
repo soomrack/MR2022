@@ -10,12 +10,14 @@ public:
     Node *left;
     Node *right;
 
+public:
     Node(int k);
+
     }
 };
 Node::Node(int k) {
     key = k;
-    left = right = NULL;
+    left = right = nullptr;
 }
 class BST {
 private:
@@ -24,6 +26,8 @@ private:
 public:
     BST();
     ~BST();
+
+public:
     void insert(int key);
     void remove(int key);
     bool search(int key);
@@ -32,7 +36,7 @@ public:
 private:
     Node* insert(Node* node, int key);
     Node* remove(Node* node, int key);
-    Node* minValueNode(Node* node);
+    Node* min(Node* node);
     bool search(Node* node, int key) ;
     void traverse(Node* node);
     void destroy(Node *node);
@@ -66,52 +70,62 @@ void BST::traverse() {
 
 
 Node* BST::insert(Node* node, int key) {
-    if (node == NULL) {
-        return new Node(key);
-    }
-
-    if (key < node->key) {
-        node->left = insert(node->left, key);
-    } else if (key > node->key) {
-        node->right = insert(node->right, key);
-    }
-
-    return node;
-}
-
-
-Node* BST::remove(Node* node, int key) {
-    if (node == NULL) {
-        return NULL;
-    }
-
-    if (key < node->key) {
-        node->left = remove(node->left, key);
-    } else if (key > node->key) {
-        node->right = remove(node->right, key);
-    } else {
-        if (node->left == NULL && node->right == NULL) {
-            delete node;
-            node = NULL;
-        } else if (node->left == NULL) {
-            Node* tmp = node;
-            node = node->right;
-            delete tmp;
-        } else if (node->right == NULL) {
-            Node* tmp = node;
-            node = node->left;
-            delete tmp;
+    Node* curr = node;
+    Node* parent = nullptr;
+    while (curr != nullptr) {
+        parent = curr;
+        if (key < curr->key) {
+            curr = curr->left;
+        } else if (key > curr->key) {
+            curr = curr->right;
         } else {
-            Node* tmp = minValueNode(node->right);
-            node->key = tmp->key;
-            node->right = remove(node->right, tmp->key);
+            return node;
         }
     }
 
-    return node;
-}
 
-Node* BST::minValueNode(Node* node) {
+    Node* BST::remove(Node* node, int key) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        if (key < node->key) {
+            node->left = remove(node->left, key);
+        } else if (key > node->key) {
+            node->right = remove(node->right, key);
+        } else {
+            if (node->left == nullptr && node->right == nullptr) {
+                Node* parent = node->parent;
+                if (parent != nullptr) {
+                    if (parent->left == node) {
+                        parent->left = nullptr;
+                    } else {
+                        parent->right = nullptr;
+                    }
+                }
+                delete node;
+                node = nullptr;
+            } else if (node->left == nullptr) {
+                Node* tmp = node;
+                node = node->right;
+                node->parent = tmp->parent;
+                delete tmp;
+            } else if (node->right == nullptr) {
+                Node* tmp = node;
+                node = node->left;
+                node->parent = tmp->parent;
+                delete tmp;
+            } else {
+                Node* tmp = min(node->right);
+                node->key = tmp->key;
+                node->right = remove(node->right, tmp->key);
+            }
+        }
+
+        return node;
+    }
+
+Node* BST::min(Node* node) {
     Node* current = node;
 
     while (current->left != NULL) {
@@ -121,19 +135,19 @@ Node* BST::minValueNode(Node* node) {
     return current;
 }
 
-bool BST::search(Node* node, int key) {
-    if (node == NULL) {
+    bool BST::search(int key) {
+        Node* current = root;
+        while (current != NULL) {
+            if (key < current->key) {
+                current = current->left;
+            } else if (key > current->key) {
+                current = current->right;
+            } else {
+                return true;
+            }
+        }
         return false;
     }
-
-    if (key < node->key) {
-        return search(node->left, key);
-    } else if (key > node->key) {
-        return search(node->right, key);
-    } else {
-        return true;
-    }
-}
 
 void BST::traverse(Node* node) {
     if (node != NULL) {
