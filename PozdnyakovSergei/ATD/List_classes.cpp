@@ -134,7 +134,7 @@ void List::print() {
 
 
 int main() {
-    List List;
+/*    List List;
     for (unsigned int num = 0; num < 5; ++num) {
         List.push_back(rand()%100);
     }
@@ -149,5 +149,5 @@ int main() {
     List.print();
     List.clean();
     List.print();
-    return 0;
+    return 0;*/
 }
