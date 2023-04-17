@@ -18,10 +18,8 @@ struct TreeNode {
     T element = {};
     int hash = 0;
 
-    //TreeNode(const T& element, const std::hash<T> &hash_fn);
-    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
-
-    TreeNode(TreeNode<T>* right, TreeNode<T>* left): right(right), left(left) {}
+    TreeNode(const T& element, const std::hash<T> &hash_fn);
+    //TreeNode(const T& element, const std::function<int(T)> &hash_fn);
 };
 
 
@@ -30,8 +28,8 @@ class Tree {
 private:
     TreeNode<T>* root;
 
-    //std::hash<T> hash_fn;
-    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+    std::hash<T> hash_fn;
+    //std::function<int(T)> hash_fn = [](T value){ return (int)value; };
 
     TreeNode<T>** find_smallest_ptr(TreeNode<T>* subtree);
 
@@ -49,14 +47,14 @@ template<typename T>
 Tree<T>::Tree() : root(nullptr) {}
 
 
-//template<typename T>
-//TreeNode<T>::TreeNode(const T &element, const std::hash<T> &hash_fn)
-//        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
-
-
 template<typename T>
-TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+TreeNode<T>::TreeNode(const T &element, const std::hash<T> &hash_fn)
         : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
+
+
+//template<typename T>
+//TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+//        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
 
 
 template<typename T>
