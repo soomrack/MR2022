@@ -15,8 +15,13 @@ int main() {
     A.add(15);
     A.add(2);
     A.add(91);
+    A.add(8);
+    A.add(6);
+    A.add(5);
+    A.add(7);
+    A.add(9);
     A.print();
-    A.remove(13);
+    A.remove(7);
     std::cout << std::endl;
     A.print();
     std::cout << "Search 25" << std::endl;
