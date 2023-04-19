@@ -1,35 +1,13 @@
-#pragma comment(lib, "Ws2_32.lib")
 
-#include "C:\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Coursework\SERVER_FOR_CLIENTS\chat.h"
+#include "..\..\SERVER_FOR_CLIENTS\chat.h"
 
 #define DEFAULT_PORT 22222
 #define ERROR_S "CLIENT ERROR: "
 #define CONNECTION_BREAK_SYMBOL '*'
-#define SERVER_IP "127.0.0.1"
+#define SERVER_IP "192.168.0.103"
 #define BUFFER_SIZE 1024
 
-/*int get_client_socket(int client)
-{
-    return client;
-}
-void exit_from_server() {
-    char buf[0];
-        buf[0] = '*';
-    }
-    send(get_client_socket(), stop, strlen(stop), 0);
-    closesocket(client);
-}*/
-void write_messages(int client) {
-    char buffer[BUFFER_SIZE];
-    while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-        std::cout << "Your message";
-        std::cin.getline(buffer, BUFFER_SIZE);
-        send(client, buffer, strlen(buffer), 0);
-        if (connection_close(buffer))
-            break;
-    }
-}
+
 
 void receive_messages(int client_socket) {
     char buffer[BUFFER_SIZE];
@@ -44,7 +22,7 @@ void receive_messages(int client_socket) {
 
 
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* argv[]) {
+int main() {
     int client;
     WSADATA data;
     GET_CONSOLE_NORMAL();
@@ -59,7 +37,6 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
         exit(EXIT_FAILURE);
     }
     server_address.sin_addr.s_addr = inet_addr(SERVER_IP);
-    //InetPtonA(AF_INET, SERVER_IP, &server_address.sin_addr); НЕ КОМПИЛИТ MINGW
     server_address.sin_family = AF_INET;
     server_address.sin_port = ntohs(DEFAULT_PORT);
 
@@ -82,18 +59,14 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char const* a
     GET_CONSOLE_NORMAL();
     std::thread read(receive_messages, client);
     // Запускаем отдельный поток для посылки сообщения серверу
-    std::thread write(write_messages, client);
-    /*while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
         std::cout << "Your message: ";
         std::cin.getline(buffer, BUFFER_SIZE);
         send(client, buffer, strlen(buffer), 0);
         if (connection_close(buffer))
             break;
-    }*/
-
-    /*atexit(exit_from_server);*/
-    // Останавливаем поток и закрываем сокет
+    }
     read.join();
     closesocket(client);
     return 0;

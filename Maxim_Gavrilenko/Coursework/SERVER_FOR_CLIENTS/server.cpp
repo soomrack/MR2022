@@ -6,6 +6,9 @@
 #define BUFFER_SIZE 1024
 #define MAX_CLIENTS 10
 
+void cleanup() {
+    WSACleanup();
+}
 
 std::vector<int> clients;
 void handle_client(int client_socket) {
@@ -72,7 +75,7 @@ int main() {
     }
 
     std::cout << "Server started. Listening on port " << DEFAULT_PORT << "." << std::endl;
-
+    std::atexit(cleanup);
     // Принимаем соединения и обрабатываем их в отдельных потоках
     while (true) {
         addr_size = sizeof(client_addr);
