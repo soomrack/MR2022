@@ -272,8 +272,6 @@ void RedBlackTree:: right_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_pt
 }
 
 
-
-
 void RedBlackTree:: left_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr) {
     NodePtrPtr child = node_ptr;
     if ((*parent_parent_node_ptr) == nullptr){
