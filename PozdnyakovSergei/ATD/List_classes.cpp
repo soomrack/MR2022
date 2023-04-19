@@ -5,13 +5,13 @@ using namespace std;
 
 class Node {
 public:
-    Node *pNext;
+    Node *pnext;
     double value;
     Node(double value = double (), Node *pNext = nullptr);
 };
 Node::Node(double value, Node *pNext) {
     this->value = value;
-    this->pNext = pNext;
+    this->pnext = pNext;
 }
 
 
@@ -26,7 +26,7 @@ public:
     void del(int );
     void clean();
     void delete_head();
-    void insert_item(double item, unsigned int number);
+//    void insert_item(double item, unsigned int number);
     void print();
 private:
     Node *head;
@@ -56,10 +56,10 @@ void List::push_back(double item) {
         return;
     }
     Node *current = head;
-    while (current->pNext != nullptr) {
-        current->pNext = new Node(item);
+    while (current->pnext != nullptr) {
+        current->pnext = new Node(item);
     }
-    current->pNext = new Node(item);
+    current->pnext = new Node(item);
 }
 
 double &List::operator[](const int num) {
@@ -69,22 +69,22 @@ double &List::operator[](const int num) {
     }
     int counter = 0;
     do {
-        current = current->pNext;
+        current = current->pnext;
         counter++;
     } while (counter != num);
     return current->value;
 }
 
 
-void List::insert_item(double item, unsigned int number) {
+/*void List::insert_item(double item, unsigned int number) {
     if (number == 0) {
         push_front(item);
         return;
     }
     Node *current = previous(number);
-    Node *insert_Node = new Node (item, current->pNext);
-    current->pNext = insert_Node;
-}
+    Node *insert_Node = new Node (item, current->pnext);
+    current->pnext = insert_Node;
+}*/
 
 
 void List::clean() {
@@ -96,7 +96,7 @@ void List::clean() {
 
 void List::delete_head() {
     Node *current = head;
-    head = head->pNext;
+    head = head->pnext;
     delete current;
 }
 
@@ -104,20 +104,20 @@ void List::delete_head() {
 void List::del(int item) {
     Node* node_del = head;
     while (node_del->value != item) {
-        node_del = node_del->pNext;
+        node_del = node_del->pnext;
     }
     Node *current;
     current = previous(item);
-    node_del = current->pNext;
-    current->pNext = node_del->pNext;
+    node_del = current->pnext;
+    current->pnext = node_del->pnext;
     delete node_del;
 }
 
 
 List::NodePtr List::previous(int item) {
     Node *current = head;
-    while (current->pNext->value != item) {
-        current = current->pNext;
+    while (current->pnext->value != item) {
+        current = current->pnext;
     }
     return current;
 }
@@ -127,7 +127,7 @@ void List::print() {
     Node *current = head;
     while (current != nullptr) {
         cout << current->value << ' ';
-        current = current->pNext;
+        current = current->pnext;
     }
     cout << endl;
 }

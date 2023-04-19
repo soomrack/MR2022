@@ -9,6 +9,12 @@ public:
     Node* left;
     Node* right;
     explicit Node(const double& value, Node* left = nullptr, Node* right = nullptr): data(value), left(left), right(right) {}
+    Node(const Node& other) {
+        data = other.data;
+        left = other.left ? new Node(*other.left) : nullptr;  // рекурсивно копируем левую ноду
+        right = other.right ? new Node(*other.right) : nullptr;  // рекурсивно копируем правую ноду
+    }
+
 };
 
 
@@ -113,33 +119,32 @@ void BinaryTree::remove(double value) {
 void BinaryTree::remove(Node ** node, double value) {
     Node **current = node;
     while (*current && (*current)->data != value) {
-        if (value < (*current)->data)
-            current = &((*current)->left);
-        else
-            current = &((*current)->right);
+        current = value < (*current)->data ? &(*current)->left : &(*current)->right;
     }
     if (!*current) return; // элемент не найден
 
     Node *temp = *current;
-    if (!(*current)->left) { //Если правый потомок
+    if (!((*current)->left)) {
         *current = (*current)->right;
         delete temp;
         return;
     }
-    if (!(*current)->right) { //Если левый потомок
+    if (!(*current)->right) {
         *current = (*current)->left;
         delete temp;
         return;
     }
-        Node **successor = &((*current)->left); //Если оба, то родителем становится правый потомок самого левого
-        while ((*successor)->right) {
-            successor = &((*successor)->right);
-        }
-    (*current)->data = (*successor)->data;
-    temp = *successor;
-    *successor = (*successor)->left;
-    delete temp;
+    Node **successor = &((*current)->left);
+    while ((*successor)->right || (*successor)->left) {
+        successor = (!(*successor)->right) ? &((*successor)->left) : &((*successor)->right);
     }
+    Node * temp_node(*successor);
+    *successor = nullptr;
+    *current = temp_node;
+    (*current)->right = temp->right;
+    (*current)->left = temp ->left;
+    delete temp;
+}
 
 
 bool BinaryTree::search(double value) {

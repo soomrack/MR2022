@@ -15,11 +15,11 @@ public:
     queue(unsigned int size = SIZE);
     ~queue();
 
-   // queue& operator=(const queue& x);
+   
 
     void push(const int x);
     void pop();
-    //double get(const unsigned int n = 0);  
+     
 
     
     void show();
