@@ -11,6 +11,7 @@ struct Node {
 
 typedef Node *NodePtr;
 typedef NodePtr *NodePtrPtr;
+
 class Exception {
     int kod_mistake;
 public:
