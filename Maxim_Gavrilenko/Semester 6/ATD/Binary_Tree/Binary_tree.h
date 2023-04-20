@@ -1,4 +1,4 @@
-#include "Stack.h"
+#include "..\Stack\Stack.h"
 #ifndef MR2022_BINARY_TREE_H
 #define MR2022_BINARY_TREE_H
 

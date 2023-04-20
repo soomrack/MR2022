@@ -106,7 +106,7 @@ stack<T>& stack<T>::operator=(const stack<T> & s) {
 
 template <typename T>
 stack<T>::stack(stack<T> && s) noexcept : capacity(s.capacity), size(s.size),
-top(s.top), data(s.data) {
+                                          top(s.top), data(s.data) {
     s.capacity = NULL;
     s.size = NULL;
     s.top = -1;

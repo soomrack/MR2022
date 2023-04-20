@@ -20,7 +20,7 @@ int main()
     s.push(5);
     s.push(3);
     s.push(7);
-    std::cout << s.get_size();
+    std::cout << s.get_size() <<std::endl;
     print(s); // Стек: 7 3 5
     std::cout << "POP METHOD: " << s.pop() << std::endl;
     print(s);                                                   // Стек: 3 5
