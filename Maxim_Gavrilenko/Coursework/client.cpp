@@ -1,5 +1,5 @@
 
-#include "..\..\SERVER_FOR_CLIENTS\chat.h"
+#include "chat.h"
 
 #define DEFAULT_PORT 22222
 #define ERROR_S "CLIENT ERROR: "
