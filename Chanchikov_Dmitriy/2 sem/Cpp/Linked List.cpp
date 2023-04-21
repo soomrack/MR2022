@@ -24,6 +24,9 @@ public:
     double pop_tail();
     //void pop(double val);
 
+    double get_head() const;
+    double get_tail() const;
+
     void print();
 };
 
@@ -111,6 +114,22 @@ void LinkedList::pop(double val) {
 }
 */
 
+// Получение значения первого элемента списка без его удаления
+double LinkedList::get_head() const {
+    if (!head) {
+        throw std::runtime_error("List is empty");
+    }
+    return head->data;
+}
+
+// Получение значения последнего элемента списка без его удаления
+double LinkedList::get_tail() const {
+    if (!tail) {
+        throw std::runtime_error("List is empty");
+    }
+    return tail->data;
+}
+
 // Вывод элементов списка
 void LinkedList::print() {
     Item* current = head;
@@ -129,17 +148,25 @@ int main() {
     list.push_head(2.5);
     list.push_head(-1.8);
     list.push_tail(3.789);
+    list.push_tail(5.0);
 
     list.print();
 
     // Извлечение первого и последнего элементов списка
-    double head_val = list.pop_head();
-    double tail_val = list.pop_tail();
+    double head_del_val = list.pop_head();
+    double tail_del_val = list.pop_tail();
+
+    std::cout << "First deleted element: " << head_del_val << std::endl;
+    std::cout << "Last deleted element: " << tail_del_val << std::endl;
+
+    list.print();
+
+    // Получение значения первого и последнего элементов списка без их удаления
+    double head_val = list.get_head();
+    double tail_val = list.get_tail();
 
     std::cout << "First element: " << head_val << std::endl;
     std::cout << "Last element: " << tail_val << std::endl;
-
-    list.print();
 
     return 0;
 }
