@@ -18,7 +18,7 @@ public:
     unsigned int key;
 
 public:
-    explicit Node(unsigned int key_, void* data_=nullptr);
+    explicit Node(unsigned int in_key, void* in_data=nullptr);
 
     void* get_data();
 };
@@ -27,26 +27,24 @@ public:
 class BinaryTree {
 private:
     Node* root;
-    unsigned int height;
 
 public:
     BinaryTree();
-
-    void append(unsigned int key_, void* data_);
-    void* find(unsigned int key_);
-    void* pop(unsigned int key_);
+    ~BinaryTree();
 
 private:
-    static unsigned int findHeight(Node* node);
+    void deleteNode(Node* node);
 
 public:
-    unsigned int get_height() const;
+    void add(unsigned int add_key, void* add_data);
+    void* find(unsigned int find_key);
+    void* del(unsigned int del_key);
 };
 
 
-Node::Node(unsigned int key_, void* data_) {
-    key = key_;
-    data = data_;
+Node::Node(unsigned int in_key, void* in_data) {
+    key = in_key;
+    data = in_data;
     left = nullptr;
     right = nullptr;
 }
@@ -59,144 +57,115 @@ void* Node::get_data() {
 
 BinaryTree::BinaryTree() {
     root = nullptr;
-    height = 0;
 }
 
 
-void BinaryTree::append(unsigned int key_, void* data_) {
-    auto* new_node = new Node(key_, data_);
+void BinaryTree::deleteNode(Node* node) {
+    if (!node) {
+        return;
+    }
+    deleteNode(node->left);
+    deleteNode(node->right);
+    delete node;
+}
+
+
+BinaryTree::~BinaryTree() {
+    deleteNode(root);
+}
+
+
+void BinaryTree::add(unsigned int add_key, void* add_data) {
+    auto* new_node = new Node(add_key, add_data);
 
     if (!root) {
         root = new_node;
-        height = 1;
         return;
     }
 
     Node* node = root;
     while (node) {
         if (node->key > new_node->key) {
-            if (node->left) {
-                node = node->left;
-            }
-            else {
+            if (!node->left) {
                 node->left = new_node;
-                height = findHeight(root);
                 return;
             }
+            node = node->left;
         }
         else {
-            if (node->right) {
-                node = node->right;
-            }
-            else {
+            if (!node->right) {
                 node->right = new_node;
-                height = findHeight(root);
                 return;
             }
+            node = node->right;
         }
     }
 }
 
 
-void* BinaryTree::find(unsigned int key_) {
+void* BinaryTree::find(unsigned int find_key) {
     Node* node = root;
     while (node) {
-        if (node->key == key_) {
+        if (node->key == find_key) {
             return node->data;
         }
-        else {
-            node = (node->key > key_) ? node->left : node->right;
-        }
+        node = (node->key > find_key) ? node->left : node->right;
     }
     return nullptr;
 }
 
 
-void* BinaryTree::pop(unsigned int key_) {
+
+
+
+void* BinaryTree::del(unsigned int del_key) {
     Node* prev_node = nullptr;
     Node* node = root;
+
     while (node) {
-        if (node->key != key_) {
-            prev_node = node;
-            node = (node->key > key_) ? node->left : node->right;
-            continue;
+        if (node->key == del_key) {
+            break;
         }
-
-        if (!node->right && !node->left) {
-            if (prev_node->left == node) {
-                prev_node->left = nullptr;
-            }
-            else {
-                prev_node->right = nullptr;
-            }
-            height = findHeight(root);
-            return node->data;
-        }
-
-        if (node->left && !node->right) {
-            if (prev_node->left == node) {
-                prev_node->left = node->left;
-            }
-            else {
-                prev_node->right = node->left;
-            }
-            node->left->right = node->right;
-            height = findHeight(root);
-            return node->data;
-        }
-
-        if (!node->left && node->right) {
-            if (prev_node->left == node) {
-                prev_node->left = node->right;
-            }
-            else {
-                prev_node->right = node->right;
-            }
-            node->right->left = node->left;
-            height = findHeight(root);
-            return node->data;
-        }
-
-        if (node->left && node->right) {
-            Node* min_node = node->right;
-            while (min_node->left) {
-                if (min_node->key < min_node->left->key) {
-                    min_node = min_node->left;
-                }
-            }
-            if (prev_node->left == node) {
-                prev_node->left = min_node;
-            }
-            else {
-                prev_node->right = min_node;
-            }
-            if (min_node != node->right) {
-                min_node->right = node->right;
-            }
-            min_node->left = node->left;
-            height = findHeight(root);
-            return node->data;
-        }
+        prev_node = node;
+        node = (node->key > del_key) ? node->left : node->right;
     }
-    return nullptr;
-}
 
-
-unsigned int BinaryTree::findHeight(Node* node) {
     if (!node) {
-        return 0;
+        return nullptr;
     }
-    if (!node->left && !node->right) {
-        return 1;
-    }
-    unsigned int left_height = findHeight(node->left);
-    unsigned int right_height = findHeight(node->right);
-    return (left_height > right_height) ? left_height + 1 : right_height + 1;
-}
 
 
-unsigned int BinaryTree::get_height() const {
-    return height;
+    Node* parent_node = node;
+    Node* child_node = node->right;
+    if (child_node) {
+        while (child_node->left) {
+            parent_node = child_node;
+            child_node = child_node->left;
+        }
+        child_node->left = node->left;
+        if (parent_node != node) {
+            parent_node->left = child_node->right;
+            child_node->right = node->right;
+        }
+    }
+    else {
+        child_node = node->left;
+    }
+
+
+    if (node == root) {
+        root = child_node;
+    }
+    else {
+        if (prev_node->left == node) {
+            prev_node->left = child_node;
+        }
+        else {
+            prev_node->right = child_node;
+        }
+    }
+
+    return node->data;
 }
 
 

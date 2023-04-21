@@ -2,21 +2,25 @@
 //#include <Ultrasonik.h>
 
 
-#define echoPin 19  // приемник
-#define trigPin 18  // источник
+#define ECHOPIN 19  // приемник
+#define TRIGPIN 18  // источник
 
-#define buttonPin 8  // кнопка включения и отключения
-#define note_pin 10  // оповещение о приближении
+#define BUTTONPIN 8  // кнопка включения и отключения
+#define NOTEPIN 10  // оповещение о приближении
 
-#define speed_pin_r 5  // скорость правых моторов
-#define speed_pin_l 6  // скорость левых моторов
-#define dur_pin_r 4  // направление правых моторов
-#define dur_pin_l 7  // направление левых моторов
+#define SPEED_R 5  // скорость правых моторов
+#define SPEED_L 6  // скорость левых моторов
+#define DIR_R 4  // направление правых моторов
+#define DIR_L 7  // направление левых моторов
 
+enum MODE {move_towards, detour_object};
+
+
+int current_mode = move_towards;
 bool is_on = false;  // для кнопки включения
 bool button_state = false;
 float time = 0.0;
-int sound_time = 0;  // время оповещения
+int sound_time = 0;  // время оповещения  
 float filt_param = 0.2;  // параметр для фильтрации
 float dist_filt = 0;  // отфильтрованный выход
 float dur_param = 29.1;
@@ -24,30 +28,104 @@ float dur_param = 29.1;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  pinMode(buttonPin, INPUT);
+  pinMode(TRIGPIN, OUTPUT);
+  pinMode(ECHOPIN, INPUT);
+  pinMode(BUTTONPIN, INPUT);
 
-  analogWrite(note_pin, 200);
-  delay(200);
-  analogWrite(note_pin, 0);
+  analogWrite(NOTEPIN, 255);
+  delay(300);
+  analogWrite(NOTEPIN, 0);
+}
+
+
+void set_mode (int new_mode) {
+  switch(new_mode) {
+    case move_towards:
+      move();
+      break;
+
+    case detour_object:
+      detour();
+      break;
+
+    default:
+      stop();
+      break;
+
+    }
+    current_mode = new_mode;
+    Serial.print(new_mode);
+}
+
+
+void move() {
+  int value_right = 1;
+  int value_left = 1;
+
+  start_motors(value_right, value_left);
+}
+
+
+void detour() {
+  int value_right = 1;
+  int value_left = 1;
+
+  start_motors(value_right, value_left);
+}
+
+
+void stop() {
+  int value_right = 0;
+  int value_left = 0;
+  start_motors(value_right, value_left);
+}
+
+
+void start_motors (int value_right, int value_left) {
+  int direction_left;
+  int direction_right;
+  if (value_right > 0) {
+    direction_right = 1;
+  }
+  else {
+    direction_right = 0;
+  }
+
+  if (value_left > 0) {
+    direction_left = 1;
+  }
+  else {
+    direction_left = 0;
+  }
+  digitalWrite(DIR_R, direction_right);
+  digitalWrite(DIR_L, direction_left);
+  analogWrite(SPEED_R, value_right);
+  analogWrite(SPEED_L, value_left);
 
 }
 
 
-void start_motors () {
+void program() {
+  int mode = 0;
+  mode = find_object;
+  set_mode(mode);
+  delay(300);
+}
+
+
+void find_object() {
 
 }
 
 
 int get_distance() {
   long dur, sm;
-  digitalWrite(trigPin, LOW);
+  digitalWrite(TRIGPIN, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(TRIGPIN, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  dur = pulseIn(echoPin, HIGH);
+  digitalWrite(TRIGPIN, LOW);
+  dur = pulseIn(ECHOPIN, HIGH);
   sm = (dur / 2) / dur_param;  // перевод показаний датчика в сантиметры
   Serial.print("Distance is ");
   Serial.print(sm);
@@ -66,27 +144,28 @@ int dist_filtered() {
 }
 
 
-int sound_tim() {
+int peep_time() {
   int sound = dist_filtered();
   int sound_time = map(sound, 0, 255, 700, 100);
-  analogWrite(note_pin, sound_time);
+  analogWrite(NOTEPIN, sound_time);
   return (sound_time);
 }
 
 
 void sound() {
-  int tim = sound_tim();
-  analogWrite(note_pin, 200);
-  delay(tim);
-  analogWrite(note_pin, 0);
-  delay(tim);
+  int time_s = peep_time();
+  analogWrite(NOTEPIN, 200);
+  delay(time_s);
+  analogWrite(NOTEPIN, 0);
+  delay(time_s);
 }
 
 
 bool check_button() {
-  if (digitalRead (buttonPin) == HIGH) {
+  if (digitalRead (BUTTONPIN) == HIGH) {
     button_state = not button_state;
-    delay(100);
+    current_mode = 0;
+    delay(500);
   }
   return button_state;
 }
@@ -96,13 +175,13 @@ void loop() {
   bool is_on = check_button();
 
   if (is_on) {
-    start_motors();
+    program();
   }
   
   else {
-    digitalWrite(speed_pin_r, LOW);
-    digitalWrite(speed_pin_l, LOW);
-    digitalWrite(dur_pin_r, LOW);
-    digitalWrite(dur_pin_l, LOW);
+    digitalWrite(SPEED_R, LOW);
+    digitalWrite(SPEED_L, LOW);
+    digitalWrite(DIR_R, LOW);
+    digitalWrite(DIR_L, LOW);
     }
 }

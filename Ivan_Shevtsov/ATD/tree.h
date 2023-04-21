@@ -28,8 +28,8 @@ namespace tree_names {
         Node* right;
         Node* left;
 
-        inline Node();
-        inline Node(double value, int key, Node* right = nullptr, Node* left = nullptr);
+        Node();
+        Node(double value, int key, Node* right = nullptr, Node* left = nullptr);
 
         ~Node();
     };

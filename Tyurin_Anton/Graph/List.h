@@ -3,12 +3,12 @@
 
 #include <string>
 #include <iostream>
-#include "Head.h"
+#include "GraphNode.h"
 
 template<typename T>
 class Node {
 public:
-    Node(T data) : data(data), next(nullptr) {}
+    explicit Node(T data) : data(data), next(nullptr) {}
 
     Node *next;
     T data;
@@ -16,6 +16,7 @@ public:
     T getNodeData();
 
     Node<T> *getNext();
+
 };
 
 template<typename T>
@@ -37,14 +38,9 @@ public:
 
     void push_head(T data);
 
-    Node<T>* find(T f_data);
-    Head* find(unsigned int f_data);
+    Node<T> *find(T f_data);
 
-    void pop(unsigned int id);
-
-    Node<T> loop(unsigned int id, auto *local);
-
-    Node<T> *operator[](const int index);
+    void pop(T d_data);
 
     void remove_first();
 
@@ -53,6 +49,13 @@ public:
     unsigned int get_size();
 
     Node<T> *getHead();
+
+    void popAll();
+
+    List<T> &operator=(const List<T> &other);
+
+    List<T> &operator=(List<T> &&other) noexcept;
+
 };
 
 #include "List.h"
@@ -103,11 +106,11 @@ void List<T>::print() {
 }
 
 template<typename T>
-Node<T>* List<T>::find(T f_data) {
+Node<T> *List<T>::find(T f_data) {
     if (is_empty()) { return nullptr; }
     Node<T> *local = head;
-    while(local) {
-        if (local->data == f_data){ return local;}
+    while (local) {
+        if (local->data == f_data) { return local; }
         local = local->next;
     }
     return nullptr;
@@ -138,23 +141,66 @@ void List<T>::remove_last() {
 }
 
 template<typename T>
-void List<T>::pop(unsigned int id) {
-    if (is_empty()) return;
-    if (id > size) return;
-    if (0 == id) {
-        remove_first();
-        return;
-    } else if (id + 1 == size) {
-        remove_last();
-        return;
+List<T> &List<T>::operator=(const List<T> &other) {
+    if (this == &other) {
+        return *this;
     }
+    if (other.is_empty()) {
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
+        return *this;
+    }
+    size = other.size;
+    auto* copy = new Node<T>(other.head->data);
+    head = copy;
+    Node<T>* original = other.head;
+    while (original->next != nullptr) {
+        copy->next = new Node<T>(original->next->data);
+        copy = copy->next;
+        original = original->next;
+    }
+    copy->next = nullptr;
+    tail = copy;
+}
+
+
+template<typename T>
+List<T> &List<T>::operator=(List<T> &&other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+    this->head = other.head;
+    this->tail = other.tail;
+    size = other.size;
+    other.head = nullptr;
+    other.tail = nullptr;
+    other.size = 0;
+}
+
+
+template<typename T>
+void List<T>::pop(T d_data) {
+    if (is_empty()) return;
     auto *local = head;
-    for (int idx = 0; idx < id - 1; idx++) {
+    while (local) {
+        if (d_data == local->data) {
+            local->next = local->next->next;
+            delete local->data;
+            size--;
+        }
         local = local->next;
     }
-    local->next = local->next->next;
-    size--;
 }
+
+template<typename T>
+void List<T>::popAll() {
+    if (is_empty()) return;
+    head = nullptr;
+    tail = nullptr;
+    size = 0;
+}
+
 
 template<typename T>
 unsigned int List<T>::get_size() {
@@ -163,7 +209,7 @@ unsigned int List<T>::get_size() {
 
 
 template<typename T>
-Node<T>* List<T>::getHead() {
+Node<T> *List<T>::getHead() {
     return head;
 }
 
@@ -173,8 +219,11 @@ T Node<T>::getNodeData() {
 }
 
 template<typename T>
-Node<T>* Node<T>::getNext() {
+Node<T> *Node<T>::getNext() {
     return next;
 }
+
+
+
 
 #endif //HELLO_WORLD_LIST_H

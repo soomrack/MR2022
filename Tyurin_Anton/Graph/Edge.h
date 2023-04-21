@@ -2,19 +2,27 @@
 #define UNTITLED_EDGE_H
 
 
-#include "Head.h"
+#include "GraphNode.h"
 
 
-class Head;
+class GraphNode;
 
 class Edge{
-    Head* loc;
-    Head* dest;
+    GraphNode* loc;
+    GraphNode* dest;
 public:
-    Edge(Head* loc_, Head* dest_){
+    Edge(GraphNode* loc_, GraphNode* dest_){
         loc = loc_;
         dest = dest_;
     };
+
+    GraphNode *getDest() {
+        return this->dest;
+    }
+
+    GraphNode *getLoc() {
+        return this->dest;
+    }
 };
 
 
