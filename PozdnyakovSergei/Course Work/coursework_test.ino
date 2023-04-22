@@ -19,6 +19,11 @@ Servo sensor_servo;
 
 enum MODE {move_towards, detour_object};
 
+void move();
+void detour();
+void stop();
+
+void (*(actions[3]))() = {move, detour, stop};
 
 int current_mode = move_towards;
 bool is_on = false;  // для кнопки включения
