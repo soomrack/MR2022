@@ -13,6 +13,8 @@
 #define DIR_R 4  // направление правых моторов
 #define DIR_L 7  // направление левых моторов
 
+#define PERIOD 100;
+
 Servo sensor_servo;
 
 enum MODE {move_towards, detour_object};
@@ -38,6 +40,14 @@ void setup() {
   delay(100);
 
   tone(NOTEPIN, 1000, 500);
+}
+
+
+int period(int mil) {
+  uint32_t tmr; 
+  if (millis() - tmr >= mil) {
+    tmr = millis();
+  }
 }
 
 
