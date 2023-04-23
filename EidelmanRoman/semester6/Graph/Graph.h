@@ -45,9 +45,10 @@ Edge::~Edge() {
 
 class Graph {
 public:
-    int8_t items;
+    int items;
     std::vector<Edge> edge_list;
-    // vector<Node>
+    std::vector<Node> node_list;
+
 
     Graph() = default;
     Graph(Node node1, Node node2);
@@ -57,7 +58,8 @@ public:
     void delete_edge(Node node1, Node node2);
     void add_node(Node graph_node, Node new_node);
     void delete_node();
-    int8_t get_count_of_edges() {return edge_list.size();};
+    int get_count_of_edges() {return edge_list.size();}; //why not int8_t?
+    int get_count_of_nodes() {return node_list.size();};
 };
 
 
@@ -71,11 +73,14 @@ void Graph::add_edge(Node node1, Node node2) {
 
 Graph::Graph(Node node1, Node node2) {
     add_edge(node1, node2);
+    node_list.push_back(node1);
+    node_list.push_back(node2);
 }
 
 
 void Graph::add_node(Node graph_node, Node new_node) {
     add_edge(graph_node, new_node);
+    node_list.push_back(new_node);
 };
 
 
