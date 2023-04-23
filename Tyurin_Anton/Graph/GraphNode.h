@@ -21,7 +21,7 @@ public:
         return data;
     };
 
-    bool operator==(const GraphNode& right) {
+    bool operator==(const GraphNode& right) const {
         if (this->data == right.data) {return 1;}
     return 0;
     }

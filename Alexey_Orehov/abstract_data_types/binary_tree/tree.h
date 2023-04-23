@@ -4,11 +4,7 @@
 #include <exception>
 #include <functional>
 
-
-class TreeException: public std::exception {
-public:
-    explicit TreeException(const char* msg) : std::exception() {}
-};
+//#define HASH_WORKAROUND
 
 
 template<class T>
@@ -17,9 +13,11 @@ struct TreeNode {
     TreeNode<T>* left;
     T element = {};
     int hash = 0;
-
+#ifndef HASH_WORKAROUND
     TreeNode(const T& element, const std::hash<T> &hash_fn);
-    //TreeNode(const T& element, const std::function<int(T)> &hash_fn);
+#else
+    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
+#endif
 };
 
 
@@ -28,8 +26,11 @@ class Tree {
 private:
     TreeNode<T>* root;
 
+#ifndef HASH_WORKAROUND
     std::hash<T> hash_fn;
-    //std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+#else
+    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+#endif
 
     TreeNode<T>** find_smallest_ptr(TreeNode<T>* subtree);
 
@@ -46,16 +47,15 @@ public:
 template<typename T>
 Tree<T>::Tree() : root(nullptr) {}
 
-
+#ifndef HASH_WORKAROUND
 template<typename T>
 TreeNode<T>::TreeNode(const T &element, const std::hash<T> &hash_fn)
         : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
-
-
-//template<typename T>
-//TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
-//        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
-
+#else
+template<typename T>
+TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
+#endif
 
 template<typename T>
 Tree<T>::Tree(const T &element) : root(new TreeNode<T>(element, hash_fn)) {}
@@ -123,11 +123,8 @@ void Tree<T>::remove(const T &element) {
 
 template<typename T>
 TreeNode<T>** Tree<T>::find_smallest_ptr(TreeNode<T> *subtree) {
-    TreeNode<T>** smallest = &subtree->left;  // Указатель на указатель на левый элемент в поддереве
-    for (;;) {
-        if ((*smallest)->left == nullptr) break;
-        smallest = &((*smallest)->left);
-    }
+    TreeNode<T>** smallest = &subtree;
+    while ((*smallest)->left != nullptr) smallest = &((*smallest)->left);
     return smallest;
 }
 
