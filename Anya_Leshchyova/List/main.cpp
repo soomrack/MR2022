@@ -3,7 +3,7 @@ class ListExceptions{
     int kod_mistake;
 public:
     ListExceptions();
-    ListExceptions(int );
+    ListExceptions(int kod);
 
 };
 
@@ -19,13 +19,15 @@ ListExceptions::ListExceptions(int kod_mistake) {
 
 
 ListExceptions mistake_parameters = (0);
-class Node{
+class Node {
 public:
-    Node *pNext;
+    Node* pNext;
     double data;
-
+    Node();
     Node (double data = double(),Node *pNext = nullptr);
 };
+
+typedef Node *NodePtr;
 
 Node:: Node (double data ,Node *pNext){
     this->data = data;
@@ -37,22 +39,19 @@ class LinkedList{
 public:
     LinkedList();
     ~LinkedList();
-
-    void push_back(double key);
-    void push_front(double key);
+    void push_back(double data);
+    void push_front(double data);
     void print();
     double& operator[] (const int );
-    void del ( int );
+    void del (double data);
     void del_head();
     void clear();
-    void insert(double key, int place);
-
-
+    void push_next (double data, double data_next);
+    void push_prev (double data, double data_prev);
 
 private:
-Node *head;
-typedef Node *NodePtr;
-NodePtr previous (int key);
+NodePtr head;
+NodePtr previous (double data);
 };
 
 
@@ -77,7 +76,6 @@ double& LinkedList::operator[](const int number) {
     }
     while(count != number);
     return current->data;
-
 }
 
 
@@ -91,7 +89,6 @@ void LinkedList::push_back(double key){
         current = current->pNext;
     }
     current->pNext = new Node (key);
-
 }
 
 
@@ -100,15 +97,20 @@ void LinkedList::push_front(double key){
 }
 
 
-void LinkedList::insert(double key, int place) {
-    if ( place < 0) throw mistake_parameters;
-    if ( place == 0){
-        push_front(key);
-        return;
+void LinkedList:: push_next (double data, double data_){
+    NodePtr node_prev = head;
+    while (node_prev->data != data_ ){
+        node_prev = node_prev->pNext;
     }
-    Node *current = previous(place);
-    Node *insert_node = new Node (key, current->pNext);
-    current->pNext = insert_node;
+    NodePtr new_node = new Node (data, node_prev->pNext);
+    node_prev->pNext = new_node;
+}
+
+
+void LinkedList::push_prev(double data, double data_prev) {
+    NodePtr prev = previous(data_prev);
+    NodePtr new_node = new Node (data, prev->pNext);
+    prev->pNext = new_node;
 }
 
 
@@ -116,7 +118,6 @@ void LinkedList:: del_head(){
     Node *current = head;
     head = head->pNext;
     delete current;
-
 }
 
 
@@ -127,7 +128,7 @@ void LinkedList:: clear(){
 }
 
 
-void LinkedList:: del(int key){
+void LinkedList:: del(double key){
     Node* node_to_del = head;
     while ( node_to_del->data != key)
         node_to_del = node_to_del->pNext;
@@ -137,7 +138,6 @@ void LinkedList:: del(int key){
     current->pNext = node_to_del->pNext;
     delete node_to_del;
 }
-
 
 
 void LinkedList::print(){
@@ -150,9 +150,9 @@ void LinkedList::print(){
 }
 
 
-LinkedList::NodePtr LinkedList::previous(int key) {
+NodePtr LinkedList::previous(double data_){
     Node *current = head;
-    while ( current->pNext->data != key)
+    while ( current->pNext->data != data_)
         current = current->pNext;
     return current;
 }
@@ -168,11 +168,10 @@ int main() {
     lst.push_front(8.00);
     lst.push_back(55.00);
     lst.print();
-    lst.insert(888.00, 1);
-    lst.print();
     lst.del( 1);
+    lst.push_prev(666.00, 0);
+    lst.push_next(999.00, 0);
     lst.print();
-
     lst.clear();
     lst.print();
 

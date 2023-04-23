@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <cmath>
 
 /* добавить кеш (не занятую память для последующего расширения, как новый аргумент класса), CHECK
  заменить вектор на какое-нибудь заполнение из списка (зачем нужен наш класс, если есть вектор?), CHECK
@@ -18,11 +19,18 @@ class DArray {
 protected:
     unsigned int size;
     T *data;
+    unsigned int default_cache = 5;
+    unsigned int real_cache = 5;
 
 public:
-    unsigned int cache_size = 0;
 
-    explicit DArray(std::list<T> in_list, int new_cache_size = 5); // заполнение массива значениями из массива при создании
+
+    void set_default_cache_size (unsigned int new_size);
+    unsigned int get_default_cache_size() const;
+    //get_reserved, get_capacity
+    unsigned int get_reserved() const;
+    unsigned int get_capacity() const;
+    explicit DArray(std::list<T> in_list, int new_cache_size = -1); // заполнение массива значениями из массива при создании
     ~DArray() noexcept;
     unsigned int get_size() const;
     void resize(unsigned int new_size);
