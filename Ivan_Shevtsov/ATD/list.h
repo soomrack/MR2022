@@ -3,6 +3,13 @@
 #include <iostream>
 
 namespace list_names {
+    /**
+     * @brief myList
+     *
+     * use try/catch for work with it
+     */
+
+    // EXCEPTIONS
     class list_exceptions: public std::domain_error{
     public:
         list_exceptions(const char* massage): std::domain_error(massage){}
@@ -19,48 +26,124 @@ namespace list_names {
                                    "List was created and data pushed");*/
 
 
+    // NODE
     template<typename T>
-    class Node {
-    protected:
+    struct Node {
+        T data;
         Node *p_next;
     public:
-        T data;
-
         Node();
-        Node(T data, Node<T> *p_next = nullptr);
-        ~Node() { p_next = nullptr; }
+        Node(T data, Node<T> *p_next = nullptr): data(data), p_next(p_next){}
+        ~Node() { p_next = nullptr;}
 
-        void push_next(Node<T> *other) { p_next = other; };
-        Node** next() {return &p_next;}
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
+        bool operator==(Node<T> const& other) const {return data == other.data;}
     };
 
+
+    // LIST
     template<typename T>
     class list {
     private:
-        unsigned int size;
+        unsigned size;
         Node<T> *head;
-
     public:
         list();
-        list(list &other);
+        list(const list &other);
+        list& operator=(list & other) = delete;
         ~list();
 
-        void clear();
-        void show();
+    public:
+        template<class p_node>
+        class ListIterator{
+            friend class list;
+        public:
+            typedef p_node iterator_type;
+            typedef std::input_iterator_tag iterator_category;
+            typedef iterator_type value_type;
+            typedef ptrdiff_t difference_type;
+            typedef iterator_type& reference;
+            typedef iterator_type* pointer;
 
+            iterator_type current_node;
+        private:
+            ListIterator(p_node current_node) : current_node(current_node) {}
+        public:
+            T operator*() const{ return current_node->data;}
+            ListIterator& operator++();
+            bool operator!=(ListIterator const& other) const{return current_node != other.current_node;}
+            bool operator==(ListIterator const& other) const{ return current_node == other.current_node;}
+        };
+
+        typedef ListIterator<Node<T>*> iterator;
+        typedef ListIterator<const Node<T>*> const_iterator;
+
+        iterator begin() {return  iterator(head);};
+        iterator end() {return nullptr;}
+
+        const_iterator begin() const { auto const ans = head; return const_iterator(ans);}
+        const_iterator end() const {return nullptr;}
+
+        friend std::ostream& operator<<(std::ostream &os, const Node<T>* node){
+            return os << node->data;
+        }
+    public:
+        T front() { return head->data; }
+        bool is_empty(){ return (head == nullptr); }
+        int lenght() { return size; }
+    public:
         void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
+        void delete_after(Node<T>* after_this);
+        bool find_and_delete(T data);  // work only if T is pointer Q:
         void push(T data);
         void pop();
 
-        int lenght() { return size; }
-        Node<T> *front() { return head; }
-        T &operator[](unsigned element_number);
+        void clear();
+        void show();  // old version without iterator
+
         bool operator==(const list &other);
         bool operator!=(const list &other);
     };
 
+    template<typename T>
+    template<class p_node>
+    list<T>::ListIterator<p_node> &list<T>::ListIterator<p_node>::operator++() {
+        if (current_node == nullptr) { return *this; }
+        current_node = current_node->p_next;
+        return *this;
+    }
 
+    template<typename T>
+    bool list<T>::find_and_delete(T data) {
+        /**
+         * @return true if node was find and deleted, else false
+         */
+
+        if (head == nullptr) {
+            return false;}
+        if ( *(head->data) == *data ){
+            pop();
+            return true;
+        }
+        for (iterator it = begin(); it != end(); ++it){
+            if (it.current_node->p_next == nullptr) {return false; }
+            if (*(it.current_node->p_next->data) == *data) {
+                delete_after(it.current_node);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<typename T>
+    void list<T>::delete_after(Node<T> *after_this) {
+       Node<T> *tmp = after_this->p_next->p_next;
+       delete after_this->p_next;
+       after_this->p_next = tmp;
+       size--;
+    }
 
     template<typename T>
     bool list<T>::operator!=(const list &other) {
@@ -77,43 +160,26 @@ namespace list_names {
         for (unsigned idx = 0; idx < size; idx++) {
             if (first_current->data != second_current->data)
                 return false;
-            first_current = *(first_current->next());
-            second_current = *(second_current->next());
+            first_current = first_current->p_next;
+            second_current = second_current->p_next;
         }
         return true;
     }
 
     template<typename T>
-    T &list<T>::operator[](unsigned int element_number) {
-        if (size == 0) {
-            list_exceptions ZERO_SIZE("zero size error");
-            throw ZERO_SIZE; }  // THIS
-        else if (element_number >= size) {
-            list_exceptions OUT_OF_THE_RANGE("index out of the range(operator [])");
-            throw OUT_OF_THE_RANGE; } // THIS
-
-        Node<T> *current_node = head;
-        int counter = 0;
-        while (current_node != nullptr) {
-            if (counter == element_number)
-                return current_node->data;
-            current_node = *(current_node->next());
-            counter++;
-        }
-    }
-
-    template<typename T>
-    list<T>::list(list &other) {
-        this->size = other.size;
+    list<T>::list(const list &other) {
+        size = other.size;
         if (other.head == nullptr) {
-            this->head = nullptr;
+            head = nullptr;
         } else {
             head = new Node<T>(other.head->data);
 
-            Node<T> *current_node = head;
+            Node<T> *first_running_node = head;
+            Node<T> *second_running_node = other.head;
             for (unsigned idx = 1; idx < other.size; idx++) {
-                *(current_node->next()) = new Node<T>(other[idx]);
-                current_node = *(current_node->next());
+                first_running_node->p_next = new Node<T>(second_running_node->p_next->data);
+                first_running_node =  first_running_node->p_next;
+                second_running_node = second_running_node->p_next;
             }
         }
     }
@@ -132,7 +198,7 @@ namespace list_names {
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < size; counter++){
             std::cout << running_pointer->data << "\t";
-            running_pointer = *(running_pointer->next());
+            running_pointer = running_pointer->p_next;
         }
         std::cout << "\n";
     }
@@ -156,12 +222,12 @@ namespace list_names {
 
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < element_number; counter++){
-            running_pointer = *(running_pointer->next());
+            running_pointer = running_pointer->p_next;
         }
-        Node<T>* del = *(running_pointer->next());
-        auto tmp = *(del->next());
+        Node<T>* del = running_pointer->p_next;
+        auto tmp = del->p_next;
         delete del;
-        *(running_pointer->next()) = tmp;
+        running_pointer->p_next = tmp;
         size--;
     }
 
@@ -183,22 +249,16 @@ namespace list_names {
         if (head == nullptr) {
             list_exceptions POP_ERROR("can`t pop from empty list");
             throw POP_ERROR; } // THIS
-        if (*(head->next()) == nullptr){
+        if (head->p_next == nullptr){
             delete head;
             head = nullptr;
             size--;
             return;
         }
-        Node<T>* tmp = *(head->next());
+        Node<T>* tmp = head->p_next;
         delete head;
         head = tmp;
         size--;
-    }
-
-    template<typename T>
-    Node<T>::Node(T data, Node<T> *p_next) {
-        this->data = data;
-        this->p_next = p_next;
     }
 
     template<typename T>
@@ -216,10 +276,10 @@ namespace list_names {
         Node<T>* new_node = new Node<T>(data);
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < element_number; counter++){
-            running_pointer = *(running_pointer->next());
+            running_pointer = running_pointer->p_next;
         }
-        *(new_node->next()) = *(running_pointer->next());
-        *(running_pointer->next()) = new_node;
+        new_node->p_next = running_pointer->p_next;
+        running_pointer->p_next = new_node;
         size++;
     }
 

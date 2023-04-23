@@ -1,87 +1,110 @@
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
 
-using namespace std;
+class Queue_Exception : public std::exception
+{
+public:
+    Queue_Exception(const char* const& msg) : std::exception(msg)
+    {}
+};
 
-class Queue {
-private:
-    int size;
-    int *arr;
-    int head;
-    int tail;
+Queue_Exception ISFULL("Queue is full. New items cannot be included\n");
+Queue_Exception ISEMPTY("Queue is empty. Items cannot be excluded\n");
+
+template <typename T = double>
+class Queue
+{
+protected:
+    unsigned int size;
+    T* values;
+    int head_idx;
+    int tail_idx;
+
 
 public:
-    Queue(int s) // constructor
-    {
-        size = s;
-        arr = new int[s];
-        head = 0;
-        tail = 0;
-    }
-
-    void fill() //put '11)s' elements in the queue
-    {
-        //srand(time(0));
-        for (int i = 0; i < size-1; i++)
-            arr[i] = rand()%10;
-        tail = size-1;
-    }
-
-    int pop() // take off one element from queue
-    {
-        if (head < tail)
-            return arr[head++];
-        else
-            cout << "Очередь пустая." << endl;
-        return 0;
-    }
-
-
-    void push(int el) // insert one element
-    {
-        if (tail < size)
-            arr[tail++] = el;
-        else
-            cout << "Очередь переполнена." << endl;
-    }
-
-    void print() // print queue to console
-    {
-        for (int i = head; i < tail; i++)
-            cout << arr[i] << " ";
-        cout << endl;
-    }
-
-    void free() // remove all elements from queue
-    {
-        delete arr;
-    }
-
-    bool is_empty() // check emptiness of  queue
-    {
-        return head == tail;
-    }
-
-    ~Queue() // destructor
-    {
-        delete arr;
-    }
+    Queue(unsigned int size);
+    ~Queue();
+    bool is_empty();
+    bool is_full();
+    unsigned int size_engaged();  // возвращает количество занятых ячеек
+    void push(T value);
+    void pop();
+    void print_queue();
 };
 
 
-
-
-
-int main()
+template <typename T>
+Queue<T>::Queue(unsigned int size)
 {
-    Queue queue(15);
-    queue.fill();
-    queue.print();
-    queue.push(10);
-    queue.pop();
-    queue.print();
-    queue.free();
-    cout << queue.is_empty() << endl;
-    return 0;
+    this->size = size;
+    values = new T[size];
+    head_idx = -1;
+    tail_idx = -1;
+}
+
+template <typename T>
+Queue<T>::~Queue()
+{
+    delete[] values;
+}
+
+
+template <typename T>
+bool Queue<T>::is_empty()
+{
+    return head_idx == -1 && tail_idx == -1 ? 1 : 0;
+}
+
+template <typename T>
+bool Queue<T>::is_full()
+{
+    return size_engaged() == size ? 1 : 0;
+}
+
+
+template <typename T>
+unsigned int Queue<T>::size_engaged()
+{
+    return head_idx > tail_idx ? head_idx - tail_idx + 1 : tail_idx - head_idx + 1;
+}
+
+
+template <typename T>
+void Queue<T>::push(T value)
+{
+    if (is_full()) throw ISFULL;
+
+    if (is_empty())
+    {
+        head_idx = 0;
+        tail_idx = 0;
+    }
+    else
+    {
+        if (head_idx == size - 1) head_idx = 0;
+        else ++head_idx;
+    }
+
+    values[head_idx] = value;
+}
+
+template <typename T>
+void Queue<T>::pop() {
+    if (is_empty()) throw ISEMPTY;
+    values[tail_idx] = NULL;
+    if (tail_idx == size - 1) tail_idx = 0;
+    else ++tail_idx;
+}
+
+template <typename T>
+void Queue<T>::print_queue() {
+    std::cout << "Place left: " << size - size_engaged() + 1 << std::endl;
+    if (is_empty()) {
+        std::cout << "Queue is empty" << std::endl;
+        return;
+    }
+    for (unsigned int idx = tail_idx; idx <= head_idx; ++idx) {
+        std::cout << values[idx] << " ";
+        if (tail_idx > head_idx && idx == size - 1) idx = -1;
+    }
+    std::cout << "\n\n";
 }

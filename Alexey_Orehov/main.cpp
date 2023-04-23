@@ -43,14 +43,18 @@ void test_list() {
 
 
 int main() {
-    int data[10] = {50, -4, 6, 1, 2, 3, -10, 9, -8, 7};
+    int data[15] = {50, 55, 6, 1, 51, 52, -10, 9, -8, 7, 10, 13, 15, -1, -2};
     Tree<int> tree;
 
     for (auto& element : data) {
         tree.insert(element);
     }
 
+    tree.remove(50);
+    tree.remove(51);
     tree.remove(6);
+    tree.remove(52);
+    tree.remove(13);
 
     for (auto& element : data) {
         if (tree.find(element)) std::cout << "Found element " << element << std::endl;

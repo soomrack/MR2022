@@ -5,8 +5,9 @@
 #ifndef ATD_GRAPH_H
 #define ATD_GRAPH_H
 #include "iostream"
-#include <vector>
-#include <unordered_map>
+#include "list.h"
+#include <limits.h> // for int max func
+
 
 namespace graph_names {
 
@@ -28,100 +29,89 @@ namespace graph_names {
     graph_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
     graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
+    // DECLARATION
+
+    class Edge;
+    class Node;
+    class Graph;
+    class Path;
 
     // EDGE
-    enum edge_state{
-        DOUBLE_LINKED,
-        SINGLY_LINKED,
-        NOT_LINKED
-    };
-
-    class Node;
-    class Edge;
-    class Graph;
-
-    typedef std::vector<Edge*> vector_edges;
-    typedef std::vector<Node*> vector_nodes_pointers;
-    int START_VECTOR_NODES_SIZE = 50;  // start for edge vector size and node vector size
-    int START_VECTOR_EDGES_SIZE = 10;
-    int INFINITY = 2147483640;  // big const for Dijkstra`s algorithm
-
-    class Edge{
-    private:
-        edge_state direction;
-        Node* from_node;
-        Node* in_node;
+    struct Edge{
+        Node* source;
+        Node* target;
         int weight;
-    public:
-        friend Graph;
-        friend Node;
-        Edge(edge_state state, Node* from, Node* in, int weight) {
-            direction = state;
-            from_node = from;
-            in_node = in;
-            this->weight = weight; }
+
+        Edge(Node* source, Node* target, int weight);
         ~Edge();
+
+        Edge() = delete;
+        Edge(const Edge&) = delete;
+        Edge& operator=(const Edge&) = delete;
+        bool operator==(Edge const& other) const;
     };
 
 
     // NODE
     class Node{
     private:
-        vector_edges edges;
-        int node_id;
+        list_names::list<Edge*> edges;
 
+        bool visited = false;  // for Dijkstra`s algorithm
+        int distance = INT_MAX;
+    public:
+        double data;
+    public:
+        Node() = delete;
+        explicit Node(double data = 0);
+        Node(double data, Node* source, int weight);
+        ~Node();
+    public:
+        void add_edge(Node* target, int weight);
+        int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
+        bool operator==(Node const& other) const {return data == other.data;}
+        int get_distance() const{return distance;}
     public:
         friend Graph;
-        double data;
-        static int node_counter;  // for node id generator // todo: do it private
-
-        Node() ;
-
-        Node(const Node& other);
-        Node& operator=(const Node& other){}  //#todo
-        ~Node();
-
-        Node(double data);
-        Node(double data, Node* link_from_this, int edge_weight, edge_state state = SINGLY_LINKED);
-
-        static int get_node_count(){ return node_counter; }
-        int get_node_id() { return node_id; }
-        void push_edge(Edge* edge){ edges.push_back(edge);}
-        Node* add_edge(Node* link_from_this, int edge_weight, edge_state state = SINGLY_LINKED);
-        Node* delete_edge(Node* linked_node);
-
     };
-
-    int Node::node_counter = 0;
-
-
 
 
     //GRAPH
     class Graph {
     private:
-        vector_nodes_pointers nodes;
-
+        list_names::list<Node*> nodes;
     public:
-        Graph();
-        Graph(Node* root);
-        Graph(double data);
+        Graph() = default;
+        explicit Graph(Node* root);
+        explicit Graph(double data);
+        Graph(const Graph&) = delete;
+        Graph& operator=(const Graph&) = delete;
+        ~Graph() {clear();}
+    public:
+        void add_node(Node* newNode);
+        void add_edge(Node* source, Node* target, int weight);
+        int del_node(double data, bool delete_only_one_flag = false); // Q: вот это сделано отвратительно!
+        int del_edge(Node* source, Node* target, int weight, bool delete_only_one_flag = false);
 
-        void add_node(double data);
-        void add_edge(Node* link_from_this, Node* link_in_this, int weight, edge_state state = SINGLY_LINKED);
-        void delete_node(double data);
-        void delete_edge(Node* first_node, Node* second_node);
-        int node_count() { return Node::get_node_count();}
-
-        Graph& dijkstra_algorithm(Node* start_node, Node* target_node);
-
-        //void show();
+        void show();
         void clear();
+    public:
+        Path& dijkstra_algorithm(Node* source, Node* target);
 
-        ~Graph() {clear();};
     };
 
+    class Path{
+        list_names::list<Node*> path_nodes;
+    public:
+        Path() = delete;
+        Path(Node* root);
+        Path(const Path&) = delete;
+        Path& operator=(const Path&) = delete;
+        ~Path();
 
+        void add_node(Node* target);
+        int lenght() {return path_nodes.begin().current_node->data->get_distance();}
+    };
 
 } // graph_names
 

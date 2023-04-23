@@ -10,43 +10,41 @@
 #define MOT_DIR_PIN_R 4
 #define MOT_DIR_PIN_L 7
 
-enum STATE {both_w,one_b,both_b};
-enum MODE {search_line,set_line,extra_set_line,smooth_line,turn_line,arc_line,back_line};
-enum SENS {left,right};
+enum STATE {both_w, one_b, both_b};
+enum MODE {search_line, set_line, smooth_line, turn_line, arc_line, back_line};
+enum SENS {left, right};
 
-int last_on_black = 0;
-int current_mode = search_line;
-float current_curvature = 0.0;
+void search();
+void get_on_line();
+void straight();
+void stop();
+void arc();
+void back();
+
+void (*(actions[6]))() = {search, get_on_line, straight, stop, arc, back};
+
+int LAST_ON_BLACK = 0;
+int CURRENT_MODE = search_line;
+float CURRENT_CURVATURE = 0.0;
 const float DELTA_CURVATURE = 0.01;
-int black_val = 750;
+int BLACK_VAL = 750;
 
-float P_koef = 2;
-float I_koef = 0.0;
-float D_koef = 0.0;
+const int STOP_SPEED = -50; 
+const int IDLE_SPEED = 90;
+const int SPEED = 225;
+int MAX_VAL = 300;
 
-const float IDLE_SPEED = 90;
-const float SPEED = 100;
-int max_val = 300;
-
-bool is_on_line = false;
-bool is_ON = false;
-float balance;
-float left_balance;
-float right_balance;
-
-
-float time = 0.0;
+bool IS_ON = false;
+float BALANCE_SENSORS;
 
 void setup() {
   Serial.begin(9600);
-  //balance = float(analogRead(A1))/float(analogRead(A0));
-  balance =(analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R));
-  left_balance = analogRead(SEN_PIN_L);
-  right_balance = analogRead(SEN_PIN_R);
-  analogWrite(SOUND_PIN,200);
-  delay(200);
-  analogWrite(SOUND_PIN,0);
+  //BALANCE_SENSORS = float(analogRead(A1))/float(analogRead(A0));
+  BALANCE_SENSORS =(analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R));
+  //BLACK_VAL = (analogRead(SEN_PIN_L) + analogRead(SEN_PIN_R)) / 2;
+  peep();
 }
+
 
 void readLight(){
   Serial.print("Right ");
@@ -55,99 +53,16 @@ void readLight(){
   Serial.print(analogRead(A1));
 }
 
-
-void black_white(){
-  int mode = 0;
-
-  mode = check_line();
-  set_mode(mode);
-
-  delay(200);
-}
-
-void set_mode(int new_mode){
-  switch(new_mode){
-    case search_line:
-      search();
-      break;
-    case set_line:
-      turn_on_line();
-      break;
-    case extra_set_line:
-      turn_on_line();
-      break;
-    case smooth_line:
-      straight_line();
-      break;
-    case back_line:
-      back();
-      break;
-    default:
-      stop();
-      break;
-  }
-  current_mode = new_mode;
-  Serial.print(new_mode);
-}
-
-int check_line(){
-
-  int sen_state = check_black(analogRead(SEN_PIN_L)) + check_black(analogRead(SEN_PIN_R));
+int check_state(){
+  int sen_state = check_black(left) + check_black(right);
   
-  switch(current_mode){
-    case search_line:
-      switch(sen_state){
-        case one_b:
-          return set_line;
-        case both_b:
-          return smooth_line;
-        default:
-          return current_mode;
-      }
-      break;
-    case set_line:
-      switch(sen_state){
-        case both_b:
-          return smooth_line;
-        //case both_w:
-          //change_mode(back_line);
-        default:
-          return current_mode;
-      }
-      break;
-    case smooth_line:
-      switch(sen_state){
-        case both_w:
-          return back_line;
-        //case one_b:
-          //change_mode(turn_line);
-        default:
-          return current_mode;
-      }
-      break;
-    case back_line:
-      switch(sen_state){
-        case both_b:
-          return smooth_line;
-        case one_b:
-          return smooth_line;
-      }
-      break;
-    default:
-      return search_line;
-    delay(10);
-  }
-
-  Serial.print("LeftSen ");
-  Serial.print(analogRead(SEN_PIN_L));
-  Serial.print(" RightSen ");
-  Serial.print(analogRead(SEN_PIN_R));
-  Serial.print(" Is on line ");
-  Serial.print(sen_state);
+  delay(10);
+  return sen_state;
 }
+
 
 bool check_black(int sensor){
-  int val;
+  int val = 0.0;
   if (sensor == left){
     val = analogRead(SEN_PIN_L);
   } 
@@ -155,8 +70,8 @@ bool check_black(int sensor){
     val = analogRead(SEN_PIN_R);
   }
 
-  if (val >= black_val){
-    last_on_black = sensor;
+  if (val >= BLACK_VAL){
+    LAST_ON_BLACK = sensor;
     return true;
   } 
   else{
@@ -164,30 +79,67 @@ bool check_black(int sensor){
   }
 }
 
+
 void stop(){
   int val_l = 0;
   int val_r = 0;
 
-  run_motor(val_l,val_r);  
+  run_motor(val_l,val_r); 
 }
 
+
 void back(){
+
+  static int iterations = 0;
+
   int val_l = -IDLE_SPEED;
   int val_r = -IDLE_SPEED;
 
   run_motor(val_l,val_r);
+
+  iterations++;
+
+  if(iterations >= 50){
+    CURRENT_MODE = search_line;
+    iterations = 0;
+    return;
+  }
+
+  switch(check_state()){
+    case both_b:
+      CURRENT_MODE = smooth_line;
+      iterations = 0;
+      break;
+    case one_b:
+      CURRENT_MODE = smooth_line;
+      iterations = 0;
+      break;
+  }
 }
+
 
 void search(){
-  int val_l = IDLE_SPEED;
-  int val_r = IDLE_SPEED;
+  static float motor_speed = 20.0;
 
-  run_motor(val_l,val_r);
+  run_motor(IDLE_SPEED * 2,motor_speed);
+  motor_speed = constrain(motor_speed + 0.05, 0.0, IDLE_SPEED);
+
+  switch(check_state()){
+    case one_b:
+      CURRENT_MODE = set_line;
+      motor_speed = 20.0;
+      break;
+    case both_b:
+      CURRENT_MODE = smooth_line;
+      motor_speed = 20.0;
+      break;
+  }
 }
 
-void turn_on_line(){
-  float diff = analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R) - balance;
-  diff = float(constrain(diff,-max_val,max_val) / max_val);
+
+void get_on_line(){
+  float diff = analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R) - BALANCE_SENSORS;
+  diff = float(constrain(diff,-MAX_VAL,MAX_VAL) / MAX_VAL);
   float diff_old = diff;
   diff = pow(diff,1.4);
   
@@ -197,36 +149,97 @@ void turn_on_line(){
 
   run_motor(val_l,val_r);
   
+  switch(check_state()){
+    case both_b:
+      CURRENT_MODE = smooth_line;
+      break;
+  }
 }
 
-void straight_line(){
-  float diff = analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R) - balance;
-  diff = float(constrain(diff,-max_val,max_val) / max_val);
+
+void straight(){
+  float diff = analogRead(SEN_PIN_L) - analogRead(SEN_PIN_R) - BALANCE_SENSORS;
+  diff = float(constrain(pow(diff,1.5),-MAX_VAL,MAX_VAL) / MAX_VAL);
   float diff_old = diff;
   
-  int val_l = map(int(255 * (-diff)),-255,255,0,2*IDLE_SPEED);
-  int val_r = map(int(255 * (diff)),-255,255,0,2*IDLE_SPEED);
+  CURRENT_CURVATURE = diff;
+
+  int val_l = map(int(255 * (-diff)), -255, 255, 0, SPEED);
+  int val_r = map(int(255 * (diff)), -255, 255, 0, SPEED);
 
   run_motor(val_l,val_r);
+
+  switch(check_state()){
+    case one_b:
+      CURRENT_MODE = arc_line;
+      break;
+    case both_w:
+      CURRENT_MODE = back_line;
+      break;
+  }
 }
+
 
 void arc(){
-  if (last_on_black == left){
-    current_curvature += DELTA_CURVATURE;
+  int val_l;
+  int val_r;
+  if (LAST_ON_BLACK == left){
+    val_l = STOP_SPEED;
+    val_r = SPEED;
   }
   else{
-    current_curvature -= DELTA_CURVATURE;
+    val_l = SPEED;
+    val_r = STOP_SPEED;
   }
 
-  int val_l = map(int(255 * (-current_curvature)),-255,255,0,2*IDLE_SPEED);
-  int val_r = map(int(255 * (current_curvature)),-255,255,0,2*IDLE_SPEED);
+  run_motor(val_l, val_r);
 
-  run_motor(val_l,val_r);  
+  switch(check_state()){
+    case both_b:
+      CURRENT_MODE = smooth_line;
+      break;
+    case both_w:
+      CURRENT_MODE = back_line;
+      break;
+  }
 }
+
+
+void arc_old(){
+  static float current_speed = STOP_SPEED;
+  if (LAST_ON_BLACK == left){
+    CURRENT_CURVATURE += DELTA_CURVATURE;
+  }
+  else{
+    CURRENT_CURVATURE -= DELTA_CURVATURE;
+  }
+  CURRENT_CURVATURE = constrain(CURRENT_CURVATURE, -1, 1);
+
+  int val_l = map(int(255 * (-CURRENT_CURVATURE)), -255, 255, -10, current_speed);
+  int val_r = map(int(255 * (CURRENT_CURVATURE)), -255, 255, -10, current_speed);
+
+  current_speed = constrain(current_speed, STOP_SPEED, 1.5*IDLE_SPEED);  
+
+  Serial.print("CURRENT_CURVATURE ");
+  Serial.print(CURRENT_CURVATURE, " ");
+
+  run_motor(val_l, val_r);
+
+  current_speed += 15;
+
+
+  switch(check_state()){
+    case both_b:
+      CURRENT_MODE = smooth_line;
+      current_speed = STOP_SPEED;
+      break;
+  }
+}
+
 
 void peep(){
   digitalWrite(SOUND_PIN,HIGH);
-  delay(200);
+  delay(1000);
   digitalWrite(SOUND_PIN,LOW);
 }
 
@@ -248,6 +261,9 @@ void run_motor(int val_l, int val_r){
     dir_r = LOW;
   }
 
+  Serial.print(CURRENT_MODE);
+  Serial.print(" LOB ");
+  Serial.print(LAST_ON_BLACK);
   Serial.print(" Left ");
   Serial.print(val_l);
   Serial.print(" Right ");
@@ -260,17 +276,23 @@ void run_motor(int val_l, int val_r){
   analogWrite(MOT_SPEED_PIN_R, abs(val_r));
 }
 
+
+void proceed(int mode){
+  (*actions[mode])();
+}
+
+
 void loop() {
   if (digitalRead(BUT_PIN) == HIGH){
-    is_ON = not is_ON;
-    current_mode = 0;
+    IS_ON = not IS_ON;
+    CURRENT_MODE = 0;
     delay(1000);
   }
   
   
 
-  if (is_ON){
-    black_white();
+  if (IS_ON){
+    proceed(CURRENT_MODE);
   }
   else{
     digitalWrite(6,LOW);
