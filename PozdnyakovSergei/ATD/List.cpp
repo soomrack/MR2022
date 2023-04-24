@@ -1,10 +1,17 @@
 #include <iostream>
 
-
 using namespace std;
 
 
+class List_exceptions: public std::domain_error {
+public:
+    List_exceptions (const char* const error) : std::domain_error(error) {
+    }
+};
+
+
 class Node {
+
 public:
     Node *pnext;
     double value;
