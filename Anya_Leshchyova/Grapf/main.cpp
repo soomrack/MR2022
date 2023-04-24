@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -7,7 +6,7 @@
 class Node {
 public:
     double data;
-    std::vector<double> neighbors; // список смежности
+    std::vector<int> neighbors; // список смежности
     Node(double data) :data(data){};
 };
 
