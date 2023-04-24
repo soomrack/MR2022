@@ -28,7 +28,7 @@ public:
     Node (double data = double(),Node *pNext = nullptr);
     void push_next (double data);
     void del_next (double data);
-    Node* peek();
+    Node* get_next();
 
 };
 
@@ -69,15 +69,18 @@ void Node::push_next(double data) {
     NodePtr node = next;
     NodePtr new_node = new Node (data);
     node->next = new_node;
+    new_node->next = next;
 }
 
 
 void Node::del_next(double data) {
+    Node* tmp = next;
     next = next->next;
+    delete tmp;
 }
 
 
-Node* Node:: peek(){
+Node* Node:: get_next(){
     return next;
 }
 
