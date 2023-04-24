@@ -17,6 +17,9 @@ public:
     double value;
     Node();
     Node(double value = double(), Node *pnext = nullptr);
+
+    void push_next(double value);
+    void del_next(double value);
 };
 
 
@@ -33,10 +36,15 @@ class List {
 public:
     List();
     ~List();
+
+    void push_head(double value);
+
     void push_back(double value);
     void push_front(double value);
+
     void push_next(double value, double value_next);
     void push_previous(double value, double value_prev);
+
     void delete_head();
     void clean();
     void print();
