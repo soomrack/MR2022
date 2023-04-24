@@ -11,13 +11,45 @@ public:
 
 
 class Node {
-
-public:
+private:
     Node *pnext;
+public:
     double value;
     Node();
-    Node(double value = double(), Node *pnext = nullptr);
+    Node(double values = double(), Node *pnext = nullptr);
+
+    Node *get_next() {return pnext;}
+    void push_next(double value);
+    void del_next();
+    void set_next(Node *new_next) {pnext = new_next;}
 };
+
+
+void Node::push_next(double value) {
+    Node *temp = new Node(value);
+    if (pnext == nullptr) {
+        pnext = temp;
+    }
+    else {
+        Node *temp2 = pnext;
+        temp->pnext = temp2;
+        pnext = temp;
+    }
+}
+
+
+void Node::del_next() {
+    if (pnext = nullptr) {}
+    Node *temp = pnext;
+    if (temp->pnext == nullptr) {
+        pnext = nullptr;
+    }
+    else {
+        Node *temp2 = temp->pnext;
+        pnext = temp2;
+    }
+    delete temp;
+}
 
 
 typedef Node *Nodeptr;
@@ -33,17 +65,25 @@ class List {
 public:
     List();
     ~List();
+
+    Node *head;
+
+    void push_head(double value);
+    Node *del_head();
+    Node *get_head();
+
     void push_back(double value);
     void push_front(double value);
-    void push_next(double value, double value_next);
-    void push_previous(double value, double value_prev);
-    void delete_head();
+
+    void push_next(double value, unsigned int index);
+    //void push_previous(double value, double value_prev);
+    void del_next(unsigned int index);
+    //void delete_head();
     void clean();
     void print();
 
 private:
-    Nodeptr head;
-    Nodeptr previous(double value);
+//    Nodeptr previous(double value);
 };
 
 
@@ -57,70 +97,54 @@ List::~List() {
 }
 
 
-void List::push_back(double value) {
+void List::push_head(double value) {
+    Node *temp = new Node(value);
     if (head == nullptr) {
-        head = new Node (value);
-        return;
+        head = temp;
     }
-    Node *current = head;
-    while (current->pnext != nullptr){
-        current = current->pnext;
+    else {
+        temp->set_next(head);
+        head = temp;
     }
-    current->pnext = new Node(value);
 }
 
 
-void List::push_front(double value) {
-    head = new Node (value, head);
-}
-
-
-void List::push_next(double value, double value_next) {
-    Nodeptr node_pr = head;
-    while (node_pr->value != value_next) {
-        node_pr = node_pr->pnext;
+Node *List::del_head() {
+    Node *temp = head;
+    if (head->get_next() == nullptr) {
+        head = nullptr;
     }
-    Nodeptr new_node = new Node(value, node_pr->pnext);
-    node_pr->pnext = new_node;
-}
-
-
-void List::push_previous(double value, double value_prev) {
-    Nodeptr pr = previous(value_prev);
-    Nodeptr new_node = new Node(value, pr->pnext);
-    pr->pnext = new_node;
-}
-
-
-void List::delete_head() {
-    Node *current = head;
-    head = head->pnext;
-    delete current;
+    else {
+        head = head->get_next();
+    }
+    return temp;
 }
 
 
 void List::clean() {
     while (head != nullptr) {
-        delete_head();
+        Node *temp = head;
+        head = head->get_next();
+        delete temp;
     }
 }
 
 
-void List::print() {
-    Node *current = head;
-    while (current != nullptr) {
-        cout << current->value << endl;
-        current = current->pnext;
+void List::push_next(double value, unsigned int index) {
+    Node *temp = head;
+    for (int count = 0; count < index; count++) {
+        temp = temp->get_next();
     }
+    temp->push_next(value);
 }
 
 
-Nodeptr List::previous(double pr_value) {
-    Node *current = head;
-    while (current->pnext->value != pr_value) {
-        current = current->pnext;
+void List::del_next(unsigned int index) {
+    Node *temp = head;
+    for (unsigned int count = 0; count < index; count++) {
+        temp = temp->get_next();
     }
-    return current;
+    temp->del_next();
 }
 
 
@@ -133,7 +157,7 @@ int main() {
     List.push_front(1);
     List.push_back(3);
     List.push_next(1, 8);
-    List.push_previous(1, 8);
+ //   List.push_previous(1, 8);
     List.print();
     List.clean();
     List.print();
