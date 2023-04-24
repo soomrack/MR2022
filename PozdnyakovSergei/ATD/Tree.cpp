@@ -142,3 +142,15 @@ void* Tree::remove(unsigned int rem_key) {
     }
     return node->value;
 }
+
+
+int main() {
+    Tree Tree;
+    Tree.insert(1, 0);
+    Tree.insert(2, 0);
+    Tree.insert(3, 0);
+    Tree.insert(4, 0);
+    Tree.insert(5, 0);
+    Tree.remove(3);
+    return 0;
+}
