@@ -1,3 +1,0 @@
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/cmake-build-debug/CMakeFiles/client.dir
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/cmake-build-debug/CMakeFiles/rebuild_cache.dir
