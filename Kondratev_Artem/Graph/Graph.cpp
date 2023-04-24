@@ -89,13 +89,19 @@ Vertex* Graph::find(int data) {
 
 
 void Graph::delVertex(int data) {
-    GraphIterator iterator(this);
+    GraphIterator del_iterator(this);
+    GraphIterator iterator(this, list.getHead()->getNodeObject());
 
-    if (iterator.find(data) == nullptr) {
+    if (del_iterator.find(data) == nullptr) {
         return;
     }
 
-    iterator.deleteVertex();
+    while (iterator.getVertex() != nullptr) {
+        delEdge(del_iterator.find(data), iterator.getVertex());
+        iterator.shiftToTail();
+    }
+
+    del_iterator.deleteVertex();
     size--;
 }
 

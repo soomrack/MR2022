@@ -115,9 +115,6 @@ void* BinaryTree::find(unsigned int find_key) {
 }
 
 
-
-
-
 void* BinaryTree::del(unsigned int del_key) {
     Node* prev_node = nullptr;
     Node* node = root;
@@ -133,7 +130,6 @@ void* BinaryTree::del(unsigned int del_key) {
     if (!node) {
         return nullptr;
     }
-
 
     Node* parent_node = node;
     Node* child_node = node->right;
@@ -152,7 +148,6 @@ void* BinaryTree::del(unsigned int del_key) {
         child_node = node->left;
     }
 
-
     if (node == root) {
         root = child_node;
     }
@@ -165,7 +160,9 @@ void* BinaryTree::del(unsigned int del_key) {
         }
     }
 
-    return node->data;
+    void* data = node->data;
+    delete node;
+    return data;
 }
 
 
