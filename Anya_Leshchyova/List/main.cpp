@@ -1,4 +1,5 @@
 #include <iostream>
+
 class ListExceptions{
     int kod_mistake;
 public:
@@ -19,7 +20,6 @@ ListExceptions::ListExceptions(int kod_mistake) {
 
 ListExceptions mistake_parameters = (0);
 
-
 class Node {
 public:
     Node* next;
@@ -33,8 +33,6 @@ public:
 };
 
 typedef Node *NodePtr;
-
-
 
 class LinkedList{
 private:
