@@ -54,18 +54,26 @@ void Graph::deleteNode(int data) {
     if (this->node_list.get_size() == 1) {this->node_list.delete_this(nodeDelete); return; }
 
     auto nodeForStep = this->node_list.getHead();
-    auto theNeededNode = nodeForStep->getNodeData();
-    auto nodeForEdgeStep = theNeededNode->edge_list.getHead();
+    auto currGraphNode = nodeForStep->getNodeData();
+    auto currEdge = currGraphNode->edge_list.getHead();
 
-    while (nodeForStep) {
-        while (nodeForEdgeStep) {
-            if ((data == nodeForEdgeStep->getNodeData()->getDest()->get()) ||
-                (data == nodeForEdgeStep->getNodeData()->getLoc()->get())) {
-                theNeededNode->edge_list.delete_this(nodeForEdgeStep->getNodeData());
+    //while (nodeForStep) {
+        //while (currEdge) { /////////////////////////////
+    unsigned int el_size = 0;
+    for (unsigned int nl_size = 0; nl_size < this->node_list.get_size(); nl_size++){
+        for(el_size; el_size < currGraphNode->edge_list.get_size(); el_size++){
+            if ((data == currEdge->getNodeData()->getDest()->get()) ||
+                (data == currEdge->getNodeData()->getLoc()->get())) {
+                currGraphNode->edge_list.delete_this(currEdge->getNodeData());
             }
-            nodeForEdgeStep = nodeForEdgeStep->next;
+            currEdge = currEdge->next;
         }
         nodeForStep = nodeForStep->next;
+        if (nodeForStep) {
+        currGraphNode = nodeForStep->getNodeData();
+        }
+        currEdge = currGraphNode->edge_list.getHead();
+        el_size = 0;
     }
 
     this->node_list.delete_this(nodeDelete);

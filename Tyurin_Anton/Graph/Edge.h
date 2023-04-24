@@ -21,7 +21,7 @@ public:
     }
 
     GraphNode *getLoc() {
-        return this->dest;
+        return this->loc;
     }
 
     bool operator==(const Edge* right) const{
