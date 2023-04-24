@@ -137,8 +137,9 @@ void check_Tree(){
 
 void check_graph(){
 	Graph my_graph;
-	DinArray<GraphNode*> empt_arr;
-	my_graph.add_node('A', empt_arr,empt_arr);
+	LinkedList<GraphNode*> neigh_list;
+	my_graph.add_node('A', neigh_list,neigh_list);
+	my_graph.add_node('B',)
 }
 
 
