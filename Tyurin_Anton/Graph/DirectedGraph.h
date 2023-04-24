@@ -9,7 +9,7 @@ class Graph {
 public:
     void addNode(int data);
 
-    static int noDestination(GraphNode *dest);
+    static bool noDestination(GraphNode *dest);
 
     static void addEdge(GraphNode *loc, GraphNode *dest);
 

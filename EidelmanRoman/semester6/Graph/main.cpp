@@ -14,6 +14,7 @@ int main() {
     graph.add_node(node1, node4);
     graph.add_edge(node2, node4);
     std::cout<<graph.get_count_of_edges()<<"\n";
+    std::cout<<graph.get_count_of_nodes()<<"\n";
 
 
 

@@ -23,6 +23,11 @@ public:
     GraphNode *getLoc() {
         return this->dest;
     }
+
+    bool operator==(const Edge* right) const{
+        if ((this->dest == right->dest) && (this->loc == right->loc)) {return true;}
+        return false;
+    }
 };
 
 
