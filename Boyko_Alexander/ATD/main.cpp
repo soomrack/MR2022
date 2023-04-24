@@ -1,10 +1,10 @@
 #include <iostream>
 #include "dinamic_array.cpp"
 #include "linked_list.h"
-#include "Stack"
-#include "Queue"
 #include "stack_data.h"
 #include "queue_data.h"
+#include "binary_tree.h"
+#include "graph_data.h"
 
 void check_DinArr(){
 	DinArray<char> A;
@@ -110,6 +110,38 @@ void check_Queue(){
 	std::cout << std::endl;
 }
 
+
+void check_Tree(){
+	Binary_Tree my_tree;
+	my_tree.add(10);
+	my_tree.add(3);
+	my_tree.add(1);
+	my_tree.add(8);
+	my_tree.add(7);
+	my_tree.add(12);
+	my_tree.add(15);
+	my_tree.add(16);
+	my_tree.add(6);
+
+	preorder_print(my_tree.root);
+
+	std::cout << std::endl;
+
+	my_tree.del(8);
+
+	preorder_print(my_tree.root);
+
+	std::cout << my_tree.find(6);
+}
+
+
+void check_graph(){
+	Graph my_graph;
+	DinArray<GraphNode*> empt_arr;
+	my_graph.add_node('A', empt_arr,empt_arr);
+}
+
+
 int main() {
 
 	check_DinArr();
@@ -119,6 +151,10 @@ int main() {
 	check_Stack();
 
 	check_Queue();
+
+	check_Tree();
+
+	check_graph();
 
 	return 0;
 
