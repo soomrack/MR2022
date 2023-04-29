@@ -40,7 +40,7 @@ public:
 
     Node<T> *find(T f_data);
 
-    void pop(T d_data);
+    void delete_this(T d_data);
 
     void remove_first();
 
@@ -180,11 +180,19 @@ List<T> &List<T>::operator=(List<T> &&other) noexcept {
 
 
 template<typename T>
-void List<T>::pop(T d_data) {
+void List<T>::delete_this(T d_data) {
     if (is_empty()) return;
     auto *local = head;
     while (local) {
         if (d_data == local->data) {
+            if (local == tail){
+                remove_last();
+                return;
+            }
+            if (local == head){
+                remove_first();
+                return;
+            }
             local->next = local->next->next;
             delete local->data;
             size--;

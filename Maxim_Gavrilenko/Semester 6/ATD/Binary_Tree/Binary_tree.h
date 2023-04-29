@@ -37,8 +37,8 @@ private:
     void print(Node** node);
     bool search(Node** node, double data);
     void replaceNode(Node** node, Node* oldNode, Node* newNode);
-
-};
+    Node** find_smallest_ptr(Node *subtree);
+    };
 
 void BinaryTree::replaceNode(Node **node, Node *oldNode, Node *newNode) {
     if (*node == oldNode) {
@@ -134,15 +134,11 @@ void BinaryTree::remove(Node ** node, double value) {
         delete temp;
         return;
     }
-    Node **successor = &((*current)->left);
-    while ((*successor)->right || (*successor)->left) {
-        successor = (!(*successor)->right) ? &((*successor)->left) : &((*successor)->right);
-    }
-    Node * temp_node(*successor);
-    *successor = nullptr;
-    *current = temp_node;
+    Node** smallest_ptr = find_smallest_ptr(temp->right);
+    *current = *smallest_ptr;
+    (*current)->left = temp->left;
+    *smallest_ptr = (*current)->right;
     (*current)->right = temp->right;
-    (*current)->left = temp ->left;
     delete temp;
 }
 
@@ -158,6 +154,15 @@ bool BinaryTree::search(Node **node, double value) {
     Node** next_node = value < (*node)->data ? &(*node)->left : &(*node)->right;
     return search(next_node, value);
 }
+
+
+
+Node** BinaryTree::find_smallest_ptr(Node *subtree) {
+    Node** smallest = &subtree;
+    while ((*smallest)->left != nullptr) smallest = &((*smallest)->left);
+    return smallest;
+}
+
 
 
 #endif //MR2022_BINARY_TREE_H

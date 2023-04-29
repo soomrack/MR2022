@@ -7,9 +7,8 @@ void Graph::addNode(int data) {
     this->node_list.push_tail(newNode);
 }
 
-int Graph::noDestination(GraphNode *dest) {
-    if (dest == nullptr) { return 0; }
-    return 1;
+bool Graph::noDestination(GraphNode *dest) {
+    return dest == nullptr;
 }
 
 void Graph::addEdge(GraphNode *loc, GraphNode *dest) {
@@ -51,27 +50,32 @@ int GraphNode::find(GraphNode* f_node){
 
 void Graph::deleteNode(int data) {
     auto nodeDelete = this->findGraphNode(data);
-    /*
-    //if (this->node_list.get_size() == 1) {this->node_list.pop(nodeDelete); return; }
-    auto nodeForStep = this->node_list.getHead();
 
-    auto edgeToDelete = nodeForStep->getNodeData();
-    auto nodeForEdgeStep = edgeToDelete->edge_list.getHead();
-    //for (unsigned int idx = 0; idx < this->node_list.get_size(); idx++) {
-        //for (unsigned int idx1 = 0; idx1 < edgeToDelete->edge_list.get_size(); idx1++) {
-    while (nodeForStep) {
-        while (nodeForEdgeStep) {
-            if ((data == nodeForEdgeStep->getNodeData()->getDest()->get()) ||
-                (data == nodeForEdgeStep->getNodeData()->getLoc()->get())) {
-                // удалить все loc и dest равные data
-                edgeToDelete->edge_list.pop(nodeForEdgeStep->getNodeData());
+    if (this->node_list.get_size() == 1) {this->node_list.delete_this(nodeDelete); return; }
+
+    auto nodeForStep = this->node_list.getHead();
+    auto currGraphNode = nodeForStep->getNodeData();
+    auto currEdge = currGraphNode->edge_list.getHead();
+
+    //while (nodeForStep) {
+        //while (currEdge) { /////////////////////////////
+    unsigned int el_size = 0;
+    for (unsigned int nl_size = 0; nl_size < this->node_list.get_size(); nl_size++){
+        for(el_size; el_size < currGraphNode->edge_list.get_size(); el_size++){
+            if ((data == currEdge->getNodeData()->getDest()->get()) ||
+                (data == currEdge->getNodeData()->getLoc()->get())) {
+                currGraphNode->edge_list.delete_this(currEdge->getNodeData());
             }
-            nodeForEdgeStep = nodeForEdgeStep->next;
+            currEdge = currEdge->next;
         }
         nodeForStep = nodeForStep->next;
+        if (nodeForStep) {
+        currGraphNode = nodeForStep->getNodeData();
+        }
+        currEdge = currGraphNode->edge_list.getHead();
+        el_size = 0;
     }
-     */
-    this->node_list.pop(nodeDelete);
 
+    this->node_list.delete_this(nodeDelete);
 }
 

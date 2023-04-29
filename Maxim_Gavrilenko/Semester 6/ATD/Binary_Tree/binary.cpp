@@ -11,7 +11,6 @@ int main() {
     A.add(36);
     A.add(28);
     A.add(26);
-
     A.add(15);
     A.add(2);
     A.add(91);
@@ -20,6 +19,7 @@ int main() {
     A.add(5);
     A.add(7);
     A.add(9);
+    A.add(14);
     A.print();
     A.remove(7);
     std::cout << std::endl;
