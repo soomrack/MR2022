@@ -15,6 +15,7 @@ public:
 
 typedef Node *Nodeptr;
 
+
 class List {
 private:
     Node *head;
@@ -28,10 +29,9 @@ public:
     void push_head(double value);
 
     void del_head();
-    Nodeptr peek_head();
+    Nodeptr get_head() {return head;};
     void clean();
     void print();
-
     void push_next (double value, double data_next);
     void push_prev (double value, double data_prev);
 };
@@ -72,9 +72,6 @@ List:: ~List(){
     clean();
 }
 
-Nodeptr List:: peek_head(){
-    return head;
-}
 
 
 void List::push_back(double key){

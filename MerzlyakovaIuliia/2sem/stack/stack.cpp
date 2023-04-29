@@ -1,10 +1,3 @@
-//
-//  main.cpp
-//  stack
-//
-//  Created by Юлия on 17.04.2023.
-//
-
 #include <iostream>
 
 class Stack_Exception : public std::exception
