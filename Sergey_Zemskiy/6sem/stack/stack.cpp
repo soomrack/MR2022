@@ -1,40 +1,36 @@
 #include <iostream>
-
+#include <string>
 
 template<typename T>
 class Node {
-private:
-    friend class stack;
-    Node* next;
 public:
+    Node<T>* next;
     Node(T _val) : val(_val), next(nullptr) {}
-
     T val;
 };
 
 template<typename T>
-class stack {
-private:
-    Node*<T> sp;
-    Node* last;
+class Stack {
 public:
-    stack() : sp(nullptr), last(nullptr) {}
+    Node<T>* sp;
+    Node<T>* last;
 
+    Stack() : sp(nullptr), last(nullptr) {}
     bool is_empty() ;
-    void push(int _val);
-    void print_sp_val();
-    Node* find(int _val) ;
+    void push(T _val);
+    void print();
     void pop() ;
 };
 
 
-
-bool stack::is_empty() {
+template<typename T>
+bool Stack<T>::is_empty() {
     return sp == nullptr;
 }
 
-void stack::push(int _val) {
-    Node* p = new Node(_val);
+template<typename T>
+void Stack<T>::push(T _val) {
+    Node<T>* p = new Node(_val);
     if (is_empty()) {
         sp = p;
         last = p;
@@ -42,10 +38,10 @@ void stack::push(int _val) {
     }
     p->next = sp;
     sp = p;
-
 }
 
-void stack::print_sp_val() {
+template<typename T>
+void Stack<T>::print() {
     if (is_empty()) {
         std::cout << "no values" << std::endl;
         return;
@@ -53,9 +49,10 @@ void stack::print_sp_val() {
     std::cout << sp->val << std::endl;
 }
 
-void stack::pop() {
+template<typename T>
+void Stack<T>::pop() {
     if (is_empty()) return;
-    Node* p = sp;
+    Node<T>* p = sp;
     sp = p->next;
     delete p;
 }
@@ -63,17 +60,6 @@ void stack::pop() {
 
 int main()
 {
-    stack<int> l;
-    std::cout << "is emty?"<< l.is_empty()<< std::endl;
-    l.push(3);
-    std::cout << "is emty?"<< l.is_empty() << std::endl;
-    l.print_sp_val();
-    l.push(123);
-    l.print_sp_val();
-    l.pop();
-    l.print_sp_val();
-    l.pop();
-    l.print_sp_val();
-
+    Stack<unsigned int> number;
     return 0;
 }
