@@ -1,4 +1,4 @@
-#include "..\Stack\Stack.h"
+#include "../Stack/Stack.h"
 #ifndef MR2022_BINARY_TREE_H
 #define MR2022_BINARY_TREE_H
 
@@ -6,18 +6,10 @@ struct Node
 {
 public:
     double data;
-    Node* left;
-    Node* right;
-    explicit Node(const double& value, Node* left = nullptr, Node* right = nullptr): data(value), left(left), right(right) {}
-    Node(const Node& other) {
-        data = other.data;
-        left = other.left ? new Node(*other.left) : nullptr;  // рекурсивно копируем левую ноду
-        right = other.right ? new Node(*other.right) : nullptr;  // рекурсивно копируем правую ноду
-    }
-
+    Node *left;
+    Node *right;
+    explicit Node(const double &value, Node *left = nullptr, Node *right = nullptr) : data(value), left(left), right(right) {}
 };
-
-
 
 class BinaryTree
 {
@@ -26,57 +18,47 @@ public:
     ~BinaryTree();
     void add(double);
     void remove(double);
-    void print();
     bool search(double);
 
 private:
-    Node* root;
-    void add(Node**, double);
-    void remove(Node**, double);
-    void remove_tree(Node**);
-    void print(Node** node);
-    bool search(Node** node, double data);
-    void replaceNode(Node** node, Node* oldNode, Node* newNode);
-    Node** find_smallest_ptr(Node *subtree);
-    };
+    Node *root;
+    void add(Node **, double);
+    void remove(Node **, double);
+    void remove_tree(Node **);
+    bool search(Node **node, double data);
+    Node **find_smallest_ptr(Node *subtree);
+};
 
-void BinaryTree::replaceNode(Node **node, Node *oldNode, Node *newNode) {
-    if (*node == oldNode) {
-        *node = newNode;
-    } else if (oldNode->data < (*node)->data) {
-        replaceNode(&(*node)->left, oldNode, newNode);
-    } else {
-        replaceNode(&(*node)->right, oldNode, newNode);
-    }
-}
 BinaryTree::BinaryTree()
 {
     root = nullptr;
 }
-
 
 BinaryTree::~BinaryTree()
 {
     remove_tree(&root);
 }
 
-
-void BinaryTree::remove_tree(Node** node)
+void BinaryTree::remove_tree(Node **node)
 {
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         return;
     }
-    stack<Node*> nodes(100);
+    stack<Node *> nodes(100);
     nodes.push(root);
 
-    while (!nodes.is_empty()) {
-        Node* current = nodes.pop();
+    while (!nodes.is_empty())
+    {
+        Node *current = nodes.pop();
 
-        if (current->right != nullptr) {
+        if (current->right != nullptr)
+        {
             nodes.push(current->right);
         }
 
-        if (current->left != nullptr) {
+        if (current->left != nullptr)
+        {
             nodes.push(current->left);
         }
 
@@ -84,57 +66,49 @@ void BinaryTree::remove_tree(Node** node)
     }
 }
 
-void BinaryTree::add(double value) {
+void BinaryTree::add(double value)
+{
     add(&root, value);
 }
 
-
-void BinaryTree::print() {
-    print(&root);
-}
-
-void BinaryTree::add(Node** node, double value) {
-    if (*node == nullptr) {
-        *node = new Node(value);
-        return;
+void BinaryTree::add(Node **node, double value)
+{
+    while (*node != nullptr)
+    {
+        node = value < (*node)->data ? &(*node)->left : &(*node)->right;
     }
-    Node** next_node = value < (*node)->data ? &(*node)->left : &(*node)->right;
-    return add(next_node, value);
+    *node = new Node(value);
 }
 
-
-void BinaryTree::print(Node** node) {
-    if ((*node) == nullptr) return;
-
-    print(&(*node)->left); // рекурсивно обрабатываем левое поддерево
-    std::cout << (*node)->data << " "; // выводим значение текущего узла
-    print(&(*node)->right); // рекурсивно обрабатываем правое поддерево
-}
-
-void BinaryTree::remove(double value) {
+void BinaryTree::remove(double value)
+{
     remove(&root, value);
 }
 
-
-void BinaryTree::remove(Node ** node, double value) {
+void BinaryTree::remove(Node **node, double value)
+{
     Node **current = node;
-    while (*current && (*current)->data != value) {
+    while (*current && (*current)->data != value)
+    {
         current = value < (*current)->data ? &(*current)->left : &(*current)->right;
     }
-    if (!*current) return; // элемент не найден
+    if (!*current)
+        return; // элемент не найден
 
     Node *temp = *current;
-    if (!((*current)->left)) {
+    if (!((*current)->left))
+    {
         *current = (*current)->right;
         delete temp;
         return;
     }
-    if (!(*current)->right) {
+    if (!(*current)->right)
+    {
         *current = (*current)->left;
         delete temp;
         return;
     }
-    Node** smallest_ptr = find_smallest_ptr(temp->right);
+    Node **smallest_ptr = find_smallest_ptr(temp->right);
     *current = *smallest_ptr;
     (*current)->left = temp->left;
     *smallest_ptr = (*current)->right;
@@ -142,27 +116,28 @@ void BinaryTree::remove(Node ** node, double value) {
     delete temp;
 }
 
-
-bool BinaryTree::search(double value) {
+bool BinaryTree::search(double value)
+{
     return search(&root, value);
 }
 
-
-bool BinaryTree::search(Node **node, double value) {
-    if ((*node) == nullptr) return false;
-    if ((*node)->data == value) return true;
-    Node** next_node = value < (*node)->data ? &(*node)->left : &(*node)->right;
-    return search(next_node, value);
+bool BinaryTree::search(Node **node, double value)
+{
+    while (*node != nullptr) {
+        if ((*node)->data == value) {
+            return true;
+        }
+        node = value < (*node)->data ? &(*node)->left : &(*node)->right;
+    }
+    return false;
 }
 
-
-
-Node** BinaryTree::find_smallest_ptr(Node *subtree) {
-    Node** smallest = &subtree;
-    while ((*smallest)->left != nullptr) smallest = &((*smallest)->left);
+Node **BinaryTree::find_smallest_ptr(Node *subtree)
+{
+    Node **smallest = &subtree;
+    while ((*smallest)->left != nullptr)
+        smallest = &((*smallest)->left);
     return smallest;
 }
 
-
-
-#endif //MR2022_BINARY_TREE_H
+#endif // MR2022_BINARY_TREE_H
