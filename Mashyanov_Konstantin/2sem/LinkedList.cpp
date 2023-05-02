@@ -11,6 +11,14 @@ private:
 public:
 	Node() = delete;
 	Node(const MyData data, const Node* next = nullptr);
+
+//  Контруктор узла
+ListNode(const MyData data, const ListNode* next = nullptr) {
+        this->data = data;
+        this->next = next;
+    }
+};
+
 public: 
 	void add_next(const MyData value);
 	void del_next();
@@ -19,10 +27,16 @@ public:
 
 class List {
 private:
-	Node *head;
+	Node *head;  //  Указатель на первый узел списка
 public:
-	List();
-	~List(); 
+	 List() {
+        head = nullptr;
+    }
+
+    ~List() {
+        clear();
+    } 
+
 public:
 	void add_head(const MyData value);  
 	void del_head();  
@@ -31,94 +45,53 @@ public:
     
 };
 
-// реализовать верхнюю часть!
-
-List::List(){
-        head = nullptr;
-        tail = nullptr;
+//  Добавление элемента в начало списка
+  void add_head(const MyData value) {
+        head = new ListNode(value, head);
     }
 
-void List::add_head(){
-        Node *temp = new Node;
-        temp->data = value;
-        temp->next = head;
-        head = temp;
-    }
+//  Удаление первого элемента списка
+    void del_head() {
+        if (head == nullptr) {
+            return;
+        }
 
-void List::del_head(){
-        Node *temp = new Node;
-        temp = head;
+        ListNode* temp = head;
         head = head->next;
         delete temp;
     }
 
+//  Получение указателя на первый элемент списка
+    Node* get_head() {
+        return head;
+    }
 
-
-int main()
-{
-	setlocale(0, "");
-	List<int> list;
-	for (int i = 0; i < 5; i++) list.push_tail(i);
-	show(list);
-	list.pop_tail();
-	list.pop_head();
-	list[1] = 777;
-	show(list);
-	system("pause");
-}
-
-
-List<T>::Node::Node(T t, Node* n)
-{
-	data = t;
-	next = n;
-}
-
-
-List<T>::List()
-{
-	size = 0;
-	head = nullptr;
-}
-
-
-List<T>::~List()
-{
-	clear();  //  Очистка всех элементов
-}
-
-//template<class T>
-void List<T>::push_tail(T value)
-{
-	if (head == nullptr)  //  Проверка вершины на null 
-		head = new Node(value);
-	else
-	{
-		for (Node* current = head; ; current = current->next)  //  Указатель узла (поиск вершины с адресом null) )
-			if (current->next == nullptr)
-			{
-				current->next = new Node(value);
-				break;
-			}
-	}
-	size++;
-}//
-
-template<class T>
-void List<T>::push_head(T value)
-{
-	head = new Node(value, head);
-	size++;
-}
-
-
-
-    void List::display(){  // Вывод списка
-        Node *temp = new Node;
-        temp = head;
-        while(temp != nullptr)
-        {
-            cout << temp->data << "\t";
-            temp = temp->next;
+//  Удаление всех элементов списка
+    void clear() {
+        while (head != nullptr) {
+            ListNode* temp = head;
+            head = head->next;
+            delete temp;
         }
     }
+
+//  Добавление узла
+    void add_next(ListNode* node, const MyData value) {
+        if (node == nullptr) {
+            return;
+        }
+
+        node->next = new ListNode(value, node->next);
+    }
+
+//  Удаление узла
+    void del_next(ListNode* node) {
+        if (node == nullptr || node->next == nullptr) {
+            return;
+        }
+
+        ListNode* temp = node->next;
+        node->next = temp->next;
+        delete temp;
+    }
+};
