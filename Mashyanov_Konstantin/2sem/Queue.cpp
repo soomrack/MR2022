@@ -101,7 +101,6 @@ q.enqueue(4);
 
 q.display();
 
-
 cout << "Front: " << q.get_front() << endl;
 cout << "Rear: " << q.get_rear() << endl;
 
