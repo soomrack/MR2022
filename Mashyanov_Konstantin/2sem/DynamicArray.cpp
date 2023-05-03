@@ -5,7 +5,7 @@
 class DynamicArray {
 private:
     int* array;  //  Указатель на начало массива
-    int size;  //  Текущий размер массива
+    int size;  
 
 public:
     DynamicArray();
@@ -29,7 +29,6 @@ DynamicArray::~DynamicArray() {
     void DynamicArray::fill_random(int n) {
         srand(time(nullptr));  //  Генерация рандомных чисел для массива
         array = new int[n];  //  Создаем массив нужной длины
-
         for (int i = 0; i < n-1; i++) {
             array[i] = rand() % 10;
         }
@@ -44,7 +43,7 @@ DynamicArray::~DynamicArray() {
         }
         temp[index] = value;  //  Вставляем новый элемент
         for (int i = index; i < size; i++) {
-            temp[i + 1] = array[i];  //  Копируем элементы после индекса
+            temp[i + 1] = array[i];  
         }
         delete[] array;
         array = temp;
