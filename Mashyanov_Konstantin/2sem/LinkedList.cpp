@@ -29,10 +29,10 @@ class List {
 private:
 	Node *head;  //  Указатель на первый узел списка
 public:
-	 List() {
+	List() {
         head = nullptr;
     }
-
+	
     ~List() {
         clear();
     } 
