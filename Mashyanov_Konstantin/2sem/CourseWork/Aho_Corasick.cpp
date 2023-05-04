@@ -1,7 +1,3 @@
-//
-// Created by alex on 15.04.2021.
-//
-
 #include <iostream>
 #include "Aho_Corasick.h"
 
