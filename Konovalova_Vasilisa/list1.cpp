@@ -1,18 +1,5 @@
 #include <iostream>
 
-class linked_list_exception: public std::exception {
-private:
-    const char* message;
-public:
-    linked_list_exception(const char* const msg) : message(msg) {}
-    const char* what() const noexcept override {
-        return message;
-    }
-};
-
-linked_list_exception empty_list("empty list");
-linked_list_exception node_does_not_exist("node does not exist");
-
 template <typename T>
 class linked_list {
 public:
@@ -29,7 +16,6 @@ public:
         T value;
         Node* next;
 
-        // добавляем friend, чтобы из методов листа были доступны поля Node
         friend class linked_list<T>;
     };
 
@@ -51,7 +37,7 @@ linked_list<T>::Node::Node(const T& value): value(value), next(nullptr) { }
 
 template<typename T>
 linked_list<T>::Node::~Node() {
-    // вызываем деструктор у следующей Node, таким образом удаляя весь хвост списка начиная с этой Node
+
     delete next;
 }
 
@@ -65,12 +51,10 @@ typename linked_list<T>::Node* linked_list<T>::Node::add_next(const T& value) {
 
 template<typename T>
 void linked_list<T>::Node::delete_next() {
-    if (next == nullptr)
-        throw node_does_not_exist;
+
 
     Node* new_next = next->next;
 
-    // зануляем next->next чтобы деструктор Node не удалил весь хвост списка
     next->next = nullptr;
     delete next;
     next = new_next;
@@ -101,8 +85,6 @@ typename linked_list<T>::Node* linked_list<T>::add_head(const T &value) {
 
 template<typename T>
 void linked_list<T>::delete_head() {
-    if (head == nullptr)
-        throw empty_list;
 
     Node* delete_node = head;
     head = head->next;
@@ -136,3 +118,5 @@ int main() {
     l.print_list();
     return 0;
 }
+
+
