@@ -18,7 +18,7 @@ protected:
 
 public:
 	Array() = default;
-	Array(unsigned int size, T value = 0., unsigned int extra = 5);
+	Array(unsigned int size, T value = 0., unsigned int reserve = 30);
 
 	~Array();
 
@@ -39,10 +39,10 @@ public:
 
 
 template <typename T>
-Array<T>::Array(unsigned int size, T value, unsigned int extra) {
-	this->size = size + extra;
-	values = new T[size + extra];
-	for (unsigned int idx = 0; idx < size + extra; ++idx) {
+Array<T>::Array(unsigned int size, T value, unsigned int reserve) {
+	this->size = size + reserve;
+	values = new T[size + reserve];
+	for (unsigned int idx = 0; idx < size + reserve; ++idx) {
 		values[idx] = value;
 	}
 }
