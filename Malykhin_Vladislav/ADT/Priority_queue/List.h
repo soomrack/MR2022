@@ -31,6 +31,7 @@ public:
     unsigned int size();
     void push (double in, int new_prio);
     void pop_tail ();
+    void print();
     Node get_tail();
     Node get_head();
 
@@ -46,11 +47,7 @@ List::Node::Node(double new_data, int new_prio) {
 }
 
 
-List::Node::~Node(){
-    priority = 0;
-    data = 0;
-    next = nullptr;
-}
+List::Node::~Node()= default;
 
 
 
@@ -113,19 +110,24 @@ void List::push (double in, int new_prio) {
     if (is_empty()){
         head = new_node;
         tail = new_node;
+        List::print();
         return;
     }
-    if(head->priority < new_prio)
-    {
+    if(head->priority <= new_prio) {
         new_node->next = head;
         head = new_node;
+        List::print();
         return;
     }
-    Node *iter = head; // для остальных списков
-    while(iter->next->priority < new_prio || iter->next != nullptr)
+    Node *iter = head; // для приоритета меньше(выше) чем у головы
+    while(iter->next != nullptr) { // проблема в этой строке
+      if(iter->next->priority <= new_prio) break;
         iter = iter->next;
+    }
     new_node->next = iter->next;
     iter->next = new_node;
+    if(new_node->next == nullptr) tail = new_node;
+    List::print();
 }
 
 void List::pop_tail() {
@@ -137,7 +139,7 @@ void List::pop_tail() {
     return;
     }
     Node *iter = head; // для остальных списков
-    for(unsigned int new_size = 1; new_size < size() - 1; new_size++) { // возможен баг, при возникновении < заменить на <=
+    for(unsigned int new_size = 1; new_size < size() - 1; new_size++) { // тут мы получаем итератор, указывающий на предпоследний узел (next от пред-предпоследнего)
     iter = iter->next;
     }
     delete tail;
@@ -151,6 +153,21 @@ List::Node List::get_head() {
 
 List::Node List::get_tail() {
     return *tail;
+}
+
+void List:: print(){
+    if (is_empty()) {
+        std::cout<<"list is empty\n";
+        return;
+    }
+    std::cout<<"data: ";
+    for(Iterator iter = head; iter.node_ptr != nullptr; ++iter)
+        std::cout<<iter.node_ptr->data<<' ';
+    std::cout<<'\n';
+    std::cout<<"prio: ";
+    for(Iterator iter = head; iter.node_ptr != nullptr; ++iter)
+        std::cout<<iter.node_ptr->priority<<' ';
+    std::cout<<"\n";
 }
 
 #endif //LIST_H

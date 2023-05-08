@@ -12,6 +12,8 @@ public:
     void push(double in_val, int in_prio);
     void pop();
     double get();
+    void print();
+    int prio();
 };
 
 Queue::Queue() {
@@ -30,5 +32,12 @@ double Queue::get() {
     return list->get_tail().data;
 }
 
+int Queue::prio() {
+    return list->get_tail().priority;
+}
+
+void Queue::print() {
+    list->print();
+}
 
 #endif //QUEUE_H
