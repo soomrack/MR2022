@@ -156,18 +156,18 @@ Node<Type> *LinkedList<Type>::get_tail() {
 
 template<class Type>
 Node<Type> *LinkedList<Type>::get(unsigned int ind) {
-	auto NeedNode = head;
-	for(int i = 0; i < ind; i++){
-		if(NeedNode != NULL){
-			NeedNode = NeedNode->next;
+	auto need_node = head;
+	for(unsigned int i = 0; i < ind; i++){
+		if(need_node != NULL){
+			need_node = need_node->next;
 		}
 		else{
 			std::cout << "Out of bounds!";
-			NeedNode = &empty<Type>;
-			return NeedNode;
+			need_node = &empty<Type>;
+			return need_node;
 		}
 	}
-	return NeedNode;
+	return need_node;
 }
 
 
