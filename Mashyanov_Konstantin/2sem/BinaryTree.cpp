@@ -122,7 +122,6 @@ private:
         }
         return node;
     }
-};
 
 int main() {
     BinaryTree tree;
