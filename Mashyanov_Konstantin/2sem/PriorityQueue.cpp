@@ -1,23 +1,22 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
 class PriorityQueue {
 private:
-    int *data;  //  Массив элементов очереди
-    int capacity;  //  Максимальная вместимость очереди
-    int size;  //  Текущий размер очереди
+    int *data; // Массив элементов очереди
+    int capacity; // Максимальная вместимость очереди
+    int size; // Текущий размер очереди
 
 public:
-    PriorityQueue(int n);
-    ~PriorityQueue();
+    PriorityQueue(int n); // Конструктор, инициализирующий массив и устанавливающий размер на 0
+    ~PriorityQueue(); // Деструктор, освобождающий память, выделенную под массив
 
-    void enqueue(int value);  //  Добавление элемента в очередь
-    void dequeue();  //  Удаление элемента из очереди
-    int front();  
-    int rear();
-    bool is_empty();  //  Проверка, является ли очередь пустой
-    bool is_full();  //  Проверка, является ли очередь полной
+    void push(int value); // Добавление элемента в очередь
+    void pop(); // Удаление элемента из очереди
+    int front(); // Возвращает значение первого элемента в очереди (с наибольшим приоритетом)
+    int rear(); // Возвращает значение последнего элемента в очереди (с наименьшим приоритетом)
+    bool is_empty(); // Проверка, является ли очередь пустой
+    bool is_full(); // Проверка, является ли очередь полной
 };
 
 PriorityQueue::PriorityQueue(int n) {
@@ -30,9 +29,9 @@ PriorityQueue::~PriorityQueue() {
     delete[] data;
 }
 
-void PriorityQueue::enqueue(int value) {
+void PriorityQueue::push(int value) {
     if (is_full()) {
-        throw "PriorityQueue is full";
+        return;
     } else {
         int i = 0;
         while (i < size && data[i] > value) {
@@ -46,9 +45,9 @@ void PriorityQueue::enqueue(int value) {
     }
 }
 
-void PriorityQueue::dequeue() {
+void PriorityQueue::pop() {
     if (is_empty()) {
-        throw "PriorityQueue is empty";
+        return;
     } else {
         for (int i = 0; i < size; i++) {
             data[i] = data[i + 1];
@@ -59,7 +58,7 @@ void PriorityQueue::dequeue() {
 
 int PriorityQueue::front() {
     if (is_empty()) {
-        throw "PriorityQueue is empty";
+        return -1;
     } else {
         return data[size - 1];
     }
@@ -67,7 +66,7 @@ int PriorityQueue::front() {
 
 int PriorityQueue::rear() {
     if (is_empty()) {
-        throw "PriorityQueue is empty";
+        return -1;
     } else {
         return data[0];
     }
@@ -84,17 +83,17 @@ bool PriorityQueue::is_full() {
 int main() {
     PriorityQueue pq(5);
 
-    pq.enqueue(3);
-    pq.enqueue(5);
-    pq.enqueue(1);
+    pq.push(3);
+    pq.push(5);
+    pq.push(1);
 
-    cout << "Front element of the priority queue: " << pq.front() << endl;
-    cout << "Rear element of the priority queue: " << pq.rear() << endl;
+    std::cout << "Front element of the priority queue: " << pq.front() << std::endl;
+    std::cout << "Rear element of the priority queue: " << pq.rear() << std::endl;
 
-    pq.dequeue();
+    pq.pop();
 
-    cout << "Front element of the priority queue after dequeue: " << pq.front() << endl;
-    cout << "Rear element of the priority queue after dequeue: " << pq.rear() << endl;
+    std::cout << "Front element of the priority queue after pop: " << pq.front() << std::endl;
+    std::cout << "Rear element of the priority queue after pop: " << pq.rear() << std::endl;
 
     return 0;
 }
