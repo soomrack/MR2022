@@ -3,95 +3,100 @@
 using namespace std;
 
 typedef double MyData;
-class ListNode {
-public:
-	MyData data;
-private:
-	Node* next;
-public:
-	Node() = delete;
-	Node(const MyData data, const Node* next = nullptr);
 
-//  Контруктор узла
-ListNode(const MyData data, const ListNode* next = nullptr) {
-        this->data = data;
-        this->next = next;
-    }
+// Объявление класса Node
+class Node {
+public:
+    MyData data;
+    Node* next;
+    Node() = delete;
+    Node(const MyData data, const Node* next = nullptr);
 };
 
-public: 
-	void add_next(const MyData value);
-	void del_next();
-	Node* get_next();
-};
+// Определение конструктора класса Node
+Node::Node(const MyData data, const Node* next) {
+    this->data = data;
+    this->next = const_cast<Node*>(next);
+}
 
 class List {
 private:
-	Node *head;  //  Указатель на первый узел списка
+    Node* head; // Указатель на первый узел списка
 public:
-	List() {
+    List() {
         head = nullptr;
     }
-	
+
     ~List() {
         clear();
-    } 
-
-public:
-	void add_head(const MyData value);  
-	void del_head();  
-	Node* get_head();  
-	void clear();  
-    
-};
-
-//  Добавление элемента в начало списка
-  void add_head(const MyData value) {
-        head = new ListNode(value, head);
     }
 
-//  Удаление первого элемента списка
-    void del_head() {
-        if (head == nullptr) {
-            return;
-        }
+public:
+    void add_head(const MyData value);
+    void del_head();
+    Node* get_head();
+    void clear();
+    void add_next(Node* node, const MyData value);
+    void del_next(Node* node);
+};
 
-        ListNode* temp = head;
+// Добавление элемента в начало списка
+void List::add_head(const MyData value) {
+    head = new Node(value, head);
+}
+
+// Удаление первого элемента списка
+void List::del_head() {
+    if (head == nullptr) {
+        return;
+    }
+
+    Node* temp = head;
+    head = head->next;
+    delete temp;
+}
+
+// Получение указателя на первый элемент списка
+Node* List::get_head() {
+    return head;
+}
+
+// Удаление всех элементов списка
+void List::clear() {
+    while (head != nullptr) {
+        Node* temp = head;
         head = head->next;
         delete temp;
     }
+}
 
-//  Получение указателя на первый элемент списка
-    Node* get_head() {
-        return head;
+// Добавление узла
+void List::add_next(Node* node, const MyData value) {
+    if (node == nullptr) {
+        return;
     }
 
-//  Удаление всех элементов списка
-    void clear() {
-        while (head != nullptr) {
-            ListNode* temp = head;
-            head = head->next;
-            delete temp;
-        }
+    node->next = new Node(value, node->next);
+}
+
+// Удаление узла
+void List::del_next(Node* node) {
+    if (node == nullptr || node->next == nullptr) {
+        return;
     }
 
-//  Добавление узла
-    void add_next(ListNode* node, const MyData value) {
-        if (node == nullptr) {
-            return;
-        }
+    Node* temp = node->next;
+    node->next = temp->next;
+    delete temp;
+}
 
-        node->next = new ListNode(value, node->next);
-    }
-
-//  Удаление узла
-    void del_next(ListNode* node) {
-        if (node == nullptr || node->next == nullptr) {
-            return;
-        }
-
-        ListNode* temp = node->next;
-        node->next = temp->next;
-        delete temp;
-    }
-};
+int main() {
+    // Пример использования класса List
+    List list;
+    list.add_head(1.0);
+    list.add_head(2.0);
+    list.add_head(3.0);
+    list.del_next(list.get_head());
+    list.clear();
+    return 0;
+}
