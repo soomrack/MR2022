@@ -3,7 +3,7 @@ using namespace std;
 
 class Graph {
 private:
-  //  Структура для описани спика сежности
+  //  Структура для описания списка смежности
     struct Node {
         int data;
         Node* next;
