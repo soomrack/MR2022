@@ -1,107 +1,102 @@
 #include <iostream>
-#include <cstdlib>
-
+using namespace std;
 
 class DynamicArray {
 private:
-    int* array;  //  Указатель на начало массива
-    int size;  
+    int *data; // Массив элементов
+    int size;  // Текущий размер массива
+    int capacity; // Максимальная вместимость массива
 
 public:
+   
     DynamicArray();
+    DynamicArray(int capacity);
     ~DynamicArray();
-    void add(int value, int index);
-    void fill_random(int n);
-    void remove(int index);
-    void print();
-    void resize(int n);
-    void clear();
+
+    // Методы для доступа к элементам
+    int get(int index);  // Получение элемента по индексу
+    void set(int index, int value); // Изменение элемента по индексу 
+    void add(int value);  // Добавление элемента в конец массива
+
+    void resize(int new_capacity);  // Изменение размера массива
+    int get_capacity();  // Возвращает максимальную вместимость массива
+    int get_size();  // Возвращает текущий размер массива
 };
+
 DynamicArray::DynamicArray() {
-        array = nullptr;
-        size = 0;
-    }
+    capacity = 8;
+    size = 0;
+    data = new int[capacity];
+}
+
+DynamicArray::DynamicArray(int initial_capacity) {
+    capacity = initial_capacity;
+    size = 0;
+    data = new int[capacity];
+}
 
 DynamicArray::~DynamicArray() {
-        delete[] array;
-    }
+    delete[] data;
+}
 
-    void DynamicArray::fill_random(int n) {
-        srand(time(nullptr));  //  Генерация рандомных чисел для массива
-        array = new int[n];  //  Создаем массив нужной длины
-        for (int i = 0; i < n-1; i++) {
-            array[i] = rand() % 10;
-        }
-        
-        size = n;
-    }
+int DynamicArray::get(int index) {
+    return data[index];
+}
 
-    void DynamicArray::add(int value, int index) {
-        int* temp = new int[size + 1];  
-        for (int i = 0; i < index; i++) {
-            temp[i] = array[i];  //  Копируем элементы до индекса
-        }
-        temp[index] = value;  //  Вставляем новый элемент
-        for (int i = index; i < size; i++) {
-            temp[i + 1] = array[i];  
-        }
-        delete[] array;
-        array = temp;
-        size++;
-    }
+void DynamicArray::set(int index, int value) {
+    data[index] = value;
+}
 
-    void DynamicArray::remove(int index) {
-        int* temp = new int[size - 1];  
-        for (int i = 0; i < index; i++) {
-            temp[i] = array[i];  
-        }
-        for (int i = index + 1; i < size; i++) {
-            temp[i - 1] = array[i]; 
-        }
-        delete[] array;
-        array = temp;
-        size--;
-    }
 
-    void DynamicArray::print() {
-        for (int i = 0; i < size; i++) {
-            std::cout << array[i] << " ";
-        }
-        std::cout << std::endl;
+void DynamicArray::add(int value) {
+    if (size == capacity) {
+        resize(capacity * 2);
     }
+    data[size++] = value;
+}
 
-    void DynamicArray::resize(int n) {
-        int* temp = new int[n];  //  Создаем временный массив нужной длины
-        int min_size = (size < n) ? size : n;  //  Определяем минимальный размер для копирования
-        for (int i = 0; i < min_size; i++) {
-            temp[i] = array[i];  //  Копируем элементы из текущего массива во временный
-        }
-        delete[] array;
-        array = temp;
-        size = n;
+void DynamicArray::resize(int new_capacity) {
+    int *new_data = new int[new_capacity];
+    for (int i = 0; i < size; i++) {
+        new_data[i] = data[i];
     }
+    delete[] data;
+    data = new_data;
+    capacity = new_capacity;
+}
 
-    void DynamicArray::clear() {
-        delete[] array;
-        array = nullptr;
-        size = 0;
-    }
+
+int DynamicArray::get_size() {
+    return size;
+}
+
+
+int DynamicArray::get_capacity() {
+    return capacity;
+}
 
 int main() {
-    DynamicArray array;
-    array.fill_random(5);
-    array.print();
+    DynamicArray arr(4);
 
-    array.add(29, 3);
-    array.print();
+    arr.add(1);
+    arr.add(2);
+    arr.add(3);
+    arr.add(4);
 
-    array.remove(2);
-    array.print();
+    std::cout << "Size: " << arr.get_size() << std::endl;
+    std::cout << "Capacity: " << arr.get_capacity() << std::endl;
 
-    array.resize(4);
-    array.print();
+    arr.set(1, 5);
 
-    array.clear();
+    std::cout << "Element at index 1: " << arr.get(1) << std::endl;
 
-    return 0;
+    arr.resize(6);
+
+    arr.add(6);
+    arr.add(7);
+
+    std::cout << "Size: " << arr.get_size() << std::endl;
+    std::cout << "Capacity: " << arr.get_capacity() << endl;
+    
+     return 0;
 }
