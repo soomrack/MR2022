@@ -1,95 +1,149 @@
 #include <iostream>
 using namespace std;
 
-class Node {
-public:
-    int value;  // Значение узла
-    Node* left_child;  // Левый потомок
-    Node* right_child;  // Правый потомок
-
-    Node(int val) {
-        value = val;
-        left_child = nullptr;
-        right_child = nullptr;
-    }
-};
-
 class BinaryTree {
 private:
-    Node* root;  // Корень дерева
+    struct Node {
+        int data;
+        Node* left;
+        Node* right;
+        Node(int value) : data(value), left(nullptr), right(nullptr) {}
+    };
 
-    Node* insert_recursive(Node* current, int value) {
-        if (current == nullptr) {
-            return new Node(value);
-        }
-
-        if (value < current->value) {
-            current->left_child = insert_recursive(current->left_child, value);
-        } else if (value > current->value) {
-            current->right_child = insert_recursive(current->right_child, value);
-        } else {
-            return current;
-        }
-
-        return current;
-    }
-
-    bool search_recursive(Node* current, int value) {
-        if (current == nullptr) {
-            return false;
-        }
-
-        if (current->value == value) {
-            return true;
-        } else if (value < current->value) {
-            return search_recursive(current->left_child, value);
-        } else {
-            return search_recursive(current->right_child, value);
-        }
-    }
-
-    void inorder_recursive(Node* current) {
-        if (current == nullptr) {
-            return;
-        }
-
-        inorder_recursive(current->left_child);
-        cout << current->value << " ";
-        inorder_recursive(current->right_child);
-    }
+    Node* root;
 
 public:
-    BinaryTree() {
-        root = nullptr;
+    BinaryTree();
+     ~BinaryTree();
+     void add(int value);  //  добавление элемента в дерево
+     void del(int value);  //  удаление элемента из дерева
+     bool get(int value);  //  поиск элемента в дереве
+private:
+     void destroy_tree(Node* node);  //  рекурсивное удаление дерева
+     void add(int value, Node* node);  //  рекурсивное добавление элемента в дерево
+     void del(int value, Node* node);  //  рекурсивное удаление элемента из дерева 
+     bool get(int value, Node* node);  //  рекурсивный поиск элемента в дереве
+     Node* find_min(Node* node);  //  поиск узла с минимальным значением в дереве
+    
+};
+    
+    
+    BinaryTree::BinaryTree() : root(nullptr) {}
+    
+    BinaryTree::~BinaryTree() {
+        destroy_tree(root);
     }
 
-    void insert(int value) {
-        root = insert_recursive(root, value);
+    void BinaryTree::add(int value) {
+        if (root == nullptr) {
+            root = new Node(value);
+        } else {
+            add(value, root);
+        }
     }
 
-    bool search(int value) {
-        return search_recursive(root, value);
+    void  BinaryTree::del(int value) {
+        del(value, root);
     }
 
-    void inorder() {
-        inorder_recursive(root);
-        cout << endl;
+    bool  BinaryTree::get(int value) {
+        return get(value, root);
+    }
+
+  
+    void  BinaryTree::destroy_tree(Node* node) {
+        if (node != nullptr) {
+            destroy_tree(node->left);
+            destroy_tree(node->right);
+            delete node;
+        }
+    }
+
+    void  BinaryTree::add(int value, Node* node) {
+        if (value < node->data) {
+            if (node->left == nullptr) {
+                node->left = new Node(value);
+            } else {
+                add(value, node->left);
+            }
+        } else if (value > node->data) {
+            if (node->right == nullptr) {
+                node->right = new Node(value);
+            } else {
+                add(value, node->right);
+            }
+        }
+    }
+
+    void  BinaryTree::del(int value, Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        if (value < node->data) {
+            del(value, node->left);
+        } else if (value > node->data) {
+            del(value, node->right);
+        } else {
+            if (node->left == nullptr && node->right == nullptr) {
+                delete node;
+                node = nullptr;
+            } else if (node->left == nullptr) {
+                Node* temp = node;
+                node = node->right;
+                delete temp;
+            } else if (node->right == nullptr) {
+                Node* temp = node;
+                node = node->left;
+                delete temp;
+            } else {
+                Node* temp = find_min(node->right);
+                node->data = temp->data;
+                del(temp->data, node->right);
+            }
+        }
+    }
+
+    
+    bool  BinaryTree::get(int value, Node* node) {
+        if (node == nullptr) {
+            return false;
+        } else if (node->data == value) {
+            return true;
+        } else if (value < node->data) {
+            return get(value, node->left);
+        } else {
+            return get(value, node->right);
+        }
+    }
+
+    Node*  BinaryTree::find_min(Node* node) {
+        while (node->left != nullptr) {
+            node = node->left;
+        }
+        return node;
     }
 };
 
 int main() {
     BinaryTree tree;
 
-    tree.insert(5);
-    tree.insert(3);
-    tree.insert(7);
-    tree.insert(1);
-    tree.insert(9);
+    tree.add(5);
+    tree.add(3);
+    tree.add(7);
+    tree.add(2);
+    tree.add(4);
+    tree.add(6);
+    tree.add(8);
 
-    tree.inorder();
+    if (tree.get(5)) {
+        cout << "Element 5 is in the tree" << endl;
+    }
 
-    cout << "Search 7: " << tree.search(7) << endl;
-    cout << "Search 2: " << tree.search(2) << endl;
+    tree.del(5);
+
+    if (!tree.get(5)) {
+        cout << "Element 5 is not in the tree anymore" << endl;
+    }
 
     return 0;
 }
