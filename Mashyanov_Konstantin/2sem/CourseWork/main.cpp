@@ -37,13 +37,13 @@ int main() {
 
 
         unsigned long long before = time(nullptr);
-        automat.Find(source);
+        automat.find(source);
         unsigned long long after = time(nullptr);
         cout << "N: " << 10 << " Words: " << i << " Seconds: " << after - before << endl;
         for(int k = 0; k < words; k++){
             string temp;
             file >> temp;
-            automat.AddString(temp);
+            automat.add_string(temp);
         }
     }
     file.close();
