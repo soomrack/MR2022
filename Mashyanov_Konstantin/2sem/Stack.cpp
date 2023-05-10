@@ -1,4 +1,3 @@
-#include <string>
 #include <iostream>
 using namespace std;
 
@@ -9,7 +8,6 @@ private:
   int size;   
 
 public:
-
   Stack(int n);
   ~Stack();
   void push(int value);  //  Метод для добавления элемента в вершину стека
@@ -18,53 +16,40 @@ public:
   bool is_empty();  // Метод для проверки, пуст ли стек
   bool is_full();  //  Метод для проверки, полон ли стек
 };
-  
- 
-  Stack::Stack(int n) {
-    size = n;              
-    data = new int[size];  
-    top = -1;              
-  }
 
-  Stack::~Stack() {
-    delete[] data;        
-  }
+Stack::Stack(int n) {
+  size = n;              
+  data = new int[size];  
+  top = -1;              
+}
 
-  void Stack::push(int value) {
-    if (top >= size - 1) {     
-      throw "Stack Overflow";  
-    } else {
-      top++;                  
-      data[top] = value;       
-    }
-  }
+Stack::~Stack() {
+  delete[] data;        
+}
 
-  void Stack::pop() {
-    if (top < 0) {            
-      throw "Stack Underflow"; 
-    } else {
-      int value = data[top];  
-      top--;                  
-    }
-  }
+void Stack::push(int value) {
+  top++;                  
+  data[top] = value;       
+}
 
-  int Stack::peek() {
-    if (top < 0) {            
-      throw "Stack is Empty"; 
-    } else {
-      return data[top];       
-    }
-  }
+void Stack::pop() {
+  top--;
+  int value = data[top+1];
+  return value;
+}
 
-  bool Stack::is_empty() {
-    return top == -1;         
-  }
+int Stack::peek() {
+  return data[top];       
+}
 
-  bool Stack::is_full() {
-    return top == size - 1;   
-  }
-  
-  
+bool Stack::is_empty() {
+  return top == -1;         
+}
+
+bool Stack::is_full() {
+  return top == size - 1;   
+}
+
 int main() {
   Stack s(5);
   s.push(10);
@@ -74,7 +59,7 @@ int main() {
   s.push(50);
 
   while (!s.is_empty()) {
-    s.peek();
+    cout << s.peek() << endl;
     s.pop();
   }
 
