@@ -3,9 +3,11 @@
  * с учетом добавленных элементов
  * добавлен счетчик используемого размера*/
 
+
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+
 
 using namespace std;
 
@@ -203,7 +205,7 @@ bool DynArray::is_empty() {
 
 
 int main() {
-/*    DynArray DA(1,6);
+    DynArray DA(1,6);
 
     DA.fill_random(10);
     DA.print();
@@ -220,5 +222,5 @@ int main() {
     DA.resize(8, 5);
     DA.print();
 
-    DA.clean();*/
+    DA.clean();
 }
