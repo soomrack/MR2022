@@ -19,7 +19,6 @@ const graph_exception node_does_not_exist("node does not exist");
 const graph_exception edge_does_not_exist("edge does not exist");
 
 // Здесь отдельно объявляем название класса, что оно существует, чтобы иметь возможность им воспользоваться в классе Node
-// В плюсах это кажется называется extern definition
 struct Edge;
 
 // Все вершины в нашем графе будут иметь тип Node. Также у каждой вершины будет уникальной индитификатор (id).
