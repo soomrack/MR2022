@@ -46,5 +46,4 @@ int main(){
     std::cout<<"\n";
     queue->print();
     std::cout<<"\n";
-
 }

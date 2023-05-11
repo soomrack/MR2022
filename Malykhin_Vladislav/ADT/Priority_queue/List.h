@@ -74,7 +74,6 @@ bool List::Iterator::operator== (Node* &&other) const {
 }
 
 
-
 bool List::Iterator::operator!= (Node* &&other) const {
     if (node_ptr != other) return true;
     return false;
