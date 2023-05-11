@@ -23,7 +23,6 @@ public:
     bool is_empty() ;
     void push(int _val);
     void print();
-    Node* find(int _val) ;
     void pop() ;
 };
 

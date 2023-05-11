@@ -3,122 +3,100 @@
 using namespace std;
 
 typedef double MyData;
-class ListNode {
+
+// Объявление класса Node
+class Node {
 public:
-	MyData data;
-private:
-	Node* next;
-public:
-	Node() = delete;
-	Node(const MyData data, const Node* next = nullptr);
-public: 
-	void add_next(const MyData value);
-	void del_next();
-	Node* get_next();
+    MyData data;
+    Node* next;
+    Node() = delete;
+    Node(const MyData data, const Node* next = nullptr);
 };
+
+// Определение конструктора класса Node
+Node::Node(const MyData data, const Node* next) {
+    this->data = data;
+    this->next = const_cast<Node*>(next);
+}
 
 class List {
 private:
-	Node *head;
+    Node* head; // Указатель на первый узел списка
 public:
-	List();
-	~List(); 
+    List() {
+        head = nullptr;
+    }
+
+    ~List() {
+        clear();
+    }
+
 public:
-	void add_head(const MyData value);  
-	void del_head();  
-	Node* get_head();  
-	void clear();  
-    
+    void add_head(const MyData value);
+    void del_head();
+    Node* get_head();
+    void clear();
+    void add_next(Node* node, const MyData value);
+    void del_next(Node* node);
 };
 
-// реализовать верхнюю часть!
+// Добавление элемента в начало списка
+void List::add_head(const MyData value) {
+    head = new Node(value, head);
+}
 
-List::List(){
-        head = nullptr;
-        tail = nullptr;
+// Удаление первого элемента списка
+void List::del_head() {
+    if (head == nullptr) {
+        return;
     }
 
-void List::add_head(){
-        Node *temp = new Node;
-        temp->data = value;
-        temp->next = head;
-        head = temp;
-    }
+    Node* temp = head;
+    head = head->next;
+    delete temp;
+}
 
-void List::del_head(){
-        Node *temp = new Node;
-        temp = head;
+// Получение указателя на первый элемент списка
+Node* List::get_head() {
+    return head;
+}
+
+// Удаление всех элементов списка
+void List::clear() {
+    while (head != nullptr) {
+        Node* temp = head;
         head = head->next;
         delete temp;
     }
-
-
-
-int main()
-{
-	setlocale(0, "");
-	List<int> list;
-	for (int i = 0; i < 5; i++) list.push_tail(i);
-	show(list);
-	list.pop_tail();
-	list.pop_head();
-	list[1] = 777;
-	show(list);
-	system("pause");
 }
 
-
-List<T>::Node::Node(T t, Node* n)
-{
-	data = t;
-	next = n;
-}
-
-
-List<T>::List()
-{
-	size = 0;
-	head = nullptr;
-}
-
-
-List<T>::~List()
-{
-	clear();  //  Очистка всех элементов
-}
-
-//template<class T>
-void List<T>::push_tail(T value)
-{
-	if (head == nullptr)  //  Проверка вершины на null 
-		head = new Node(value);
-	else
-	{
-		for (Node* current = head; ; current = current->next)  //  Указатель узла (поиск вершины с адресом null) )
-			if (current->next == nullptr)
-			{
-				current->next = new Node(value);
-				break;
-			}
-	}
-	size++;
-}//
-
-template<class T>
-void List<T>::push_head(T value)
-{
-	head = new Node(value, head);
-	size++;
-}
-
-
-
-    void List::display(){  // Вывод списка
-        Node *temp = new Node;
-        temp = head;
-        while(temp != nullptr)
-        {
-            cout << temp->data << "\t";
-            temp = temp->next;
-        }
+// Добавление узла
+void List::add_next(Node* node, const MyData value) {
+    if (node == nullptr) {
+        return;
     }
+
+    node->next = new Node(value, node->next);
+}
+
+// Удаление узла
+void List::del_next(Node* node) {
+    if (node == nullptr || node->next == nullptr) {
+        return;
+    }
+
+    Node* temp = node->next;
+    node->next = temp->next;
+    delete temp;
+}
+
+int main() {
+    // Пример использования класса List
+    List list;
+    list.add_head(1.0);
+    list.add_head(2.0);
+    list.add_head(3.0);
+    list.del_next(list.get_head());
+    list.clear();
+    return 0;
+}

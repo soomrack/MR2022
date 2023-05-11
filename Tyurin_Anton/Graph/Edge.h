@@ -28,6 +28,7 @@ public:
         if ((this->dest == right->dest) && (this->loc == right->loc)) {return true;}
         return false;
     }
+
 };
 
 

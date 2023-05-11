@@ -1,4 +1,4 @@
-#include "iostream"
+#include <iostream>
 #include "Binary_tree.h"
 
 int main() {
@@ -20,10 +20,8 @@ int main() {
     A.add(7);
     A.add(9);
     A.add(14);
-    A.print();
     A.remove(7);
     std::cout << std::endl;
-    A.print();
     std::cout << "Search 25" << std::endl;
     A.search(25) ? std::cout << "yes": std::cout << "no"; std::cout<<std::endl;
     return 0;
