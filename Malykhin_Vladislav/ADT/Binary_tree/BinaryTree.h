@@ -16,9 +16,7 @@ public:
     Node* get_l();
     Node* get_r();
     double get_data();
-    void add_l(double in_data);
     void add_l(Node* l_node);
-    void add_r(double in_data);
     void  add_r( Node* r_node);
 };
 
@@ -28,14 +26,11 @@ class Iterator {
 public:
     Node *ptr;
     Iterator();
-    Iterator(Node *in_node);
     ~Iterator();
     void go_l();
     void go_r();
     void set(Node *in_node);
     double get_data();
-    //double get_r_data();
-    //double get_l_data();
 };
 
 
@@ -45,8 +40,6 @@ protected:
     Node *root;
 public:
     BinaryTree();
-    BinaryTree(Node *in_root);
-    BinaryTree(double in_root);
     ~BinaryTree();
     void add_node(Node *node, Node *fork_node);
     void add_node(double node, Node *fork_node);
@@ -81,18 +74,6 @@ Node* Node::get_r() {
 }
 
 
-void Node::add_l(double in_data) {
-    auto *l_node = new Node(in_data);
-    l_child = l_node;
-}
-
-
-void Node::add_r(double in_data) {
-    auto *r_node = new Node(in_data);
-    r_child = r_node;
-}
-
-
 void Node::add_l(Node *l_node) {
     l_child = l_node;
 }
@@ -105,11 +86,6 @@ void Node::add_r(Node *r_node) {
 
 Iterator::Iterator() {
     ptr = nullptr;
-}
-
-
-Iterator::Iterator(Node *in_node) {
-    ptr = in_node;
 }
 
 
@@ -141,15 +117,6 @@ BinaryTree::BinaryTree() {
     root = nullptr;
 }
 
-
-BinaryTree::BinaryTree(Node *in_root) {
-    root = in_root;
-}
-
-BinaryTree::BinaryTree(double in_root) {
-    auto new_node = new Node( in_root);
-    root = new_node;
-}
 
 
 BinaryTree::~BinaryTree() = default;
