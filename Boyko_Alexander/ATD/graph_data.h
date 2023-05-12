@@ -46,7 +46,6 @@ void Graph::add_link(Type data_from, Type data_to) {
 
 	if(node_to == nullptr){
 		add_node(data_to);
-		node_to = get_node(data_to);
 	}
 
 	node_from->neighbours.append(data_to);
@@ -73,6 +72,8 @@ void Graph::del_node(Type del_data) {
 		del_link(del_data, nodes[idx]->data);
 		del_link(nodes[idx]->data, del_data);
 	}
+	nodes.pop_at(nodes.find(del_node));
+	delete del_node;
 }
 
 void Graph::print() {

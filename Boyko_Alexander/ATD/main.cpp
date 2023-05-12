@@ -141,8 +141,15 @@ void check_graph(){
 	my_graph.add_link('A','B');
 	my_graph.add_link('B','C');
 	my_graph.add_link('A','C');
+	my_graph.add_link('C','B');
+
 
 	my_graph.print();
+
+	my_graph.del_node('C');
+
+	my_graph.print();
+
 }
 
 
