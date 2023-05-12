@@ -58,10 +58,10 @@ void check_LinkedList(){
 
 	List.push_head('0');
 
-	List.get(2)->push_next('2');
-	List.get(3)->pop_next();
+	List.get_in_order(2)->push_next('2');
+	List.get_in_order(3)->pop_next();
 
-	List.get(10)->pop_next();
+	List.get_in_order(10)->pop_next();
 
 	List.pop_head();
 	List.pop_tail();
@@ -70,7 +70,7 @@ void check_LinkedList(){
 
 	std::cout << "\nSize = " << List.size() << std::endl;
 	for(int ind = 0; ind < List.size();ind++){
-		std::cout << List.get(ind)->data;
+		std::cout << List.get_in_order(ind)->data;
 	}
 	std::cout << std::endl;
 
@@ -114,32 +114,35 @@ void check_Queue(){
 void check_Tree(){
 	Binary_Tree my_tree;
 	my_tree.add(10);
-	my_tree.add(3);
-	my_tree.add(1);
-	my_tree.add(8);
-	my_tree.add(7);
-	my_tree.add(12);
-	my_tree.add(15);
-	my_tree.add(16);
 	my_tree.add(6);
+	my_tree.add(15);
+	my_tree.add(8);
+	my_tree.add(3);
+	my_tree.add(4);
+	my_tree.add(5);
+	my_tree.add(2);
+	my_tree.add(9);
+	my_tree.add(7);
 
 	preorder_print(my_tree.root);
 
 	std::cout << std::endl;
 
-	my_tree.del(8);
+	my_tree.del(6);
 
 	preorder_print(my_tree.root);
 
-	std::cout << my_tree.find(6);
+	std::cout << my_tree.find(6) << std::endl;
 }
 
 
 void check_graph(){
 	Graph my_graph;
-	LinkedList<GraphNode*> neigh_list;
-	my_graph.add_node('A', neigh_list,neigh_list);
-	my_graph.add_node('B',)
+	my_graph.add_link('A','B');
+	my_graph.add_link('B','C');
+	my_graph.add_link('A','C');
+
+	my_graph.print();
 }
 
 
