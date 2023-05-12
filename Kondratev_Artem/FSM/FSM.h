@@ -6,15 +6,22 @@
 #define HELLO_WORLD_FSM_H
 
 
+#include <functional>
+#include <utility>
+
+typedef double U;
+typedef std::function<double(double)> T;
+
+
 class FSM {
 private:
-    double (*active_state)(double);
+    T active_state;
 
 public:
     FSM();
 
-    void setState(double state(double));
-    double activeState(double u);
+    void setState(T state);
+    U activeState(double u);
 };
 
 
@@ -23,12 +30,12 @@ FSM::FSM() {
 }
 
 
-void FSM::setState(double state(double)) {
-    active_state = state;
+void FSM::setState(T state) {
+    active_state = std::move(state);
 }
 
 
-double FSM::activeState(double u) {
+U FSM::activeState(U u) {
     if (active_state != nullptr) {
         return active_state(u);
     }

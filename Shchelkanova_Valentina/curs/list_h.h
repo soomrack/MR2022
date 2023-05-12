@@ -7,16 +7,19 @@
 
 using namespace std;
 
-struct Node {
-    int data;
+template<class T>
+class Node {
+public:
+    T data;
     Node* next;
 };
 
 // Определяем класс списка
+template<class T>
 class List {
 private:
-    Node* head;
-    Node* tail;
+    Node<T>* head;
+    Node<T>* tail;
 
 public:
     List();
@@ -24,36 +27,46 @@ public:
     List& operator=(const List& other);
     ~List();
 
-    void push_tail(int value);      // Добавление элемента в конец списка
+    void push_tail(T value);        // Добавление элемента в конец списка
     void display() const;           // Вывод списка
-    void push_head(int value);      // Добавление элемента в начало списка
+    void push_head(T value);        // Добавление элемента в начало списка
     void delete_head();             // Удаление первого элемента списка
     void delete_tail();             // Удаление последнего элемента списка
     void delete_position(int pos);  // Удаление элемента на указанной позиции
     void fillWithRandom();          // Заполнение списка случайными числами
     void clearList();               // Очистка списка
-    Node* get_head() const;         // Возвращение указателя на первый элемент
-    int searchElementPosition(int element);
+    Node<T>* get_head() const;      // Возвращение указателя на первый элемент
+    int searchElementPosition(T element);
+    void get_element(int n, T value);
+    void change_element(int pos, T value);
+    T get_element(int pos) const;
+    int get_size();
+    void createList(int size, T value);
 };
 
-List::List() {
+
+template<class T>
+List<T>::List() {
     head = nullptr;
     tail = nullptr;
 }
 
-List::List(const List& other) {
+template<class T>
+List<T>::List(const List& other) {
     head = nullptr;
     tail = nullptr;
-    Node* current = other.head;
+    Node<T>* current = other.head;
     while (current != nullptr) {
         push_tail(current->data);
         current = current->next;
     }
 }
-void List::clearList() {
-    Node* current = head;
+
+template<class T>
+void List<T>::clearList() {
+    Node<T>* current = head;
     while (current != nullptr) {
-        Node* next = current->next;
+        Node<T>* next = current->next;
         delete current;
         current = next;
     }
@@ -61,11 +74,11 @@ void List::clearList() {
     tail = nullptr;
 }
 
-
-List& List::operator=(const List& other) {
+template<class T>
+List<T>& List<T>::operator=(const List& other) {
     if (this != &other) {
         clearList();
-        Node* current = other.head;
+        Node<T>* current = other.head;
         while (current != nullptr) {
             push_tail(current->data);
             current = current->next;
@@ -74,12 +87,14 @@ List& List::operator=(const List& other) {
     return *this;
 }
 
-List::~List() {
+template<class T>
+List<T>::~List() {
     clearList();
 }
 
-void List::push_tail(int value) {
-    Node* temp = new Node;
+template<class T>
+void List<T>::push_tail(T value) {
+    Node<T>* temp = new Node<T>;
     temp->data = value;
     temp->next = nullptr;
 
@@ -93,26 +108,29 @@ void List::push_tail(int value) {
     }
 }
 
-void List::display() const {
-    Node* temp = head;
+template<class T>
+void List<T>::display() const {
+    Node<T>* temp = head;
     while (temp != nullptr) {
         std::cout << temp->data << "\t";
         temp = temp->next;
     }
 }
 
-void List::push_head(int value) {
-    Node* temp = new Node;
+template<class T>
+void List<T>::push_head(T value) {
+    Node<T>* temp = new Node<T>;
     temp->data = value;
     temp->next = head;
     head = temp;
 }
 
-void List::delete_head() {
+template<class T>
+void List<T>::delete_head() {
     if (head == nullptr) {
         return;
     }
-    Node* temp = head;
+    Node<T>* temp = head;
     head = head->next;
     if (head == nullptr) {
         tail = nullptr;
@@ -120,7 +138,8 @@ void List::delete_head() {
     delete temp;
 }
 
-void List::delete_tail() {
+template<class T>
+void List<T>::delete_tail() {
     if (head == nullptr) {
         return;
     }
@@ -130,7 +149,7 @@ void List::delete_tail() {
         tail = nullptr;
         return;
     }
-    Node* current = head;
+    Node<T>* current = head;
     while (current->next != tail) {
         current = current->next;
     }
@@ -139,7 +158,8 @@ void List::delete_tail() {
     tail->next = nullptr;
 }
 
-void List::delete_position(int pos) {
+template<class T>
+void List<T>::delete_position(int pos) {
     if (pos < 1) {
         return;
     }
@@ -147,27 +167,70 @@ void List::delete_position(int pos) {
         delete_head();
         return;
     }
-    Node* current = head;
-    Node* previous = nullptr;
+    Node<T>* current = head;
+    Node<T>* previous = nullptr;
     for (int i = 1; i < pos; i++) {
         if (current == nullptr) {
             return;
         }
         previous = current;
-    }}
+    }
+}
 
-int List::searchElementPosition(int element) {
+/*template<class T>
+int List<T>::searchElementPosition(T element) {
     int position = 1;
-    Node* current = head;
-    while (current != nullptr) {
-        if (current->data == element) {
-            return position;
+    Node<T> *current = head;
+}
+*/
+
+template<class T>
+void List<T>::change_element(int pos, T value) {
+    if (pos < 1) {
+        return;
+    }
+    Node<T>* current = head;
+    for (int i = 1; i < pos; i++) {
+        if (current == nullptr) {
+            return;
         }
         current = current->next;
-        position++;
     }
-    return -1;
+    current->data = value;
+}
+
+template<class T>
+T List<T>::get_element(int pos) const {
+    if (pos < 1) {
+        return T();
+    }
+    Node<T>* current = head;
+    for (int i = 1; i < pos; i++) {
+        if (current == nullptr) {
+            return T();
+        }
+        current = current->next;
+    }
+    return current->data;
 }
 
 
+template<class T>
+int List<T>::get_size() {
+    int size = 0;
+    Node<T>* current = head;
+    while (current != nullptr) {
+        size++;
+        current = current->next;
+    }
+    return size ;
+}
+
+template<class T>
+void List<T>::createList(int size, T value) {
+    clearList();
+    for (int i = 0; i < size; i++) {
+        push_tail(value);
+    }
+}
 #endif  // list_h

@@ -1,137 +1,122 @@
 #include <iostream>
 
-template <typename T = double>
-class Node {
-protected:
-    T value = NULL;
-    Node* prev = nullptr;
-    Node* next = nullptr;
-
+template <typename T>
+class linked_list {
 public:
-    Node() = default;
-    Node(const Node& node);
-    ~Node();
+    class Node {
+    public:
+        explicit Node(const T& value);
+        ~Node();
 
-    template <typename T = double> friend class LinkedList;
-};
+        Node* get_next();
+        Node* add_next(const T& value);
+        void delete_next();
 
+    private:
+        T value;
+        Node* next;
 
+        friend class linked_list<T>;
+    };
 
-template <typename T = double>
-class LinkedList {
-protected:
-    Node<T>* head = nullptr;
-    Node<T>* tail = nullptr;
+    linked_list() = default;
+    ~linked_list();
 
-public:
-    LinkedList() = default;
-
-    ~LinkedList();
-
-    void push_head(T value);
-    void push_tail(T value);
-    T get_item(unsigned int k);
-    void delete_item(unsigned int k);
+    Node* add_head(const T& value);
+    Node* get_head();
+    void delete_head();
 
     void print_list();
+
+private:
+    Node* head;
 };
 
+template<typename T>
+linked_list<T>::Node::Node(const T& value): value(value), next(nullptr) { }
 
-template <typename T>
-Node<T>::~Node() {
-    prev = nullptr;
-    next = nullptr;
+template<typename T>
+linked_list<T>::Node::~Node() {
+
+    delete next;
 }
 
-template <typename T>
-Node<T>::Node(const Node& node) {
-    value = node->value;
-    prev = node->prev;
-    next = node->next;
+template<typename T>
+typename linked_list<T>::Node* linked_list<T>::Node::add_next(const T& value) {
+    Node* new_node = new Node(value);
+    new_node->next = next;
+    next = new_node;
+    return new_node;
 }
 
+template<typename T>
+void linked_list<T>::Node::delete_next() {
 
-template <typename T>
-LinkedList<T>::~LinkedList() {
-    head = nullptr;
-    tail = nullptr;
+
+    Node* new_next = next->next;
+
+    next->next = nullptr;
+    delete next;
+    next = new_next;
 }
 
-template <typename T>
-void LinkedList<T>::push_head(T value) {
-    Node<T>* new_node = new Node<T>();
-    new_node->value = value;
-    new_node->prev = nullptr;
+template<typename T>
+typename linked_list<T>::Node* linked_list<T>::Node::get_next() {
+    return next;
+}
 
-    if (head == nullptr) {
-        new_node->next = nullptr;
-        head = new_node;
-        tail = new_node;
-        return;
+template<typename T>
+linked_list<T>::~linked_list() {
+    delete head;
+}
+
+template<typename T>
+typename linked_list<T>::Node *linked_list<T>::get_head() {
+    return head;
+}
+
+template<typename T>
+typename linked_list<T>::Node* linked_list<T>::add_head(const T &value) {
+    Node* new_head = new Node(value);
+    new_head->next = head;
+    head = new_head;
+    return head;
+}
+
+template<typename T>
+void linked_list<T>::delete_head() {
+
+    Node* delete_node = head;
+    head = head->next;
+    delete_node->next = nullptr;
+    delete delete_node;
+}
+
+template<typename T>
+void linked_list<T>::print_list() {
+    Node* cur = head;
+    while (cur != nullptr) {
+        std::cout << cur->value << " ";
+        cur = cur->get_next();
     }
-
-    new_node->next = head;
-    head = new_node;
-
-}
-
-template <typename T>
-void LinkedList<T>::push_tail(T value) {
-    Node<T>* new_node = new Node<T>();
-    new_node->value = value;
-    new_node->next = nullptr;
-
-    if (head == nullptr) {
-        new_node->prev = nullptr;
-        head = new_node;
-        tail = new_node;
-        return;
-    }
-    tail->next = new_node;
-    new_node->prev = tail;
-    tail = new_node;
-}
-
-template <typename T>
-T LinkedList<T>::get_item(unsigned int k) { //k>
-	Node<>* temp = head;
-	for (unsigned int i = 1; i <= k; ++i) {
-		temp = temp->next;
-	}
-	return temp->value;
-}
-
-template <typename T>
-void LinkedList<T>::delete_item(unsigned int k) {
-	Node<>* delete_node = head;
-	for (unsigned int i = 1; i <= k; ++i) {
-		delete_node = delete_node->next;
-	}
-	delete_node->prev->next = delete_node->next;
-	delete_node->next->prev = delete_node->prev;
-	delete[] delete_node;
-}
-
-template <typename T>
-void LinkedList<T>::print_list() {
-    Node<T>* temp = head;
-    while (temp != nullptr) {
-        std::cout << temp->value << " ";
-        temp = temp->next;
-    }
-    std::cout << "\n\n";
+    std::cout << std::endl;
 }
 
 int main() {
-	LinkedList<> l;
-	l.push_tail(1);
-	l.print_list();
-	l.push_head(2);
-	l.print_list();
-	l.push_head(3);
-	l.print_list();
-	l.push_tail(4);
-	l.print_list();
+    linked_list<int> l;
+    l.add_head(0);
+    auto head = l.get_head();
+    head->add_next(1);
+    head->get_next()->add_next(2);
+    l.add_head(-1);
 
-	return 0;
+    l.print_list();
+
+    l.delete_head();
+    l.get_head()->delete_next();
+
+    l.print_list();
+    return 0;
 }
+
+

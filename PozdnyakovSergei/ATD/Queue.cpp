@@ -8,6 +8,7 @@ class Queue {
     int last;
     int count;
 
+
 public:
     Queue(int size);
     ~Queue();

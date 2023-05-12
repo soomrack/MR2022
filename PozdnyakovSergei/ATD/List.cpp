@@ -1,6 +1,13 @@
 #include <iostream>
 
 
+class List_exceptions: public std::domain_error {
+public:
+    List_exceptions (const char* const error) : std::domain_error(error) {
+    }
+};
+
+
 class Node {
 public:
     Node* next;
@@ -92,12 +99,12 @@ void List::push_head(double key){
 }
 
 
-void List::push_next (double data, double data_){
+void List::push_next (double value, double value_next){
     Nodeptr node_prev = head;
-    while (node_prev->value != data_ ){
+    while (node_prev->value != value_next){
         node_prev = node_prev->next;
     }
-    Nodeptr new_node = new Node (data, node_prev->next);
+    Nodeptr new_node = new Node (value, node_prev->next);
     node_prev->next = new_node;
 }
 
@@ -163,7 +170,7 @@ int main() {
     lst.push_head(9.00);
     lst.push_back(5.00);
     lst.print();
-    lst.del( 1);
+    lst.del(1);
     lst.push_prev(1.00, 0);
     lst.push_next(1.00, 0);
 
