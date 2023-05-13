@@ -20,6 +20,7 @@ private:
     size_t size;
 
 public:
+    queue();
     explicit queue(size_t);
     queue(const queue&);
     queue(queue&&) noexcept;
@@ -41,13 +42,22 @@ public:
 
 template <typename T>
 queue<T>::queue(size_t num) {
+    capacity = 0;
+    data = nullptr;
+    top = -1;
+    tail = -1;
+    size = 0;
+}
+
+
+template <typename T>
+queue<T>::queue(size_t num) {
     capacity = num;
     data = new T[capacity];
     if (!data) throw BADALLOC;
     top = -1;
     tail = -1;
     size = 0;
-
 }
 
 template <typename T>
