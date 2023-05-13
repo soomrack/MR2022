@@ -2,7 +2,7 @@
 #define MR2022_DYNAMIC_ARRAY_H
 
 #include <algorithm>
-
+#include <cstring>
 class ARRAY_EXCEPTION: public std::domain_error
 {
 public:
@@ -123,7 +123,7 @@ void dynamic_array<T>::resize(unsigned int new_size) {
     if (new_size < size) size = new_size;
     capacity = new_size;
     auto* new_data = new T[capacity];
-    memcpy(new_data,data,sizeof(T) * capacity);
+    memcpy(new_data,data,sizeof(T) * size);
     delete data;
     data = new_data;
 }
