@@ -30,7 +30,6 @@ int main() {
         std::cout << "Print z: ";
         print(z);
         std::cout<<"SWAP"<<std::endl;
-        q.swap(z);
         std::cout << "Print q:";
         print(q);
         queue<int>ab(std::move(q));
