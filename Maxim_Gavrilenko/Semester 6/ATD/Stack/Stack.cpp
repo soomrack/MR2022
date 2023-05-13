@@ -3,15 +3,14 @@
 
 template <typename T>
 void print(stack<T> &A)
-{
-    if (A.is_empty())
-        throw EMPTY;
+{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           if (A.is_empty())
+    throw EMPTY;
     std::cout << "stack: ";
     for (int i = A.get_size() - 1; i >= 0; i--)
     {
         std::cout << A[i] << " ";
     }
-    std::cout << std::endl;
+    std::cout << std::endl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 }
 
 int main()

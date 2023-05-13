@@ -34,7 +34,6 @@ public:
     T pop();
     T get_top();
     T get_tail();
-    void swap(queue<T>&);
     unsigned int get_size();
     void clear();
 
@@ -63,10 +62,10 @@ bool queue<T>::is_full() {
     return tail == capacity - 1;
 }
 
-template <typename T>
+template <typename T> 
 bool queue<T>::is_empty() {
     return top == -1 || top > tail;
-}
+} 
 
 template <typename T>
 void queue<T>::push(T num) {
@@ -111,14 +110,6 @@ void queue<T>::clear() {
     }
 }
 
-template <typename T>
-void queue<T>::swap(queue<T> & A) {
-    if (A.size != size) throw std::domain_error("queue size is not equal");
-    queue<T> temp(size);
-    memcpy(temp.data,A.data,sizeof(T) * size);
-    memcpy(A.data,data,sizeof(T) * A.size);
-    memcpy(data,temp.data, sizeof(T) * size);
-}
 
 template<typename T>
 T& queue<T>::operator[](unsigned int idx)
@@ -152,8 +143,8 @@ queue<T>::queue(queue<T> &&q) noexcept :top(q.top) ,tail(q.tail), size(q.size), 
     data = q.data;
     q.top = -1;
     q.tail = -1;
-    q.size = NULL;
-    q.capacity =NULL;
+    q.size = 0;
+    q.capacity = 0;
     q.data = nullptr;
 }
 
@@ -167,8 +158,8 @@ queue<T>& queue<T>::operator=(queue<T> &&q) noexcept {
     data = q.data;
     q.top = -1;
     q.tail = -1;
-    q.size = NULL;
-    q.capacity =NULL;
+    q.size = 0;
+    q.capacity = 0;
     q.data = nullptr;
     return *this;
 }
