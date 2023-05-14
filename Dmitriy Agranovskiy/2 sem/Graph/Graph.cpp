@@ -1,104 +1,116 @@
-#include "DirectedGraph.h"
-#include "List.h"
+#include <iostream>
+using namespace std;
 
+class Graph {
+private:
+  //  Структура для описания списка смежности
+    struct Node {
+        int data;
+        Node* next;
+        Node(int value) : data(value), next(nullptr) {}
+    };
 
-void Graph::addNode(int data) {
-    auto *newNode = new GraphNode(data);
-    newNode->data = data;
-    this->node_list.push_tail(newNode);
-}
+    Node** adj_list;
+    int num_vertices;
 
-
-bool Graph::noDestination(GraphNode *dest) {
-    return dest == nullptr;
-}
-
-
-void Graph::addEdge(GraphNode *loc, GraphNode *dest) {
-    if (noDestination(dest)) { return; }
-    Edge *newEdge = new Edge(loc, dest);
-    loc->edge_list.push_tail(newEdge);
-    dest->edge_list.push_tail(newEdge);
-}
-
-
-GraphNode *Graph::findGraphNode(unsigned int findData) {
-    Node<GraphNode *> *node = this->node_list.getHead();
-    while (node) {
-        if (node->getNodeData()->get() == findData) {
-            return node->getNodeData();
+public:
+  Graph(int n);
+  ~Graph();
+  void add_vertex(int v);  //  Метод для добавления вершины
+  void add_edge(int v1, int v2);  //  Метод для добавления пути
+  void del_edge(int v1, int v2);  //  Метод для удаления пути
+};
+  
+  
+    Graph::Graph(int n) : num_vertices(n) {
+        adj_list = new Node*[num_vertices];
+        for (int i = 0; i < num_vertices; ++i) {
+            adj_list[i] = nullptr;
         }
-        node = node->getNext();
     }
-    return nullptr;
-}
 
-
-void Graph::addEdge(int loc_data, int dest_data) {
-    GraphNode *loc = this->findGraphNode(loc_data);
-    GraphNode *dest = this->findGraphNode(dest_data);
-    addEdge(loc, dest);
-}
-
-/*
-int GraphNode::find(GraphNode* f_node){
-    GraphNode* searchNode = this->edge_list.getHead();
-    while(searchNode){
-        if (f_node->data == searchNode->data){return searchNode->data}
-        searchNode = searchNode->next;
-    }
-}
-*/
-
-void Graph::deleteNode(int data) {
-    auto nodeDelete = this->findGraphNode(data);
-
-    if (this->node_list.get_size() == 1) {this->node_list.delete_this(nodeDelete); return; }
-
-    auto nodeForStep = this->node_list.getHead();
-    auto currGraphNode = nodeForStep->getNodeData();
-    auto currEdge = currGraphNode->edge_list.getHead();
-
-    unsigned int el_size = 0;
-    for (unsigned int nl_size = 0; nl_size < this->node_list.get_size(); nl_size++){
-        for(el_size; el_size < currGraphNode->edge_list.get_size(); el_size++){
-            if ((data == currEdge->getNodeData()->getDest()->get()) ||
-                (data == currEdge->getNodeData()->getLoc()->get())) {
-                currGraphNode->edge_list.delete_this(currEdge->getNodeData());
+    Graph::~Graph() {
+        for (int i = 0; i < num_vertices; ++i) {
+            Node* current = adj_list[i];
+            while (current != nullptr) {
+                Node* temp = current;
+                current = current->next;
+                delete temp;
             }
-            currEdge = currEdge->next;
         }
-        nodeForStep = nodeForStep->next;
-        if (nodeForStep) {
-        currGraphNode = nodeForStep->getNodeData();
-        }
-        currEdge = currGraphNode->edge_list.getHead();
-        el_size = 0;
+        delete[] adj_list;
     }
 
-    this->node_list.delete_this(nodeDelete);
-}
-
-
-Edge* GraphNode::findEdge(GraphNode* floc, GraphNode* fdest){
-    auto fEdge = this->edge_list.getHead();
-    for (unsigned int idx = 0; idx < this->edge_list.get_size(); idx++){
-        if (( fdest == fEdge->getNodeData()->getDest()) &&
-            ( floc == fEdge->getNodeData()->getLoc())){
-            return fEdge->getNodeData();
-        }
-        fEdge = fEdge->next;
+    void Graph::add_vertex(int v) {
+        adj_list[v] = new Node(v);
     }
-}
+
+    void Graph::add_edge(int v1, int v2) {
+        Node* new_edge = new Node(v2);
+        new_edge->next = adj_list[v1];
+        adj_list[v1] = new_edge;
+
+        new_edge = new Node(v1);
+        new_edge->next = adj_list[v2];
+        adj_list[v2] = new_edge;
+    }
+
+    void Graph::del_edge(int v1, int v2) {
+        Node* current = adj_list[v1];
+        Node* prev = nullptr;
+
+        while (current != nullptr) {
+            if (current->data == v2) {
+                if (prev == nullptr) {
+                    adj_list[v1] = current->next;
+                } else {
+                    prev->next = current->next;
+                }
+                delete current;
+                break;
+            }
+            prev = current;
+            current = current->next;
+        }
+
+        current = adj_list[v2];
+        prev = nullptr;
+
+        while (current != nullptr) {
+            if (current->data == v1) {
+                if (prev == nullptr) {
+                    adj_list[v2] = current->next;
+                } else {
+                    prev->next = current->next;
+                }
+                delete current;
+                break;
+            }
+            prev = current;
+            current = current->next;
+        }
+    }
 
 
-void Graph::deleteEdge(int loc_data, int dest_data) {
-    auto loc = this->findGraphNode(loc_data);
-    auto dest = this->findGraphNode(dest_data);
+int main() {
+    Graph g(5);
 
-    auto delLoc = loc->findEdge(loc, dest);
-    auto delDest = dest->findEdge(loc, dest);
+    g.add_vertex(0);
+    g.add_vertex(1);
+    g.add_vertex(2);
+    g.add_vertex(3);
+    g.add_vertex(4);
 
-    loc->edge_list.delete_this(delLoc);
-    dest->edge_list.delete_this(delDest);
+    g.add_edge(0, 1);
+    g.add_edge(0, 4);
+    g.add_edge(1, 2);
+    g.add_edge(1, 3);
+    g.add_edge(1, 4);
+    g.add_edge(2, 3);
+    g.add_edge(3, 4);
+
+    g.del_edge(0, 4);
+    g.del_edge(1, 4);
+
+    return 0;
 }
