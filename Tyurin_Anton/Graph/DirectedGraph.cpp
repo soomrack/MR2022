@@ -1,15 +1,18 @@
 #include "DirectedGraph.h"
 #include "List.h"
 
+
 void Graph::addNode(int data) {
     auto *newNode = new GraphNode(data);
     newNode->data = data;
     this->node_list.push_tail(newNode);
 }
 
+
 bool Graph::noDestination(GraphNode *dest) {
     return dest == nullptr;
 }
+
 
 void Graph::addEdge(GraphNode *loc, GraphNode *dest) {
     if (noDestination(dest)) { return; }
@@ -29,7 +32,6 @@ GraphNode *Graph::findGraphNode(unsigned int findData) {
     }
     return nullptr;
 }
-
 
 
 void Graph::addEdge(int loc_data, int dest_data) {
@@ -54,20 +56,49 @@ void Graph::deleteNode(int data) {
     if (this->node_list.get_size() == 1) {this->node_list.delete_this(nodeDelete); return; }
 
     auto nodeForStep = this->node_list.getHead();
-    auto theNeededNode = nodeForStep->getNodeData();
-    auto nodeForEdgeStep = theNeededNode->edge_list.getHead();
+    auto currGraphNode = nodeForStep->getNodeData();
+    auto currEdge = currGraphNode->edge_list.getHead();
 
-    while (nodeForStep) {
-        while (nodeForEdgeStep) {
-            if ((data == nodeForEdgeStep->getNodeData()->getDest()->get()) ||
-                (data == nodeForEdgeStep->getNodeData()->getLoc()->get())) {
-                theNeededNode->edge_list.delete_this(nodeForEdgeStep->getNodeData());
+    unsigned int el_size = 0;
+    for (unsigned int nl_size = 0; nl_size < this->node_list.get_size(); nl_size++){
+        for(el_size; el_size < currGraphNode->edge_list.get_size(); el_size++){
+            if ((data == currEdge->getNodeData()->getDest()->get()) ||
+                (data == currEdge->getNodeData()->getLoc()->get())) {
+                currGraphNode->edge_list.delete_this(currEdge->getNodeData());
             }
-            nodeForEdgeStep = nodeForEdgeStep->next;
+            currEdge = currEdge->next;
         }
         nodeForStep = nodeForStep->next;
+        if (nodeForStep) {
+        currGraphNode = nodeForStep->getNodeData();
+        }
+        currEdge = currGraphNode->edge_list.getHead();
+        el_size = 0;
     }
 
     this->node_list.delete_this(nodeDelete);
 }
 
+
+Edge* GraphNode::findEdge(GraphNode* floc, GraphNode* fdest){
+    auto fEdge = this->edge_list.getHead();
+    for (unsigned int idx = 0; idx < this->edge_list.get_size(); idx++){
+        if (( fdest == fEdge->getNodeData()->getDest()) &&
+            ( floc == fEdge->getNodeData()->getLoc())){
+            return fEdge->getNodeData();
+        }
+        fEdge = fEdge->next;
+    }
+}
+
+
+void Graph::deleteEdge(int loc_data, int dest_data) {
+    auto loc = this->findGraphNode(loc_data);
+    auto dest = this->findGraphNode(dest_data);
+
+    auto delLoc = loc->findEdge(loc, dest);
+    auto delDest = dest->findEdge(loc, dest);
+
+    loc->edge_list.delete_this(delLoc);
+    dest->edge_list.delete_this(delDest);
+}

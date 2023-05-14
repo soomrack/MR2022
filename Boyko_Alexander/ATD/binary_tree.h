@@ -13,7 +13,7 @@ public:
 
 class Binary_Tree{
 private:
-	TreeNode* get_tree_node(int find_data);
+	TreeNode* get_node(int find_data);
 	TreeNode* get_parent_node(int find_data);
 public:
 	TreeNode* root;
@@ -33,45 +33,54 @@ void Binary_Tree::add(int new_data) {
 
 bool Binary_Tree::find(int find_data) {
 	auto current_node = root;
-	if(get_tree_node(find_data) != nullptr){
+	if(get_node(find_data) != nullptr){
 		return true;
 	}
 	return false;
 }
 
-TreeNode* get_right(TreeNode* start_node){
-	auto current_node = start_node;
-	while (current_node != nullptr) {
-		if (current_node->child_right == nullptr) {
-			break;
-		}
-		current_node = current_node->child_right;
-	}
-	return current_node;
-}
-
-TreeNode* get_left(TreeNode* start_node){
-	auto current_node = start_node;
-	while (current_node != nullptr) {
-		if (current_node->child_left == nullptr) {
-			break;
-		}
-		current_node = current_node->child_left;
-	}
-	return current_node;
-}
-
 void Binary_Tree::del(int del_data) {
 	auto parent_node = get_parent_node(del_data);
-	TreeNode* current_node;
-	current_node = current_node
+	auto current_node_link = del_data < parent_node->data ? &(parent_node->child_left) : &(parent_node->child_right);
+	auto del_node = *current_node_link;
+
+	if((*current_node_link)->child_right == nullptr){
+		*current_node_link = (*current_node_link)->child_left;
+		delete del_node;
+		return;
+	}
+	if((*current_node_link)->child_left == nullptr) {
+		*current_node_link = (*current_node_link)->child_right;
+		delete del_node;
+		return;
+	}
+	auto del_left_link = &((*current_node_link)->child_left);
+	auto del_right_link = &((*current_node_link)->child_right);
+	auto del_link = current_node_link;
+
+	// Поиск самого левого справа
+	auto most_left_link = del_right_link;
+	auto next_node = (*most_left_link)->child_left;
+	while (next_node != nullptr) {
+		most_left_link = &((*most_left_link)->child_left);
+		next_node = next_node->child_left;
+	}
+
+	auto most_left = *most_left_link;
+	(*del_link) = most_left;
+	most_left->child_left = (*del_left_link);
+	auto mem_link = most_left->child_right;
+	most_left->child_right = (*del_right_link);
+	(*most_left_link) = mem_link;
+
+	delete del_node;
 }
 
-TreeNode *Binary_Tree::get_tree_node(int find_data) {
+TreeNode *Binary_Tree::get_node(int find_data) {
 	TreeNode** link = &root;
 	while(*link != nullptr){
-		link = find_data < (*link)->data ? &((*link)->child_left) : &((*link)->child_right);
 		if((*link)->data == find_data) return *link;
+		link = find_data < (*link)->data ? &((*link)->child_left) : &((*link)->child_right);
 	}
 	return nullptr;
 }

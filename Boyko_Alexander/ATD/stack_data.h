@@ -30,7 +30,7 @@ int Stack::size() {
 }
 
 Node<Type>* Stack::get(unsigned int ind) {
-	return StackList.get(ind);
+	return StackList.get_in_order(ind);
 }
 
 

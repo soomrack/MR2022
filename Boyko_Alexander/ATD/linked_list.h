@@ -31,7 +31,8 @@ public:
 	Type pop_tail();
 	Node<Type>* get_head();
 	Node<Type>* get_tail();
-	Node<Type>* get(unsigned int ind);
+	Node<Type>* get_in_order(unsigned int ind);
+	Node<Type>* find(Type find_data);
 };
 
 
@@ -155,7 +156,7 @@ Node<Type> *LinkedList<Type>::get_tail() {
 }
 
 template<class Type>
-Node<Type> *LinkedList<Type>::get(unsigned int ind) {
+Node<Type> *LinkedList<Type>::get_in_order(unsigned int ind) {
 	auto need_node = head;
 	for(unsigned int i = 0; i < ind; i++){
 		if(need_node != NULL){
@@ -170,6 +171,17 @@ Node<Type> *LinkedList<Type>::get(unsigned int ind) {
 	return need_node;
 }
 
+template<class Type>
+Node<Type>* LinkedList<Type>::find(Type find_data) {
+	Node<Type>* tail = head;
+	if(tail != nullptr) {
+		if(tail->data == find_data){
+			return tail;
+		}
+		tail = tail->next;
+	}
+	return nullptr;
+}
 
 
 #endif //ATD_LINKED_LIST_H
