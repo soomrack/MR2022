@@ -1,4 +1,4 @@
-#include "Graph_2.h"
+#include "graph_2.h"
 int main()
 {
     Graph<double> graph;
