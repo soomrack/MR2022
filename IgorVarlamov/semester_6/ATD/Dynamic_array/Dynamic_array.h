@@ -2,7 +2,7 @@
 #define MR2022_DYNAMIC_ARRAY_H
 
 #include <algorithm>
-
+#include <cstring>
 class ARRAY_EXCEPTION: public std::domain_error
 {
 public:
@@ -11,6 +11,7 @@ public:
 
 ARRAY_EXCEPTION BADALLOC("Memory is not allocated");
 ARRAY_EXCEPTION OUTOFRANGE("Out of range");
+ARRAY_EXCEPTION NOTFOUND("Value is not found in this scope");
 
 
 template <typename T>
@@ -32,12 +33,12 @@ public:
 
     void resize(unsigned int);
     void insert (T, unsigned int);
-    bool search (T);
-    
-    
+    void append (T);
+    void remove(unsigned int);
+    int search(T);
+
     unsigned int get_size() {return size;}
     unsigned int get_capacity() {return capacity;}
-    unsigned int get_free_capacity() {return capacity - size;}
 };
 
 template <typename T>
@@ -63,7 +64,8 @@ dynamic_array<T>::dynamic_array(const dynamic_array &array) : capacity(array.cap
 }
 
 template <typename T>
-dynamic_array<T>::dynamic_array(dynamic_array&& array) noexcept : capacity(array.capacity), size(array.size), data(array.data) {
+dynamic_array<T>::dynamic_array(dynamic_array&& array) noexcept : capacity(array.capacity), 
+size(array.size), data(array.data) {
     array.size = 0;
     array.capacity = 0;
     array.data = nullptr;
@@ -73,14 +75,18 @@ template <typename T>
 dynamic_array<T>::~dynamic_array() {
     size = 0;
     capacity = 0;
-    delete data;
+    if (data) {
+        delete data;
+    }
+    
 }
 
 template <typename T>
-bool dynamic_array<T>::search(T num) {
+int dynamic_array<T>::search(T num) {
     for(unsigned int i = 0; i < size; i++) {
-        if (data[i] == num) return true;
+        if (data[i] == num) return i;
     }
+    throw NOTFOUND;
 }
 
 
@@ -105,9 +111,25 @@ void dynamic_array<T>::resize(unsigned int new_size) {
     }
     capacity = new_size;
     auto* new_data = new T[capacity];
-    memcpy(new_data,data,sizeof(T) * capacity);
+    memcpy(new_data, data, sizeof(T) * size);
     delete data;
     data = new_data;
 }
 
+template<typename T>
+void dynamic_array<T>::append(T new_data) {
+	if(size >= capacity){
+		resize(size+10);
+	}
+	data[size++] = new_data;
+}
+
+template<typename T>
+void dynamic_array<T>::remove(unsigned int idx) {
+	if(idx < 0){
+		throw OUTOFRANGE;
+	}
+	size -= 1;
+	memcpy(data + idx, data + idx + 1, (size - idx + 1) * sizeof(T));
+}
 #endif //MR2022_DYNAMIC_ARRAY_H

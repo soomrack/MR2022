@@ -1,5 +1,5 @@
- #include <iostream>
-#include "dynamic_array.h"
+#include <iostream>
+#include "Dynamic_array.h"
 #include <ctime>
 template <typename T>
 void print (dynamic_array<T>& A) {
@@ -16,20 +16,14 @@ int main() {
         print(A);
         std::cout << A.get_size() << std::endl;
         print(A);
-        A.search(4.08) ? std::cout << "YES" : std::cout << "NO";
         std::cout << std::endl;
         A.resize(12);
-        std::cout << "Unalloceted capacity: " << A.get_free_capacity() << std::endl;
-        print(A);
         A.insert(3, 9);
         A.insert(8, 2);
-        std::cout << "Unalloceted capacity: " << A.get_free_capacity() << std::endl;
         A.insert(9, 2);
         print(A);
-        std::cout << "Unalloceted capacity: " << A.get_free_capacity() << std::endl;
         A.resize(10);
         print(A);
-        std::cout << "Unalloceted capacity: " << A.get_free_capacity() << std::endl;
     }
     catch (ARRAY_EXCEPTION &e)
     {
