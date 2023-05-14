@@ -2,7 +2,7 @@
 #ifndef MR2022_QUEUE_H
 #define MR2022_QUEUE_H
 
-class QUEUE_ERROR: public std:: domain_error {
+class QUEUE_ERROR: public std::domain_error {
 public:
    explicit QUEUE_ERROR(const char *const str) : std::domain_error(str) {};
 };

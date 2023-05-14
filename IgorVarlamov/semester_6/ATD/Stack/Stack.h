@@ -15,40 +15,62 @@ STACK_ERROR FULL("Stack is full");
 template <typename T>
 class stack {
 private:
-    size_t capacity;
-    size_t size;
-    int top;        // индекс верхнего элемента стека
-    T* data;   // массив для хранения элементов стека
+    size_t capacitance;                                             // вместимость стека
+    size_t size;                                                    // текущий размер стэка
+    int top;                                                        // индекс верхнего элемента стека
+    T* data;                                                        // массив для хранения элементов стека
 public:
-    stack();
-    stack(const stack&);
-    explicit stack(stack&&) noexcept;
-    explicit stack(size_t);
-    ~stack();
+    stack();                                                        // пустой конструктор
+    stack(const stack&);                                            // конструктор копирования
+    explicit stack(stack&&) noexcept;                               // конструктор переноса
+    explicit stack(size_t);                                         // конструктор с заданной емкостью стека
+    ~stack();                                                       // деструктор
     
-    bool is_empty();
-    bool is_full();
+    bool is_empty();                                                // проверяет, пуст ли стек
+    bool is_full();                                                 // проверяет, заполнен ли стек
 
-    unsigned int get_size();
-    void push(T);
-    T pop();
-    T peek();
+    unsigned int get_size();                                        // возвращает текущий размер стека
+    void push(T);                                                   // добавляет элемент в стек
+    T pop();                                                        // удаляет элемент из стека и возвращает его значение
+    T peek();                                                       // возвращает значение верхнего элемента стека, не удаляя его
     
     T& operator[](unsigned int idx) {return data[idx];};
 };
 
 template <typename T>
-stack<T>::stack(size_t capacity) {
-    capacity = capacity;
-    data = new T[capacity];
+stack<T>::stack() {
+    capacitance = 0;
+    size = 0;
+    top = -1;
+    data = nullptr;
+}
+
+template <typename T>
+stack<T>::stack(size_t capacitance) {
+    capacitance = capacitance;
+    data = new T[capacitance];
     if (!data) throw BADALLOC;
     size = 0;
-    top = -1;   // инициализация вершины пустым значением
+    top = -1;                                                       // инициализация вершины пустым значением
 }
+
 template <typename T>
-bool stack<T>::is_empty() {
-    return top == -1;
+stack<T>::stack(const stack<T> & stack) : capacitance(stack.capacitance), size(stack.size), top(stack.top) {
+    data = new T[capacitance];
+    if (!data) throw BADALLOC;
+    memcpy(data, stack.data, capacitance);
 }
+
+
+template <typename T>
+stack<T>::stack(stack<T> && stack) noexcept : capacitance(stack.capacitance), size(stack.size),
+                                          top(stack.top), data(stack.data) {
+    stack.capacitance = NULL;
+    stack.size = NULL;
+    stack.top = -1;
+    stack.data = nullptr;
+}
+
 
 template <typename T>
 stack<T>::~stack() {
@@ -59,6 +81,10 @@ stack<T>::~stack() {
     data = nullptr;
 }
 
+template <typename T>
+bool stack<T>::is_empty() {
+    return top == -1;
+}
 
 template<typename T>
 unsigned int stack<T>::get_size() {
@@ -66,7 +92,7 @@ unsigned int stack<T>::get_size() {
 
 template <typename T>
 bool stack<T>::is_full(){
-    return top == capacity - 1;
+    return top == capacitance - 1;
 }
 
 template <typename T>
@@ -89,30 +115,4 @@ T stack<T>::peek() {
     if (is_empty()) throw EMPTY;
     return data[top];
 }
-
-template <typename T>
-stack<T>::stack() {
-    capacity = 0;
-    size = 0;
-    top = -1;
-    data = nullptr;
-}
-
-template <typename T>
-stack<T>::stack(const stack<T> & stack) : capacity(stack.capacity), size(stack.size), top(stack.top) {
-    data = new T[capacity];
-    if (!data) throw BADALLOC;
-    memcpy(data, stack.data, capacity);
-}
-
-
-template <typename T>
-stack<T>::stack(stack<T> && stack) noexcept : capacity(stack.capacity), size(stack.size),
-                                          top(stack.top), data(stack.data) {
-    stack.capacity = NULL;
-    stack.size = NULL;
-    stack.top = -1;
-    stack.data = nullptr;
-}
-
 #endif //MR2022_stack_H
