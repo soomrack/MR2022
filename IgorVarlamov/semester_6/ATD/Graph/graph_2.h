@@ -9,30 +9,30 @@ template <typename T>
 class GraphNode
 {
 public:
-    T data; // данные, хранимые в узле
-    dynamic_array<T> neighbors; // список смежности для узла
+    T data;                                                             // данные, хранимые в узле
+    dynamic_array<T> neighbors;                                         // список смежности для узла
 
     explicit GraphNode(T data) :data(data) {};
 };
 
-// класс для представления графа через списки смежности
+                                                                        // класс для представления графа через списки смежности
 template <typename T>
 class Graph
 {
 private:
-    // поиск узла по его данным
+                                                                        // поиск узла по его данным
     GraphNode<T> *get_node(double data);
-    dynamic_array<GraphNode<T> *> nodes; // список узлов графа
+    dynamic_array<GraphNode<T> *> nodes;                                // список узлов графа
 public:
-    // добавление узла в граф
+                                                                        // добавление узла в граф
     void add_node(T data);
-    // добавление ребра между вершинами с данными data1 и data2
+                                                                        // добавление ребра между вершинами с данными data1 и data2
     void add_edge(T data1, T data2);
-    // Удаление ребра из графа
+                                                                        // Удаление ребра из графа
     void remove_edge(T data1, T data2);
-    // удаление узла с данными data
+                                                                        // удаление узла с данными data
     void remove_node(T data);
-    // вывод списка смежности для каждого узла
+                                                                        // вывод списка смежности для каждого узла
     void print();
 };
 
@@ -49,7 +49,7 @@ void Graph<T>::add_edge(T data1, T data2)
 {
     auto *node1 = get_node(data1);
     auto *node2 = get_node(data2);
-    if (node1 == node2) return; // Случай ребра на одну вершину
+    if (node1 == node2) return;                                         // Случай ребра на одну вершину
     node1->neighbors.append(data2);
     node2->neighbors.append(data1);
 }
@@ -60,7 +60,7 @@ void Graph<T>::remove_edge(T data1, T data2)
 {
     auto *node1 = get_node(data1);
     auto *node2 = get_node(data2);
-    node1->neighbors.remove(node1->neighbors.search(data2)); // Удаление вершины w из списка s
+    node1->neighbors.remove(node1->neighbors.search(data2));            // Удаление вершины w из списка s
     node2->neighbors.remove(node2->neighbors.search(data1));
 }
 
@@ -80,7 +80,7 @@ GraphNode<T>* Graph<T>::get_node(double data)
 
 template <typename T>
 void Graph<T>::remove_node(T data) {
-    // Находим удаляемый узел по данным
+                                                                        // Находим удаляемый узел по данным
     GraphNode<T> *node = get_node(data);
     if (node == nullptr) {
         std::cout << "Узел не найден" << std::endl;
@@ -96,7 +96,7 @@ void Graph<T>::remove_node(T data) {
     for (int neighborIndex = 0; neighborIndex < node->neighbors.get_size(); neighborIndex++) {
     remove_edge(data, node->neighbors[neighborIndex]);
     }
-    // Удаляем узел из списка узлов графа
+                                                                        // Удаляем узел из списка узлов графа
     for (size_t i = 0; i < nodes.get_size(); i++) {
         if (nodes[i]->data == data) {
             nodes.remove(i);
