@@ -17,14 +17,14 @@ ARRAY_EXCEPTION NOTFOUND("Value is not found in this scope");
 template <typename T>
 class dynamic_array {
 protected:
-    size_t capacity;
-    size_t size;
-    T* data;
+    size_t capacity;                                            // емкость массива
+    size_t size;                                                // текущий размер массива;
+    T* data;                                                    // указатель на массив элементов
 
 
 public:
-    dynamic_array();
-    explicit dynamic_array(unsigned int);
+    dynamic_array();                                            // конструктор по умолчанию, который инициализирует поля data, capacity и size нулевыми значениями
+    explicit dynamic_array(unsigned int);                       // 
     dynamic_array(const dynamic_array& A);
     dynamic_array(dynamic_array&& A) noexcept;
     ~dynamic_array();
