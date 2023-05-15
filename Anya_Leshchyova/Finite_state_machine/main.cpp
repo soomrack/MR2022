@@ -20,6 +20,7 @@ std::string State:: get_name(){
     return name;
 }
 
+
 bool State:: is_final() {
     return final;
 }
@@ -28,6 +29,7 @@ bool State:: is_final() {
 void State::add_transition(char symbol, State* next) {
     transitions[symbol] = next;
 }
+
 
 State* State::get_next_state(char symbol) {
     if (transitions.find(symbol) != transitions.end()) {
@@ -51,6 +53,7 @@ public:
     bool process(std::string input);
 
 };
+
 
 void FSN:: add_state(State* state) {
     states[state->get_name()] = state;
@@ -77,9 +80,11 @@ bool FSN::process(std::string input) {
     return current_state->is_final();
 }
 
+
 void FSN:: set_state(std::string state_name){
     current_state = states[state_name];
 }
+
 
 int main() {
 
