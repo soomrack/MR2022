@@ -27,6 +27,7 @@ public:
 	void pop_back();
 	void pop_at(int ind);
 	void clear();
+	int find(Type find_data);
 };
 
 

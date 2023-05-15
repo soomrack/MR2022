@@ -54,6 +54,8 @@ int main() {
     //A.delEdge(4, 3);
     A.printEdges();
 
+    A.delVertex(0);
+    A.printEdges();
 
 /*
     List<int> B;

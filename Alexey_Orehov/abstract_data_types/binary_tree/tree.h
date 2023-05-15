@@ -4,11 +4,7 @@
 #include <exception>
 #include <functional>
 
-
-class TreeException: public std::exception {
-public:
-    explicit TreeException(const char* msg) : std::exception() {}
-};
+//#define HASH_WORKAROUND
 
 
 template<class T>
@@ -17,11 +13,11 @@ struct TreeNode {
     TreeNode<T>* left;
     T element = {};
     int hash = 0;
-
+#ifndef HASH_WORKAROUND
     TreeNode(const T& element, const std::hash<T> &hash_fn);
-//    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
-
-    TreeNode(TreeNode<T>* right, TreeNode<T>* left): right(right), left(left) {}
+#else
+    TreeNode(const T& element, const std::function<int(T)> &hash_fn);
+#endif
 };
 
 
@@ -29,22 +25,18 @@ template<class T>
 class Tree {
 private:
     TreeNode<T>* root;
-    unsigned long long int size;
 
+#ifndef HASH_WORKAROUND
     std::hash<T> hash_fn;
-//    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+#else
+    std::function<int(T)> hash_fn = [](T value){ return (int)value; };
+#endif
 
-    void insert(TreeNode<T>* subtree, const T& element);
-    bool find(TreeNode<T>* subtree, const T& element);
-    void find_remove_cand(TreeNode<T>* subtree, TreeNode<T>* parent, int element);
-    TreeNode<T>* delete_node(TreeNode<T>* subtree);
-    TreeNode<T>* find_smallest(TreeNode<T>* subtree);
+    TreeNode<T>** find_smallest_ptr(TreeNode<T>* subtree);
 
 public:
     Tree();
     explicit Tree(const T &element);
-
-    TreeNode<T>* get_root() { return this->root; }
 
     void insert(const T& element);
     bool find(const T& element);
@@ -53,116 +45,87 @@ public:
 
 
 template<typename T>
-Tree<T>::Tree() {
-    size = 0;
-    root = nullptr;
-}
+Tree<T>::Tree() : root(nullptr) {}
 
-
-//template<typename T>
-//TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
-//        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
-
+#ifndef HASH_WORKAROUND
 template<typename T>
 TreeNode<T>::TreeNode(const T &element, const std::hash<T> &hash_fn)
         : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
-
+#else
+template<typename T>
+TreeNode<T>::TreeNode(const T &element, const std::function<int(T)> &hash_fn)
+        : element(element), hash(hash_fn(element)), right(nullptr), left(nullptr) {}
+#endif
 
 template<typename T>
-Tree<T>::Tree(const T &element) {
-    size = 0;
-    root = new TreeNode<T>(element, hash_fn);
-}
+Tree<T>::Tree(const T &element) : root(new TreeNode<T>(element, hash_fn)) {}
 
 
 template<typename T>
 void Tree<T>::insert(const T &element) {
-    if (root == nullptr) root = new TreeNode<T>(element, hash_fn);
-    else this->insert(root, element);
-}
-
-
-template<typename T>
-void Tree<T>::insert(TreeNode<T> *subtree, const T &element) {
-    int hash_diff = hash_fn(element) - subtree->hash;
-    if (hash_diff > 0) {
-        if (subtree->right != nullptr) insert(subtree->right, element);
-        else {
-            subtree->right = new TreeNode<T>(element, hash_fn);
-            size += 1;
-        }
+    if (root == nullptr) {
+        root = new TreeNode<T>(element, hash_fn);
         return;
     }
-    if (hash_diff < 0) {
-        if (subtree->left != nullptr) insert(subtree->left, element);
-        else {
-            subtree->left = new TreeNode<T>(element, hash_fn);
-            size += 1;
+    TreeNode<T>* subtree_root = root;
+    TreeNode<T>** insert_cand = nullptr;
+    int element_hash = hash_fn(element);
+    while (element_hash != subtree_root->hash) {
+        if (element_hash > subtree_root->hash) {
+            insert_cand = &subtree_root->right;
+            if (subtree_root->right == nullptr) break;
+            else subtree_root = subtree_root->right;
+        } else {
+            insert_cand = &subtree_root->left;
+            if (subtree_root->left == nullptr) break;
+            else subtree_root = subtree_root->left;
         }
-        return;
     }
+    *insert_cand = new TreeNode<T>(element, hash_fn);
 }
 
 
 template<typename T>
 bool Tree<T>::find(const T &element) {
-    return find(root, element);
-}
-
-
-template<typename T>
-bool Tree<T>::find(TreeNode<T> *subtree, const T &element) {
-    if (subtree == nullptr) return false;  // Дошли до конца, элемент не найден
-
-    int hash_diff = hash_fn(element) - subtree->hash;
-    if (hash_diff == 0) return true;
-    if (hash_diff > 0) return find(subtree->right, element);
-    return find(subtree->left, element);  // if (hash_diff < 0)
+    TreeNode<T>* subtree_root = root;
+    while (subtree_root != nullptr) {
+        int hash_diff = hash_fn(element) - subtree_root->hash;
+        if (hash_diff == 0) return true;
+        subtree_root = (hash_diff > 0) ? subtree_root->right : subtree_root->left;
+    }
+    return false;
 }
 
 
 template<typename T>
 void Tree<T>::remove(const T &element) {
-    this->find_remove_cand(root, nullptr, hash_fn(element));
+    TreeNode<T>** parent_ptr = &root;
+    int element_hash = hash_fn(element);
+    while (*parent_ptr != nullptr) {
+        if (element_hash == (*parent_ptr)->hash) break;
+        parent_ptr = (element_hash > (*parent_ptr)->hash) ? &((*parent_ptr)->right) : &((*parent_ptr)->left);
+    }
+    if (*parent_ptr == nullptr) return;
+    TreeNode<T>* remove_cand = *parent_ptr;
+
+    if (remove_cand == nullptr) return;
+    if (remove_cand->right == nullptr) { *parent_ptr = remove_cand->left; return; }
+    if (remove_cand->left == nullptr) { *parent_ptr = remove_cand->right; return; }
+
+    TreeNode<T>** smallest_ptr = find_smallest_ptr(remove_cand->right);
+    *parent_ptr = *smallest_ptr;
+    (*parent_ptr)->left = remove_cand->left;
+    *smallest_ptr = (*parent_ptr)->right;
+    (*parent_ptr)->right = remove_cand->right;
+    delete remove_cand;
 }
 
 
 template<typename T>
-void Tree<T>::find_remove_cand(TreeNode<T> *subtree, TreeNode<T>* parent, int element) {
-    if (subtree->right == nullptr && subtree->left == nullptr) return; // Дошли до конца дерева, элемент не найден
-
-    if (element - subtree->hash > 0) {
-        if (subtree->right->hash == element) subtree->right = delete_node(subtree->right);
-        else find_remove_cand(subtree->right, subtree, element);
-    }
-    else {
-        if (subtree->left->hash == element) subtree->left = delete_node(subtree->left);
-        else find_remove_cand(subtree->left, subtree, element);
-    }
-}
-
-
-template<typename T>
-TreeNode<T> *Tree<T>::delete_node(TreeNode<T> *subtree) {
-    if (subtree->right == nullptr && subtree->left == nullptr) return nullptr;
-    if (subtree->right == nullptr) return subtree->left;
-    if (subtree->left == nullptr) return subtree->right;
-
-    TreeNode<T>* min_right_node = find_smallest(subtree->right);
-    subtree->element = min_right_node->element;
-    subtree->hash = min_right_node->hash;
-    find_remove_cand(subtree->right, subtree, min_right_node->hash);
-    return subtree;
-}
-
-
-template<typename T>
-TreeNode<T>* Tree<T>::find_smallest(TreeNode<T> *subtree) {
-    if (subtree->left != nullptr) return find_smallest(subtree->left);
-    else {
-        subtree->left = nullptr;
-        return subtree;
-    }
+TreeNode<T>** Tree<T>::find_smallest_ptr(TreeNode<T> *subtree) {
+    TreeNode<T>** smallest = &subtree;
+    while ((*smallest)->left != nullptr) smallest = &((*smallest)->left);
+    return smallest;
 }
 
 

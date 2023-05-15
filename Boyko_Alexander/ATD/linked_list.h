@@ -31,7 +31,8 @@ public:
 	Type pop_tail();
 	Node<Type>* get_head();
 	Node<Type>* get_tail();
-	Node<Type>* get(unsigned int ind);
+	Node<Type>* get_in_order(unsigned int ind);
+	Node<Type>* find(Type find_data);
 };
 
 
@@ -155,21 +156,32 @@ Node<Type> *LinkedList<Type>::get_tail() {
 }
 
 template<class Type>
-Node<Type> *LinkedList<Type>::get(unsigned int ind) {
-	auto NeedNode = head;
-	for(int i = 0; i < ind; i++){
-		if(NeedNode != NULL){
-			NeedNode = NeedNode->next;
+Node<Type> *LinkedList<Type>::get_in_order(unsigned int ind) {
+	auto need_node = head;
+	for(unsigned int i = 0; i < ind; i++){
+		if(need_node != NULL){
+			need_node = need_node->next;
 		}
 		else{
 			std::cout << "Out of bounds!";
-			NeedNode = &empty<Type>;
-			return NeedNode;
+			need_node = &empty<Type>;
+			return need_node;
 		}
 	}
-	return NeedNode;
+	return need_node;
 }
 
+template<class Type>
+Node<Type>* LinkedList<Type>::find(Type find_data) {
+	Node<Type>* tail = head;
+	if(tail != nullptr) {
+		if(tail->data == find_data){
+			return tail;
+		}
+		tail = tail->next;
+	}
+	return nullptr;
+}
 
 
 #endif //ATD_LINKED_LIST_H

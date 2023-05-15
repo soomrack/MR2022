@@ -1,3 +1,0 @@
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/build_server/CMakeFiles/MR2022.dir
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/build_server/CMakeFiles/edit_cache.dir
-C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/build_server/CMakeFiles/rebuild_cache.dir

@@ -1,540 +1,507 @@
 #include <iostream>
-using namespace std;
+#include <stack>
 
-struct Node {  // узел
-    int data;  // хранит ключ - число
-    Node *parent;  // родитель
-    Node *left;  // левый ребенок
-    Node *right;  // правый ребенок
-    int color;  // цвет красный (1) чёрный (0)
+struct Node {
+    int data;
+    int key;
+    int color;
+    Node *left;
+    Node *right;
 };
 
 typedef Node *NodePtr;
+typedef NodePtr *NodePtrPtr;
+
+class Exception {
+    int kod_mistake;
+public:
+    Exception(int kod);
+};
 
 
-class RedBlackTree {
-private:
-    NodePtr root; // корень
-    NodePtr TNULL; // лист
+Exception::Exception(int kod) {
+    kod_mistake = kod;
+}
 
-    RedBlackTree(NodePtr node, NodePtr parent);
-
-    void preOrderHelper(NodePtr node);  // выведет от корня до листьев
-    void inOrderHelper(NodePtr node); //сначала все левые, потом все правые ( в порядке возрастания получится)
-    void postOrderHelper(NodePtr node); // выведет от листа до корня
+Exception stack_full = 1;
+Exception stack_empty = 2;
 
 
-    NodePtr searchTreeHelper(NodePtr node, int key); // ищет заданный узел
-    void deleteFix(NodePtr x); // балансировка после удаления ( свойство глубины )
-    void rbTransplant(NodePtr u, NodePtr v); // доп. для удаления, спасает правого/левого ребенка удаляемого родителя
-    void deleteNodeHelper(NodePtr node, int key);  //удаление узла
-    void insertFix(NodePtr k); // балансировка после вставки ( свойство цвета )
-    void printHelper(NodePtr root, string indent, bool last); // вывод
-    void printSearch( NodePtr node);
+class Stack {
+    NodePtrPtr *stack;
+    int sp;  //stack point
+    int capacity; // размер стека
+public:
+    Stack();
+    ~Stack();
+    void push(NodePtrPtr);
+    void pop();
+    NodePtrPtr peek();  // посмотреть самый верхний элемент ( без извлечения )
+    inline bool isEmpty();
+    inline bool isFull();
+    void print();
+    void clear();
+};
 
+Stack::Stack(){
+    capacity = 10;
+    stack = new NodePtrPtr[capacity];
+    sp = -1;
+}
+
+Stack::~Stack() {
+    delete[] stack;
+}
+
+
+void Stack::push(NodePtrPtr item) {
+    if (isFull()) throw stack_full;
+    stack[++sp] = item;
+}
+
+
+void Stack::pop() {
+    if (isEmpty()) throw stack_empty;
+    sp--;
+}
+
+
+NodePtrPtr Stack::peek() {
+    if (!isEmpty()) {
+        return stack[sp];
+    }
+    else {
+        throw stack_empty;
+    }
+}
+
+
+inline bool Stack::isEmpty() {
+    return sp == -1;
+}
+
+
+inline bool Stack::isFull() {
+    return sp == capacity - 1;
+}
+
+
+void Stack::print() {
+    for (int number = sp; number >= 0; number--){
+        std::cout << (*(stack[number]))->data<< " ";
+    }
+    std::cout <<  " \n";
+}
+
+
+void Stack::clear(){
+    while (isEmpty() != true){
+        pop();
+    }
+}
+
+
+class RedBlackTree{
 public:
     RedBlackTree();
+    bool search(int data) ;
+    void del(int data);
+    void print();
+    void insert(int data);
 
-    void preOrder();
-    void inOrder();
-    void postOrder();
-
-    NodePtr searchTree(int k) ;
-    NodePtr minimum(NodePtr node); // нужно для одного случая удаления
-    NodePtr maximum(NodePtr node);
-    NodePtr successor(NodePtr x);  // преемник
-    NodePtr predecessor(NodePtr x);  // предшественник
-
-    void leftRotate(NodePtr x);  // левое вращение
-    void rightRotate(NodePtr x);  // правое вращение
-    void insert(int key);  // вставка узла
-    NodePtr getRoot();  // отдаст корень
-    void deleteNode(int data);  // удаление узла
-    void printTree();
+private:
+    NodePtr root;
+    NodePtr TNULL;
+    int hash ();
+    int count;  // для hash функции
+    Stack stack_parent_ptr;
+    NodePtr search(NodePtr node, int data);
+    void print(NodePtr root, std::string indent, bool last);
+    void del(NodePtr node, int data);
+    void insert_fix (NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) ;
+    void right_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr);
+    void left_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr);
+    NodePtrPtr min(NodePtrPtr node);  // node =! TNULL
+    NodePtrPtr parent_min(NodePtrPtr  node);  // node =! TNULL
+    void del_fix(NodePtr node_to_del, int data);
 };
 
 
 RedBlackTree:: RedBlackTree(){
     TNULL = new Node;
-    TNULL->color = 0;
     TNULL->left = nullptr;
     TNULL->right = nullptr;
     root = TNULL;
+    TNULL->color = 0;
+    TNULL->key = 0;
+    count = -1;
 }
 
 
-RedBlackTree:: RedBlackTree(NodePtr node, NodePtr parent) {
-    node->data = 0;
-    node->parent = parent;
-    node->left = nullptr;
-    node->right = nullptr;
-    node->color = 0;
+int RedBlackTree:: hash (){
+    count ++;
+    return count + 1;
 }
 
 
-void RedBlackTree::preOrderHelper(NodePtr node) {
-    if (node != TNULL) {
-        cout << node->data << " ";
-        preOrderHelper(node->left);
-        preOrderHelper(node->right);
-    }
-}
-
-
-void RedBlackTree::inOrderHelper(NodePtr node) {
-    if (node != TNULL) {
-        inOrderHelper(node->left);
-        cout << node->data << " ";
-        inOrderHelper(node->right);
-    }
-}
-
-
-void RedBlackTree::postOrderHelper(NodePtr node) {
-    if (node != TNULL) {
-        postOrderHelper(node->left);
-        postOrderHelper(node->right);
-        cout << node->data << " ";
-    }
-}
-
-
-
-void RedBlackTree::printSearch(NodePtr node) {
-    if (node == root) {
-        cout << endl << "Element - > root = " << node->data << endl;
-        return;
-    }
-    cout  << endl <<"Element = " << node-> data << endl;
-    cout  <<"     Node"  << endl;
-    cout  <<"      " << node-> parent->data << endl;
-    cout  <<"    |    |    " <<  endl;
-    cout  <<"    " << node-> parent->left->data <<"   ";
-    cout  << node-> parent->right->data << endl;
-}
-
-
-NodePtr RedBlackTree:: searchTreeHelper(NodePtr node, int key) {
-    if (node == TNULL || key == node->data) {
-        if (key != node->data ){
-            cout << "Node not found  " << key <<endl;
-            return node;
-        }
-        printSearch(node);
-        return node;
-    }
-    if (key < node->data) {
-        return searchTreeHelper(node->left, key);
-    }
-    return searchTreeHelper(node->right, key);
-}
-
-
-
-void RedBlackTree:: deleteFix(NodePtr x) {
-    NodePtr s;
-    // пока х не станет корнем и цвет черным ( корень всегда черный)
-    while (x != root && x->color == 0) {
-
-        if (x == x->parent->left) {  // если Х это левый ребенок
-            s = x->parent->right; // тогда s - правый ребенок  - брат
-
-            //случай когда Брат Красный, тогда Брат --> черный, отец красный и левый поворот.
-            if (s->color == 1) {
-                s->color = 0;
-                x->parent->color = 1;
-                leftRotate(x->parent);
-                s = x->parent->right;
-            }
-
-            //Брат черный ( после ифа/ был)
-
-            //Случай: оба ребенка брата Черные ( племянники) -->
-            // Брат красный, отец - черный
-            if (s->left->color == 0 && s->right->color == 0) {
-                s->color = 1;
-                x = x->parent;
-            } else {  //СЛУЧАИ:  ПРАВЫЙ/ ЛЕВЫЙ/ ОБА ПЛЕМЯННИКИ КРАСНЫЕ
-
-                //
-                // Правый племянник - черный ( значит Левый красный) -->
-                // Левый племянник в черный, брат в красный, правый поворот
-                if (s->right->color == 0) {
-                    s->left->color = 0;
-                    s->color = 1;
-                    rightRotate(s);
-                    s = x->parent->right;
-                }
-
-                // Случай
-                // После поворота появится брат с Правым красным ребенком ( либо был/либо после ифа)
-                // Брат в цвет отца, правый племянник и отец в черный и левый поворот
-                s->color = x->parent->color;
-                x->parent->color = 0;
-                s->right->color = 0;
-                leftRotate(x->parent);
-                x = root;
-            }
-
-        } else {  // Если Х - правый ребенок
-            // Все аналогично
-            s = x->parent->left;
-            if (s->color == 1) {
-                s->color = 0;
-                x->parent->color = 1;
-                rightRotate(x->parent);
-                s = x->parent->left;
-            }
-            if (s->right->color == 0 && s->left->color == 0) {
-                s->color = 1;
-                x = x->parent;
+void RedBlackTree::insert_fix(NodePtrPtr parent_node_ptr,NodePtrPtr node_ptr  ) {
+    NodePtr count = (*parent_node_ptr);
+    while (count->color == 1) {
+        stack_parent_ptr.pop();
+        if ((*stack_parent_ptr.peek())->left == *parent_node_ptr) {
+            //  MY PARENT IS LEFT
+            if ((*stack_parent_ptr.peek())->right->color == 1) {
+                //  MY UNCLE IS RED
+                //             G(B)                         G(R)
+                //            /    \                       /   \
+                //          P(R)    U(R)      ->         P(B)  U(B)
+                //          |                             |
+                //         X(R)                          X(R)
+                (*stack_parent_ptr.peek())->color = 1;
+                (*stack_parent_ptr.peek())->right->color = 0;
+                (*parent_node_ptr)->color = 0;
+                if ((*stack_parent_ptr.peek()) != root) stack_parent_ptr.pop();
             } else {
-                if (s->left->color == 0) {
-                    s->right->color = 0;
-                    s->color = 1;
-                    leftRotate(s);
-                    s = x->parent->left;
+                //  MY UNCLE IS BLACK
+                if ((*parent_node_ptr)->right == *node_ptr) {
+                    //             G(B)                         G(B)
+                    //            /    \                       /   \
+                    //          P(R)    U(B)      ->         X(R)  G(R)
+                    //             \                         /
+                    //            X(R)                     P(R)
+                    left_rotate(node_ptr, node_ptr, parent_node_ptr);
                 }
-                s->color = x->parent->color;
-                x->parent->color = 0;
-                s->left->color = 0;
-                rightRotate(x->parent);
-                x = root;
+                //             G(B)                         P(B)
+                //            /    \                       /   \
+                //          P(R)    U(B)      ->         X(R)  G(R)
+                //         /                                     \
+                //        X(R)                                    X(B)
+                (*stack_parent_ptr.peek())->color = 1;
+                (*parent_node_ptr)->color = 0;
+                right_rotate(node_ptr, parent_node_ptr, stack_parent_ptr.peek());
+                break;
             }
-        }
-    }
-    x->color = 0; // корень всегда чёрный
-}
-
-
-void RedBlackTree:: rbTransplant(NodePtr u, NodePtr v) {
-    if (u->parent == nullptr) {
-        root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    v->parent = u->parent;
-}
-
-
-void RedBlackTree::deleteNodeHelper(NodePtr node, int key) {
-    NodePtr z = TNULL; // создает лист
-    NodePtr x, y;  // два узла
-
-    //Пока не дойдем до листа
-    while (node != TNULL) {
-        if (node->data == key) { // сохраняем удаляемый узел
-            z = node;
-        }
-        if (node->data <= key) {
-            node = node->right;
         } else {
-            node = node->left;
-        }
-    }
-
-    if (z == TNULL) {
-        cout << "Key not found in the tree" << endl;
-        return;
-    }
-
-    y = z;
-    int y_original_color = y->color;
-    //СЛУЧАЙ: Когда левый ребенок равен нулю
-    //Ребенок встает на место удаляемого отца
-    if (z->left == TNULL) {
-        x = z->right;
-        rbTransplant(z, z->right);
-
-        //СЛУЧАЙ: Когда правый ребенок равен нулю
-        //Ребенок встает на место удаляемого отца
-    } else if (z->right == TNULL) {
-        x = z->left;
-        rbTransplant(z, z->left);
-
-        //СЛУЧАЙ: Оба ребенка НЕ равны нулю
-        // ищем самый левый элемент в правом поддереве, удаляем его и вставляем его на место удаляемого
-    } else {
-        y = minimum(z->right); // ищем самый левый элемент в правом поддереве
-        y_original_color = y->color;
-        x = y->right;
-        if (y->parent == z) {
-            x->parent = y;
-        } else {
-            rbTransplant(y, y->right);
-            y->right = z->right;
-            y->right->parent = y;
-        }
-        rbTransplant(z, y);
-        y->left = z->left;
-        y->left->parent = y;
-        y->color = z->color;
-    }
-    //СЛУЧАЙ: Если нет детей - просто удаляем
-    delete z;
-    if (y_original_color == 0) { // если цвет удаляемого элемента - черный, проверяем свойство глубины
-        deleteFix(x);
-    }
-}
-
-
-void RedBlackTree:: insertFix(NodePtr k) {
-    NodePtr u;
-
-    //СЛУЧАЙ: Родитель был красный --> стало два красных подряд
-    while (k->parent->color == 1) {
-
-        //  СЛУЧАЙ 1: Если родитель нового узла Правый ребенок
-        if (k->parent == k->parent->parent->right) {
-            u = k->parent->parent->left;
-            //Если он красный
-            if (u->color == 1) {
-                u->color = 0;
-                k->parent->color = 0;
-                k->parent->parent->color = 1;
-                k = k->parent->parent;
-            } else {  //Если он черный
-                if (k == k->parent->left) {
-                    k = k->parent;
-                    rightRotate(k);
-                }
-                k->parent->color = 0;
-                k->parent->parent->color = 1;
-                leftRotate(k->parent->parent);
-            }
-
-            // СЛУЧАЙ 2: Если родитель нового узла Левый ребенок
-        } else {
-            u = k->parent->parent->right;
-
-            if (u->color == 1) {
-                u->color = 0;
-                k->parent->color = 0;
-                k->parent->parent->color = 1;
-                k = k->parent->parent;
+            //  MY PARENT IS RIGHT
+            if ((*stack_parent_ptr.peek())->left->color == 1) {
+                //  MY UNCLE IS RED
+                //             G(B)                         G(R)
+                //            /    \                       /   \
+                //          U(R)    P(R)      ->         P(B)  U(B)
+                //                   |                            |
+                //                  X(R)                         X(R)
+                (*stack_parent_ptr.peek())->color = 1;
+                (*stack_parent_ptr.peek())->left->color = 0;
+                (*parent_node_ptr)->color = 0;
+                if ((*stack_parent_ptr.peek()) != root) stack_parent_ptr.pop();
             } else {
-                if (k == k->parent->right) {
-                    k = k->parent;
-                    leftRotate(k);
+                //  MY UNKLE IS BLACK
+                if ((*parent_node_ptr)->left == *node_ptr) {
+                    //             G(B)                         G(R)
+                    //            /    \                       /   \
+                    //          U(R)    P(R)      ->         P(B)   X(B)
+                    //                   /                            \
+                    //                 X(R)                          U(R)
+                    right_rotate(node_ptr, node_ptr, parent_node_ptr);
                 }
-                k->parent->color = 0;
-                k->parent->parent->color = 1;
-                rightRotate(k->parent->parent);
+                //             G(B)                         P(B)
+                //            /    \                       /   \
+                //          U(R)    P(R)      ->         G(R)   X(R)
+                //                   \                   /
+                //                   X(R)              U(B)
+                (*stack_parent_ptr.peek())->color = 1;
+                (*parent_node_ptr)->color = 0;
+                left_rotate(node_ptr, parent_node_ptr, stack_parent_ptr.peek());
+                break;
             }
         }
-
-        //СЛУЧАЙ 3: Дерева не было
-        if (k == root) {
-            break;
-        }
+        root->color = 0;
+        node_ptr = parent_node_ptr;
+        parent_node_ptr = stack_parent_ptr.peek();
+        count = *stack_parent_ptr.peek();
     }
-    root->color = 0;  // Корень всегда черный
-}
-
-
-void RedBlackTree:: printHelper(NodePtr root, string indent, bool last) {
-    if (root != TNULL) {
-        cout << indent;
-        if (last) {
-            cout << "R----";
-            indent += "   ";
-        } else {
-            cout << "L----";
-            indent += "|  ";
-        }
-
-        string sColor = root->color ? "RED" : "BLACK";
-        cout << root->data << "(" << sColor << ")" << endl;
-        printHelper(root->left, indent, false);
-        printHelper(root->right, indent, true);
-    }
-}
-
-
-void RedBlackTree:: preOrder() {
-    preOrderHelper(this->root);
-}
-
-void RedBlackTree:: inOrder() {
-    inOrderHelper(this->root);
-}
-
-void RedBlackTree:: postOrder() {
-    postOrderHelper(this->root);
-}
-
-NodePtr RedBlackTree:: searchTree(int k) {
-    return searchTreeHelper(this->root, k);
-}
-
-NodePtr RedBlackTree:: minimum(NodePtr node) { // помогает при удалении, отдает последний левый узел
-    while (node->left != TNULL) {
-        node = node->left;
-    }
-
-    return node;
-}
-
-NodePtr RedBlackTree:: maximum(NodePtr node) {
-    while (node->right != TNULL) {
-        node = node->right;
-    }
-    return node;
-}
-
-NodePtr RedBlackTree:: successor(NodePtr x) {
-    if (x->right != TNULL) {
-        return minimum(x->right);
-    }
-
-    NodePtr y = x->parent;
-    while (y != TNULL && x == y->right) {
-        x = y;
-        y = y->parent;
-    }
-    return y;
-}
-
-NodePtr RedBlackTree:: predecessor(NodePtr x) {
-    if (x->left != TNULL) {
-        return maximum(x->left);
-    }
-
-    NodePtr y = x->parent;
-    while (y != TNULL && x == y->left) {
-        x = y;
-        y = y->parent;
-    }
-
-    return y;
-}
-
-void RedBlackTree:: leftRotate(NodePtr x) { // левое вращение
-    NodePtr y = x->right; // равен сыну
-    x->right = y->left;  // брат равен левому ребенку сына
-    if (y->left != TNULL) { // если левого ребенка сына нет
-        y->left->parent = x; //х занимает место сына
-    }
-    y->parent = x->parent; // дед становится на место отца
-    if (x->parent == nullptr) { // если деда нет
-        this->root = y; // сын ставится в корень
-    } else if (x == x->parent->left) { // если дед есть -- если х = дяди
-        x->parent->left = y;  // дядя становится У (равен сыну)
-    } else {
-        x->parent->right = y;
-    }
-    y->left = x;
-    x->parent = y;
-}
-
-void RedBlackTree:: rightRotate(NodePtr x) {  // правое вращение
-    NodePtr y = x->left;
-    x->left = y->right;
-    if (y->right != TNULL) {
-        y->right->parent = x;
-    }
-    y->parent = x->parent;
-    if (x->parent == nullptr) {
-        this->root = y;
-    } else if (x == x->parent->right) {
-        x->parent->right = y;
-    } else {
-        x->parent->left = y;
-    }
-    y->right = x;
-    x->parent = y;
 }
 
 
 void RedBlackTree:: insert(int key) {
-    NodePtr node = new Node;  // создаём новый узел, у него всё ноль, цвет красный
-    node->parent = nullptr;
+    NodePtr node = new Node;
     node->data = key;
     node->left = TNULL;
     node->right = TNULL;
     node->color = 1;
-
-    NodePtr y = nullptr;
-    NodePtr x = this->root;  // пусть х - корень
-
-    while (x != TNULL) {  // пока х не доберется до листа
-        y = x;  // сохранит последний не нулевой лист
-        if (node->data <  x->data) {  // если узел дерева меньше нового узла с Х
-            x = x->left;  // кладем х влево
+    node->key = hash();
+    NodePtrPtr parent_new_node_ptr = &(this->root);
+    if (root == TNULL){
+        root = node;
+        root->color = 0;
+        return;
+    }
+    do {
+        stack_parent_ptr.push(&(*parent_new_node_ptr));
+        if (((*parent_new_node_ptr)->data > key)){
+            if( (*parent_new_node_ptr)->left == TNULL) break;
+            parent_new_node_ptr = &((*parent_new_node_ptr)->left);
         } else {
-            x = x->right; // иначе кладем вправо
+            if( (*parent_new_node_ptr)->right == TNULL) break;
+            parent_new_node_ptr = &((*parent_new_node_ptr)->right);
+        }
+    } while ((*parent_new_node_ptr) != TNULL );
+    ((*parent_new_node_ptr)->data > key) ? &((*parent_new_node_ptr)->left = node) :
+    &((*parent_new_node_ptr)->right = node);
+    NodePtrPtr  new_node_ptr = &node;
+    insert_fix(parent_new_node_ptr, new_node_ptr);
+    stack_parent_ptr.clear();
+    return;
+}
+
+
+void RedBlackTree:: right_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr){
+    NodePtrPtr child = node_ptr; //сохраним ссылки для рекурсии
+    if (*parent_parent_node_ptr == nullptr){
+        const NodePtr buffer = (*node_ptr)->right; // =b
+        root = (*node_ptr); // x=y -> y is root
+        root->right = (*parent_node_ptr);
+        (*parent_node_ptr)->left = buffer;
+        return;
+    }
+    const NodePtr buffer = (*parent_node_ptr)->right; // = c
+    const NodePtr ded = (*parent_parent_node_ptr); // = x
+    (*parent_parent_node_ptr) = *parent_node_ptr; // x= y
+    (*parent_parent_node_ptr)->right = ded;
+    ded->left= buffer;
+}
+
+
+void RedBlackTree:: left_rotate (NodePtrPtr node_ptr, NodePtrPtr parent_node_ptr, NodePtrPtr parent_parent_node_ptr) {
+    NodePtrPtr child = node_ptr;
+    if ((*parent_parent_node_ptr) == nullptr){
+        const NodePtr buffer = (*node_ptr)->left; // = a
+        this->root = *node_ptr; // x = y
+        root->left = *parent_node_ptr; // a = x
+        root->left->right = buffer; // +a
+        return;
+    }
+    const NodePtr buffer = (*parent_node_ptr)->left;
+    const NodePtr ded = (*parent_parent_node_ptr);
+    *parent_parent_node_ptr = *parent_node_ptr;
+    (*parent_parent_node_ptr)->left = ded;
+    ded->right = buffer;
+    parent_node_ptr = child;
+}
+
+
+NodePtrPtr RedBlackTree:: min(NodePtrPtr node) {
+    while ((*node)->left != TNULL){
+        node = &((*node)->left);
+    }
+    return node;
+}
+
+
+NodePtrPtr RedBlackTree:: parent_min(NodePtrPtr   node) {
+    while ((*node)->left->left != TNULL)
+        node = &((*node)->left);
+    return node;
+}
+
+
+void RedBlackTree:: del( int key) {
+    NodePtrPtr node_to_del_ptr = &(this->root);
+    while ((*node_to_del_ptr) != TNULL){
+        if ((*node_to_del_ptr)->data == key) break;
+        node_to_del_ptr = ((*node_to_del_ptr)->data > key) ? &((*node_to_del_ptr)->left) : &((*node_to_del_ptr)->right);
+    }
+    if ((*node_to_del_ptr) == TNULL) return;
+    int color_node_to_del = (*node_to_del_ptr)->color;
+    if ((*node_to_del_ptr)->right == TNULL) {
+        if ((*node_to_del_ptr)->left == TNULL){
+            (*node_to_del_ptr)->color = color_node_to_del;
+            *node_to_del_ptr = (*node_to_del_ptr)->left;
+            if(color_node_to_del == 0) del_fix( (*node_to_del_ptr),  key);
+            stack_parent_ptr.clear();
+            return;
+        }
+        (*node_to_del_ptr)->color = color_node_to_del;
+        *node_to_del_ptr = (*node_to_del_ptr)->left;
+        return;
+    }
+    if ((*node_to_del_ptr)->left == TNULL) {
+        *node_to_del_ptr = (*node_to_del_ptr)->right;
+        (*node_to_del_ptr)->color = color_node_to_del;
+        return;
+    }
+    if ((*node_to_del_ptr)->right->left == TNULL){  //ОСОБЫЙ СЛУЧАЙ
+        //          | ->A
+        //         N1
+        //    E<-/    \->B
+        //     N2      N3
+        //         R<-/   \
+        //         TNULL    N4
+        (*node_to_del_ptr)->right->left = (*node_to_del_ptr)->left; // R = E
+        (*node_to_del_ptr) = (*node_to_del_ptr)->right; //A = B
+        (*node_to_del_ptr)->color = color_node_to_del;
+        (*node_to_del_ptr)->color = color_node_to_del;
+        if(color_node_to_del == 0) del_fix( (*node_to_del_ptr),  key);
+        stack_parent_ptr.clear();
+        return;
+    }
+    NodePtrPtr minimum = (min(&((*node_to_del_ptr)->right)));
+    int color_minimum = (*minimum)->color;
+    int minimum_data = (*minimum)->data;
+    (*minimum)->right->color = color_minimum;
+    //          | ->A                                             A = R
+    //         N1                                                 D = E
+    //    E<-/    \->B                                            T = B
+    //     N2      N3                                             R = T
+    //         R<-/   \
+    //          MIN    N4
+    //      D <-/ \->T
+    //              N6
+    const NodePtr buffer = *node_to_del_ptr; // = A
+    const NodePtr buffer_min = (*minimum)->right; // = T
+    const NodePtrPtr parent_min_ptr = parent_min(&((*node_to_del_ptr)->right)); // = B
+    (*node_to_del_ptr) = *minimum; // A = R
+    (*minimum)->left = (buffer)->left; // D = E
+    (*minimum)->right = (buffer)->right; // T = B
+    (*parent_min_ptr)->left = buffer_min ; //R = T
+    (*node_to_del_ptr)->color = color_node_to_del;
+    if(color_node_to_del == 0) del_fix( (*parent_min_ptr)->left,  minimum_data);
+    stack_parent_ptr.clear();
+}
+
+
+void RedBlackTree::del_fix(NodePtr node_to_del, int key) {
+    NodePtrPtr  node = {&this->root};
+    while (*node != TNULL){
+        if (*node == node_to_del)break;
+        node = ((*node)->data > key) ? &((*node)->left) : &((*node)->right);
+        stack_parent_ptr.push(node);
+    }
+    if (*node != TNULL) stack_parent_ptr.push(node);
+    NodePtrPtr parent = node;
+    while ((*stack_parent_ptr.peek()) != root && (*stack_parent_ptr.peek())->color == 0){
+        if ((*stack_parent_ptr.peek()) == TNULL) stack_parent_ptr.pop();
+        if ( (*stack_parent_ptr.peek())->left == *parent){
+            // I AM LEFT
+            if ((*stack_parent_ptr.peek())->right->color == 1){
+                // MY BROTHER IS RED
+                //             G(B)                         P(B)
+                //            /    \                       /   \
+                //          P(B)    U(R)      ->         X(B)  G(R)
+                //          |                                    |
+                //         X(B)                                  U(B)
+                //#4
+                (*stack_parent_ptr.peek())->right->color = 0;
+                (*stack_parent_ptr.peek())->color = 1;
+                left_rotate(node, &((*stack_parent_ptr.peek())->left),stack_parent_ptr.peek());
+            }
+            if ((*stack_parent_ptr.peek())->right->right->color == 0 and  (*stack_parent_ptr.peek())->right->left->color == 0) {
+                //  BOTH NEPHEWS ARE BLACK
+                //             G(?)                         G(B)
+                //            /    \                       /   \
+                //          X(B)    U(R)      ->         X(B)   U(R)
+                //                  /  \                       /  \         |
+                //               n1(B) n2(B)                 n1(B) n2(B)
+                //#5
+                (*stack_parent_ptr.peek())->right->color = 1;
+                (*stack_parent_ptr.peek())->color = 0;
+                parent = stack_parent_ptr.peek();
+                stack_parent_ptr.pop();
+            } else {
+                if ( (*stack_parent_ptr.peek())->right->right->color == 0){
+                    //  RIGHT NEPHEWS is BLACK
+                    //             G(?)                         G(B)
+                    //            /    \                       /   \
+                    //          X(B)    U(B)      ->         X(B)   n1(B)
+                    //                  /  \                           \
+                    //               n1(R) n2(B)                       U(R)
+                    //                                                    \
+                    //                                                    n2(B)
+                    (*stack_parent_ptr.peek())->right->left->color = 0;
+                    (*stack_parent_ptr.peek())->right->color = 1;
+                    right_rotate(node,&((*stack_parent_ptr.peek())->right->right),&((*stack_parent_ptr.peek())->right) );
+                }
+                //  RIGHT NEPHEWS is RED
+                //             G(?)                         U(color-G)
+                //            /    \                       /   \
+                //          X(B)    U(B)      ->         G(B)   n2(B)
+                //                  /  \                 /  \
+                //               n1(?) n2(R)          X(B)  n2(B)
+                (*stack_parent_ptr.peek())->right->color =(*stack_parent_ptr.peek())->color;
+                (*stack_parent_ptr.peek())->right->right->color = 0;
+                (*stack_parent_ptr.peek())->color = 0;
+                left_rotate(node,&((*stack_parent_ptr.peek())->right),stack_parent_ptr.peek() );
+                return;
+            }
+        } if ( (*stack_parent_ptr.peek())->right== *parent) {
+            //  I AM RIGHT
+            if ((*stack_parent_ptr.peek())->left->color == 1){
+                //  MY BROTHER IS RED
+                (*stack_parent_ptr.peek())->left->color = 0;
+                (*stack_parent_ptr.peek())->color = 1;
+                right_rotate(node, &((*stack_parent_ptr.peek())->right),stack_parent_ptr.peek());
+            }
+            if((*stack_parent_ptr.peek())->left->left->color == 0 and (*stack_parent_ptr.peek())->left->right->color == 0 ){
+                //  BOTH NEPHEWS ARE BLACK
+                (*stack_parent_ptr.peek())->left->color = 1;
+                (*stack_parent_ptr.peek())->color = 0;
+                parent = stack_parent_ptr.peek();
+                stack_parent_ptr.pop();
+            } else {
+                if ((*stack_parent_ptr.peek())->left->left->color == 0) {
+                    //  LEFT NEPHEWS is BLACK
+                    (*stack_parent_ptr.peek())->left->right->color = 0;
+                    (*stack_parent_ptr.peek())->left->color = 1;
+                    left_rotate(node, &((*stack_parent_ptr.peek())->right->right), &((*stack_parent_ptr.peek())->right));
+                }
+                //  LEFT NEPHEWS is RED
+                (*stack_parent_ptr.peek())->left->color = (*stack_parent_ptr.peek())->color;
+                (*stack_parent_ptr.peek())->color = 0;
+                (*stack_parent_ptr.peek())->left->left->color = 0;
+                right_rotate(node, &((*stack_parent_ptr.peek())->left), stack_parent_ptr.peek());
+                break;
+            }
         }
     }
-
-    node->parent = y;   // так как У это последний ненулевой лист, то делаем его родителем для нового узла
-    if (y == nullptr) {
-        root = node;   // если дерева не существовало - то Х становится корнем
-    } else if (node->data <  y->data) {   // дерево было, сравниваем если узел больше У ( родителя)
-        y->left = node;  // кладем влево
-    } else {
-        y->right = node;
-    }
-
-    if (node->parent == nullptr) { // если  дерева не было, то корень окрашеваем обязательно в черный
-        node->color = 0;
-        return;
-    }
-
-    if (node->parent->parent == nullptr) {
-        return;
-    }
-
-    insertFix(node);  // проверяем балансировку дерева после вставки
 }
 
 
-NodePtr RedBlackTree:: getRoot() {
-    return this->root;
+bool RedBlackTree::search(int data_) {
+    NodePtr root_help = this->root;
+    while (root_help != TNULL){
+        if (root_help->data == data_) return true;
+        root_help = (root_help->data > data_) ? root_help->left : root_help->right;
+    }
+    return false;
 }
 
-void RedBlackTree:: deleteNode(int data) {  // удаление узла, публичное
-    deleteNodeHelper(this->root, data);
+
+void RedBlackTree:: print(NodePtr root, std::string indent, bool last) {
+    if (root != TNULL) {
+        std::cout << indent;
+        if (last) {
+            std::cout << "R----";
+            indent += "   ";
+        } else {
+            std::cout << "L----";
+            indent += "|  ";
+        }
+        std::string sColor = root->color ? "RED" : "BLACK";
+        std::cout << root->data << "(" << sColor << ")" << "\n";
+        print(root->left, indent, false);
+        print(root->right, indent, true);
+    }
 }
 
-void RedBlackTree:: printTree() {
+
+void RedBlackTree:: print() {
     if (root) {
-        printHelper(this->root, "", true);
+        print(this->root, "", true);
     }
 }
-
 
 
 int main() {
-    RedBlackTree bst;
-    NodePtr  search;
-    bst.insert(55);
-    bst.insert(40);
-    bst.insert(65);
-    bst.insert(60);
-    bst.insert(75);
-    bst.insert(56);
-    bst.insert(5);
-    bst.insert(555);
-    bst.insert(70);
-    bst.insert(57);
-    bst.insert(61);
-
-    bst.printTree();
-
-    cout << endl << "After deleting" << endl;
-    bst.deleteNode(55);
-    bst.printTree();
-
-
-    cout << endl << "After search" << endl;
-    search = bst.searchTree(56);
-
-    cout << endl;
-    bst.inOrder();
-    cout << endl;
-
     return 0;
 }
 

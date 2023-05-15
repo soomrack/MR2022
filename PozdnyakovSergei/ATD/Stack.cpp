@@ -1,9 +1,11 @@
 #include <iostream>
 
+
 class Stack{
     int *array;
     int stp;
     int capacity;
+
 public:
     Stack (int size);  // Конструктор
     ~Stack();  // Деструктор

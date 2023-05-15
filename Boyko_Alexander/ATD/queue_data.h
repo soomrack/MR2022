@@ -31,7 +31,7 @@ int Queue::size() {
 }
 
 Node<Type> *Queue::get(unsigned int ind) {
-	return QueueList.get(ind);
+	return QueueList.get_in_order(ind);
 }
 
 #endif //ATD_QUEUE_DATA_H

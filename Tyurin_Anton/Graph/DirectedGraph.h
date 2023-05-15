@@ -9,7 +9,7 @@ class Graph {
 public:
     void addNode(int data);
 
-    static int noDestination(GraphNode *dest);
+    static bool noDestination(GraphNode *dest);
 
     static void addEdge(GraphNode *loc, GraphNode *dest);
 
@@ -19,9 +19,9 @@ public:
 
     void deleteNode(int data);
 
-    //void deleteEdge(GraphNode *loc, GraphNode *dest);
+    void deleteEdge(GraphNode *loc, GraphNode *dest);
 
-    //void deleteEdge(int loc_data, int dest_data);
+    void deleteEdge(int loc_data, int dest_data);
 
     List<GraphNode *> node_list;
 };
