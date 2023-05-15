@@ -4,7 +4,7 @@
 #define MR2022_GRAPH_2_H
 #include <iostream>
 #include "../Dynamic_array/Dynamic_array.h"
-//TODO Добавить класс исключений, если захочется.
+
 template <typename T>
 class GraphNode
 {
