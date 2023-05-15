@@ -13,6 +13,8 @@ public:
 
 public:
     void add_edge (Node* neighbour) {edges.push_back(neighbour);};
+    void delete_edge (Node* neighbour) {edges.pop_back();};
+
 };
 
 
@@ -33,8 +35,9 @@ void Graph::add_node(int value) {
     nodes.push_back(Node(value));
 }
 
-
-
+void Graph::delete_node() {
+    nodes.pop_back();
+}
 
 int main() {
     Graph graph;
