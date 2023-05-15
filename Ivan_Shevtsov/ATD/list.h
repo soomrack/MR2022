@@ -4,27 +4,29 @@
 
 namespace list_names {
     /**
-     * @brief myList
+     * @brief myList container
      *
-     * use try/catch for work with it
+     * use try/catch for work with list
+     *
+     * @method void List::delete_after(Node<T>* after_this)  -  only works when template T is a pointer
+     *
+     * @class ListException has these exceptions(objects):
+     *
+     * @objects ListException ZERO_SIZE("zero size error");
+     * @objects ListException SHOW_ERROR("can`t show zero size list");
+     * @objects ListException DELL_AFTER_OUT_OF_THE_RANGE("index out of the range(delete operation)");
+     * @objects ListException DELL_AFTER_LAST("can`t delete after last element");
+     * @objects ListException POP_ERROR("can`t pop from empty list");
+     * @objects ListException INSERT_AFTER_OUT_OF_THE_RANGE("index out of the range(insert operation)");
+     * @objects ListException INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element. "
+     *                                 "List was created and data pushed");
      */
 
     // EXCEPTIONS
-    class list_exceptions: public std::domain_error{
+    class ListException: public std::domain_error{
     public:
-        list_exceptions(const char* massage): std::domain_error(massage){}
+        ListException(const char* massage): std::domain_error(massage){}
     };
-
-/*    list_exceptions ZERO_SIZE("zero size error");
-    list_exceptions OUT_OF_THE_RANGE("index out of the range(operator [])");
-    list_exceptions SHOW_ERROR("can`t show zero size list");
-    list_exceptions DELL_AFTER_OUT_OF_THE_RANGE("index out of the range(delete operation)");
-    list_exceptions DELL_AFTER_LAST("can`t delete after last element");
-    list_exceptions POP_ERROR("can`t pop from empty list");
-    list_exceptions INSERT_AFTER_OUT_OF_THE_RANGE("index out of the range(insert operation)");
-    list_exceptions INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element. "
-                                   "List was created and data pushed");*/
-
 
     // NODE
     template<typename T>
@@ -41,7 +43,6 @@ namespace list_names {
         bool operator==(Node<T> const& other) const {return data == other.data;}
     };
 
-
     // LIST
     template<typename T>
     class list {
@@ -53,7 +54,6 @@ namespace list_names {
         list(const list &other);
         list& operator=(list & other) = delete;
         ~list();
-
     public:
         template<class p_node>
         class ListIterator{
@@ -96,7 +96,7 @@ namespace list_names {
         void insert_after(T data, unsigned element_number);  // element number starting from 0
         void delete_after(unsigned element_number);
         void delete_after(Node<T>* after_this);
-        bool find_and_delete(T data);  // work only if T is pointer Q:
+        bool find_and_delete(T data);
         void push(T data);
         void pop();
 
@@ -119,7 +119,9 @@ namespace list_names {
     bool list<T>::find_and_delete(T data) {
         /**
          * @return true if node was find and deleted, else false
+         * @brief  method only works when template T is a pointer
          */
+         // TODO: check data is a pointer
 
         if (head == nullptr) {
             return false;}
@@ -192,8 +194,8 @@ namespace list_names {
     template<typename T>
     void list<T>::show() {
         if (size == 0){
-            list_exceptions SHOW_ERROR("can`t show zero size list");
-            throw SHOW_ERROR; } // THIS
+            ListException SHOW_ERROR("can`t show zero size list");
+            throw SHOW_ERROR; }
 
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < size; counter++){
@@ -211,14 +213,14 @@ namespace list_names {
     template<typename T>
     void list<T>::delete_after(unsigned int element_number) {
         if (size == 0){
-            list_exceptions ZERO_SIZE("zero size error");
-            throw ZERO_SIZE;} // THIS
+            ListException ZERO_SIZE("zero size error");
+            throw ZERO_SIZE;}
         if (element_number >= size) {
-            list_exceptions DELL_AFTER_OUT_OF_THE_RANGE("index out of the range(delete operation)");
-            throw DELL_AFTER_OUT_OF_THE_RANGE; }// THIS
+            ListException DELL_AFTER_OUT_OF_THE_RANGE("index out of the range(delete operation)");
+            throw DELL_AFTER_OUT_OF_THE_RANGE; }
         if (element_number == size - 1) {
-            list_exceptions DELL_AFTER_LAST("can`t delete after last element");
-            throw DELL_AFTER_LAST; }// THIS
+            ListException DELL_AFTER_LAST("can`t delete after last element");
+            throw DELL_AFTER_LAST; }
 
         Node<T>* running_pointer = head;
         for (unsigned counter = 0; counter < element_number; counter++){
@@ -239,6 +241,7 @@ namespace list_names {
             size++;
             return;
         }
+
         Node<T>* new_node = new Node<T>(data, head);
         head = new_node;
         size++;
@@ -247,7 +250,7 @@ namespace list_names {
     template<typename T>
     void list<T>::pop() {
         if (head == nullptr) {
-            list_exceptions POP_ERROR("can`t pop from empty list");
+            ListException POP_ERROR("can`t pop from empty list");
             throw POP_ERROR; } // THIS
         if (head->p_next == nullptr){
             delete head;
@@ -265,12 +268,12 @@ namespace list_names {
     void list<T>::insert_after(T data, unsigned int element_number) {  // element number starts from 0
         if (size == 0 and element_number == 0){
             push(data);
-            list_exceptions INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element."
+            ListException INSERT_WARNING("[WARNING] list was empty and you wanted to add zero position element."
                                            "List was created and data pushed");
             throw INSERT_WARNING; // THIS
         }
         if (element_number >= size){
-            list_exceptions INSERT_AFTER_OUT_OF_THE_RANGE("index out of the range(insert operation)");
+            ListException INSERT_AFTER_OUT_OF_THE_RANGE("index out of the range(insert operation)");
             throw INSERT_AFTER_OUT_OF_THE_RANGE; // THIS
         }
         Node<T>* new_node = new Node<T>(data);

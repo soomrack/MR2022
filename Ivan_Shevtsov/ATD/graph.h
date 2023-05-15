@@ -6,35 +6,35 @@
 #define ATD_GRAPH_H
 #include "iostream"
 #include "list.h"
+#include "dynamic_array.h"
 #include <limits.h> // for int max func
 
 
 namespace graph_names {
 
     /**
-     * @brief Directed weighted graph
+     * @brief myGraph container
      *
-     * Use block try/catch to work whits it, catch graph_exception type.
+     * use try/catch for work with graph
      *
-    */
+     *
+     * @class GraphException has these exceptions(objects):
+     *
+     * @objects ... TODO here will be exception objects declarations
+     */
 
     // EXCEPTIONS
-    class graph_exceptions: public std::domain_error{
+    class GraphException: public std::domain_error{
     public:
-        graph_exceptions(const char* massage): std::domain_error(massage){}
+        GraphException(const char* massage): std::domain_error(massage){}
     };
 
-/*    graph_exceptions ZERO_SIZE("zero size error");
-    graph_exceptions QUEUE_OUT_OF_TRE_RANGE("index out of the range");
-    graph_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
-    graph_exceptions QUEUE_SHOW_ERROR("can`t show zero size queue");*/
 
     // DECLARATION
 
     class Edge;
     class Node;
     class Graph;
-    class Path;
 
     // EDGE
     struct Edge{
@@ -56,9 +56,6 @@ namespace graph_names {
     class Node{
     private:
         list_names::list<Edge*> edges;
-
-        bool visited = false;  // for Dijkstra`s algorithm
-        int distance = INT_MAX;
     public:
         double data;
     public:
@@ -70,7 +67,7 @@ namespace graph_names {
         void add_edge(Node* target, int weight);
         int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
         bool operator==(Node const& other) const {return data == other.data;}
-        int get_distance() const{return distance;}
+
     public:
         friend Graph;
     };
@@ -90,28 +87,60 @@ namespace graph_names {
     public:
         void add_node(Node* newNode);
         void add_edge(Node* source, Node* target, int weight);
-        int del_node(double data, bool delete_only_one_flag = false); // Q: вот это сделано отвратительно!
+        int del_node(double data, bool delete_only_one_flag = false);
         int del_edge(Node* source, Node* target, int weight, bool delete_only_one_flag = false);
 
         void show();
         void clear();
     public:
-        Path& dijkstra_algorithm(Node* source, Node* target);
+        // DIJKSTRA
+        struct dijkstra_node{
+            Node* node;
+            int dist;
+            bool visited;
+            dijkstra_node* prev;
 
-    };
+            dijkstra_node(Node* node, int dist, bool visited, dijkstra_node* prev): node(node), dist(dist),
+                                                                           visited(visited), prev(prev){}
+            DynArr_names::dynamic_array<double> restore_path (){
+                DynArr_names::dynamic_array<double> path(10);
 
-    class Path{
-        list_names::list<Node*> path_nodes;
+                dijkstra_node* running_node = this;
+                while (running_node != nullptr){
+                    path.push_back(running_node->node->data);
+                    running_node = running_node->prev;
+                }
+                return path;
+            }
+
+            dijkstra_node(const dijkstra_node&) = delete;
+            dijkstra_node& operator=(const dijkstra_node&) = delete;
+            ~dijkstra_node() = default;
+
+        };
+
+        dijkstra_node* dijkstra_simple(Node* source, Node* target, bool show_log = true);
+    private:
+        dijkstra_node* find_dijkstra_node(list_names::list<dijkstra_node*>& list,Node* find_node);
+        dijkstra_node* find_dijkstra_node_with_min_dist(list_names::list<dijkstra_node*>& list, bool print_value = false);
+
+
     public:
-        Path() = delete;
-        Path(Node* root);
-        Path(const Path&) = delete;
-        Path& operator=(const Path&) = delete;
-        ~Path();
+        // AStar
+        struct AStar_node{
+            Node* node;
+            double x;
+            double y;
 
-        void add_node(Node* target);
-        int lenght() {return path_nodes.begin().current_node->data->get_distance();}
+            AStar_node(Node* node, double x, double y): node(node), x(x), y(y){};
+
+        };
+
+        AStar_node* AStar_simple(Node* source_node, double source_x, double source_y,
+                                Node* target_node, double target_x, double target_y,
+                                 DynArr_names::dynamic_array<double>& x_array, DynArr_names::dynamic_array<double>& y_array);
     };
+
 
 } // graph_names
 
