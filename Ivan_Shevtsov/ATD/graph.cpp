@@ -1,7 +1,3 @@
-//
-// Created by ivan on 03/04/23.
-//
-
 #include "graph.h"
 
 using namespace graph_names;
@@ -60,7 +56,6 @@ int Node::del_edge(Node *target, int weight, bool delete_only_one_flag) {
     return deleted_edges_counter;
 }
 
-
 Graph::Graph(Node *root) {
     nodes.push(root);  // todo: push all the nodes in root edges
 }
@@ -88,8 +83,7 @@ int Graph::del_node(double data, bool delete_only_one_flag) {
     if (delete_only_one_flag){
         if (!nodes.find_and_delete(tmpNode)) {return 0;}
         deleted_nodes_counter++;
-        for (auto &&node: nodes){  // Q: вот этот момент чую как то неправильно делаю, навероне можно без вложенного цикла
-                                            // можно попробовать заменить на пустую ноду, но тогда постоянное добавление и удаление будут засорять память
+        for (auto &&node: nodes){
             for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
 
                 if (it.current_node->data->target->data == data){
@@ -103,7 +97,7 @@ int Graph::del_node(double data, bool delete_only_one_flag) {
         while (nodes.find_and_delete(tmpNode)){
             if (!nodes.find_and_delete(tmpNode)) {return 0;}
             deleted_nodes_counter++;
-            for (auto &&node: nodes){  // Q: это вообще ужас! три уровня вложенности, но я не понимаю как иначе
+            for (auto &&node: nodes){
                 for (auto it = node->edges.begin(); it != node->edges.end(); ++it){
                     if (it.current_node->data->target->data == data){
                         auto tmp = it.current_node->p_next;
@@ -148,59 +142,111 @@ void Graph::show() {
     std::cout << "END OF GRAPH\n";
 }
 
-Path &Graph::dijkstra_algorithm(Node *start_node, Node *target_node) {
-    Path ans(start_node);
-    start_node->distance = 0;
-    start_node->visited = true;
-
-    Node* running_node = start_node;
-    while (running_node != target_node){
-        Node* min_dist_node = target_node;
-        for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
-            if (it.current_node->data->target->distance > it.current_node->data->weight +
-                                                          it.current_node->data->source->distance)
-                it.current_node->data->target->distance = it.current_node->data->weight +
-                                                          it.current_node->data->source->distance;
-            if (it.current_node->data->target->distance < min_dist_node->distance){
-                min_dist_node = it.current_node->data->target;
-                it.current_node->data->target->visited = true;
-            }
-        }
-        ans.add_node(min_dist_node);
-        running_node = min_dist_node;
+Graph::dijkstra_node* Graph::dijkstra_simple(Node *start_node, Node *target_node, bool show_log) {
+    // Cast nodes list to struct list
+    list_names::list<dijkstra_node*> dijkstra_data_list;
+    for (auto it_nodes = nodes.begin(); it_nodes != nodes.end(); ++it_nodes){
+        dijkstra_node* newObject = new dijkstra_node(it_nodes.current_node->data,
+                                                    INT_MAX - 100, false,
+                                                     find_dijkstra_node(dijkstra_data_list, start_node));
+        // TODO: fix max dijkstra value
+        dijkstra_data_list.push(newObject);
     }
 
-    for (auto &&node: nodes){
-        if (!node->visited){
-            running_node = node;
-            Node* min_dist_node = target_node;
-            for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
-                if (it.current_node->data->target->distance > it.current_node->data->weight +
-                                                              it.current_node->data->source->distance)
-                    it.current_node->data->target->distance = it.current_node->data->weight +
-                                                              it.current_node->data->source->distance;
-                if (it.current_node->data->target->distance < min_dist_node->distance){
-                    min_dist_node = it.current_node->data->target;
-                    it.current_node->data->target->visited = true;
+    find_dijkstra_node(dijkstra_data_list, start_node)->dist = 0;
+
+    if (show_log){
+        std::cout << "WAYS FROM NODE WITH DATA: " << start_node->data <<
+                    " TO NODE WITH DATA: " << target_node->data << "\n";
+        for (auto it = dijkstra_data_list.begin(); it != dijkstra_data_list.end(); ++it){
+            std::cout << it.current_node->data->node->data << "\t";
+        }
+        std::cout << "\n";
+        for (auto it = dijkstra_data_list.begin(); it != dijkstra_data_list.end(); ++it){
+            if (it.current_node->data->dist == INT_MAX - 100){
+                std::cout << "INF" << "\t";
+            } else {
+                std::cout << it.current_node->data->dist << "\t";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    dijkstra_node* running_dijkstra_node = find_dijkstra_node(dijkstra_data_list, start_node);
+    while (running_dijkstra_node != nullptr){
+        running_dijkstra_node->visited = true;
+        for (auto it_edge = running_dijkstra_node->node->edges.begin();
+                it_edge != running_dijkstra_node->node->edges.end(); ++it_edge) {
+            auto target_dijkstra_node = find_dijkstra_node(dijkstra_data_list,
+                                                           it_edge.current_node->data->target);
+            if (target_dijkstra_node->dist >
+                running_dijkstra_node->dist + it_edge.current_node->data->weight)
+            {
+                target_dijkstra_node->dist = running_dijkstra_node->dist + it_edge.current_node->data->weight;
+                target_dijkstra_node->prev = running_dijkstra_node;
+            }
+        }
+
+        running_dijkstra_node = find_dijkstra_node_with_min_dist(dijkstra_data_list, show_log);
+    }
+
+    return find_dijkstra_node(dijkstra_data_list, target_node);
+}
+
+Graph::dijkstra_node *Graph::find_dijkstra_node(list_names::list<dijkstra_node *> &list, Node *find_node) {
+    {
+        for (auto it = list.begin(); it != list.end(); ++it){
+            if (it.current_node->data->node == find_node){
+                return it.current_node->data;
+            }
+        }
+        return nullptr;
+    }
+}
+
+Graph::dijkstra_node *
+Graph::find_dijkstra_node_with_min_dist(list_names::list<dijkstra_node *> &list, bool print_value) {
+    {
+        int min = INT_MAX;
+        dijkstra_node* ans = nullptr;
+        for (auto it = list.begin(); it != list.end(); ++it){
+            if (it.current_node->data->dist < min and !it.current_node->data->visited){
+                min = it.current_node->data->dist;
+                ans = it.current_node->data;
+            }
+        }
+        if (print_value){
+            for (auto it = list.begin(); it != list.end(); ++it){
+                if (it.current_node->data->dist == INT_MAX - 100){
+                    std::cout << "INF" << "\t";
+                } else {
+                    std::cout << it.current_node->data->dist << "\t";
                 }
             }
-            ans.add_node(min_dist_node);  // del old
+            std::cout << "\n";
         }
+        return ans;
+    }
+}
 
+Graph::AStar_node*
+Graph::AStar_simple(Node *source_node, double source_x, double source_y,
+                    Node *target_node, double target_x, double target_y,
+                    DynArr_names::dynamic_array<double>& x_array, DynArr_names::dynamic_array<double>& y_array) {
+    // this func only for test, it will delete TODO
+    list_names::list<AStar_node*> AStar_nodes_list;
+    auto it = nodes.begin();
+    for (int idx = 0; idx < nodes.lenght(); idx ++, ++it){
+        AStar_node* newObject = new AStar_node(it.current_node->data,
+                                               x_array[idx],
+                                               y_array[idx]);
+        AStar_nodes_list.push(newObject);
     }
 
-    return ans;
+    AStar_node* source = new AStar_node(source_node, source_x, source_y);
+    AStar_node* target = new AStar_node(target_node, target_x, target_y);
+
+    return target;
 }
 
-Path::~Path() {
-    path_nodes.clear();
-}
 
-Path::Path(Node *root) {
-    path_nodes.push(root);
-
-}
-
-void Path::add_node(Node *target) {
-    path_nodes.push(target);
-}
