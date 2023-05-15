@@ -51,7 +51,6 @@ public:
     void add_transition(std::string current_state_name, char symbol, std::string next_state_name);
     void set_state(std::string state_name);
     bool process(std::string input);
-
 };
 
 
