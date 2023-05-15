@@ -203,7 +203,7 @@ bool check_button() {
 
 void loop() {
   bool is_on = check_button();
-
+  
   if (is_on) {
     sens_privod(19);
     ride();
@@ -211,8 +211,6 @@ void loop() {
   }
   
   else {
-    analogWrite(SPEED_R, LOW);
-    analogWrite(SPEED_L, LOW);
-    sens_privod(90);
+    stop();
   }
 }
