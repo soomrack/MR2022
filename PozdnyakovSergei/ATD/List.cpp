@@ -1,182 +1,127 @@
 #include <iostream>
 
 
-class List_exceptions: public std::domain_error {
-public:
-    List_exceptions (const char* const error) : std::domain_error(error) {
-    }
-};
-
-
 class Node {
-public:
-    Node* next;
-    double value;
-    Node();
-    Node(double value = double (), Node *pnext = nullptr);
-    Node* get_next();
-    void push_next (double value);
-    void del_next (double value);
-};
-
-
-typedef Node *Nodeptr;
-
-
-class List {
 private:
-    Node *head;
-    Nodeptr prev (double value);
+    Node *next;
 public:
-    List();
-    ~List();
+    double value;
 
-    void push_back(double value);
-    void del(double value);
-    void push_head(double value);
+    Node(double data) : value(value), next(nullptr) {}
+    ~Node() = default;
 
-    void del_head();
-    Nodeptr get_head() {return head;};
-    void clean();
-    void print();
-    void push_next (double value, double data_next);
-    void push_prev (double value, double data_prev);
+    Node *get_next() { return next; }
+    void set_next(Node *new_next) { next = new_next; }
+    void push_next(double item);
+    void delete_next();
 };
 
 
-Node:: Node (double value ,Node *pnext){
-    this->value = value;
-    this->next = pnext;
+void Node::push_next(double item) {
+    Node *temp = new Node(item);
+    if (next == nullptr) {
+        next = temp;
+    } else {
+        Node *temp2 = next;
+        temp->next = temp2;
+        next = temp;
+    }
 }
 
 
-void Node::push_next(double data) {
-    Nodeptr node = next;
-    Nodeptr new_node = new Node (data);
-    node->next = new_node;
-    new_node->next = next;
-}
+void Node::delete_next() {
+    if (next == nullptr) throw std::runtime_error("Next node doesn't exist!");
 
-
-void Node::del_next(double data) {
-    Node* temp = next;
-    next = next->next;
+    Node *temp = next;
+    if (temp->next == nullptr) {
+        next = nullptr;
+    } else {
+        Node *temp2 = temp->next;
+        next = temp2;
+    }
     delete temp;
 }
 
 
-Node* Node:: get_next(){
-    return next;
+class LinkedList {
+private:
+    unsigned int size;
+
+public:
+    Node *head;
+
+    LinkedList() : head(nullptr), size(0) {}
+    ~LinkedList() { clear(); }
+
+    void push_head(double data);
+    Node *pop_head();
+    int get_size() const { return size; }
+    bool is_empty() const { return size == 0; }
+    void clear();
+    Node *get_head() { return head; }
+    void push_next(double data, unsigned int index);
+    void delete_next(unsigned int index);
+
+};
+
+
+void LinkedList::push_head(double value) {
+    Node *temp = new Node(value);
+    if (head == nullptr) {
+        head = temp;
+    } else {
+        temp->set_next(head);
+        head = temp;
+    }
+    size++;
 }
 
 
-List::List(){
+Node *LinkedList::pop_head() {
+    if (head == nullptr) throw std::underflow_error("List is empty!");
+
+    Node *temp = head;
+    if (head->get_next() == nullptr) {
+        head = nullptr;
+    } else {
+        head = head->get_next();
+    }
+    size--;
+    return temp;
+}
+
+
+void LinkedList::clear() {
+    while (head != nullptr) {
+        Node *temp = head;
+        head = head->get_next();
+        delete temp;
+    }
     head = nullptr;
+    size = 0;
 }
 
 
-List:: ~List(){
-    clean();
-}
-
-
-
-void List::push_back(double key){
-    if ( head == nullptr){
-        head = new Node (key);
-        return;
+void LinkedList::push_next(double value, unsigned int number) {
+    Node *temp = head;
+    for (int i = 0; i < number; ++i) {
+        temp = temp->get_next();
     }
-    Node *current = head;
-    while ( current->next != nullptr){
-        current = current->next;
+    size++;
+    temp->push_next(value);
+}
+
+
+void LinkedList::delete_next(unsigned int number) {
+    Node *temp = head;
+    for (int i = 0; i < number; ++i) {
+        temp = temp->get_next();
     }
-    current->next = new Node (key);
-}
-
-
-void List::push_head(double key){
-    head = new Node (key, head);
-}
-
-
-void List::push_next (double value, double value_next){
-    Nodeptr node_prev = head;
-    while (node_prev->value != value_next){
-        node_prev = node_prev->next;
-    }
-    Nodeptr new_node = new Node (value, node_prev->next);
-    node_prev->next = new_node;
-}
-
-
-void List::push_prev(double value, double value_prev) {
-    Nodeptr previous = prev(value_prev);
-    Nodeptr new_node = new Node (value, previous->next);
-    previous->next = new_node;
-}
-
-
-void List:: del_head(){
-    Node *current = head;
-    head = head->next;
-    delete current;
-}
-
-
-void List::clean(){
-    while (head != nullptr){
-        del_head();
-    }
-}
-
-
-void List:: del(double key){
-    Node* node_to_del = head;
-    while ( node_to_del->value != key)
-        node_to_del = node_to_del->next;
-    Node *current;
-    current = prev(key);
-    node_to_del = current->next;
-    current->next = node_to_del->next;
-    delete node_to_del;
-}
-
-
-void List::print(){
-    Node *current = head;
-    while (current != nullptr){
-        std::cout << current->value << "  ";
-        current = current->next;
-    }
-    std::cout << "\n";
-}
-
-
-Nodeptr List::prev(double data_){
-    Node *current = head;
-    while ( current->next->value != data_)
-        current = current->next;
-    return current;
+    size--;
+    temp->delete_next();
 }
 
 
 int main() {
-    List lst;
-    for (int i = 0; i < 9; i++){
-        lst.push_back(rand() %10);
-    }
-    lst.print();
 
-    lst.push_head(9.00);
-    lst.push_back(5.00);
-    lst.print();
-    lst.del(1);
-    lst.push_prev(1.00, 0);
-    lst.push_next(1.00, 0);
-
-    lst.print();
-    lst.clean();
-    lst.print();
-
-    return 0;
 }

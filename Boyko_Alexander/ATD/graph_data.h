@@ -12,6 +12,7 @@ public:
 
 class Graph{
 public:
+	~Graph();
 	DinArray<GraphNode*> nodes;
 	void add_node(Type new_data);
 	void del_node(Type del_data);
@@ -85,6 +86,13 @@ void Graph::print() {
 			std::cout << ", ";
 		}
 		std::cout << std::endl;
+	}
+}
+
+Graph::~Graph() {
+	for(int idx = 0; idx < nodes.size(); idx++){
+		delete nodes[idx];
+		nodes.clear();
 	}
 }
 
