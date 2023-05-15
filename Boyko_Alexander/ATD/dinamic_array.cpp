@@ -40,6 +40,9 @@ void DinArray<Type>::pop_back() {
 
 template<class Type>
 void DinArray<Type>::pop_at(int ind) {
+	if(ind < 0){
+		return;
+	}
 	arr_size -= 1;
 	memcpy(data + ind, data + ind + 1, (arr_size-ind+1) * sizeof(Type));
 }
@@ -147,6 +150,17 @@ void DinArray<Type>::append_at(DinArray<Type> &new_datas, int ind) {
 	arr_size = new_size;
 	memcpy(data + ind + new_datas.size(), data + ind, (old_size - ind) * sizeof(Type));
 	memcpy(data + ind,new_datas.data,new_datas.size() * sizeof(Type));
+}
+
+template<class Type>
+int DinArray<Type>::find(Type find_data) {
+	for(int idx = 0; idx < arr_size; idx++){
+		if(data[idx] == find_data){
+			return idx;
+		}
+	}
+
+	return -1;
 }
 
 

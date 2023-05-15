@@ -1,10 +1,10 @@
 #include <iostream>
 #include "dinamic_array.cpp"
 #include "linked_list.h"
-#include "Stack"
-#include "Queue"
 #include "stack_data.h"
 #include "queue_data.h"
+#include "binary_tree.h"
+#include "graph_data.h"
 
 void check_DinArr(){
 	DinArray<char> A;
@@ -58,10 +58,10 @@ void check_LinkedList(){
 
 	List.push_head('0');
 
-	List.get(2)->push_next('2');
-	List.get(3)->pop_next();
+	List.get_in_order(2)->push_next('2');
+	List.get_in_order(3)->pop_next();
 
-	List.get(10)->pop_next();
+	List.get_in_order(10)->pop_next();
 
 	List.pop_head();
 	List.pop_tail();
@@ -70,7 +70,7 @@ void check_LinkedList(){
 
 	std::cout << "\nSize = " << List.size() << std::endl;
 	for(int ind = 0; ind < List.size();ind++){
-		std::cout << List.get(ind)->data;
+		std::cout << List.get_in_order(ind)->data;
 	}
 	std::cout << std::endl;
 
@@ -110,6 +110,49 @@ void check_Queue(){
 	std::cout << std::endl;
 }
 
+
+void check_Tree(){
+	Binary_Tree my_tree;
+	my_tree.add(10);
+	my_tree.add(6);
+	my_tree.add(15);
+	my_tree.add(8);
+	my_tree.add(3);
+	my_tree.add(4);
+	my_tree.add(5);
+	my_tree.add(2);
+	my_tree.add(9);
+	my_tree.add(7);
+
+	preorder_print(my_tree.root);
+
+	std::cout << std::endl;
+
+	my_tree.del(6);
+
+	preorder_print(my_tree.root);
+
+	std::cout << my_tree.find(6) << std::endl;
+}
+
+
+void check_graph(){
+	Graph my_graph;
+	my_graph.add_link('A','B');
+	my_graph.add_link('B','C');
+	my_graph.add_link('A','C');
+	my_graph.add_link('C','B');
+
+
+	my_graph.print();
+
+	my_graph.del_node('C');
+
+	my_graph.print();
+
+}
+
+
 int main() {
 
 	check_DinArr();
@@ -119,6 +162,10 @@ int main() {
 	check_Stack();
 
 	check_Queue();
+
+	check_Tree();
+
+	check_graph();
 
 	return 0;
 

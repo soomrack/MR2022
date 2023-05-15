@@ -40,7 +40,7 @@ public:
 
     Node<T> *find(T f_data);
 
-    void pop(T d_data);
+    void delete_this(T d_data);
 
     void remove_first();
 
@@ -51,6 +51,10 @@ public:
     Node<T> *getHead();
 
     void popAll();
+
+    List<T> &operator=(const List<T> &other);
+
+    List<T> &operator=(List<T> &&other) noexcept;
 
 };
 
@@ -137,11 +141,58 @@ void List<T>::remove_last() {
 }
 
 template<typename T>
-void List<T>::pop(T d_data) {
+List<T> &List<T>::operator=(const List<T> &other) {
+    if (this == &other) {
+        return *this;
+    }
+    if (other.is_empty()) {
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
+        return *this;
+    }
+    size = other.size;
+    auto* copy = new Node<T>(other.head->data);
+    head = copy;
+    Node<T>* original = other.head;
+    while (original->next != nullptr) {
+        copy->next = new Node<T>(original->next->data);
+        copy = copy->next;
+        original = original->next;
+    }
+    copy->next = nullptr;
+    tail = copy;
+}
+
+
+template<typename T>
+List<T> &List<T>::operator=(List<T> &&other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+    this->head = other.head;
+    this->tail = other.tail;
+    size = other.size;
+    other.head = nullptr;
+    other.tail = nullptr;
+    other.size = 0;
+}
+
+
+template<typename T>
+void List<T>::delete_this(T d_data) {
     if (is_empty()) return;
     auto *local = head;
     while (local) {
         if (d_data == local->data) {
+            if (local == tail){
+                remove_last();
+                return;
+            }
+            if (local == head){
+                remove_first();
+                return;
+            }
             local->next = local->next->next;
             delete local->data;
             size--;
@@ -179,6 +230,8 @@ template<typename T>
 Node<T> *Node<T>::getNext() {
     return next;
 }
+
+
 
 
 #endif //HELLO_WORLD_LIST_H
