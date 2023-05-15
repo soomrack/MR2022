@@ -1,7 +1,3 @@
-//
-// Created by ivan on 03/04/23.
-//
-
 #include "tree.h"
 
 tree_names::Node::Node() {
