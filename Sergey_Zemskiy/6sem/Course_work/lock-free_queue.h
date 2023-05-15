@@ -14,15 +14,13 @@ private:
     long front;
     long rear;
     std::aligned_storage_t<sizeof(T), alignof(T)> queue[CAPACITY];
-    long temp_front;
-    T output_val;
 
 public:
-    bool empty ;
+    bool empty;
 
 public:
-    Queue() : front(0), rear(0), empty(true) {} ;
-    Queue(const Queue &other) ;
+    Queue() : front(0), rear(0), empty(true) {};
+    Queue(const Queue &other);
     ~Queue() = default;
 
 public:
@@ -63,9 +61,9 @@ Queue<T, CAPACITY>& Queue<T, CAPACITY>::operator=(const Queue &other) {
 template<typename T, const unsigned int CAPACITY>
 bool Queue<T, CAPACITY>::push(const T &new_val) {
     if (front == (rear + 1)% CAPACITY)  return false;
-    ::new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*>
-    (&queue[(front == rear) && empty? rear: (rear + 1) % CAPACITY])) T(new_val);
-    rear = ((front == rear) && empty) ? rear: (rear + 1) % CAPACITY;
+    new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*>
+    (&queue[empty? rear: (rear + 1) % CAPACITY])) T(new_val);
+    rear = empty ? rear: (rear + 1) % CAPACITY;
     empty = false;
     return true;
 }
@@ -73,9 +71,10 @@ bool Queue<T, CAPACITY>::push(const T &new_val) {
 template<typename T, const unsigned int CAPACITY>
 T Queue<T, CAPACITY>::pop() {
     if (empty) return T();
-    temp_front = front;
+    long temp_front = front;
     if (front == rear) empty = true;
     else front = (front + 1) % CAPACITY;
+    T output_val;
     ::new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[temp_front])));
     memset(&queue[temp_front], 0, sizeof(T));
     return output_val;
