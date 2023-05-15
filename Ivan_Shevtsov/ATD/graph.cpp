@@ -243,10 +243,39 @@ Graph::AStar_simple(Node *source_node, double source_x, double source_y,
         AStar_nodes_list.push(newObject);
     }
 
+
+
     AStar_node* source = new AStar_node(source_node, source_x, source_y);
     AStar_node* target = new AStar_node(target_node, target_x, target_y);
 
-    return target;
+    queue_names::queue<AStar_node*> open;
+    queue_names::queue<AStar_node*> closed;
+
+    open.push(source);
+
+    while (!open.is_empty()){
+        auto head_of_open = open.front()->data;
+        open.pop();
+
+        if (closed.value_in_queue(head_of_open)){
+            continue;
+        }
+
+        if (head_of_open == target)
+            return head_of_open;
+
+        closed.push(head_of_open);
+
+        for (auto it = AStar_nodes_list.begin(); it !=){
+            open.push(AStar_nodes_list.return_node(it.current_node->data));
+
+        }
+
+
+    }
+
+
+    return nullptr;
 }
 
 

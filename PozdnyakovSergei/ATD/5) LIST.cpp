@@ -97,6 +97,7 @@ void LinkedList::clear() {
         head = head->get_next();
         delete temp;
     }
+    head = nullptr;
     size = 0;
 }
 

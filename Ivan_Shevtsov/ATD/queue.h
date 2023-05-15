@@ -24,10 +24,9 @@ namespace queue_names {
 
     template<typename T>
     class Node {
-    protected:
-        Node *p_next;
-        Node *p_prev;
     public:
+        Node<T> *p_next;
+        Node<T> *p_prev;
         T data;
 
         Node();
@@ -38,10 +37,8 @@ namespace queue_names {
         void push_next(Node *other);
         void push_prev(Node *other);
 
-        Node **next() { return &p_next; }
-        Node **prev() { return &p_prev; }
+        bool operator==(Node<T> const& other);
     };
-
 
     template<typename T>
     class queue {
@@ -55,6 +52,7 @@ namespace queue_names {
 
         void show();
         void clear();
+        bool is_empty(){ return (p_head == nullptr);};
 
         void push(T data);
         void pop();
@@ -62,8 +60,23 @@ namespace queue_names {
         Node<T> *front() { return p_head; }
         Node<T> *back() { return p_tail; }
 
+        bool value_in_queue(T value);
         T get_element(unsigned element_number);  // element number starting from 0
     };
+
+    template<typename T>
+    bool queue<T>::value_in_queue(T value) {
+        auto current_pointer = p_head;
+        while (true){
+            if (current_pointer->data == value)
+                return true;
+            current_pointer = current_pointer->p_next;
+            if (current_pointer == nullptr){
+                break;
+            }
+        }
+        return false;
+    }
 
     template<typename T>
     queue<T>::queue() {
@@ -90,16 +103,16 @@ namespace queue_names {
             queue_exceptions QUEUE_POP_ERROR("can`t pop from empty queue");
             throw QUEUE_POP_ERROR;
         }
-        if (*(p_head->prev()) == nullptr)    {
+        if (p_head->p_prev == nullptr)    {
             delete p_head;
             p_head = nullptr;
             p_tail = nullptr;
             size--;
             return;
         }
-        p_head = *(p_head->prev());
-        delete *(p_head->next());
-        *(p_head->next()) = nullptr;
+        p_head = p_head->p_prev;
+        delete p_head->p_next;
+        p_head->p_next = nullptr;
 
         size--;
     }
@@ -127,7 +140,7 @@ namespace queue_names {
         Node<T>* running_pointer = p_head;
         while (running_pointer != nullptr){
             std::cout << running_pointer->data << "\t";
-            running_pointer = *(running_pointer->prev());
+            running_pointer = running_pointer->p_next;
         }
         std::cout  << "\n";
 
@@ -144,7 +157,7 @@ namespace queue_names {
 
         Node<T>* running_pointer = p_head;
         for (unsigned counter = 1; counter <= element_number; counter++){
-            running_pointer = *(running_pointer->prev());
+            running_pointer = running_pointer->p_prev;
         }
         return running_pointer->data;
     }
@@ -155,6 +168,12 @@ namespace queue_names {
         p_prev = nullptr;
         data = T();
     }
+
+    template<typename T>
+    bool Node<T>::operator==(const Node<T> &other) {
+        return data == other.data;
+    }
+
 
     template<typename T>
     Node<T>::Node(T data) {

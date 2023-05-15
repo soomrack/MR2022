@@ -8,16 +8,18 @@ public:
 	int data;
 	TreeNode* child_left;
 	TreeNode* child_right;
-	TreeNode(int new_data);
+	explicit TreeNode(int new_data);
 };
 
 class Binary_Tree{
 private:
 	TreeNode* get_node(int find_data);
 	TreeNode* get_parent_node(int find_data);
+	void delete_all(TreeNode* del_root);
 public:
 	TreeNode* root;
 	Binary_Tree(){root = nullptr;};
+	~Binary_Tree();
 	void add(int new_data);
 	bool find(int find_data);
 	void del(int del_data);
@@ -96,6 +98,20 @@ TreeNode *Binary_Tree::get_parent_node(int find_data) {
 	return nullptr;
 }
 
+Binary_Tree::~Binary_Tree() {
+	delete_all(root);
+}
+
+void Binary_Tree::delete_all(TreeNode* del_root) {
+	if (del_root == nullptr)   // Базовый случай
+	{
+		return;
+	}
+	delete_all(del_root->child_left);   //рекурсивный вызов левого поддерева
+	delete_all(del_root->child_right);  //рекурсивный вызов правого поддерева
+	delete del_root;
+}
+
 
 TreeNode::TreeNode(int new_data) {
 	data = new_data;
@@ -113,6 +129,7 @@ void preorder_print(TreeNode *root)
 	preorder_print(root->child_left);   //рекурсивный вызов левого поддерева
 	preorder_print(root->child_right);  //рекурсивный вызов правого поддерева
 }
+
 // Функция печатает значения бинарного дерева поиска в прямом порядке.
 // Вместо печати первой инструкцией функции может быть любое действие
 // с данным узлом

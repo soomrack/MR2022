@@ -105,7 +105,18 @@ namespace list_names {
 
         bool operator==(const list &other);
         bool operator!=(const list &other);
+        Node<T>* return_node(T data);
     };
+
+    template<typename T>
+    Node<T> *list<T>::return_node(T data) {
+        for (auto it = this->begin(); it != this->end(); ++it){
+            if (it.current_node->data == data) {
+                return it.current_node->data;
+            }
+        }
+        return nullptr;
+    }
 
     template<typename T>
     template<class p_node>
@@ -121,7 +132,13 @@ namespace list_names {
          * @return true if node was find and deleted, else false
          * @brief  method only works when template T is a pointer
          */
-         // TODO: check data is a pointer
+        try {
+            typeid(T*);
+        }
+        catch (std::exception& ex){
+            ListException TYPE_ERROR("T must be pointer");
+            throw TYPE_ERROR;
+        }
 
         if (head == nullptr) {
             return false;}

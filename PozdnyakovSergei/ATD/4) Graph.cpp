@@ -67,7 +67,8 @@ void Graph::del_node(double value) {
             vnode.erase(it);
             for (auto neighbour : nodeRemove->neighbors) {
                 Node *neighbourNode = get_node(neighbour);
-                neighbourNode->neighbors.erase(std::remove(neighbourNode->neighbors.begin(), neighbourNode->neighbors.end(), value), neighbourNode->neighbors.end());
+                neighbourNode->neighbors.erase(std::remove(neighbourNode->neighbors.begin(),
+                                                           neighbourNode->neighbors.end(), value), neighbourNode->neighbors.end());
             }
             delete nodeRemove;
             return;
