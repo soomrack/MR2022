@@ -306,12 +306,11 @@ int main() {
         //test_list(); //#TODO написать нормально тесты
         //test_stack();
         //test_dynamic_array();
-        test_queue();
+        //test_queue();
         //test_tree();
 
         //exc_text();
-        //test_dijst();
-       //test_graph();
+        test_graph();
     }
     catch (const list_names::ListException& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
