@@ -49,9 +49,11 @@ void Graph<T>::add_edge(T data1, T data2)
 {
     auto *node1 = get_node(data1);
     auto *node2 = get_node(data2);
+    if (node1 && node2) { 
     if (node1 == node2) return;                                         // Случай ребра на одну вершину
     node1->neighbors.append(data2);
     node2->neighbors.append(data1);
+    }
 }
 
 
