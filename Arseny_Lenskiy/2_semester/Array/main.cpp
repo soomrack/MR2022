@@ -1,9 +1,7 @@
 #include <iostream>
-#include <string>
-#include "DynamicArray.h"
+#include "../heap_sorts_cw/DynamicArray.h"
 
 int main() {
-    system("chcp 65001");
 
     // объявляем первый динамический массив
     DynamicArray<int> digits;
@@ -14,13 +12,16 @@ int main() {
     }
 
     // выводим все элементы массива в поток cout
+    std::cout << "DIGITS:\t\t";
     digits.print(std::cout);
     std::cout << '\n';
 
     // укорачиваем максимально допустимый размер массива на 10
+    // тут capacity = 15, поэтому 5 элементов должно остаться
     digits.shrink(10);
 
     // выводим все элементы массива в поток cout
+    std::cout << "DIGITS:\t\t";
     digits.print(std::cout);
     std::cout << '\n';
 
@@ -29,21 +30,20 @@ int main() {
 
     // заполняем новый массив значениями, хранящимися в старом,
     // но только в обратном порядке, используя push_head()
-    for (int i = 0; i < digits.size(); ++i) {
+    for (int i = 0; i < digits.getSize(); ++i) {
         digits2.push_head(digits[i]);
     }
 
     // выводим все элементы второго массива в поток cout
+    std::cout << "DIGITS_2:\t";
     digits2.print(std::cout);
-    std::cout << '\n';
-    // выводим все элементы первого массива в поток cout
-    digits.print(std::cout);
     std::cout << '\n';
 
     // присваиваем значения второго массива элементам первого
     digits = digits2;
 
     // выводим все элементы первого массива в поток cout
+    std::cout << "DIGITS:\t\t";
     digits.print(std::cout);
     std::cout << '\n';
 
