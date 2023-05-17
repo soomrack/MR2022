@@ -5,55 +5,48 @@
 
 template<class T>
 class QueueArray {
-public:
-    QueueArray(int size = 100) :
-            size(size),
-            tail(0),
-            head(0),
-            items(0) {
-        if (size <= 0) {
-            throw WrongQueueSize();
-        }
-        array = new T[size];
-    }
-
-    virtual ~QueueArray() {
-        delete array;
-    }
-
-    void push(const T &e);      // Добавление элемента в очередь
-    T pop();                    // Удаление элемента из очереди
-    bool isEmpty();             // Проверка очереди на пустоту
-
 private:
-    int size;
+    unsigned int size;
     T *array;
     int tail;
     int head;
     int items;
+
+public:
+    QueueArray(unsigned int size = 100);
+
+    ~QueueArray() { delete array; }
+
+    void push(T element);
+
+    T pop();
+
+    bool isEmpty();
 };
 
 template<class T>
-void QueueArray<T>::push(const T &e) {
-    if (tail == head && items == size) {
-        throw QueueOverflow();
-    } else {
-        array[tail] = e;
-        tail = (tail + 1) % size;
-        items++;
-    }
+QueueArray<T>::QueueArray(unsigned int size): size(size), tail(0), head(0), items(0) {
+    if (size == 0) throw QueueException(WRONGSIZE);
+    array = new T[size];
+}
+
+template<class T>
+void QueueArray<T>::push(T element) {
+    if (tail == head && items == size) throw QueueException(OVERFLOW);
+
+    array[tail] = element;
+    tail = (tail + 1) % size;
+    items++;
 }
 
 template<class T>
 T QueueArray<T>::pop() {
     T item;
-    if (head == tail && items == 0) {
-        throw QueueUnderflow();
-    } else {
-        item = array[head];
-        head = (head + 1) % size;
-        items--;
-    }
+    if (head == tail && items == 0) throw QueueException(UNDERFLOW);
+
+    item = array[head];
+    head = (head + 1) % size;
+    items--;
     return item;
 }
 

@@ -2,35 +2,27 @@
 #define QUEUEEXCEPTIONS_H
 
 #include <exception>
+#include "MyExtensions.h"
 
-class QueueOverflow : public std::exception {
+class QueueException : public std::exception {
 public:
-    QueueOverflow() : reason_("Queue Overflow") {}
+    QueueException(ExceptionType type);
 
-    const char *what() const noexcept override { return reason_; }
+    const char *what() const noexcept override { return reason; }
 
 private:
-    const char *reason_;
+    const char *reason;
 };
 
-class QueueUnderflow : public std::exception {
-public:
-    QueueUnderflow() : reason_("Queue Underflow") {}
-
-    const char *what() const noexcept override { return reason_; }
-
-private:
-    const char *reason_;
-};
-
-class WrongQueueSize : public std::exception {
-public:
-    WrongQueueSize() : reason_("Wrong Queue Size") {}
-
-    const char *what() const noexcept override { return reason_; }
-
-private:
-    const char *reason_;
-};
+QueueException::QueueException(ExceptionType type) {
+    switch (type) {
+        case OVERFLOW:
+            reason = "Queue Overflow";
+        case UNDERFLOW:
+            reason = "Queue Underflow";
+        case WRONGSIZE:
+            reason = "Wrong Queue Size";
+    }
+}
 
 #endif
