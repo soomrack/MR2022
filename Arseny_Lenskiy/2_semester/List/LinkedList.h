@@ -61,7 +61,6 @@ public:
     Node<T> *get_head() { return head; }
     void push_next(T data, unsigned int index);
     void delete_next(unsigned int index);
-
 };
 
 template<typename T>
@@ -102,6 +101,8 @@ void LinkedList<T>::clear() {
 
 template<typename T>
 void LinkedList<T>::push_next(T data, unsigned int index) {
+    if (index >= size) throw std::out_of_range("Invalid index!");
+
     Node<T> *temp = head;
     for (int i = 0; i < index; ++i) {
         temp = temp->get_next();
@@ -112,6 +113,8 @@ void LinkedList<T>::push_next(T data, unsigned int index) {
 
 template<typename T>
 void LinkedList<T>::delete_next(unsigned int index) {
+    if (index >= size) throw std::out_of_range("Invalid index!");
+
     Node<T> *temp = head;
     for (int i = 0; i < index; ++i) {
         temp = temp->get_next();
