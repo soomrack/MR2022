@@ -34,6 +34,29 @@ private:
         destroy_tree(root);
     }
 
+    void BinaryTree::add(int value) {
+        if (root == nullptr) {
+            root = new Node(value);
+        } else {
+            add(value, root);
+            
+    void  BinaryTree::del(int value) {
+        del(value, root);
+    }
+
+    bool  BinaryTree::get(int value) {
+        return get(value, root);
+    }
+
+  
+    void  BinaryTree::destroy_tree(Node* node) {
+        if (node != nullptr) {
+            destroy_tree(node->left);
+            destroy_tree(node->right);
+            delete node;
+        }
+    }
+
    void  BinaryTree::add(int value, Node* node) {
     Node* next_step = nullptr; 
         if (value < node->data) {
@@ -52,39 +75,6 @@ private:
             }
         }
         add(value, next_step ); 
-    }
-
-    void  BinaryTree::del(int value) {
-        del(value, root);
-    }
-
-    bool  BinaryTree::get(int value) {
-        return get(value, root);
-    }
-
-  
-    void  BinaryTree::destroy_tree(Node* node) {
-        if (node != nullptr) {
-            destroy_tree(node->left);
-            destroy_tree(node->right);
-            delete node;
-        }
-    }
-
-    void  BinaryTree::add(int value, Node* node) {
-        if (value < node->data) {
-            if (node->left == nullptr) {
-                node->left = new Node(value);
-            } else {
-                add(value, node->left);
-            }
-        } else if (value > node->data) {
-            if (node->right == nullptr) {
-                node->right = new Node(value);
-            } else {
-                add(value, node->right);
-            }
-        }
     }
 
 void BinaryTree::del(int value, Node*& node) {
