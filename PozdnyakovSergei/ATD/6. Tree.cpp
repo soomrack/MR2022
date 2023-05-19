@@ -17,12 +17,17 @@ private:
     void delete_all(Node* del_root);
 public:
     Node* root;
-    Tree() {root = nullptr;};
+    Tree();
     ~Tree();
     void insert(unsigned int new_value);
     void del(unsigned int del_value);
     bool find_val(unsigned int find_value);
 };
+
+
+Tree::Tree() {
+    root = nullptr;
+}
 
 
 void Tree::insert(unsigned int new_value) {
@@ -165,7 +170,6 @@ void tree(){
     tree.del(8);
     std::cout << tree.find_val(2);
 }
-
 
 
 int main() {
