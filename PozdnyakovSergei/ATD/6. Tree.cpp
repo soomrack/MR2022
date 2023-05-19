@@ -40,9 +40,18 @@ void Tree::insert(unsigned int new_value) {
 
 
 void Tree::del(unsigned int del_value) {
+
+/*    while () {
+сюда добавить поиск удаляемого элемента
+    }*/
+
     auto parent_node = get_parent(del_value);
     auto current_node_link = del_value < parent_node->value ? &(parent_node->left) : &(parent_node->right);
     auto del_node = *current_node_link;
+
+    if (get_node(del_value) == nullptr) {
+        return;
+    }
 
     if((*current_node_link)->right == nullptr){
         *current_node_link = (*current_node_link)->left;
@@ -54,9 +63,7 @@ void Tree::del(unsigned int del_value) {
         delete del_node;
         return;
     }
-    if (get_node(del_value) == nullptr) {
-        return;
-    }
+
     auto del_left_link = &((*current_node_link)->left);
     auto del_right_link = &((*current_node_link)->right);
     auto del_link = current_node_link;
