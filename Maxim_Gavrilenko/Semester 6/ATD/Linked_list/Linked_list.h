@@ -86,7 +86,6 @@ T& List<T>::operator[](const unsigned idx)
         i++;
     }
 }
-
 template<typename T>
 void List<T>::advance(List<T>& list, unsigned int distance)
 {
@@ -102,8 +101,8 @@ template<typename T>
 void List<T>::pop_front()
 {
     if (size == 0) throw EMPTY;
-    Node<T>* temp = head;
     head = head->next;
+    Node<T>* temp = head;
     delete temp;
     size--;
 }
