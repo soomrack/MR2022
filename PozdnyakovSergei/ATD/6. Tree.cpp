@@ -79,7 +79,6 @@ void Tree::del(unsigned int del_value) {
 }
 
 bool Tree::find_val(unsigned int find_value) {
-    auto current_node = root;
     if (get_node(find_value) != nullptr) {
         return true;
     }
