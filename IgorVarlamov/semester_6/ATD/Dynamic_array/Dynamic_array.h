@@ -23,6 +23,8 @@ protected:
 
 
 public:
+    
+
     dynamic_array();                                            // конструктор по умолчанию, который инициализирует поля data, capacity и size нулевыми значениями
     explicit dynamic_array(unsigned int);                       // конструктор с заданной емкостью 
     dynamic_array(const dynamic_array& A);                      // конструктор копирования
@@ -34,7 +36,7 @@ public:
     void resize(unsigned int);                                  // метод, который изменяет емкость массива
     void insert (T, unsigned int);                              // метод, который вставляет элемент в массив по указанному индексу
     void append (T);                                            // метод, который добавляет элемент в конец массива
-    void remove(unsigned int);                                  // метод, который удаляет элемент из массива по указанному индексу
+    void remove(unsigned int);                                //  // метод, который удаляет элемент из массива по указанному индексу
     int search(T);                                              // метод, который ищет элемент в массиве и возвращает его индекс
 
     unsigned int get_size() {return size;}                      // возвращает текущей размер массива
@@ -93,7 +95,7 @@ int dynamic_array<T>::search(T num) {
 template <typename T>
 void dynamic_array<T>::insert(T value, unsigned int idx) {
     if (idx > capacity) throw OUTOFRANGE ;
-    if (size == capacity) resize(capacity * 2); // В случае конца массива, емкость расширяется в два раза
+    if (size == capacity) resize(capacity * 2); // В случае конца массива, емкость расширяется в два раза //
     std::copy(data + idx, data + size, data + idx + 1);
     data[idx] = value;
     size++;

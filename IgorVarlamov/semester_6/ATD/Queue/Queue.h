@@ -83,7 +83,7 @@ Queue<T>::~Queue() {
     delete[] data;
 }
 
-template <typename T>
+template <typename T>                   // 
 bool Queue<T>::is_full() {
     return tail == capacitance - 1;
 }
@@ -93,7 +93,7 @@ bool Queue<T>::is_empty() {
     return top == -1 || top > tail;
 }
 
-template <typename T>
+template <typename T>//
 void Queue<T>::push(T num) {
     if (is_full()) throw OVERFLOWED;
     data[++tail] = num;
@@ -103,7 +103,7 @@ void Queue<T>::push(T num) {
     }
 }
 
-template <typename T>
+template <typename T>//
 T Queue<T>::pop() {
     if (is_empty()) throw EMPTY;
     size--;
