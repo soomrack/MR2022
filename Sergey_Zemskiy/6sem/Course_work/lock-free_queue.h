@@ -11,15 +11,15 @@
 template<typename T, const unsigned int CAPACITY>
 class Queue {
 private:
-    long front;
-    long rear;
+    long head;
+    long tail;
     std::aligned_storage_t<sizeof(T), alignof(T)> queue[CAPACITY];
 
 public:
     bool empty;
 
 public:
-    Queue() : front(0), rear(0), empty(true) {};
+    Queue() : head(0), tail(0), empty(true) {};
     Queue(const Queue &other);
     ~Queue() = default;
 
@@ -41,8 +41,8 @@ Queue<T, CAPACITY>::Queue(const Queue &other) {
         ::new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[index]))
         T(*std::launder(reinterpret_cast<const T*>(&other.queue[index])));
     }
-    front = other.front;
-    rear = other.rear;
+    head = other.head;
+    tail = other.tail;
     empty = other.empty;
 }
 
@@ -52,18 +52,18 @@ Queue<T, CAPACITY>& Queue<T, CAPACITY>::operator=(const Queue &other) {
         ::new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[index]))
         T(*std::launder(reinterpret_cast<const T*>(&other.queue[index])));
     }
-    front = other.front;
-    rear = other.rear;
+    head = other.head;
+    tail = other.tail;
     empty = other.empty;
     return *this;
 }
 
 template<typename T, const unsigned int CAPACITY>
 bool Queue<T, CAPACITY>::push(const T &new_val) {
-    if (front == (rear + 1)% CAPACITY)  return false;
+    if (head == (tail + 1)% CAPACITY)  return false;
     new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*>
-    (&queue[empty? rear: (rear + 1) % CAPACITY])) T(new_val);
-    rear = empty ? rear: (rear + 1) % CAPACITY;
+    (&queue[empty? tail: (tail + 1) % CAPACITY])) T(new_val);
+    tail = empty ? tail: (tail + 1) % CAPACITY;
     empty = false;
     return true;
 }
@@ -71,12 +71,12 @@ bool Queue<T, CAPACITY>::push(const T &new_val) {
 template<typename T, const unsigned int CAPACITY>
 T Queue<T, CAPACITY>::pop() {
     if (empty) return T();
-    long temp_front = front;
-    if (front == rear) empty = true;
-    else front = (front + 1) % CAPACITY;
+    long temp_head = head;
+    if (head == tail) empty = true;
+    else head = (head + 1) % CAPACITY;
     T output_val;
-    ::new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[temp_front])));
-    memset(&queue[temp_front], 0, sizeof(T));
+    new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[temp_head])));
+    memset(&queue[temp_head], 0, sizeof(T));
     return output_val;
 }
 
