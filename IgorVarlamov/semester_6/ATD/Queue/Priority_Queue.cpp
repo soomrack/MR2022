@@ -1,12 +1,11 @@
 #include <iostream>
 #include <stdexcept>
 
-template <typename T>
-struct QueueNode
-{
-    T data;
-    int priority;
-    QueueNode(T data, int priority) : data(data), priority(priority) {}
+template<typename T>
+struct QueueNode {
+        T data;
+        int priority;
+        QueueNode(T _data, int _priority) : data(_data), priority(_priority) {}
 };
 
 template <typename T>
@@ -17,17 +16,76 @@ private:
     int size;
     int capacity;
 
-    void siftUp(int index)
-    {
-        if (index == 0)
-            return;
-        int parent = (index - 1) / 2;
-        if (data[index].priority > data[parent].priority)
-        {
-            std::swap(data[index], data[parent]);
-            siftUp(parent);
-        }
+public:
+
+    PriorityQueue(int);
+    ~PriorityQueue();
+    void push(T, int);
+    T pop();
+    T top() const;
+    bool empty() const;
+    int getSize() const;
+
+    void siftUp(int);
+    void siftDown(int);
+
+};
+
+
+template <typename T>
+PriorityQueue<T>::PriorityQueue(int capacity){
+    this->size = 0;
+    this->capacity = capacity;
+    this->data = new QueueNode[capacity];
+}
+
+template <typename T>
+PriorityQueue<T>::~PriorityQueue() {
+        delete[] data;
+}
+
+template <typename T>
+void PriorityQueue<T>::push(T element, int priority) { 
+    if (size == capacity) {
+        throw std::overflow_error("Priority queue is full");
     }
+    data[size] = QueueNode(element, priority);
+    siftUp(size);
+    size++;
+}
+
+template <typename T>
+T PriorityQueue<T>::pop() {
+    if (size == 0) {
+        throw std::range_error("Priority queue is empty");
+    }
+    pri
+    std::swap(data[0], data[size - 1]);
+    size--;
+    siftDown(0);
+}
+
+
+
+template <typename T>
+bool PriorityQueue<T>::empty() const {
+        return size == 0;
+    }
+
+template <typename T>
+int PriorityQueue<T>::getSize() const {
+    return size;
+}
+
+template <typename T>
+void PriorityQueue<T>::siftUp(int index) {
+    if (index == 0) return;
+    int parent = (index - 1) / 2;
+    if (data[index].priority > data[parent].priority) {
+        std::swap(data[index], data[parent]);
+        siftUp(parent);
+    }
+}
 
     void siftDown(int index)
     {
