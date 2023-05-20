@@ -11,15 +11,12 @@
 template<typename T, const unsigned int CAPACITY>
 class Queue {
 private:
-    long front;
-    long rear;
+    long head;
+    long tail;
     std::aligned_storage_t<sizeof(T), alignof(T)> queue[CAPACITY];
 
 public:
-    bool empty;
-
-public:
-    Queue() : front(0), rear(0), empty(true) {};
+    Queue() : head(-1), tail(0) {};
     Queue(const Queue &other);
     ~Queue() = default;
 
@@ -41,9 +38,8 @@ Queue<T, CAPACITY>::Queue(const Queue &other) {
         ::new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[index]))
         T(*std::launder(reinterpret_cast<const T*>(&other.queue[index])));
     }
-    front = other.front;
-    rear = other.rear;
-    empty = other.empty;
+    head = other.head;
+    tail = other.tail;
 }
 
 template<typename T, const unsigned int CAPACITY>
@@ -52,31 +48,31 @@ Queue<T, CAPACITY>& Queue<T, CAPACITY>::operator=(const Queue &other) {
         ::new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[index]))
         T(*std::launder(reinterpret_cast<const T*>(&other.queue[index])));
     }
-    front = other.front;
-    rear = other.rear;
-    empty = other.empty;
+    head = other.head;
+    tail = other.tail;
     return *this;
 }
 
 template<typename T, const unsigned int CAPACITY>
 bool Queue<T, CAPACITY>::push(const T &new_val) {
-    if (front == (rear + 1)% CAPACITY)  return false;
-    new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*>
-    (&queue[empty? rear: (rear + 1) % CAPACITY])) T(new_val);
-    rear = empty ? rear: (rear + 1) % CAPACITY;
-    empty = false;
+    if (head == tail)  return false;
+    new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[tail])) T(new_val);
+    long prev_tail = tail;
+    tail = (tail + 1) % CAPACITY;
+    if (head == -1) head = prev_tail;
+    //если после проверки условия произойдёт метод "pop", может произойти ошибка
     return true;
 }
 
 template<typename T, const unsigned int CAPACITY>
 T Queue<T, CAPACITY>::pop() {
-    if (empty) return T();
-    long temp_front = front;
-    if (front == rear) empty = true;
-    else front = (front + 1) % CAPACITY;
+    if (head == -1) return T();
     T output_val;
-    ::new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[temp_front])));
-    memset(&queue[temp_front], 0, sizeof(T));
+    new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[head])));
+    memset(&queue[head], 0, sizeof(T));
+    head = (head + 1) % CAPACITY;
+    if (head == tail) head = -1;
+    //если после проверки условия произойдёт метод "pop", может произойти ошибка
     return output_val;
 }
 

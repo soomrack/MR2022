@@ -17,8 +17,8 @@ class Node
 {
 public:
     T data;
-    Node* prev;
-    Node* next;
+    Node* prev;//
+    Node* next;//
     Node(const Node &other) : data(other.data), prev(nullptr), next(nullptr) {}
     explicit Node(const T &value, Node *prev = nullptr, Node *next = nullptr) : data(value), prev(prev), next(next) {}
 };
@@ -31,7 +31,7 @@ private:
 
 public:
     explicit Iterator(Node<T> *node_it) : node(node_it) {}
-    Iterator operator++()
+    Iterator operator++()//--
     {
         node = node->next;
         return *this;

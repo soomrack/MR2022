@@ -15,7 +15,7 @@ class BinaryTree
 public:
     BinaryTree();
     void add(double);
-    void remove(double);
+    void remove(double);// add find, destr
 
 private:
     Node *root;
