@@ -22,7 +22,7 @@ private:
 public:
     DynamicArray();
     explicit DynamicArray(unsigned long long capacity);
-    DynamicArray(T* array, unsigned long long array_size);
+    DynamicArray(T* array, unsigned long long size);
     DynamicArray(const DynamicArray &array);
     DynamicArray(DynamicArray &&array) noexcept;
     ~DynamicArray() { delete[] data; }
@@ -57,7 +57,8 @@ DynamicArray<T>::DynamicArray(unsigned long long capacity) : size(0), capacity(c
 }
 
 template<typename T>
-DynamicArray<T>::DynamicArray(T *array, unsigned long long size) : DynamicArray(size), size(size) {
+DynamicArray<T>::DynamicArray(T *array, unsigned long long array_size) : DynamicArray(array_size) {
+    size = array_size;
     memcpy(data, array, size * sizeof(T));
 }
 
