@@ -16,10 +16,7 @@ private:
     std::aligned_storage_t<sizeof(T), alignof(T)> queue[CAPACITY];
 
 public:
-    bool empty;
-
-public:
-    Queue() : head(0), tail(0), empty(true) {};
+    Queue() : head(-1), tail(0) {};
     Queue(const Queue &other);
     ~Queue() = default;
 
@@ -43,7 +40,6 @@ Queue<T, CAPACITY>::Queue(const Queue &other) {
     }
     head = other.head;
     tail = other.tail;
-    empty = other.empty;
 }
 
 template<typename T, const unsigned int CAPACITY>
@@ -54,29 +50,29 @@ Queue<T, CAPACITY>& Queue<T, CAPACITY>::operator=(const Queue &other) {
     }
     head = other.head;
     tail = other.tail;
-    empty = other.empty;
     return *this;
 }
 
 template<typename T, const unsigned int CAPACITY>
 bool Queue<T, CAPACITY>::push(const T &new_val) {
-    if (head == (tail + 1)% CAPACITY)  return false;
-    new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*>
-    (&queue[empty? tail: (tail + 1) % CAPACITY])) T(new_val);
-    tail = empty ? tail: (tail + 1) % CAPACITY;
-    empty = false;
+    if (head == tail)  return false;
+    new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[tail])) T(new_val);
+    long prev_tail = tail;
+    tail = (tail + 1) % CAPACITY;
+    if (head == -1) head = prev_tail;
+    //если после проверки условия произойдёт метод "pop", может произойти ошибка
     return true;
 }
 
 template<typename T, const unsigned int CAPACITY>
 T Queue<T, CAPACITY>::pop() {
-    if (empty) return T();
-    long temp_head = head;
-    if (head == tail) empty = true;
-    else head = (head + 1) % CAPACITY;
+    if (head == -1) return T();
     T output_val;
-    new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[temp_head])));
-    memset(&queue[temp_head], 0, sizeof(T));
+    new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[head])));
+    memset(&queue[head], 0, sizeof(T));
+    head = (head + 1) % CAPACITY;
+    if (head == tail) head = -1;
+    //если после проверки условия произойдёт метод "pop", может произойти ошибка
     return output_val;
 }
 
