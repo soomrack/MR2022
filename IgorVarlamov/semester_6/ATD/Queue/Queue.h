@@ -135,8 +135,6 @@ void Queue<T>::clear() {
     while (!is_empty()) {
         pop();
     }
-    top = -1;
-    tail = -1;
 }
 
 template<typename T>
