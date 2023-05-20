@@ -41,7 +41,7 @@ public:
 
 
 template <typename T>
-Queue<T>::Queue(size_t num) {
+Queue<T>::Queue() {
     capacitance = 0;
     data = nullptr;
     top = -1;
@@ -73,8 +73,8 @@ Queue<T>::Queue(Queue<T> &&q) noexcept :top(q.top) ,tail(q.tail), size(q.size), 
     data = q.data;
     q.top = -1;
     q.tail = -1;
-    q.size = NULL;
-    q.capacitance =NULL;
+    q.size = 0;
+    q.capacitance = 0;
     q.data = nullptr;
 }
 
@@ -107,7 +107,13 @@ template <typename T>
 T Queue<T>::pop() {
     if (is_empty()) throw EMPTY;
     size--;
-    return data[top++];
+    T element = data[top++];
+    if (size == 0) 
+    {
+        top = -1;
+        tail = -1;
+    }
+    return element;
 }
 
 template <typename T>
@@ -129,6 +135,8 @@ void Queue<T>::clear() {
     while (!is_empty()) {
         pop();
     }
+    top = -1;
+    tail = -1;
 }
 
 template<typename T>

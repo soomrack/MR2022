@@ -17,21 +17,19 @@ int main() {
         q.push(30);
         q.push(40);
         q.push(50);
-        z.push(30);
-        z.push(20);
-        z.push(1000);
-        z.push(21);
-        z.push(52);
-        std::cout << "Front element: " << q.get_top() << std::endl;
-        std::cout << "Current_size:" << q.get_size() << std::endl;
         std::cout << "Print q: ";
         print(q);
-        std::cout << "Print z: ";
-        print(z);
-        std::cout << "Print q:";
+        q.pop();
+        q.pop();
+        q.pop();
+        q.pop();
+        q.pop();
+        q.push(3);
+        q.push(7);
+        std::cout << "Print q: ";
         print(q);
-        Queue<int>ab(std::move(q));
-        print(ab);
+        std::cout << "Front element: " << q.get_top() << std::endl;
+        std::cout << "Current_size:" << q.get_size() << std::endl;
     }
     catch (std::domain_error& e) {
         std::cerr << "Caught: " << e.what() << std::endl;
