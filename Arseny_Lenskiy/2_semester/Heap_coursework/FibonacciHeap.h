@@ -15,7 +15,6 @@ private:
 
     Node<T> *merge_trees(Node<T> *a, Node<T> *b);
     void delete_tree(Node<T> *node);
-    void consolidate();
 
 public:
     FibonacciHeap() : roots(), size(0), minimum(nullptr) {};
@@ -28,6 +27,8 @@ public:
     void print_roots();
     unsigned int get_size() { return size; }
     void roots_sort();
+
+    void consolidate();
 };
 
 template<typename T>

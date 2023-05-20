@@ -1,152 +1,50 @@
-#ifndef DYNAMIC_ARRAY_H
-#define DYNAMIC_ARRAY_H
+//
+// Created by vihmavari on 30.03.2023.
+//
 
-// класс динамического массива - шаблонный класс
-template<class T>
-class DynamicArray {
+#ifndef MY_VECTOR_CHAT_GPT_VECTOR_H
+#define MY_VECTOR_CHAT_GPT_VECTOR_H
+
+#include <iostream>
+using namespace std;
+
+class gptArray {
 private:
-    T *data_;               // тип данных, хранящихся в массиве
-    size_t size_;           // кол-во элементов, помещённых в массив
-    size_t capacity_;       // максимально допустимый размер массива
+    int size;       // текущий размер массива
+    int capacity;   // максимальная вместимость массива
+    int* arr;       // указатель на начало массива
+
 public:
-    // конструктор без параметров
-    DynamicArray() {
-        data_ = nullptr;
-        size_ = 0;
-        capacity_ = 0;
-    };
+    // Конструктор, создающий массив с начальной вместимостью 1 элемент
+    gptArray() {
+        size = 0;
+        capacity = 1;
+        arr = new int[capacity];    // выделяем память под 1 элемент
+    }
 
-    // конструктор с параметром (capacity)
-    DynamicArray(int capacity) {
-        if (capacity == 0) {
-            data_ = nullptr;
-            size_ = 0;
-            capacity_ = 0;
-            return;
-        }
-        size_ = 0;
-        capacity_ = capacity;
-        data_ = new T[capacity_];
-    };
-
-    // конструктор копирования
-    DynamicArray(DynamicArray<T> &vector) {
-        if (vector.capacity_ == 0) {
-            data_ = nullptr;
-            size_ = 0;
-            capacity_ = 0;
-            return;
-        }
-        size_ = vector.size_;
-        capacity_ = vector.capacity_;
-        data_ = new T[capacity_];
-        for (int i = 0; i < size_; ++i) {
-            data_[i] = vector.data_[i];
-        }
-    };
-
-    //деструктор
-    ~DynamicArray() {
-        if (data_ != nullptr) {
-            delete[] data_;
-        }
-    };
-
-    // метод, возвращающий кол-во помещённых элементов в массив
-    size_t size() {
-        return size_;
-    };
-
-    // метод укорачивания максимально возможного количества элементов в массиве
-    void shrink(int k) {
-        if (capacity_ - k >= 0) {
-            capacity_ -= k;
-            if (capacity_ < size_) {
-                size_ = capacity_;
+    // Метод для добавления элемента в массив
+    void push(int element) {
+        // Если текущий размер массива равен его максимальной вместимости, то нужно расширить массив
+        if (size == capacity) {
+            // Выделяем новую память с увеличенной в 2 раза вместимостью
+            int* new_arr = new int[2 * capacity];
+            // Копируем все элементы из старого массива в новый
+            for (int i = 0; i < capacity; i++) {
+                new_arr[i] = arr[i];
             }
-        } else {
-            capacity_ = 0;
-            size_ = 0;
+            // Удаляем старый массив из памяти
+            delete[] arr;
+            // Переназначаем указатель на начало нового массива
+            arr = new_arr;
+            // Обновляем значение максимальной вместимости
+            capacity *= 2;
         }
-
-    };
-
-    // метод увеличения максимального количества элементов в массиве
-    void expand(int k) {
-        T *temp = new T[size_];
-        for (int i = 0; i < size_; ++i)
-            temp[i] = data_[i];
-        capacity_ += k;
-        data_ = new T[capacity_];
-        for (int i = 0; i < size_; ++i) {
-            data_[i] = temp[i];
-        }
-    };
-
-    // метод добавления элемента в конец массива
-    // О(1), если capacity > size
-    void push_tail(const T &item) {
-        if (size_ == capacity_) {
-            expand(capacity_ + 1);
-        }
-        data_[size_] = item;
-        size_++;
-    };
-
-    // метод добавления элемента в начало массива
-    void push_head(const T &item) {
-        T *temp = new T[size_ + 1];
-        temp[0] = item;
-        for (int i = 0; i < size_; ++i)
-            temp[i + 1] = data_[i];
-
-        if (size_ == capacity_) {
-            capacity_ += capacity_ + 1;
-        }
-        size_++;
-        data_ = new T[capacity_];
-        for (int i = 0; i < size_; ++i) {
-            data_[i] = temp[i];
-        }
-    };
-
-    //оператор индексирования
-    T &operator[](const size_t index) {
-        try {
-            // если пытаемся достать что-то по индексу, превышающему кол-во элементов в массиве,
-            // то генерируем исключение Invalid index
-            if (index >= size_) {
-                throw "Invalid index";
-            }
-        }
-        catch (std::string error) {
-            std::cerr << error;
-            exit(-1);
-        }
-        return data_[index];
-    };
-
-    // оператор копирующего присваивания
-    DynamicArray<T> &operator=(const DynamicArray &vector) {
-        if (this == &vector) {
-            return *this;
-        }
-        if (data_ != nullptr) {
-            delete[] data_;
-        }
-        size_ = vector.size_;
-        capacity_ = vector.capacity_;
-        data_ = new T[capacity_];
-        for (int i = 0; i < size_; ++i) {
-            data_[i] = vector.data_[i];
-        }
-        return *this;
-    };
-
-    void print(std::ostream &out) const {
-        for (size_t i = 0; i < size_; i++)
-            out << data_[i] << '\t';
-    };
+        // Добавляем элемент в конец массива
+        arr[size] = element;
+        // Обновляем текущий размер массива
+        size++;
+    }
 };
 
-#endif
+
+#endif //MY_VECTOR_CHAT_GPT_VECTOR_H

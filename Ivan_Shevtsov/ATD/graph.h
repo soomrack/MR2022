@@ -7,7 +7,9 @@
 #include "iostream"
 #include "list.h"
 #include "dynamic_array.h"
+#include "queue.h"
 #include <limits.h> // for int max func
+#include "math.h"
 
 
 namespace graph_names {
@@ -133,12 +135,18 @@ namespace graph_names {
             double y;
 
             AStar_node(Node* node, double x, double y): node(node), x(x), y(y){};
+            bool operator==(AStar_node const& other){
+                return node == other.node and x == other.x and y == other.y;
+            }
 
         };
 
         AStar_node* AStar_simple(Node* source_node, double source_x, double source_y,
                                 Node* target_node, double target_x, double target_y,
                                  DynArr_names::dynamic_array<double>& x_array, DynArr_names::dynamic_array<double>& y_array);
+        double find_heuristics(AStar_node* source, AStar_node* target){
+            return sqrt(source->x * source->x + target->y * target->y);
+        }
     };
 
 

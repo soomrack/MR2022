@@ -1,9 +1,5 @@
-/*Был изменен конструктор и добавлен буфер элементов
- * была изменена функция для изменения размера массива
- * с учетом добавленных элементов
- * добавлен счетчик используемого размера*/
-
-
+#ifndef DYNAMIC_ARRAY
+#define DYNAMIC_ARRAY
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -204,23 +200,4 @@ bool DynArray::is_empty() {
 }
 
 
-int main() {
-    DynArray DA(1,6);
-
-    DA.fill_random(10);
-    DA.print();
-
-    DA.remove(5);
-    DA.print();
-
-    DA.add(18, 2);
-    DA.print();
-
-    DA.get(3);
-    DA.set(1, 1);
-
-    DA.resize(8, 5);
-    DA.print();
-
-    DA.clean();
-}
+#endif //DYNAMIC_ARRAY

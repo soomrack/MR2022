@@ -39,9 +39,7 @@ private:
             root = new Node(value);
         } else {
             add(value, root);
-        }
-    }
-
+            
     void  BinaryTree::del(int value) {
         del(value, root);
     }
@@ -59,51 +57,52 @@ private:
         }
     }
 
-    void  BinaryTree::add(int value, Node* node) {
+   void  BinaryTree::add(int value, Node* node) {
+    Node* next_step = nullptr; 
         if (value < node->data) {
             if (node->left == nullptr) {
                 node->left = new Node(value);
-            } else {
-                add(value, node->left);
+            }
+            
+             else {
+                next_step = node->left);
             }
         } else if (value > node->data) {
             if (node->right == nullptr) {
                 node->right = new Node(value);
             } else {
-                add(value, node->right);
+                next_step = node->right;
             }
         }
+        add(value, next_step ); 
     }
 
-    void  BinaryTree::del(int value, Node* node) {
-        if (node == nullptr) {
-            return;
-        }
-        if (value < node->data) {
-            del(value, node->left);
-        } else if (value > node->data) {
-            del(value, node->right);
-        } else {
-            if (node->left == nullptr && node->right == nullptr) {
-                delete node;
-                node = nullptr;
-            } else if (node->left == nullptr) {
-                Node* temp = node;
-                node = node->right;
-                delete temp;
-            } else if (node->right == nullptr) {
-                Node* temp = node;
-                node = node->left;
-                delete temp;
-            } else {
-                Node* temp = find_min(node->right);
-                node->data = temp->data;
-                del(temp->data, node->right);
-            }
-        }
+void BinaryTree::del(int value, Node*& node) {
+    if (node == nullptr) {
+        return;
     }
-
-    
+    if (value < node->data) {
+        del(value, node->left);
+        return;
+    }
+    if (value > node->data) {
+        del(value, node->right);
+        return;
+    }
+    if (node->left == nullptr) {
+        Node* temp = node;
+        node = node->right;
+        delete temp;
+    } else if (node->right == nullptr) {
+        Node* temp = node;
+        node = node->left;
+        delete temp;
+    } else {
+        Node* temp = find_min(node->right);
+        node->data = temp->data;
+        del(temp->data, node->right);
+    }
+}
     bool  BinaryTree::get(int value, Node* node) {
         if (node == nullptr) {
             return false;

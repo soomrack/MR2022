@@ -14,13 +14,20 @@ class Tree {
 private:
     Node* get_node (unsigned int find_value);
     Node* get_parent (unsigned int find_value);
+    void delete_all(Node* del_root);
 public:
     Node* root;
-    Tree() {root = nullptr;};
+    Tree();
+    ~Tree();
     void insert(unsigned int new_value);
     void del(unsigned int del_value);
     bool find_val(unsigned int find_value);
 };
+
+
+Tree::Tree() {
+    root = nullptr;
+}
 
 
 void Tree::insert(unsigned int new_value) {
@@ -33,14 +40,52 @@ void Tree::insert(unsigned int new_value) {
 
 
 void Tree::del(unsigned int del_value) {
+
+/*    while () {
+сюда добавить поиск удаляемого элемента
+    }*/
+
     auto parent_node = get_parent(del_value);
-    Node* current_node;
-    current_node = current_node;
+    auto current_node_link = del_value < parent_node->value ? &(parent_node->left) : &(parent_node->right);
+    auto del_node = *current_node_link;
+
+    if (get_node(del_value) == nullptr) {
+        return;
+    }
+
+    if((*current_node_link)->right == nullptr){
+        *current_node_link = (*current_node_link)->left;
+        delete del_node;
+        return;
+    }
+    if((*current_node_link)->left == nullptr) {
+        *current_node_link = (*current_node_link)->right;
+        delete del_node;
+        return;
+    }
+
+    auto del_left_link = &((*current_node_link)->left);
+    auto del_right_link = &((*current_node_link)->right);
+    auto del_link = current_node_link;
+
+    auto most_left_link = del_right_link;
+    auto next_node = (*most_left_link)->left;
+    while (next_node != nullptr) {
+        most_left_link = &((*most_left_link)->left);
+        next_node = next_node->left;
+    }
+
+    auto most_left = *most_left_link;
+    (*del_link) = most_left;
+    most_left->left = (*del_left_link);
+    auto mem_link = most_left->right;
+    (*most_left_link) = mem_link;
+    most_left->right = (*del_right_link);
+
+    delete del_node;
 }
 
-
 bool Tree::find_val(unsigned int find_value) {
-    auto current_node = root;
     if (get_node(find_value) != nullptr) {
         return true;
     }
@@ -79,6 +124,19 @@ Node::Node(unsigned int new_value) {
 }
 
 
+Tree::~Tree() {
+    delete_all(root);
+}
+
+
+void Tree::delete_all(Node *del_root) {
+    if (del_root == nullptr) { return;}
+    delete_all(del_root->left);
+    delete_all(del_root->right);
+    delete del_root;
+}
+
+
 Node *Tree::get_node(unsigned int find_value) {
     Node** link = &root;
     while (*link != nullptr) {
@@ -114,11 +172,8 @@ void tree(){
     tree.insert(5);
     tree.insert(6);
     tree.insert(7);
-
     std::cout << std::endl;
-
     tree.del(8);
-
     std::cout << tree.find_val(2);
 }
 
