@@ -1,65 +1,59 @@
 #ifndef MR2022_GRAPH_H
 #define MR2022_GRAPH_H
 
-#include "dynamic_array.h"
-#include <set>
+#include <iostream>
+#include <list>
+#include <vector>
+#include <unordered_map>
 
 
-namespace Graph {
+namespace graph {
+    template<class T> class Node;
+    template<class T> class Graph;
+
+    template<typename T>
+    using storage_map = std::unordered_map<T, Node<T>*>;
 
     template<class T>
     class Node {
+        friend Graph<T>;
+
     private:
         T value;
-        DynamicArray<Node<T>*> neighbors;
+        storage_map<T> neighbours;
 
     public:
-        Node();
-        explicit Node(const T& val);
-        Node(const Node& node);
+        explicit Node(const T& value): value(value) {}
 
-    };
-
-    template<class T>
-    struct Edge {
-        Node<T>* orgn;
-        Node<T>* dest;
     };
 
     template<class T>
     class Graph {
     private:
-        DynamicArray<Node<T>*> vertices;
+        storage_map<T> vertices;
     public:
-        Graph(DynamicArray<Edge<T>> edges);
+        void add_node(const T& value);
+        void add_edge(const T& from, const T& to, bool add_reverse = false);
 
+        bool contains(const T& value) { return vertices.contains(value); }
+
+        Node<T>* get_node(const T& value) { return vertices[value]; }
     };
 
     template<typename T>
-    Node<T>::Node(): value(0), neighbors(DynamicArray<Node<T>*>()) {}
-
-    template<typename T>
-    Node<T>::Node(const T &val): value(val), neighbors(DynamicArray<Node<T>*>()) {}
-
-    template<typename T>
-    Node<T>::Node(const Node<T> &node): value(node.value), neighbors(node.neighbors) {}
-
-
-    template<typename T>
-    Graph<T>::Graph(DynamicArray<Edge<T>> edges) {
-        std::set<Node<T>*> counter;
-        for (int idx = 0; idx < edges.length(); idx++){
-            counter.insert(edges[idx].orgn);
-            counter.insert(edges[idx].dest);
-        }
-        vertices.resize(counter.size());
-        for (auto& el: counter) {
-            vertices.push_back(el);
-        }
+    void Graph<T>::add_node(const T &value) {
+        vertices[value] = new Node<T>(value);
     }
 
+    template<typename T>
+    void Graph<T>::add_edge(const T &from, const T &to, bool add_reverse) {
+        if (!vertices.contains(from)) vertices[from] = new Node<T>(from);
+        if (!vertices.contains(to))  vertices[to] = new Node<T>(to);
+        vertices[from]->neighbours[to] = vertices[to];
+        if (!add_reverse) return;
+        vertices[to]->neighbours[from] = vertices[from];
+    }
 }
-
 
 
 #endif //MR2022_GRAPH_H
