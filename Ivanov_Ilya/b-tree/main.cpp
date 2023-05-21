@@ -1,9 +1,4 @@
-//
-//  main.cpp
-//  b-tree
-//
-//  Created by Илья Иванов on 19.05.2023.
-//
+
 #include "tree.h"
 #include <iostream>
 
@@ -46,7 +41,7 @@ int main () {
 
     bst.print();
 
-    a = bst.search(41);
+    a = bst.search(960);
     std::cout << "\n"
               << a << "\n";
 

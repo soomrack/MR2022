@@ -4,7 +4,7 @@
 #include <stack>
 
 struct Node {
-    int data;  // хранит ключ - число
+    int data;
     Node *left;
     Node *right;
 
@@ -26,8 +26,8 @@ private:
     NodePtr TNULL;
     NodePtr search(NodePtr node, int key);
     void print(NodePtr root, std::string indent, bool last);
-    NodePtrPtr min(NodePtrPtr node);  // node =! TNULL
-    NodePtrPtr parent_min(NodePtrPtr  node);  // node =! TNULL
+    NodePtrPtr min(NodePtrPtr node);
+    NodePtrPtr parent_min(NodePtrPtr  node);
 };
 
 
@@ -44,23 +44,13 @@ void Tree:: insert(int key) {
     node->data = key;
     node->left = TNULL;
     node->right = TNULL;
-    NodePtr last_leaf = nullptr;
-    NodePtr root_help = this->root;
-
-    while (root_help != TNULL) {
-        last_leaf = root_help;
-        root_help = (node->data <  root_help->data) ?  root_help->left :  root_help->right;
-    }
-
-    if (last_leaf == nullptr){
-        root = node;
-        return;
-    }
-    (node->data <  last_leaf->data) ? last_leaf->left = node :  last_leaf->right = node;
-    return;
+    NodePtrPtr link = &root;
+    while (*link != TNULL)
+       {
+           link = (*link)->data < key ? &(*link)->left : &(*link)->right;
+       }
+    *link = node;
 }
-
-
 
 
 NodePtrPtr Tree:: min(NodePtrPtr node) {
@@ -95,34 +85,15 @@ void Tree:: del( int key) {
         *node_to_del_ptr = (*node_to_del_ptr)->right;
         return;
     }
-    if ((*node_to_del_ptr)->right->left == TNULL){  //ОСОБЫЙ СЛУЧАЙ
-        //          | ->A
-        //         N1
-        //    E<-/    \->B
-        //     N2      N3
-        //         R<-/   \
-        //         TNULL    N4
-        (*node_to_del_ptr)->right->left = (*node_to_del_ptr)->left; // R = E
-        (*node_to_del_ptr) = (*node_to_del_ptr)->right; //A = B
-        return;
-    }
 
     NodePtrPtr minimum = (min(&((*node_to_del_ptr)->right)));
-    //          | ->A                                             A = R
-    //         N1                                                 D = E
-    //    E<-/    \->B                                            T = B
-    //     N2      N3                                             R = T
-    //         R<-/   \
-    //          MIN    N4
-    //      D <-/ \->T
-    //              N6
-    const NodePtr buffer = *node_to_del_ptr; // = A
-    const NodePtr buffer_min = (*minimum)->right; // = T
-    const NodePtrPtr parent_min_ptr = parent_min(&((*node_to_del_ptr)->right)); // = B
-    (*node_to_del_ptr) = *minimum; // A = R
-    (*minimum)->left = (buffer)->left; // D = E
-    (*minimum)->right = (buffer)->right; // T = B
-    (*parent_min_ptr)->left = buffer_min ; //R = T
+    const NodePtr buffer = *node_to_del_ptr;
+    const NodePtr buffer_min = (*minimum)->right;
+    const NodePtrPtr parent_min_ptr = parent_min(&((*node_to_del_ptr)->right));
+    (*node_to_del_ptr) = *minimum;
+    (*minimum)->left = (buffer)->left;
+    (*minimum)->right = (buffer)->right;
+    (*parent_min_ptr)->left = buffer_min ;
 
 }
 

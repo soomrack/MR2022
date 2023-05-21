@@ -28,15 +28,12 @@ public:
     DynArray(unsigned int size, unsigned int buffer = 10);
     DynArray(const DynArray &other);
     ~DynArray();
-
-    //int reserv = 2;
-
     void fill_random(int num);
     void add(int value, int idx);
     void remove(int idx);
     void print();
     void clean();
-    void resize(unsigned int newsize, unsigned int new_buffer);
+    void resize(unsigned int new_size);
     unsigned int get(unsigned int number);
     void set(unsigned int number, unsigned int item);
     unsigned int operator[] (unsigned int number);
@@ -75,16 +72,6 @@ DynArray::DynArray(const DynArray &other)
         array[idx] = other.array[idx];
     }
 }
-
-
-
-/*DynArray::DynArray(unsigned int item, unsigned int n) {
-    size = n + 2;
-    array = new unsigned int [size];
-    for (unsigned int number = 0; number < n; ++number) {
-        array[number] = item;
-    }
-}*/
 
 
 DynArray::~DynArray() {
@@ -135,7 +122,7 @@ void DynArray::remove(int number) {
     delete array;
     array = temp;
     size--;
-    if (size = 0) {
+    if (size == 0) {
         throw IS_EMPTY;
     }
     filled_size--;
@@ -158,25 +145,13 @@ void DynArray::clean() {
 }
 
 
-void DynArray::resize(unsigned int new_size, unsigned int new_buffer) {
-    if (new_size - size <= new_buffer) {
-        unsigned int *temp = array;
+void DynArray::resize(unsigned int new_size) {
+    if (new_size < size)
         size = new_size;
-        buffer = new_buffer;
-        array = new unsigned int [size];
-        for (unsigned int number = 0; number < size; ++number) {
-            array[number] = temp[number];
-        }
-        delete temp;
-    } else {
-        unsigned int *temp = array;
-        size = new_size + new_buffer;
-        array = new unsigned int [size];
-        for (unsigned int number = 0; number < size; ++number) {
-            array[number] = temp[number];
-        }
-        delete temp;
-    }
+        auto* new_data = new unsigned int[new_size];
+           memcpy(new_data, array, sizeof (unsigned int)* size);
+           delete array;
+           array = new_data;
 }
 
 
