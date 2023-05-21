@@ -16,9 +16,8 @@ namespace graph {
 
     template<class T>
     class Node {
-        friend Graph<T>;
 
-    private:
+    public:
         T value;
         storage_map<T> neighbours;
 
@@ -29,7 +28,7 @@ namespace graph {
 
     template<class T>
     class Graph {
-    private:
+    protected:
         storage_map<T> vertices;
     public:
         void add_node(const T& value);
