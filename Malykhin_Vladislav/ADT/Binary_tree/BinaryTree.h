@@ -211,4 +211,5 @@ void BinaryTree::remove(double in_data) {
         previous->set_link(removed_node);
     delete removed_node;
 }
+
 #endif //BINARYTREE_H

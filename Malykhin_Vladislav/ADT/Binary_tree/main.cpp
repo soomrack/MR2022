@@ -22,6 +22,7 @@ int main(){
     tree.print(4);
     tree.print(5);
 
+
     std::cout<<"\nRemove test****************\n";
     tree.remove(10);
     tree.print(10);
