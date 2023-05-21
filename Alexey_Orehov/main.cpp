@@ -72,6 +72,11 @@ void test_graph() {
 
     G.add_edge(1, 3, true);
     G.add_edge(3, 2, true);
+    G.add_edge(4, 5);
+    G.add_edge(1, 4);
+    G.add_edge(2, 5, true);
+
+    G.delete_node(2);
 
     auto ref = G.get_node(5);
 }
