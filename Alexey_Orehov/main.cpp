@@ -3,6 +3,7 @@
 #include "stack.h"
 #include "list.h"
 #include "tree.h"
+#include "graph.h"
 
 void test_dynamic_array() {
     int A_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -29,6 +30,7 @@ void test_stack() {
 
 
 void test_list() {
+    using namespace list;
     int A_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     List<int> A(A_data, 10);
     A.push_back(3);
@@ -59,10 +61,25 @@ void test_tree() {
     }
 }
 
+void test_graph() {
+    using namespace graph;
+    Graph<int> G;
+    G.add_node(1);
+    G.add_node(2);
+    G.add_node(3);
+    G.add_node(4);
+    G.add_node(5);
+
+    G.add_edge(1, 3, true);
+    G.add_edge(3, 2, true);
+
+    auto ref = G.get_node(5);
+}
+
 
 
 int main() {
-    test_dynamic_array();
+    test_graph();
 
     return 0;
 }
