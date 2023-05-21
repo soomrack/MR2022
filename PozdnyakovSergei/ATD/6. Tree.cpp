@@ -7,6 +7,7 @@ public:
     Node* left;
     Node* right;
     Node(unsigned int new_value);
+    int key;
 };
 
 
@@ -39,11 +40,12 @@ void Tree::insert(unsigned int new_value) {
 }
 
 
-void Tree::del(unsigned int del_value) {
+/*void Tree::del(unsigned int del_value) {
 
-/*    while () {
-сюда добавить поиск удаляемого элемента
-    }*/
+    Node **node_to_del = &root;
+    while (*node_to_del != nullptr) {
+        if (del_value == (*node_to_del))
+    }
 
     auto parent_node = get_parent(del_value);
     auto current_node_link = del_value < parent_node->value ? &(parent_node->left) : &(parent_node->right);
@@ -83,7 +85,38 @@ void Tree::del(unsigned int del_value) {
     most_left->right = (*del_right_link);
 
     delete del_node;
+}*/
+
+
+void Tree::del(unsigned int del_value) {
+    Node** del_link = &root;
+    while (*del_link != nullptr) {
+        if (del_value == (*del_link)->key) break;
+        del_link = del_value > (*del_link)->key? &(*del_link)->right:  &(*del_link)->left;
+    }
+    if (*del_link == nullptr) return;
+    Node* del = *del_link;
+    if (((*del_link)->left == nullptr) && ((*del_link)->right == nullptr)) {
+        *del_link = nullptr;
+        delete (*del_link);
+    }
+    if ((*del_link)->left == nullptr) {
+        *del_link = (*del_link)->right;
+        delete del;
+    }
+    if ((*del_link)->right == nullptr) {
+        *del_link = (*del_link)->left;
+        delete del;
+    }
+    Node** temp_link = &((*del_link)->right);
+    while ((*temp_link)->left) temp_link = &((*temp_link)->left);
+    *del_link = *temp_link;
+    (*del_link)->right = del->right;
+    (*del_link)->left = del->left;
+    *temp_link = (*temp_link)->right;
+    delete del;
 }
+
 
 bool Tree::find_val(unsigned int find_value) {
     if (get_node(find_value) != nullptr) {
