@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "StackArray.h"
 #include "QueueArray.h"
 
@@ -11,7 +12,7 @@ void test_Stack() {
         std::cout << stack1.pop() << std::endl;
         std::cout << stack1.pop() << std::endl;
     }
-    catch (StackUnderflow &e) {
+    catch (StackException &e) {
         std::cout << e.what() << std::endl;
     }
 
@@ -23,7 +24,7 @@ void test_Stack() {
     try {
         stack1.push(5);
     }
-    catch (StackOverflow &e) {
+    catch (StackException &e) {
         std::cout << e.what() << std::endl;
     }
 
@@ -42,7 +43,7 @@ void test_Queue() {
     try {
         queue1.pop();
     }
-    catch (QueueUnderflow &e) {
+    catch (QueueException &e) {
         std::cout << e.what() << std::endl;
     }
 
@@ -54,7 +55,7 @@ void test_Queue() {
     try {
         queue1.push(5);
     }
-    catch (QueueOverflow &e) {
+    catch (QueueException &e) {
         std::cout << e.what() << std::endl;
     }
 

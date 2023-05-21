@@ -24,7 +24,7 @@ private:
     Node *root;
     void add(Node **, double);
     void remove(Node **, double);
-    void remove_tree(Node **);
+    void remove_tree(Node* node);
     bool search(Node **node, double data);
     Node **find_smallest_ptr(Node *subtree);
 };
@@ -36,33 +36,15 @@ BinaryTree::BinaryTree()
 
 BinaryTree::~BinaryTree()
 {
-    remove_tree(&root);
+    remove_tree(root);
 }
 
-void BinaryTree::remove_tree(Node **node)
+void BinaryTree::remove_tree(Node* node)
 {
-    if (root == nullptr)
-    {
-        return;
-    }
-    stack<Node *> nodes(100);
-    nodes.push(root);
-
-    while (!nodes.is_empty())
-    {
-        Node *current = nodes.pop();
-
-        if (current->right != nullptr)
-        {
-            nodes.push(current->right);
-        }
-
-        if (current->left != nullptr)
-        {
-            nodes.push(current->left);
-        }
-
-        delete current;
+    if (node!= nullptr) {
+        remove_tree(node->left);
+        remove_tree(node->right);
+        delete node;
     }
 }
 

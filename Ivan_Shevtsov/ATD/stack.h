@@ -1,22 +1,25 @@
-//
-// use try/catch for work with it
-//
-
 #ifndef ATD_STACK_H
 #define ATD_STACK_H
 #include "dynamic_array.h"
 #include <iostream>
 
 namespace stack_names {
+    /**
+    * @brief myStack container
+    *
+    * use try/catch for work with Stack
+    * @class stack_exceptions has these exceptions(objects):
+    *
+    * @objects stack_exceptions STACK_FILLED_WARNING("[WARNING] stack is filled. Last element was added.");
+    * @objects stack_exceptions ALREADY_CLEAR("stack is already clear");
+    * @objects stack_exceptions STACK_EMPTY("stack is empty, can`t return return top");
+    * @objects stack_exceptions STACK_OVERFLOW("stack overflow");
+    */
+
     class stack_exceptions: public std::domain_error{
     public:
         stack_exceptions(const char* massage): std::domain_error(massage){}
     };
-
-/*    stack_exceptions STACK_FILLED_WARNING("[WARNING] stack is filled. Last element was added.");
-    stack_exceptions ALREADY_CLEAR("stack is already clear");
-    stack_exceptions STACK_EMPTY("stack is empty, can`t return return top");
-    stack_exceptions STACK_OVERFLOW("stack overflow");*/
 
     const int START_SIZE = 50;
 
@@ -38,7 +41,7 @@ namespace stack_names {
 
         void clear();
         T top();
-        inline int is_filled_size() { return filled_size; }
+        int stack_filled_size() { return filled_size; }
         void print();
 
         bool operator==(stack &other);
@@ -57,7 +60,7 @@ template<typename T>
 void stack<T>::pop() {
     if (filled_size == 0) {
         stack_exceptions ALREADY_CLEAR("stack is already clear");
-        throw ALREADY_CLEAR;}  // THIS}
+        throw ALREADY_CLEAR;}
     filled_size--;
     sp -= sizeof(T);
 }
@@ -66,7 +69,7 @@ template<typename T>
 void stack<T>::print() {
     if (filled_size == 0) {
         stack_exceptions EMPTY("stack is empty");
-        throw EMPTY;}  // THIS
+        throw EMPTY;}
 
     T* running_pointer = sp;
     for (int idx = 0; idx < filled_size; idx++){
@@ -124,7 +127,7 @@ T stack<T>::top() {
     if (sp == nullptr) {
         stack_exceptions STACK_EMPTY ("stack is empty, can`t return return top");
         throw STACK_EMPTY;
-    } // THIS
+    }
     return (*sp);
 }
 
@@ -154,10 +157,10 @@ template <typename T>
 void stack<T>::push(T data) {
     if (filled_size == stack_size) {
         stack_exceptions STACK_OVERFLOW("stack overflow");
-        throw STACK_OVERFLOW; } // THIS}
+        throw STACK_OVERFLOW; }
     if (filled_size == stack_size - 1) {
         stack_exceptions STACK_FILLED_WARNING("[WARNING] stack is filled. Last element was added.");
-        throw STACK_FILLED_WARNING;  }// THIS}
+        throw STACK_FILLED_WARNING;  }
     if (sp == nullptr){
 
     }

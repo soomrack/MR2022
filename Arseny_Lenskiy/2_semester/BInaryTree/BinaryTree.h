@@ -9,6 +9,7 @@ private:
         Node(T data) : data(data), left(nullptr), right(nullptr) {}
     };
 
+private:
     Node *root;
 
     Node *getSuccessor(Node *delNode);
@@ -23,29 +24,13 @@ public:
 
 template<typename T>
 void BinaryTree<T>::insert(T data) {
-    Node *node = new Node(data);
-    if (root == nullptr) {
-        root = node;
-    } else {
-        Node *current = root;
-        while (true) {
-            if (data < current->data) {
-                if (current->left == nullptr) {
-                    current->left = node;
-                    break;
-                } else {
-                    current = current->left;
-                }
-            } else {
-                if (current->right == nullptr) {
-                    current->right = node;
-                    break;
-                } else {
-                    current = current->right;
-                }
-            }
-        }
+    Node **node = &root;
+
+    while (*node != nullptr) {
+        node = (*node)->data > data ? &((*node)->left) : &((*node)->right);
     }
+
+    *node = new Node(data);
 }
 
 template<typename T>
@@ -54,11 +39,7 @@ bool BinaryTree<T>::search(T data) {
     while (current != nullptr) {
         if (data == current->data) {
             return true;
-        } else if (data < current->data) {
-            current = current->left;
-        } else {
-            current = current->right;
-        }
+        } else current = data < current->data ? current->left : current->right;
     }
     return false;
 }

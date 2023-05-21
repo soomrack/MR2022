@@ -23,22 +23,24 @@ protected:
 
 
 public:
+    
+
     dynamic_array();                                            // конструктор по умолчанию, который инициализирует поля data, capacity и size нулевыми значениями
-    explicit dynamic_array(unsigned int);                       // 
-    dynamic_array(const dynamic_array& A);
-    dynamic_array(dynamic_array&& A) noexcept;
-    ~dynamic_array();
+    explicit dynamic_array(unsigned int);                       // конструктор с заданной емкостью 
+    dynamic_array(const dynamic_array& A);                      // конструктор копирования
+    dynamic_array(dynamic_array&& A) noexcept;                  // конструктор переноса
+    ~dynamic_array();                                           // деструктор
 
-    T& operator[](unsigned);
+    T& operator[](unsigned);                                    // оператор индексации, который возвращает ссылку на элемент массива по указанному индексу
 
-    void resize(unsigned int);
-    void insert (T, unsigned int);
-    void append (T);
-    void remove(unsigned int);
-    int search(T);
+    void resize(unsigned int);                                  // метод, который изменяет емкость массива
+    void insert (T, unsigned int);                              // метод, который вставляет элемент в массив по указанному индексу
+    void append (T);                                            // метод, который добавляет элемент в конец массива
+    void remove(unsigned int);                                //  // метод, который удаляет элемент из массива по указанному индексу
+    int search(T);                                              // метод, который ищет элемент в массиве и возвращает его индекс
 
-    unsigned int get_size() {return size;}
-    unsigned int get_capacity() {return capacity;}
+    unsigned int get_size() {return size;}                      // возвращает текущей размер массива
+    unsigned int get_capacity() {return capacity;}              // возвращает полную емкость
 };
 
 template <typename T>
@@ -93,7 +95,7 @@ int dynamic_array<T>::search(T num) {
 template <typename T>
 void dynamic_array<T>::insert(T value, unsigned int idx) {
     if (idx > capacity) throw OUTOFRANGE ;
-    if (size == capacity) resize(capacity * 2); // В случае конца массива, емкость расширяется в два раза
+    if (size == capacity) resize(capacity * 2); // В случае конца массива, емкость расширяется в два раза //
     std::copy(data + idx, data + size, data + idx + 1);
     data[idx] = value;
     size++;

@@ -10,6 +10,7 @@ void print(Iterator<T> it)
     }
     std:: cout << std::endl;
 }
+
 int main()
 {
     LinkedList<double> list;
@@ -34,4 +35,5 @@ int main()
     LinkedList<double> list2 = std::move(list);
     list2.clear();
     list2.push_head(3);
+    return 0;
 }

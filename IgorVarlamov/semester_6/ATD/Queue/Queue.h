@@ -15,9 +15,9 @@ class Queue {
 private:
     T *data;                                        // массив для хранения элементов очереди
     int top;                                        // индекс первого элемента очереди
-    int tail;                                       //  индекс последнего элемента очереди                  
-    size_t capacitance;                             //  вместимость очереди
-    size_t size;                                    //  массив для хранения элементов очереди
+    int tail;                                       // индекс последнего элемента очереди                  
+    size_t capacitance;                             // вместимость очереди
+    size_t size;                                    // массив для хранения элементов очереди
 
 public:
     Queue();                                        // пустой конструктор
@@ -41,7 +41,7 @@ public:
 
 
 template <typename T>
-Queue<T>::Queue(size_t num) {
+Queue<T>::Queue() {
     capacitance = 0;
     data = nullptr;
     top = -1;
@@ -73,8 +73,8 @@ Queue<T>::Queue(Queue<T> &&q) noexcept :top(q.top) ,tail(q.tail), size(q.size), 
     data = q.data;
     q.top = -1;
     q.tail = -1;
-    q.size = NULL;
-    q.capacitance =NULL;
+    q.size = 0;
+    q.capacitance = 0;
     q.data = nullptr;
 }
 
@@ -83,7 +83,7 @@ Queue<T>::~Queue() {
     delete[] data;
 }
 
-template <typename T>
+template <typename T>                   // 
 bool Queue<T>::is_full() {
     return tail == capacitance - 1;
 }
@@ -93,7 +93,7 @@ bool Queue<T>::is_empty() {
     return top == -1 || top > tail;
 }
 
-template <typename T>
+template <typename T>//
 void Queue<T>::push(T num) {
     if (is_full()) throw OVERFLOWED;
     data[++tail] = num;
@@ -103,11 +103,17 @@ void Queue<T>::push(T num) {
     }
 }
 
-template <typename T>
+template <typename T>//
 T Queue<T>::pop() {
     if (is_empty()) throw EMPTY;
     size--;
-    return data[top++];
+    T element = data[top++];
+    if (size == 0) 
+    {
+        top = -1;
+        tail = -1;
+    }
+    return element;
 }
 
 template <typename T>

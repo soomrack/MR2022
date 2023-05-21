@@ -1,6 +1,86 @@
 #include "MaxHeap.h"
 #include "BinomialHeap.h"
 #include "FibonacciHeap.h"
+#include <chrono>
+#include <random>
+
+void test(int heap) {
+    MaxHeap<int> maxHeap;
+    BinomialHeap<int> heapBinomial;
+    FibonacciHeap<int> heapFibonacci;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    switch (heap) {
+        case 0:
+            std::cout << "\nMAXHEAP: \n\n\n";
+            for (unsigned long long i = 100; i < 1001; i+=50) {
+
+                for (unsigned long long j = 0; j < i; ++j) {
+                    maxHeap.insert(gen());
+                }
+
+                auto begin = std::chrono::steady_clock::now();
+
+                while (!maxHeap.is_empty()) {
+                    maxHeap.extract_max();
+                }
+
+                auto end = std::chrono::steady_clock::now();
+
+                auto elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+
+                std::cout << elapsed_ms.count() << "\n";
+            }
+            break;
+        case 1:
+            std::cout << "\nBINOMIALHEAP: \n\n\n";
+            for (unsigned long long i = 1000; i < 15001; i+=500) {
+
+                for (unsigned long long j = 0; j < i; ++j) {
+                    heapBinomial.insert(gen());
+                }
+
+                auto begin = std::chrono::steady_clock::now();
+
+                while (heapBinomial.get_size() != 0) {
+                    heapBinomial.extract_min();
+                }
+
+                auto end = std::chrono::steady_clock::now();
+
+                auto elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+
+                std::cout << elapsed_ms.count() << "\n";
+            }
+            break;
+        case 2:
+            std::cout << "\nFIBONACCIHEAP: \n\n\n";
+            for (unsigned long long i = 100; i < 1001; i+=50) {
+
+                for (unsigned long long j = 0; j < i; ++j) {
+                    heapFibonacci.insert(gen());
+                }
+
+                heapFibonacci.consolidate();
+                auto begin = std::chrono::steady_clock::now();
+
+                while (heapFibonacci.get_size() != 0) {
+                    heapFibonacci.extract_min();
+                }
+
+                auto end = std::chrono::steady_clock::now();
+
+                auto elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+
+                std::cout << elapsed_ms.count() << "\n";
+            }
+            break;
+        default:
+            std::cout << "Пока!";
+    }
+}
 
 void testMaxHeap() {
     std::cout << "\n\nMAX_HEAP_TEST\n\n\n";
@@ -131,12 +211,12 @@ void testFibonacciHeap() {
 int main() {
     system("chcp 65001");
 
-    int test;
+    int t;
     std::cout << "Введи тип кучи, тесты для которой хочешь посмотреть (0: max, 1: binomial, 2: fibonacci)\n";
 
-    std::cin >> test;
+    std::cin >> t;
 
-    switch (test) {
+    switch (t) {
         case 0:
             testMaxHeap();
             break;
@@ -145,6 +225,13 @@ int main() {
             break;
         case 2:
             testFibonacciHeap();
+            break;
+        case 7:
+//            test(0);
+//            std::cout << "\n\n\n";
+            test(1);
+//            std::cout << "\n\n\n";
+//            test(2);
             break;
         default:
             std::cout << "В другой раз!\n";

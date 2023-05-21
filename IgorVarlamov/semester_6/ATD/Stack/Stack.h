@@ -13,7 +13,7 @@ STACK_ERROR EMPTY("Stack is empty");
 STACK_ERROR FULL("Stack is full");
 
 template <typename T>
-class stack {''
+class stack {
 private:
     size_t capacitance;                                             // вместимость стека
     size_t size;                                                    // текущий размер стэка
@@ -74,10 +74,7 @@ stack<T>::stack(stack<T> && stack) noexcept : capacitance(stack.capacitance), si
 
 template <typename T>
 stack<T>::~stack() {
-    while (size)
-    {
-        pop();
-    }
+    delete data;
     data = nullptr;
 }
 

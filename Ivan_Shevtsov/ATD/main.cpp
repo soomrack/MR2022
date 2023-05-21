@@ -17,6 +17,8 @@ enum test_state{
     MASKED = 3
 };
 
+void exc_text();
+
 void sep(const char* message= "")
 {
     std::cout << "----------------------------" << message << "----------------------------\n";
@@ -41,7 +43,7 @@ void test_list(bool test_visible = true)
     try {
         lst1.insert_after(0, 0);
     }
-    catch (list_exceptions& ex){
+    catch (ListException& ex){
         std::cerr << "List exception in func: " << ex.what() << std::endl;}
     lst1.push(1);
     lst1.push(2);
@@ -76,13 +78,13 @@ void test_dynamic_array()
     sep("ARRAY TEST STARTED");
 
     using namespace DynArr_names;
-    dynamic_array DA1(10);
-    dynamic_array DA2(10);
-    DA1.fill_random();
+    dynamic_array<int> DA1(10);
+    dynamic_array<int> DA2(10);
+    DA1.fill_random_int();
 #ifndef DEBUG
     delay();
 #endif
-    DA2.fill_random();
+    DA2.fill_random_int();
     sep("DA1");
     DA1.show();
     sep("DA2");
@@ -100,8 +102,8 @@ void test_dynamic_array()
     else if (DA1 != DA2)
         std::cout << "is`t equal" << std::endl;
     sep("test transfer constructor");
-    dynamic_array DA3(10);
-    DA3.fill_random();
+    dynamic_array<int> DA3(10);
+    DA3.fill_random_int();
     DA3.show();
 
     auto DA4 = std::move(DA3);
@@ -174,7 +176,7 @@ void test_tree(){
 void test_queue() {
     sep("QUEUE TEST STARTED");
     using namespace queue_names;
-    queue que1;
+    queue<double> que1;
     que1.push(1);
     que1.push(2);
     que1.push(3);
@@ -194,7 +196,7 @@ void test_queue() {
     std::cout << que1.get_element(3) << std::endl;  // error
 
 
-    queue que2;
+    queue<double> que2;
     que2.push(1);
     que2.push(2);
     que2.push(3);
@@ -211,13 +213,17 @@ void test_graph(){
     sep("GRAPH TEST STARTED");
 
     // input
-    Node* node1 = new Node(1);
-    Node* node2 = new Node(2);
-    Node* node3 = new Node(3);
-    Node* node4 = new Node(4);
-    Node* node5 = new Node(5);
-    Node* node6 = new Node(6);
-    Node* node7 = new Node(7);
+    Node* node1 = new   Node(1.0);
+    Node* node2 = new   Node(2);
+    Node* node3 = new   Node(3);
+    Node* node4 = new   Node(4);
+    Node* node5 = new   Node(5);
+    Node* node6 = new   Node(6);
+    Node* node7 = new   Node(7);
+    Node* node8  = new  Node(8 );
+    Node* node9  = new  Node(9 );
+    Node* node10  = new Node(10);
+    Node* node11 = new  Node(11);
 
 
     graph1.add_node(node1);
@@ -227,33 +233,71 @@ void test_graph(){
     graph1.add_node(node5);
     graph1.add_node(node6);
     graph1.add_node(node7);
+    graph1.add_node(node8 );
+    graph1.add_node(node9 );
+    graph1.add_node(node10);
+    graph1.add_node(node11);
 
-    graph1.add_edge(node1, node2, 1);
-    graph1.add_edge(node1, node4, 2);
-    graph1.add_edge(node1, node4, 3);
-    graph1.add_edge(node2, node3, 4);
-    graph1.add_edge(node1, node4, 3);
-    graph1.add_edge(node2, node4, 5);
-    graph1.add_edge(node3, node2, 6);
-    graph1.add_edge(node4, node1, 1);
-    graph1.add_edge(node5, node2, 6);
-    graph1.add_edge(node4, node6, 7);
-
-    Node* delNode1 = new Node(2);
-    Node* delNode2 = new Node(2);
-    graph1.add_node(delNode1);
-    graph1.add_node(delNode2);
-    graph1.add_edge(delNode1, delNode2, 2);
-    graph1.add_edge(delNode2, delNode1, 3);
-    graph1.add_edge(node2, delNode2, 4);
-    graph1.add_edge(node1, delNode1, 4);
+    graph1.add_edge(node1, node2, 3);
+    graph1.add_edge(node1, node3, 2);
+    graph1.add_edge(node1, node4, 1);
+    graph1.add_edge(node4, node5, 10);
+    graph1.add_edge(node5, node5, 10);
+    graph1.add_edge(node5, node9, 15);
+    graph1.add_edge(node3, node6, 8);
+    graph1.add_edge(node6, node5, 5);
+    graph1.add_edge(node6, node8, 6);
+    graph1.add_edge(node8, node9, 1);
+    graph1.add_edge(node10, node8, 5);
+    graph1.add_edge(node2, node7, 12);
+    graph1.add_edge(node2, node6, 4);
+    graph1.add_edge(node7, node6, 3);
 
 
+    //Node* delNode1 = new Node(2);
+    //Node* delNode2 = new Node(2);
+    //graph1.add_node(delNode1);
+    //graph1.add_node(delNode2);
+    //graph1.add_edge(delNode1, delNode2, 2);
+    //graph1.add_edge(delNode2, delNode1, 3);
+    //graph1.add_edge(node2, delNode2, 4);
+    //graph1.add_edge(node1, delNode1, 4);
+
+    // test
     graph1.show();
     sep();
-    graph1.del_node(2, false);
-    graph1.show();
+    //graph1.del_node(2, false);
+    //graph1.show();
+    sep("dijkstra test");
+    std::cout << graph1.dijkstra_simple(node1, node9, true)->dist << "\n";
+
+    sep("dijkstra path");
+    graph1.dijkstra_simple(node1, node9, false)->restore_path().show();
+    sep("A* test");
+    // GENERATE GRID MANUALLY
+    auto* x_array = new DynArr_names::dynamic_array<double>;
+    auto* y_array = new DynArr_names::dynamic_array<double>;
+
+/*    x_array->push_back(0);
+    x_array->push_back(20);
+    x_array->push_back(10);
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();
+    x_array->push_back();*/
+
     sep("GRAPH TEST ENDED");
+}
+
+void exc_text() {
+    using namespace list_names;
+    list<int> list1;
+    list1.show();
 }
 
 int main() {
@@ -264,9 +308,11 @@ int main() {
         //test_dynamic_array();
         //test_queue();
         //test_tree();
+
+        //exc_text();
         test_graph();
     }
-    catch (const list_names::list_exceptions& err){
+    catch (const list_names::ListException& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
     catch (const DynArr_names::dynamic_array_exceptions& err){
         std::cerr << "Dynamic array exception: " << err.what() << std::endl;}
@@ -274,12 +320,13 @@ int main() {
         std::cerr << "Queue exception: " << err.what() << std::endl;}
     catch (const tree_names::tree_exceptions& err){
         std::cerr << "Tree exception: " << err.what() << std::endl;}
-    catch (const graph_names::graph_exceptions& err){
+    catch (const graph_names::GraphException& err){
         std::cerr << "Graph exception: " << err.what() << std::endl;}
     catch (const stack_names::stack_exceptions& err){
         std::cerr << "Stack exception: " << err.what() << std::endl;}
 
     return 0;
 }
+
 
 

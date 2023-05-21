@@ -1,7 +1,6 @@
 #include <Servo.h>
 //#include <Ultrasonik.h>
 
-
 #define ECHOPIN 19  // приемник
 #define TRIGPIN 18  // источник
 
@@ -209,6 +208,7 @@ void loop() {
     ride();
     //program();
   }
+  
   
   else {
     stop();

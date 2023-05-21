@@ -5,28 +5,29 @@ class BinaryTree {
 private:
     struct Node {
         int data;
+        int value;
         Node* left;
         Node* right;
         Node(int value) : data(value), left(nullptr), right(nullptr) {}
     };
 
-    Node* root;
-
 public:
+    Node* root;
     BinaryTree();
      ~BinaryTree();
-     void add(int value);  //  добавление элемента в дерево
-     void del(int value);  //  удаление элемента из дерева
-     bool get(int value);  //  поиск элемента в дереве
+     void add(int value);  
+     void del(int del_value);  
+     bool get(int get_value);  
+     
+
 private:
-     void destroy_tree(Node* node);  //  рекурсивное удаление дерева
-     void add(int value, Node* node);  //  рекурсивное добавление элемента в дерево
-     void del(int value, Node* node);  //  рекурсивное удаление элемента из дерева 
-     bool get(int value, Node* node);  //  рекурсивный поиск элемента в дереве
-     Node* find_min(Node* node);  //  поиск узла с минимальным значением в дереве
+     Node* get_node(int get_value);
+	 Node* get_parent_node(int get_value);
+	 void destroy_tree(Node* node);  
+	 Node* find_min(int min_value);
+	 
     
 };
-    
     
     BinaryTree::BinaryTree() : root(nullptr) {}
     
@@ -35,23 +36,64 @@ private:
     }
 
     void BinaryTree::add(int value) {
-        if (root == nullptr) {
-            root = new Node(value);
-        } else {
-            add(value, root);
-        }
+        Node** link = &root;
+	while(*link != nullptr){
+		link = value < (*link)->data ? &((*link)->left) : &((*link)->right);
+	}
+	*link = new Node(value);
+}
+
+    void BinaryTree::del(int del_value) {
+    auto get_parent = get_parent_node(del_value);
+    auto current_node_link = del_value < get_parent->value ? &(get_parent->left) : &(get_parent->right);
+    auto del_node = *current_node_link;
+
+    if (get_node(del_value) == nullptr) {
+        return;
     }
 
-    void  BinaryTree::del(int value) {
-        del(value, root);
+    if((*current_node_link)->right == nullptr){
+        *current_node_link = (*current_node_link)->left;
+        delete del_node;
+        return;
+    }
+    if((*current_node_link)->left == nullptr) {
+        *current_node_link = (*current_node_link)->right;
+        delete del_node;
+        return;
     }
 
-    bool  BinaryTree::get(int value) {
-        return get(value, root);
+    auto del_left_link = &((*current_node_link)->left);
+    auto del_right_link = &((*current_node_link)->right);
+    auto del_link = current_node_link;
+
+    auto most_left_link = del_right_link;
+    auto next_node = (*most_left_link)->left;
+    while (next_node != nullptr) {
+        most_left_link = &((*most_left_link)->left);
+        next_node = next_node->left;
     }
 
-  
-    void  BinaryTree::destroy_tree(Node* node) {
+    auto most_left = *most_left_link;
+    (*del_link) = most_left;
+    most_left->left = (*del_left_link);
+    auto mem_link = most_left->right;
+    (*most_left_link) = mem_link;
+    most_left->right = (*del_right_link);
+
+    delete del_node;
+}
+
+
+  bool BinaryTree::get(int get_value) {
+	auto current_node = root;
+	if(get_node(get_value) != nullptr){
+		return true;
+	}
+	return false;
+}
+
+    void  BinaryTree::destroy_tree (Node* node) {
         if (node != nullptr) {
             destroy_tree(node->left);
             destroy_tree(node->right);
@@ -59,69 +101,38 @@ private:
         }
     }
 
-    void  BinaryTree::add(int value, Node* node) {
-        if (value < node->data) {
-            if (node->left == nullptr) {
-                node->left = new Node(value);
-            } else {
-                add(value, node->left);
-            }
-        } else if (value > node->data) {
-            if (node->right == nullptr) {
-                node->right = new Node(value);
-            } else {
-                add(value, node->right);
-            }
+    Node* BinaryTree::get_node(int get_value) {
+    Node** link = &root;
+    while (*link != nullptr) {
+        link = get_value < (*link)->value ? &((*link)->left) : &((*link)->right);
+        if ((*link)->value = get_value) {
+            return *link;
         }
     }
+    return nullptr;
+}
 
-    void  BinaryTree::del(int value, Node* node) {
-        if (node == nullptr) {
-            return;
-        }
-        if (value < node->data) {
-            del(value, node->left);
-        } else if (value > node->data) {
-            del(value, node->right);
-        } else {
-            if (node->left == nullptr && node->right == nullptr) {
-                delete node;
-                node = nullptr;
-            } else if (node->left == nullptr) {
-                Node* temp = node;
-                node = node->right;
-                delete temp;
-            } else if (node->right == nullptr) {
-                Node* temp = node;
-                node = node->left;
-                delete temp;
-            } else {
-                Node* temp = find_min(node->right);
-                node->data = temp->data;
-                del(temp->data, node->right);
-            }
+
+    Node* BynaryTree::get_parent_node(int get_value) {
+    Node** link = &root;
+    Node** get_parent_link = nullptr;
+    while (*link != nullptr) {
+        get_parent_link = link;
+        link = get_value < (*link)->value ? &((*link)->left) : &((*link)->right);
+        if ((*link)->value == get_value) {
+            return *get_parent_link;
         }
     }
+    return nullptr;
+}
 
-    
-    bool  BinaryTree::get(int value, Node* node) {
-        if (node == nullptr) {
-            return false;
-        } else if (node->data == value) {
-            return true;
-        } else if (value < node->data) {
-            return get(value, node->left);
-        } else {
-            return get(value, node->right);
-        }
-    }
-
-    Node*  BinaryTree::find_min(Node* node) {
+    Node* BinaryTree::find_min(int min_value) {
         while (node->left != nullptr) {
             node = node->left;
         }
         return node;
     }
+    
 
 int main() {
     BinaryTree tree;
