@@ -119,11 +119,15 @@ void Tree<T>:: del(T key) {
         return;
     }
 
-    NodePtrPtr<T> minimum = (min(&((*deleting_node_ptr)->right)));
+
+    //delete min
+
+    const NodePtrPtr<T> parent_min_ptr = parent_min(&((*deleting_node_ptr)->right)); // C
+    NodePtrPtr<T> minimum = &((*parent_min_ptr)->left);
 
     const NodePtr<T> temp = *deleting_node_ptr; // A
     const NodePtr<T> temp_min = (*minimum)->right; // F
-    const NodePtrPtr<T> parent_min_ptr = parent_min(&((*deleting_node_ptr)->right)); // C
+
 
     (*deleting_node_ptr) = *minimum; // A = D
     (*minimum)->left = (temp)->left; // E = B
