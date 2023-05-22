@@ -18,6 +18,8 @@ public:
     Node();
     Node(const int new_data, Node* new_next): data(new_data), next(new_next) {};
     Node* get_next();
+    void add_next(const int data);
+    void del_next();
 };
 
 class List {
@@ -64,6 +66,19 @@ void List::del_head() {
 void List::add_head(const int data) {
     Node* new_head = new Node(data, head);
     head = new_head;
+}
+void Node::add_next(const int data) {
+    Node* new_node = new Node(data, next);
+    next = new_node;
+}
+
+void Node::del_next() {
+    if (next == nullptr) {
+        throw List_error("No next node to delete.");
+    }
+    Node* node_to_delete = next;
+    next = next->get_next();
+    delete node_to_delete;
 }
 
 void List::print() {

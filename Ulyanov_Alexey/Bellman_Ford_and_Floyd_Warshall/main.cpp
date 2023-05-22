@@ -258,16 +258,22 @@ void Graph::generate_matrix() {
 
 Dynamic_array<unsigned int> Graph::Bellman_Ford(const unsigned int start) {
 
+    // инициализация массива расстояний из вершины start
     Dynamic_array<unsigned int> ans = Dynamic_array<unsigned int>(vertexs.length());
 
+    // он заполняется значениями, равными максимальной дистанции, то есть на нулевом этапе итераций все вершины считаются недостижимыми
     for (unsigned int idx = 0; idx < ans.length(); idx++){
         ans[idx] = MAX_COUNT;
     }
 
+    // проверяется наличие данной вершины в графе
+    // если её нет, то осуществляется выход из функции, иначе соответствующему значению массива присваивается 0
     if (!contains(start)) return ans;
-
     ans[start] = 0;
 
+    // далее происходит заполнение массива с помощью списка ребер:
+    // считается, что если путь до вершины i кратчайший, то путь до вершины j определится как сумма путей от start до i и от i до j
+    // полагается, что за n итераций определятся все наикратчайшие пути до всех n вершин
     for (unsigned int idx = 0; idx < vertexs.length() - 1; idx++){
         for (unsigned int jdx = 0; jdx < ways.length(); jdx++){
             ans[ways[jdx].to] = std::min(ans[ways[jdx].to], ans[ways[jdx].from] + ways[jdx].cost);
@@ -280,8 +286,12 @@ Dynamic_array<unsigned int> Graph::Bellman_Ford(const unsigned int start) {
 
 Dynamic_array<Dynamic_array<unsigned int>> Graph::Floyd_Warshall() {
 
+    // алгоритм Флойда-Уоршелла определяет наикратчайшие пути от всех вершин до всех
+    // поэтому на нулевой итерации результирующая матрица соответствует матрице смежности
     Dynamic_array<Dynamic_array<unsigned int>> ans = adjacency_matrix;
 
+    // далее для каждой k-ой вершины проверяется следующее:
+    // какой из путей от i до j (напрямую или через вершину k (от i до k + от k до j)) минимальным
     for (unsigned int kdx = 0; kdx < vertexs.length(); kdx++){
         for (unsigned int row = 0; row < vertexs.length(); row++){
             for (unsigned int col = 0; col < vertexs.length(); col++){
