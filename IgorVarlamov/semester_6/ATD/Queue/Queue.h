@@ -15,9 +15,9 @@ template <typename T>
 class Queue
 {
 private:
-    T *data;            // массив для хранения элементов очереди
-    int head;            
-    int tail;           
+    T *data; // массив для хранения элементов очереди
+    int head;
+    int tail;
     size_t capacitance; // вместимость очереди
     size_t size;        // массив для хранения элементов очереди
 
@@ -33,7 +33,7 @@ public:
 
     void enqueue(T num);
     void dequeue();
-    T front();      // возвращает значение первого элемента очереди, не удаляя его
+    T front(); // возвращает значение первого элемента очереди, не удаляя его
     T rear();
 
     unsigned int get_size(); // возвращает текущий размер очереди
@@ -107,27 +107,33 @@ void Queue<T>::enqueue(T num)
 {
     if (is_full())
         throw OVERFLOWED;
-    if (is_empty) head = 0;
+    if (is_empty())
+        head = 0;
+    size++;
     tail = (tail + 1) % capacitance;
     data[tail] = num;
-    size++;
+    
 }
 
 template <typename T>
-void Queue<T>::dequeue() // Помещает элемент в конец очереди
+void Queue<T>::dequeue() 
 {
-    if (is_empty()) throw EMPTY;
-    if (head == tail)
-    {
-        head = -1;
-        tail = -1;
-    }
-    else 
-    {
+if (is_empty()) throw EMPTY;
+    // Освобождаем память, занятую удаляемым элементом
+    T deletedItem = data[head];
+    data[head] = NULL;
+    // Перемещаем указатель на начало очереди на следующий элемент
+    if (head == tail) {
+        // Очередь содержала только один элемент
+        head = tail = -1;
+    } else {
         head = (head + 1) % capacitance;
     }
-
+    size--;
+    std::cout << "Deleted item: " << deletedItem << std::endl;
 }
+
+
 
 template <typename T>
 T Queue<T>::front()
@@ -136,7 +142,6 @@ T Queue<T>::front()
         throw EMPTY;
     return data[head];
 }
-
 
 template <typename T>
 T Queue<T>::rear()
@@ -152,16 +157,16 @@ unsigned int Queue<T>::get_size()
     return size;
 }
 
-template <typename T>
-void Queue<T>::clear()
-{
-    if (is_empty())
-        throw EMPTY;
-    while (!is_empty())
-    {
-        pop();
-    }
-}
+// template <typename T>
+// void Queue<T>::clear()
+// {
+//     if (is_empty())
+//         throw EMPTY;
+//     while (!is_empty())
+//     {
+//         pop();
+//     }
+// }
 
 template <typename T>
 T &Queue<T>::operator[](unsigned int idx)

@@ -12,23 +12,20 @@ int main() {
     Queue<int> q(5);
     Queue<int> z(5);
     try {
-        q.push(10);
-        q.push(20);
-        q.push(30);
-        q.push(40);
-        q.push(50);
+        q.enqueue(10);
+        q.enqueue(20);
+        q.enqueue(30);
+        q.enqueue(40);
         std::cout << "Print q: ";
         print(q);
-        q.pop();
-        q.pop();
-        q.pop();
-        q.pop();
-        q.pop();
-        q.push(3);
-        q.push(7);
+        q.dequeue();
+        q.dequeue();
+        q.dequeue();
+        q.enqueue(3);
+        q.enqueue(7);
         std::cout << "Print q: ";
         print(q);
-        std::cout << "Front element: " << q.get_top() << std::endl;
+        std::cout << "Front element: " << q.front() << std::endl;
         std::cout << "Current_size:" << q.get_size() << std::endl;
     }
     catch (std::domain_error& e) {

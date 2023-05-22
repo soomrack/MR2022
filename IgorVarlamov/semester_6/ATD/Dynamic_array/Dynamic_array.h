@@ -20,7 +20,7 @@ protected:
     size_t capacity;                                            // емкость массива
     size_t size;                                                // текущий размер массива;
     T* data;                                                    // указатель на массив элементов
-
+    size_t resize_array = 100;
 
 public:
     
@@ -34,13 +34,15 @@ public:
     T& operator[](unsigned);                                    // оператор индексации, который возвращает ссылку на элемент массива по указанному индексу
 
     void resize(unsigned int);                                  // метод, который изменяет емкость массива
-    void insert (T, unsigned int);                              // метод, который вставляет элемент в массив по указанному индексу
+    void insert (T, unsigned int, size_t resize_array);         // метод, который вставляет элемент в массив по указанному индексу
     void append (T);                                            // метод, который добавляет элемент в конец массива
-    void remove(unsigned int);                                //  // метод, который удаляет элемент из массива по указанному индексу
+    void remove(unsigned int);                                  // // метод, который удаляет элемент из массива по указанному индексу
     int search(T);                                              // метод, который ищет элемент в массиве и возвращает его индекс
 
     unsigned int get_size() {return size;}                      // возвращает текущей размер массива
     unsigned int get_capacity() {return capacity;}              // возвращает полную емкость
+
+
 };
 
 template <typename T>
@@ -93,9 +95,9 @@ int dynamic_array<T>::search(T num) {
 
 
 template <typename T>
-void dynamic_array<T>::insert(T value, unsigned int idx) {
+void dynamic_array<T>::insert(T value, unsigned int idx, size_t resize_array) {
     if (idx > capacity) throw OUTOFRANGE ;
-    if (size == capacity) resize(capacity * 2); // В случае конца массива, емкость расширяется в два раза //
+    if (size == capacity) resize(capacity * resize_array); // В случае конца массива, емкость расширяется в два раза //
     std::copy(data + idx, data + size, data + idx + 1);
     data[idx] = value;
     size++;
