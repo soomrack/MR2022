@@ -14,7 +14,7 @@ public:
     Node(const Data data, const Node* next = nullptr);
 public:
     Node *get_next() { return next; }
-    void get_next(Node *new_next) { next = new_next; }
+    void add_next(Node *new_next) { next = new_next; }
     void delete_next();
 };
 Node::Node(const Data data, const Node* next) {
