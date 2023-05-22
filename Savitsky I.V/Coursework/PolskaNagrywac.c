@@ -166,7 +166,18 @@ int main(int argc, char* argv[])
 				else result = a % b;push(&stack_result, result);result = 0;
 			}
 			if (symbol == '^') {
-				b = pop(&stack_result);a = pop(&stack_result);if (b < 0) { if (a == 0){ printf("Infinity\n");return; }  a = 0; printf("This calculator don't work with floating point numbers\n"); }if (b == 0)a = 1; i = 1;result = a; while (i < b) { i++; result *= a; }push(&stack_result, result);
+				b = pop(&stack_result);
+				a = pop(&stack_result);
+				if (b < 0) { 
+					if (a == 0){ printf("Infinity\n");return; } 
+				    a = 0; 
+				    printf("This calculator don't work with floating point numbers\n");
+				}
+				if (b == 0)a = 1; 
+				i = 1;
+				result = b;
+				while (i < a) { i++; result *= b; }
+				push(&stack_result, result);
 			}
 
 		} while (symbol != '\0');
