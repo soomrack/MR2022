@@ -47,6 +47,7 @@ void Tree<T>::delete_tree(NodePtr<T> node) {
 template<typename T>
 Tree<T>::~Tree() {
     delete_tree(root);
+    delete default_node;
 }
 
 template <typename T>
@@ -118,25 +119,38 @@ void Tree<T>:: del(T key) {
         return;
     }
 
-    //view images in the repository
-    if ((*deleting_node_ptr)->right->left == default_node){
-        (*deleting_node_ptr)->right->left = (*deleting_node_ptr)->left;
-        (*deleting_node_ptr) = (*deleting_node_ptr)->right;
-        return;
-    }
-
     NodePtrPtr<T> minimum = (min(&((*deleting_node_ptr)->right)));
+
     const NodePtr<T> temp = *deleting_node_ptr; // A
     const NodePtr<T> temp_min = (*minimum)->right; // F
     const NodePtrPtr<T> parent_min_ptr = parent_min(&((*deleting_node_ptr)->right)); // C
 
-    (*deleting_node_ptr) = *minimum;
-    (*minimum)->left = (temp)->left;
-    (*minimum)->right = (temp)->right;
-    (*parent_min_ptr)->left = temp_min ;
+    (*deleting_node_ptr) = *minimum; // A = D
+    (*minimum)->left = (temp)->left; // E = B
+    (*minimum)->right = (temp)->right; // F = C
+    (*parent_min_ptr)->left = temp_min; // D = F
 
     deleting_node_ptr = nullptr;
     delete deleting_node_ptr;
+    /*
+    //view images in the repository
+    NodePtrPtr<T> minimum = (min(&((*deleting_node_ptr)->right)));
+    const NodePtr<T> temp = *deleting_node_ptr; // A
+    const NodePtr<T> temp_min = (*minimum)->right; // F
+    //const NodePtrPtr<T> parent_min_ptr = parent_min(&((*deleting_node_ptr)->right)); // C
+    const NodePtrPtr<T> parent_min_ptr = parent_min(&((*deleting_node_ptr)->right)); // C
+
+
+    (*deleting_node_ptr) = *minimum; //A = D
+    (*minimum)->left = (temp)->left; //E = B
+    //(*parent_min_ptr)->left = temp_min;
+    (*parent_min_ptr)->left= temp_min; // D = F
+    (*minimum)->right = (temp)->right; // F = C
+
+
+    deleting_node_ptr = nullptr;
+    delete deleting_node_ptr;
+     */
 }
 
 template <typename T>
@@ -183,6 +197,7 @@ int main ()
     tree.insert(20);
     tree.insert(21);
     tree.insert(19);
+    tree.insert(18);
     tree.print();
     std::cout << "\n find 15? -- " << tree.search(15) << "\n";
     tree.del(15);
