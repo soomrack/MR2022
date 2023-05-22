@@ -17,11 +17,14 @@ class Dynamic_array {
 private:
     T* val;
     size_t size;
+    //size_t allocated_size;
+
+public:
     size_t buffer_size;
 
 public:
     Dynamic_array();
-    Dynamic_array(size_t size);
+    Dynamic_array(size_t size, size_t buffer_size);
     Dynamic_array(const Dynamic_array &other);
     ~Dynamic_array();
 
@@ -31,7 +34,9 @@ public:
 
 public:
     size_t get_size();
-    bool resize(size_t new_size);
+    bool resize(size_t size);
+    bool resize(size_t size, size_t buffer_size);
+
 };
 
 template<typename T>
@@ -42,9 +47,9 @@ Dynamic_array<T>::Dynamic_array() {
 }
 
 template<typename T>
-Dynamic_array<T>::Dynamic_array(size_t size) {
+Dynamic_array<T>::Dynamic_array(size_t size, size_t buffer_size) {
     this->size = size;
-    buffer_size = size / 2;
+    this->buffer_size = buffer_size;
     val = new T[size + buffer_size];
     if (val == nullptr) throw MEMORY;
 }
@@ -88,19 +93,31 @@ size_t Dynamic_array<T>::get_size() {
 }
 
 template<typename T>
-bool Dynamic_array<T>::resize(size_t new_size) {
-    if (new_size <= size + buffer_size) {
-        buffer_size += (size - new_size);
-        size = new_size;
+bool Dynamic_array<T>::resize(size_t size) {
+    if (size <= this->size + this->buffer_size) {
+        this->buffer_size += (this->size - size);// он равен оставшейся выделенной, а не указанной пользователем
+        this->size = size;
         return true;
     }
-    T* new_val = new T[new_size];
+    T* new_val = new T[size + buffer_size];
     if (new_val == nullptr) return false;
-    memcpy(new_val, val, (buffer_size + size) * sizeof (T));
+    memcpy(new_val, val, (this->buffer_size + this->size) * sizeof (T));
     delete[] val;
     val = new_val;
-    size = new_size;
-    buffer_size = new_size / 2;
+    this->size = size;
+    this->buffer_size = buffer_size;
+    return true;
+}
+
+template<typename T>
+bool Dynamic_array<T>::resize(size_t size, size_t buffer_size) {
+    T* new_val = new T[size + buffer_size];
+    if (new_val == nullptr) return false;
+    memcpy(new_val, val, (this->buffer_size + this->size) * sizeof (T));
+    delete[] val;
+    val = new_val;
+    this->size = size;
+    this->buffer_size = buffer_size;
     return true;
 }
 

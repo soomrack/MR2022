@@ -128,7 +128,7 @@ int Tree::get_key(T data) {
 
 void Tree::del_by_key(int del_key) {
 	NodeTree** temp = &root;
-	while (temp != nullptr) { 
+	while (*temp != nullptr) { 
 		if ((*temp)->key == del_key) {
 			if ((*temp)->left_child == nullptr && (*temp)->right_child == nullptr) {
 				*temp = nullptr;

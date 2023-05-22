@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stack>
-#include "except.h"
 using namespace std;
 
 template <typename T>
@@ -20,11 +19,13 @@ template <typename T>
 class Tree{
 public:
     Tree();
+    ~Tree();
+
     bool search(T k) ;
     void del(T key);
     void print();
     void insert(T key);
-
+    void delete_tree(NodePtr<T> node);
 private:
     NodePtr<T> root;
     NodePtr<T> default_node;
@@ -33,6 +34,20 @@ private:
     NodePtrPtr<T> min(NodePtrPtr<T> node);
     NodePtrPtr<T> parent_min(NodePtrPtr<T> node);
 };
+
+template<typename T>
+void Tree<T>::delete_tree(NodePtr<T> node) {
+    if (node != default_node) {
+        delete_tree(node->left);
+        delete_tree(node->right);
+        delete node;
+    }
+}
+
+template<typename T>
+Tree<T>::~Tree() {
+    delete_tree(root);
+}
 
 template <typename T>
 Tree<T>::Tree(){
@@ -120,6 +135,8 @@ void Tree<T>:: del(T key) {
     (*minimum)->right = (temp)->right;
     (*parent_min_ptr)->left = temp_min ;
 
+    deleting_node_ptr = nullptr;
+    delete deleting_node_ptr;
 }
 
 template <typename T>

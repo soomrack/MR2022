@@ -8,99 +8,99 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
+				<Option working_dir="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="ATD">
-				<Option output="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/ATD.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
+				<Option output="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/ATD" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 ATD"/>
-					<CompileFile command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 ATD"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="ATD/fast">
-				<Option output="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/ATD.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
+				<Option output="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/ATD" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
-					<Add directory="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 ATD/fast"/>
-					<CompileFile command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 ATD/fast"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
+				<Option working_dir="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
+				<Option working_dir="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="E:/Programmes/CLion 2022.2.1/bin/mingw/bin/mingw32-make.exe -f &quot;E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/binary_tree.h">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/binary_tree.h">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/graph_data.h">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/graph_data.h">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/linked_list.h">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/linked_list.h">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/main.cpp">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/main.cpp">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/queue_data.h">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/queue_data.h">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/stack_data.h">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/stack_data.h">
 			<Option target="ATD"/>
 		</Unit>
-		<Unit filename="E:/Education/MR2022/Boyko_Alexander/ATD/CMakeLists.txt">
+		<Unit filename="/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>
