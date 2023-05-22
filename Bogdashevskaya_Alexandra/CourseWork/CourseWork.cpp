@@ -1,10 +1,11 @@
 //AVL Tree
 
-// data - T, key - unsighned int
 
 #include <iostream> 
 #include <queue>
 #include <stack>
+#include <ctime>
+
 
 class Tree_Exception : public std::exception
 {
@@ -13,16 +14,16 @@ public:
 	{}
 };
 
-Tree_Exception ALREADY_EXISTS("Node with this key already exists\n");
-Tree_Exception DOES_NOT_EXISTS("Node does not exist\n");
+Tree_Exception ALREADY_EXISTS("Node with this key already exists");
+Tree_Exception DOES_NOT_EXISTS("Node does not exist");
 
 typedef double T;
-unsigned int GEN = 0;
+T GEN = 0;
 
 class NodeTree {
 protected:
-	unsigned int data;
-	T key;
+	T data;
+	int key;
 	NodeTree* left_child;
 	NodeTree* right_child;
 	int height;
@@ -30,7 +31,7 @@ protected:
 
 
 public:
-	NodeTree(T key, NodeTree* left_child = nullptr, NodeTree* right_child = nullptr, int height = 0, int bf = 0);
+	NodeTree(int key, NodeTree* left_child = nullptr, NodeTree* right_child = nullptr, int height = 0, int bf = 0);
 	NodeTree(const NodeTree& node);
 	~NodeTree();
 	void update(); // updates balance factor and height
@@ -49,13 +50,13 @@ public:
 	Tree() = default;
 	~Tree();
 
-	void add(T new_key);
+	void add(int new_key);
 
-	void del_by_data(unsigned int del_data);
-	void del_by_key(T del_key);
+	void del_by_data(T del_data);
+	void del_by_key(int del_key);
 
-	unsigned int get_data(T key);
-	T get_key(unsigned int data);
+	T get_data(int key);
+	int get_key(T data);
 
 	void print_tree();
 
@@ -66,7 +67,7 @@ public:
 	void rl_rotate(NodeTree** node);
 };
 
-NodeTree::NodeTree(T key, NodeTree* left_child, NodeTree* right_child, int height, int bf) {
+NodeTree::NodeTree(int key, NodeTree* left_child, NodeTree* right_child, int height, int bf) {
 
 	this->data = GEN;
 	this->key = key;
@@ -105,8 +106,7 @@ Tree::~Tree() {
 	root = nullptr;
 }
 
-void Tree::add(T new_key) {
-	std::cout << "Adding node with key " << new_key << std::endl;
+void Tree::add(int new_key) {
 	NodeTree* new_node = new NodeTree(new_key);
 	NodeTree** temp = &root;
 	node_stack stack;
@@ -120,7 +120,7 @@ void Tree::add(T new_key) {
 }
 
 
-unsigned int Tree::get_data(T key) {
+T Tree::get_data(int key) {
 	if (root == nullptr) throw DOES_NOT_EXISTS;
 	NodeTree** temp = &root;
 	while (temp != nullptr) {
@@ -137,7 +137,7 @@ unsigned int Tree::get_data(T key) {
 	throw DOES_NOT_EXISTS;
 }
 
-T Tree::get_key(unsigned int data) {
+int Tree::get_key(T data) {
 	if (root == nullptr) throw DOES_NOT_EXISTS;
 	T result = NULL;
 	NodeTree* temp = root;
@@ -158,18 +158,18 @@ T Tree::get_key(unsigned int data) {
 
 
 
-void Tree::del_by_key(T del_key) {
-	std::cout << "Deliting node with key " << del_key << std::endl;
+void Tree::del_by_key(int del_key) {
 	NodeTree** temp = &root;
 	node_stack stack;
-	while (temp != nullptr) {
+	while (*temp != nullptr) {
 		if ((*temp)->key == del_key) {
+
 			if ((*temp)->left_child == nullptr && (*temp)->right_child == nullptr) {
 				*temp = nullptr;
 				balance(stack);
 				return;
 			}
-			// ���� ������� - �������� �������� �� �������
+			// 1 child
 			if ((*temp)->left_child != nullptr && (*temp)->right_child == nullptr) {
 				*temp = (*temp)->left_child;
 				balance(stack);
@@ -180,19 +180,21 @@ void Tree::del_by_key(T del_key) {
 				balance(stack);
 				return;
 			}
-			// 2 ������� - �������� �� ��������, �������� �������� � ���������� �������� ��������
+			// 2 children
 			NodeTree* change = (*temp)->left_child;
 			while (change->right_child != nullptr) {
 				change = change->right_child;
 			}
-			T change_key = change->key;
-			unsigned int change_data = change->data;
+			int change_key = change->key;
+			T change_data = change->data;
 			del_by_key(change_key);
 			(*temp)->key = change_key;
 			(*temp)->data = change_data;
 			return;
 		}
+
 		stack.push(temp);
+
 		if ((*temp)->key > del_key) {
 			temp = &((*temp)->left_child);
 		}
@@ -203,7 +205,7 @@ void Tree::del_by_key(T del_key) {
 	throw DOES_NOT_EXISTS;
 }
 
-void Tree::del_by_data(unsigned int del_data) {
+void Tree::del_by_data(T del_data) {
 	del_by_key(get_key(del_data));
 }
 
@@ -219,10 +221,14 @@ void Tree::balance(node_stack stack) {
 		//std::cout << (*temp)->key << " " << (*temp)->height << " " << (*temp)->bf << std::endl;
 
 		if ((*temp)->bf < -1) {
-			(*temp)->right_child->bf < 0 ? l_rotate(temp) : rl_rotate(temp);
+			(*temp)->right_child->bf <= 0 ? l_rotate(temp) : rl_rotate(temp);
+			stack.~stack();
+			return;
 		}
 		else if ((*temp)->bf > 1) {
-			(*temp)->left_child->bf > 0 ? r_rotate(temp) : lr_rotate(temp);
+			(*temp)->left_child->bf >= 0 ? r_rotate(temp) : lr_rotate(temp);
+			stack.~stack();
+			return;
 		}
 		stack.pop();
 	}
@@ -230,8 +236,6 @@ void Tree::balance(node_stack stack) {
 
 
 void Tree::l_rotate(NodeTree** node) {
-	std::cout << "left-rotate. Node is " << (*node)->key << std::endl;
-
 	NodeTree* child = (*node)->right_child;
 
 	(*node)->right_child = child->left_child;
@@ -242,7 +246,6 @@ void Tree::l_rotate(NodeTree** node) {
 }
 
 void Tree::r_rotate(NodeTree** node) {
-	std::cout << "right-rotate. Node is " << (*node)->key << std::endl;
 	NodeTree* child = (*node)->left_child;
 
 	(*node)->left_child = child->right_child;
@@ -258,31 +261,68 @@ void Tree::lr_rotate(NodeTree** node) {
 }
 
 void Tree::rl_rotate(NodeTree** node){
-	l_rotate(&((*node)->right_child));
-	r_rotate(node);
+	r_rotate(&((*node)->right_child));
+	l_rotate(node);
 }
 
 
 
-void Tree::print_tree() {
-	std::cout << "The tree: \n";
-	std::cout << (root == nullptr ? NULL : root->key) << std::endl;
-	std::cout << (root->left_child == nullptr ? NULL : root->left_child->key) << " " << (root->right_child == nullptr ? NULL : root->right_child->key) << std::endl;
-	std::cout << (root->left_child->left_child == nullptr ? NULL : root->left_child->left_child->key) << " " << (root->left_child->right_child == nullptr ? NULL : root->left_child->right_child->key) << " " << (root->right_child->left_child == nullptr ? NULL : root->right_child->left_child->key) << " " << (root->right_child->right_child == nullptr ? NULL : root->right_child->right_child->key) << std::endl;
-}
+//void Tree::print_tree() {
+//	std::cout << "The tree: \n";
+//	std::cout << (root == nullptr ? NULL : root->key) << std::endl;
+//	std::cout << (root->left_child == nullptr ? NULL : root->left_child->key) << " " << (root->right_child == nullptr ? NULL : root->right_child->key) << std::endl;
+//	std::cout << (root->left_child->left_child == nullptr ? NULL : root->left_child->left_child->key) << " " << (root->left_child->right_child == nullptr ? NULL : root->left_child->right_child->key) << " " << (root->right_child->left_child == nullptr ? NULL : root->right_child->left_child->key) << " " << (root->right_child->right_child == nullptr ? NULL : root->right_child->right_child->key) << std::endl;
+//}
 
 
 int main() {
+	clock_t big_start = clock();
+	const int iter = 10000;
 	Tree A;
-	A.add(7);
-	A.add(9);
-	A.add(4);
-	A.add(3);
-	A.add(5);
-	A.del_by_key(9);
+	int values[iter];
+
+	for (int i = 0; i < iter; ++i) {
+		int rand = std::rand();
+		values[i] = rand;
+
+		clock_t start = clock();
+		try {
+			A.add(rand);
+		}
+		catch (const Tree_Exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		clock_t end = clock();
+
+		double seconds = (double)(end - start);
+		std::cout << seconds << std::endl;
 
 
-	A.print_tree();
+	}
+
+	std::cout << "\nDelete:\n\n";
+
+	for (int i = 0; i < iter; ++i) {
+		int rand = std::rand() % iter;
+
+		int value = values[rand];
+
+		clock_t start = clock();
+		try {
+			A.del_by_key(value);
+		}
+		catch (const Tree_Exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		clock_t end = clock();
+
+		double seconds = (double)(end - start);
+		std::cout << seconds << std::endl;
+
+	}
+	clock_t big_end = clock();
+	double seconds = (double)(big_end - big_start) / CLOCKS_PER_SEC;
+	std::cout << seconds << std::endl;
 
 	return 0;
 }

@@ -148,11 +148,13 @@ void DynArray::clean() {
 void DynArray::resize(unsigned int new_size) {
     if (new_size < size)
         size = new_size;
-        auto* new_data = new unsigned int[new_size];
-           memcpy(new_data, array, sizeof (unsigned int)* size);
-           delete array;
-           array = new_data;
+    auto* new_data = new unsigned int[new_size + buffer]; //добавлен буффер
+    memcpy(new_data, array, sizeof(unsigned int) * size);
+    delete[] array;
+    array = new_data;
+    size = new_size;
 }
+
 
 
 unsigned int DynArray::get(unsigned int number) {
