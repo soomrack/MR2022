@@ -19,10 +19,6 @@ public:
 
     bool operator==(const State& other) const { return description == other.description; }
 
-    bool operator<(const State& other) {
-        return this->description < other.description;
-    }
-
     State(const State& state);
 };
 
@@ -60,7 +56,7 @@ State::State(const State& state) {
 }
 
 void Game::print_stats() const {
-    std::cout << "You now have " << health << " health, " << money << " money and " <<  (armor ? "":"no") << " armor\n";
+    std::cout << "You now have " << health << " health, " << money << " money and " <<  (armor ? "":"no ") << "armor\n";
 }
 
 void Game::play(const State& start_state) {
@@ -78,8 +74,7 @@ void Game::play(const State& start_state) {
             std::cout << "====================================" << std::endl;
 
             std::cout << "Your path has split, choose what to do next" << std::endl;
-            int counter = 1;
-            for (auto &el: current_state_neighbours) {
+            for (int counter = 1; auto &el: current_state_neighbours) {
                 std::cout << counter++ << " - " << el.second->value.description << std::endl;
             }
             std::cin >> choice;
@@ -88,8 +83,7 @@ void Game::play(const State& start_state) {
                 std::cin >> choice;
             }
         }
-        int counter = 1;
-        for (auto &el: current_state_neighbours) {
+        for (int counter = 1; auto &el: current_state_neighbours) {
             if (counter++ == choice) {
                 current_state = el.second->value;
                 current_state_neighbours = el.second->neighbours;

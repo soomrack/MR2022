@@ -1,10 +1,8 @@
 file(REMOVE_RECURSE
-  "ATD.exe"
-  "ATD.exe.manifest"
+  "ATD"
   "ATD.pdb"
-  "CMakeFiles/ATD.dir/main.cpp.obj"
-  "CMakeFiles/ATD.dir/main.cpp.obj.d"
-  "libATD.dll.a"
+  "CMakeFiles/ATD.dir/main.cpp.o"
+  "CMakeFiles/ATD.dir/main.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.
