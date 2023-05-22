@@ -1,3 +1,3 @@
-E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/ATD.dir
-E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Education/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/ATD.dir
+/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/sirbo/CLionProjects/MR2022/Boyko_Alexander/ATD/cmake-build-debug/CMakeFiles/rebuild_cache.dir

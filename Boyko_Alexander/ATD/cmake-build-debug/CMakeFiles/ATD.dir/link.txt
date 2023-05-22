@@ -1,3 +1,1 @@
-"E:\Programmes\CLion 2022.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\ATD.dir/objects.a
-"E:\Programmes\CLion 2022.2.1\bin\mingw\bin\ar.exe" qc CMakeFiles\ATD.dir/objects.a @CMakeFiles\ATD.dir\objects1.rsp
-"E:\Programmes\CLion 2022.2.1\bin\mingw\bin\g++.exe" -g -Wl,--whole-archive CMakeFiles\ATD.dir/objects.a -Wl,--no-whole-archive -o ATD.exe -Wl,--out-implib,libATD.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\ATD.dir\linklibs.rsp
+/usr/bin/c++ -g CMakeFiles/ATD.dir/main.cpp.o -o ATD 
