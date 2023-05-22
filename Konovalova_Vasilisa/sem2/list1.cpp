@@ -14,7 +14,7 @@ public:
     Node(const Data data, const Node* next = nullptr);
 public:
     Node *get_next() { return next; }
-    void add_next(Node *new_next) { next = new_next; }
+    void add_next(Node* node, const Data value);
     void delete_next();
 };
 Node::Node(const Data data, const Node* next) {
@@ -33,10 +33,14 @@ public:
     void delete_head();
     Node* get_head(){return head;};
     void clear();
-    //void add_next(Node* node, const Data value);
-    //void delete_next(Node* node);
-
 };
+
+void Node::add_next(Node* node, const Data value) {
+    if (node == nullptr) {
+        return;
+    }
+    node->next = new Node(value, node->next);
+}
 
 void Node::delete_next() {
     Node *temp = next;
