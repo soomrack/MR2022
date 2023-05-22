@@ -100,25 +100,14 @@ void BinaryTree::remove(double value)
         return;
     }
     Node **largestOnLeftPtr = find_biggest_ptr(nodeToRemove->left);
+    *current = *largestOnLeftPtr;
 
+    (nodeToRemove->left == *largestOnLeftPtr) ? (nodeToRemove->left = nullptr) : (*largestOnLeftPtr = (*current)->left);
 
-    if (nodeToRemove->left == *largestOnLeftPtr) 
-    /*Случай если самый большой элемент
-    стоит следующим после найденной ноды, чтобы не создавать 
-    вложения указателей самого в себя, возникает условие*/
-    {
-        *current = *largestOnLeftPtr;
-    }
-    else
-    {
-        *current = *largestOnLeftPtr;
-        *largestOnLeftPtr = (*current)->left;
-        (*current)->left = nodeToRemove->left;
-    }
+    (*current)->left = nodeToRemove->left;
     (*current)->right = nodeToRemove->right;
     delete nodeToRemove;
 }
-
 
 Node **BinaryTree::find_smallest_ptr(Node *subtree)
 {
@@ -127,7 +116,6 @@ Node **BinaryTree::find_smallest_ptr(Node *subtree)
         smallest = &((*smallest)->left);
     return smallest;
 }
-
 
 Node **BinaryTree::find_biggest_ptr(Node *subtree)
 {
