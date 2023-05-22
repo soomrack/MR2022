@@ -1,49 +1,47 @@
 #include <iostream>
 using namespace std;
 
-class BinaryTree {
-private:
-    struct Node {
-        int data;
-        int value;
-        Node* left;
-        Node* right;
-        Node(int value) : data(value), left(nullptr), right(nullptr) {}
-    };
+struct Node {
+    int data;
+    int value;
+    Node* left;
+    Node* right;
+    Node(int value) : data(value), value(value), left(nullptr), right(nullptr) {}
+};
 
+class BinaryTree {
+    
 public:
     Node* root;
     BinaryTree();
-     ~BinaryTree();
-     void add(int value);  
-     void del(int del_value);  
-     bool get(int get_value);  
-     
+    ~BinaryTree();
+    void add(int value);
+    void del(int del_value);
+    bool get(int get_value);
 
 private:
-     Node* get_node(int get_value);
-	 Node* get_parent_node(int get_value);
-	 void destroy_tree(Node* node);  
-	 Node* find_min(int min_value);
-	 
-    
-};
-    
-    BinaryTree::BinaryTree() : root(nullptr) {}
-    
-    BinaryTree::~BinaryTree() {
-        destroy_tree(root);
-    }
+    Node* get_node(int get_value);
+    Node* get_parent_node(int get_value);
+    void destroy_tree(Node* node);
+    Node* find_min(Node* node);
 
-    void BinaryTree::add(int value) {
-        Node** link = &root;
-	while(*link != nullptr){
-		link = value < (*link)->data ? &((*link)->left) : &((*link)->right);
-	}
-	*link = new Node(value);
+};
+
+BinaryTree::BinaryTree() : root(nullptr) {}
+
+BinaryTree::~BinaryTree() {
+    destroy_tree(root);
 }
 
-    void BinaryTree::del(int del_value) {
+void BinaryTree::add(int value) {
+    Node** link = &root;
+    while (*link != nullptr) {
+        link = value < (*link)->value ? &((*link)->left) : &((*link)->right);
+    }
+    *link = new Node(value);
+}
+
+void BinaryTree::del(int del_value) {
     auto get_parent = get_parent_node(del_value);
     auto current_node_link = del_value < get_parent->value ? &(get_parent->left) : &(get_parent->right);
     auto del_node = *current_node_link;
@@ -52,12 +50,12 @@ private:
         return;
     }
 
-    if((*current_node_link)->right == nullptr){
+    if ((*current_node_link)->right == nullptr) {
         *current_node_link = (*current_node_link)->left;
         delete del_node;
         return;
     }
-    if((*current_node_link)->left == nullptr) {
+    if ((*current_node_link)->left == nullptr) {
         *current_node_link = (*current_node_link)->right;
         delete del_node;
         return;
@@ -84,36 +82,34 @@ private:
     delete del_node;
 }
 
-
-  bool BinaryTree::get(int get_value) {
-	auto current_node = root;
-	if(get_node(get_value) != nullptr){
-		return true;
-	}
-	return false;
+bool BinaryTree::get(int get_value) {
+    auto current_node = root;
+    if (get_node(get_value) != nullptr) {
+        return true;
+    }
+    return false;
 }
 
-    void  BinaryTree::destroy_tree (Node* node) {
-        if (node != nullptr) {
-            destroy_tree(node->left);
-            destroy_tree(node->right);
-            delete node;
-        }
+void BinaryTree::destroy_tree(Node* node) {
+    if (node != nullptr) {
+        destroy_tree(node->left);
+        destroy_tree(node->right);
+        delete node;
     }
+}
 
-    Node* BinaryTree::get_node(int get_value) {
+Node* BinaryTree::get_node(int get_value) {
     Node** link = &root;
     while (*link != nullptr) {
         link = get_value < (*link)->value ? &((*link)->left) : &((*link)->right);
-        if ((*link)->value = get_value) {
+        if ((*link)->value == get_value) {
             return *link;
         }
     }
     return nullptr;
 }
 
-
-    Node* BynaryTree::get_parent_node(int get_value) {
+Node* BinaryTree::get_parent_node(int get_value) {
     Node** link = &root;
     Node** get_parent_link = nullptr;
     while (*link != nullptr) {
@@ -126,13 +122,12 @@ private:
     return nullptr;
 }
 
-    Node* BinaryTree::find_min(int min_value) {
-        while (node->left != nullptr) {
-            node = node->left;
-        }
-        return node;
+Node* BinaryTree::find_min(Node* node) {
+    while (node->left != nullptr) {
+        node = node->left;
     }
-    
+    return node;
+}
 
 int main() {
     BinaryTree tree;
