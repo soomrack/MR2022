@@ -65,7 +65,7 @@ void BinaryTree::del(int del_value) {
     auto del_right_link = &((*current_node_link)->right);
     auto del_link = current_node_link;
 
-    auto most_left_link = del_right_link;
+    /*auto most_left_link = del_right_link;
     auto next_node = (*most_left_link)->left;
     while (next_node != nullptr) {
         most_left_link = &((*most_left_link)->left);
@@ -77,7 +77,21 @@ void BinaryTree::del(int del_value) {
     most_left->left = (*del_left_link);
     auto mem_link = most_left->right;
     (*most_left_link) = mem_link;
-    most_left->right = (*del_right_link);
+    most_left->right = (*del_right_link);*/
+    
+    auto most_left_link = del_left_link;
+auto next_node = (*most_left_link)->right;  //  Первое удаление (правого потомка)
+while (next_node != nullptr) {
+    most_left_link = &((*most_left_link)->right); //  Второй выбор
+    next_node = next_node->right;
+}
+
+auto most_left = *most_left_link;
+(*del_link) = most_left;  //  Второе удаление  (левого потомка)
+most_left->right = (*del_right_link);
+auto mem_link = most_left->left;
+(*most_left_link) = mem_link;
+most_left->left = (*del_left_link); 
 
     delete del_node;
 }
