@@ -59,8 +59,10 @@ bool Queue<T, CAPACITY>::push(const T &new_val) {
     new(static_cast<std::aligned_storage_t<sizeof(T), alignof(T)>*> (&queue[tail])) T(new_val);
     long prev_tail = tail;
     tail = (tail + 1) % CAPACITY;
-    if (head == -1) head = prev_tail;
-    //если после проверки условия произойдёт метод "pop", может произойти ошибка
+    if (head == -1)
+        // если после проверки условия произойдёт метод "pop", то он не вернёт никакого значения, т.к. выполнится
+        // первое условие (head == -1) и программа выйдет из метода. Хотя при этом данные уже были сохранены.
+        head = prev_tail;
     return true;
 }
 
@@ -71,8 +73,10 @@ T Queue<T, CAPACITY>::pop() {
     new(&output_val) T(*std::launder(reinterpret_cast<const T*>(&queue[head])));
     memset(&queue[head], 0, sizeof(T));
     head = (head + 1) % CAPACITY;
-    if (head == tail) head = -1;
-    //если после проверки условия произойдёт метод "pop", может произойти ошибка
+    if (head == tail)
+        // если после проверки условия произойдёт метод "push", то он не запушит никакого значения, т.к. выполнится
+        // первое условие (head == tail) и программа выйдет из метода. Хотя при этом очередь пуста.
+        head = -1;
     return output_val;
 }
 
