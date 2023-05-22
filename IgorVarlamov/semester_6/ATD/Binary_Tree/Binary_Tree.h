@@ -21,8 +21,8 @@ public:
 
 private:
     Node *root;
-    Node** find_smallest_ptr(Node *subtree);
-    void delete_root();
+    Node **find_smallest_ptr(Node *subtree);
+    void delete_root(Node *root);
 };
 
 BinaryTree::BinaryTree()
@@ -32,38 +32,40 @@ BinaryTree::BinaryTree()
 
 BinaryTree::~BinaryTree()
 {
-    delete_root(root)
+    delete_root(root);
 }
 
 bool BinaryTree::search(double value)
 {
-    auto** node = &root;
-    while (*node != nullptr) 
+    auto **node = &root;
+    while (*node != nullptr)
     {
-        if ((*node)->data == value) return true;
-        if ((*node)->data > value) 
+        if ((*node)->data == value)
+            return true;
+        if ((*node)->data > value)
         {
             node = &(*node)->left;
         }
-        else 
+        else
         {
             node = &(*node)->right;
         }
     }
 }
 
-void BinaryTree::delete_root(Node* node)
-{   if (node != nullptr) 
+void BinaryTree::delete_root(Node *node)
+{
+    if (node != nullptr)
     {
-    delete_root(node->left);
-    delete_root(node->right);
-    delete node;
+        delete_root(node->left);
+        delete_root(node->right);
+        delete node;
     }
 }
 
 void BinaryTree::add(double value)
 {
-    auto** node = &root;
+    auto **node = &root;
     while (*node != nullptr)
     {
         node = value < (*node)->data ? &(*node)->left : &(*node)->right;
@@ -71,20 +73,19 @@ void BinaryTree::add(double value)
     *node = new Node(value);
 }
 
-
 void BinaryTree::remove(double value)
 {
-    auto** node = &root;
+    auto **node = &root;
     Node **current = node;
     while (*current && (*current)->data != value)
     {
         current = value < (*current)->data ? &(*current)->left : &(*current)->right;
     }
     if (!*current)
-        return; 
+        return;
 
-    Node *temp = *current; 
-    if (((*current)->left) != nullptr) 
+    Node *temp = *current;
+    if (((*current)->left) != nullptr)
     {
         *current = (*current)->right;
         delete temp;
