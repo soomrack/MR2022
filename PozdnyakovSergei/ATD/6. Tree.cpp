@@ -96,10 +96,6 @@ void Tree::del(unsigned int del_value) {
     }
     if (*to_del == nullptr) return;
     Node* del = *to_del;
-    if (((*to_del)->left == nullptr) && ((*to_del)->right == nullptr)) {
-        *to_del = nullptr;
-        delete (*to_del);
-    }
     if ((*to_del)->left == nullptr) {
         *to_del = (*to_del)->right;
         delete del;
