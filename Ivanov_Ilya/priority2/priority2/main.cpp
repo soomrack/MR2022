@@ -1,7 +1,7 @@
 #include "queue.h"
 using namespace :: std;
 int main(){
-    queue a;
+    queue a(7);
     try {
     a.push(10,1);
     a.push(9,2);

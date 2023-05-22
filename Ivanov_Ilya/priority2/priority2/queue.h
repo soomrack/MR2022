@@ -6,30 +6,35 @@ class queue_error : public std:: domain_error{
     queue_error(const char* const message): std:: domain_error(message){}
 };
 queue_error empty("queue is empty");
+queue_error full("queue is full");
+
 
 class queue {
 private:
     int* data;
     int* priorities;
+    int capacity;
     int head;
     int current_size;
     int tail;
 public:
-    queue();
+    queue(int capacity);
    ~queue();
     void push(int x, int priority);
     int pop();
     void print();
     bool is_empty();
+    bool is_full();
     unsigned int get_size();
 };
 
-queue::queue() {
+queue::queue(int capacity) {
+    this->capacity = capacity;
+    data = new int[capacity];
+    head = 0;
+    tail = 0;
     current_size = 0;
-    data = new int[current_size];
-    head = -1;
-    tail = -1;
-};
+}
 
 queue::~queue() {
     delete[] data;
@@ -39,7 +44,14 @@ queue::~queue() {
 bool queue::is_empty() {
     return head == -1 ;
 };
+bool queue::is_full() {
+    return current_size == capacity;
+}
+
 void queue::push(int x, int priority) {
+    if (is_full()) {
+        throw full;
+    }
     if (is_empty()) {
         head = 0;
         tail = 0;
@@ -54,28 +66,27 @@ void queue::push(int x, int priority) {
         }
         data[i + 1] = x;
         priorities[i + 1] = priority;
-        tail++;
+        tail = (tail + 1) % capacity;
     }
     current_size++;
 }
 int queue::pop() {
-    if(is_empty()) throw empty;
-    int value = data[head];
-    head++;
-    if (head > tail) {
-      head = tail = -1;
+    if (is_empty()) {
+        throw empty;
     }
+
+    int value = data[head];
+    head = (head + 1) % capacity;
     current_size--;
     return value;
-  }
-
+}
 unsigned int queue::get_size() {
     if (is_empty()) throw empty;
    return current_size;
 }
 void queue::print(){
-    for (int i = head; i <=tail; i++) {
-     std:: cout << data[i] << "\n";
-}
+    for (int i = 0; i < current_size; i++) {
+        std::cout << data[(head + i) % capacity] << "\n";
+    }
 }
 #endif //MR2022_queue

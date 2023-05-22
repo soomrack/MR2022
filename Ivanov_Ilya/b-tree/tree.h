@@ -68,33 +68,29 @@ NodePtrPtr Tree:: parent_min(NodePtrPtr   node) {
 
 
 
-void Tree:: del( int key) {
+void Tree::del(int key) {
     NodePtrPtr node_to_del_ptr = &(this->root);
-    while ((*node_to_del_ptr) != TNULL){
-        if ((*node_to_del_ptr)->data == key) break;
+    while (*node_to_del_ptr != TNULL && (*node_to_del_ptr)->data != key) {
         node_to_del_ptr = ((*node_to_del_ptr)->data > key) ? &((*node_to_del_ptr)->left) : &((*node_to_del_ptr)->right);
     }
 
-    if ((*node_to_del_ptr) == TNULL) return;
+    if (*node_to_del_ptr == TNULL) {
+        return; // Узел не найден, выходим из метода
+    }
 
     if ((*node_to_del_ptr)->right == TNULL) {
         *node_to_del_ptr = (*node_to_del_ptr)->left;
         return;
     }
+
     if ((*node_to_del_ptr)->left == TNULL) {
         *node_to_del_ptr = (*node_to_del_ptr)->right;
         return;
     }
 
-    NodePtrPtr minimum = (min(&((*node_to_del_ptr)->right)));
-    const NodePtr buffer = *node_to_del_ptr;
-    const NodePtr buffer_min = (*minimum)->right;
-    const NodePtrPtr parent_min_ptr = parent_min(&((*node_to_del_ptr)->right));
-    (*node_to_del_ptr) = *minimum;
-    (*minimum)->left = (buffer)->left;
-    (*minimum)->right = (buffer)->right;
-    (*parent_min_ptr)->left = buffer_min ;
-
+    NodePtrPtr minimum = min(&((*node_to_del_ptr)->right)); 
+    (*node_to_del_ptr)->data = (*minimum)->data;
+    *minimum = (*minimum)->right;
 }
 
 NodePtr Tree:: search(NodePtr node, int key) {
