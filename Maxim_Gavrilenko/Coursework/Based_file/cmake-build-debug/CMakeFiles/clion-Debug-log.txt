@@ -1,0 +1,7 @@
+"C:\Program Files\JetBrains\CLion 2022.3.3\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2022.3.3/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Coursework\Based_file -B C:\Users\El1x3r7714\CLionProjects\MR2022\Maxim_Gavrilenko\Coursework\Based_file\cmake-build-debug
+-- Configuring done
+CMake Error at CMakeLists.txt:5 (add_executable):
+  No SOURCES given to target: MR2022
+
+
+CMake Generate step failed.  Build files cannot be regenerated correctly.
