@@ -101,7 +101,7 @@ void BinaryTree::destroy_tree(Node* node) {
 Node* BinaryTree::get_node(int get_value) {
     Node** link = &root;
     while (*link != nullptr) {
-        link = get_value > (*link)->value ? &((*link)->left) : &((*link)->right);
+        link = get_value < (*link)->value ? &((*link)->left) : &((*link)->right);
         if ((*link)->value == get_value) {
             return *link;
         }
