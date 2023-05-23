@@ -85,7 +85,7 @@ template <typename T>
 void PriorityQueue<T>::siftUp(int index)
 {
     if (index == 0)
-        return;
+        return; 
     int parent = (index - 1) / 2;
     if (data[index].priority > data[parent].priority)
     {

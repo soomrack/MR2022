@@ -105,7 +105,7 @@ bool Queue<T>::is_empty()
 template <typename T> //
 void Queue<T>::enqueue(T num)
 {
-    if (is_full())
+    if (is_full()) 
         throw OVERFLOWED;
     if (is_empty())
         head = 0;

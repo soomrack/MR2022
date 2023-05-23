@@ -24,7 +24,7 @@ int main() {
         print(A);
         A.resize(10);
         print(A);
-    }
+    } 
     catch (ARRAY_EXCEPTION &e)
     {
         std::cerr<<e.what()<<std::endl;

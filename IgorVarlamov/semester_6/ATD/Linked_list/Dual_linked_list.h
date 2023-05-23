@@ -12,7 +12,7 @@ LIST_ERROR EMPTY("List is empty");
 LIST_ERROR BADALLOC("Memory has not been allocated");
 
 
-template <typename T>
+template <typename T> 
 class Node
 {
 public:

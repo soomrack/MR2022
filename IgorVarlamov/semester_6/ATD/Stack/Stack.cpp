@@ -27,4 +27,4 @@ int main()
     std::cout << "Top of the Stack: " << s.peek() << std::endl; // Верхний элемент стека: 3
 
     return 0;
-}
+}  

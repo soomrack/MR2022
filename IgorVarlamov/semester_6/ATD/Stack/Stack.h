@@ -78,7 +78,7 @@ stack<T>::~stack() {
     data = nullptr;
 }
 
-template <typename T>
+template <typename T> 
 bool stack<T>::is_empty() {
     return top == -1;
 }

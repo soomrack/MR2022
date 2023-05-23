@@ -9,8 +9,8 @@ int main() {
     A.add(32);
     A.add(7);
     A.add(36);
-    A.add(28);
-    A.add(26);
+    A.add(28); 
+    A.add(26); 
     A.add(15);
     A.add(2);
     A.add(91);

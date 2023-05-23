@@ -12,5 +12,5 @@ int main()
     graph.remove_edge(10,3);
     graph.remove_node(10);
     graph.print();
-    return 0;
+    return 0; 
 }

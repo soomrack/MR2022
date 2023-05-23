@@ -20,7 +20,7 @@ public:
     bool search(double);
 
 private:
-    Node *root;
+    Node *root; 
     Node **find_smallest_ptr(Node *subtree);
     void delete_root(Node *root);
 };

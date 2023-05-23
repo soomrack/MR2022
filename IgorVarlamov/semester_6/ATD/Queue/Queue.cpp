@@ -21,7 +21,7 @@ int main() {
         q.dequeue();
         q.dequeue();
         q.dequeue();
-        q.enqueue(3);
+        q.enqueue(3); 
         q.enqueue(7);
         std::cout << "Print q: ";
         print(q);
