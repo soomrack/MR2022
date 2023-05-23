@@ -20,8 +20,9 @@ public:
     bool search(double);
 
 private:
-    Node *root; 
+    Node *root;
     Node **find_smallest_ptr(Node *subtree);
+    Node **find_biggest_ptr(Node *subtree);
     void delete_root(Node *root);
 };
 
@@ -79,30 +80,33 @@ void BinaryTree::remove(double value)
     Node **current = node;
     while (*current && (*current)->data != value)
     {
-        current = value < (*current)->data ? &(*current)->left : &(*current)->right;
+        current = value < (*current)->data ? &((*current)->left) : &((*current)->right);
     }
-    if (!*current)
+    if (*current == nullptr)
         return;
 
-    Node *temp = *current;
-    if (((*current)->left) != nullptr)
+    Node *nodeToRemove = *current;
+
+    if (nodeToRemove->left == nullptr)
     {
-        *current = (*current)->right;
-        delete temp;
+        *current = nodeToRemove->right;
+        delete nodeToRemove;
         return;
     }
-    if (!(*current)->right)
+    if (nodeToRemove->right == nullptr)
     {
-        *current = (*current)->left;
-        delete temp;
+        *current = nodeToRemove->left;
+        delete nodeToRemove;
         return;
     }
-    Node **smallest_ptr = find_smallest_ptr(temp->right);
-    *current = *smallest_ptr;
-    (*current)->left = temp->left;
-    *smallest_ptr = (*current)->right;
-    (*current)->right = temp->right;
-    delete temp;
+    Node **largestOnLeftPtr = find_biggest_ptr(nodeToRemove->left);
+    *current = *largestOnLeftPtr;
+
+    (nodeToRemove->left == *largestOnLeftPtr) ? (nodeToRemove->left = nullptr) : (*largestOnLeftPtr = (*current)->left);
+
+    (*current)->left = nodeToRemove->left;
+    (*current)->right = nodeToRemove->right;
+    delete nodeToRemove;
 }
 
 Node **BinaryTree::find_smallest_ptr(Node *subtree)
@@ -111,6 +115,14 @@ Node **BinaryTree::find_smallest_ptr(Node *subtree)
     while ((*smallest)->left != nullptr)
         smallest = &((*smallest)->left);
     return smallest;
+}
+
+Node **BinaryTree::find_biggest_ptr(Node *subtree)
+{
+    Node **biggest = &subtree;
+    while ((*biggest)->right != nullptr)
+        biggest = &((*biggest)->right);
+    return biggest;
 }
 
 #endif // MR2022_BINARY_TREE_H
