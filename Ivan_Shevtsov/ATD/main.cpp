@@ -9,6 +9,7 @@
 
 //#define DEBUG
 
+
 enum test_state{
     PASSED = 1,
     FAILED = 0,
@@ -17,23 +18,26 @@ enum test_state{
     MASKED = 3
 };
 
-void exc_text();
-
+// SEPARATOR
 void sep(const char* message= "")
 {
     std::cout << "----------------------------" << message << "----------------------------\n";
 }
 
-void test_list(bool test_visible = true)
+
+void test_list()
 {
     sep("LIST TEST STARTED");
     using namespace list_names;
+
     list<int> lstTest;
-    lstTest.push(1);
-    lstTest.push(2);
-    lstTest.push(3);
-    lstTest.push(4);
-    lstTest.push(5);
+    for (int idx = 0; idx < 6; idx++) {
+        lstTest.push(1);
+        lstTest.push(2);
+        lstTest.push(3);
+        lstTest.push(4);
+        lstTest.push(5);
+    }
 
     for (auto &&node: lstTest){
         std::cout << node << std::endl;
@@ -71,7 +75,9 @@ void test_list(bool test_visible = true)
     sep("LIST TEST ENDED");
 }
 
+
 void delay(){ int a; for (int i = 0; i < 1000000000; i++) {a = i;}}
+
 
 void test_dynamic_array()
 {
@@ -109,15 +115,9 @@ void test_dynamic_array()
     auto DA4 = std::move(DA3);
     DA4.show();
 
-/*
-    for (auto value : DA4){
-        std::cout << value << std::endl;
-    }
-*/
-
-
     sep("ARRAY TEST ENDED");
 }
+
 
 void test_stack()
 {
@@ -164,14 +164,15 @@ void test_stack()
     }
     else sep("not equal");
     sep("STACK TEST ENDED");
-
 }
+
 
 void test_tree(){
     using namespace tree_names;
-
+    // #TODO
 
 }
+
 
 void test_queue() {
     sep("QUEUE TEST STARTED");
@@ -207,6 +208,7 @@ void test_queue() {
 
 }
 
+
 void test_graph(){
     using namespace graph_names;
     Graph graph1;
@@ -224,7 +226,6 @@ void test_graph(){
     Node* node9  = new  Node(9 );
     Node* node10  = new Node(10);
     Node* node11 = new  Node(11);
-
 
     graph1.add_node(node1);
     graph1.add_node(node2);
@@ -253,64 +254,37 @@ void test_graph(){
     graph1.add_edge(node2, node6, 4);
     graph1.add_edge(node7, node6, 3);
 
+    Node* delNode1 = new Node(2);
+    Node* delNode2 = new Node(2);
+    graph1.add_node(delNode1);
+    graph1.add_node(delNode2);
+    graph1.add_edge(delNode1, delNode2, 2);
+    graph1.add_edge(delNode2, delNode1, 3);
+    graph1.add_edge(node2, delNode2, 4);
+    graph1.add_edge(node1, delNode1, 4);
 
-    //Node* delNode1 = new Node(2);
-    //Node* delNode2 = new Node(2);
-    //graph1.add_node(delNode1);
-    //graph1.add_node(delNode2);
-    //graph1.add_edge(delNode1, delNode2, 2);
-    //graph1.add_edge(delNode2, delNode1, 3);
-    //graph1.add_edge(node2, delNode2, 4);
-    //graph1.add_edge(node1, delNode1, 4);
 
     // test
     graph1.show();
     sep();
-    //graph1.del_node(2, false);
-    //graph1.show();
-    sep("dijkstra test");
-    std::cout << graph1.dijkstra_simple(node1, node9, true)->dist << "\n";
-
-    sep("dijkstra path");
-    graph1.dijkstra_simple(node1, node9, false)->restore_path().show();
-    sep("A* test");
-    // GENERATE GRID MANUALLY
-    auto* x_array = new DynArr_names::dynamic_array<double>;
-    auto* y_array = new DynArr_names::dynamic_array<double>;
-
-/*    x_array->push_back(0);
-    x_array->push_back(20);
-    x_array->push_back(10);
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();
-    x_array->push_back();*/
+    graph1.del_node(2, false);
+    graph1.show();
 
     sep("GRAPH TEST ENDED");
 }
 
-void exc_text() {
-    using namespace list_names;
-    list<int> list1;
-    list1.show();
-}
 
 int main() {
     using namespace std;
+
+    // MANUAL TESTING
     try{
-        //test_list(); //#TODO написать нормально тесты
+        test_list();
         //test_stack();
         //test_dynamic_array();
         //test_queue();
         //test_tree();
-
-        //exc_text();
-        test_graph();
+        //test_graph();
     }
     catch (const list_names::ListException& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
