@@ -9,7 +9,7 @@ void sep(const char* message= "")
 }
 
 
-void test_graph(){
+void test_Dijkstra(){
     using namespace graph_names;
     Graph graph1;
     sep("GRAPH TEST STARTED");
@@ -72,23 +72,32 @@ void test_graph(){
     //graph1.show();
     sep("dijkstra test");
     sep("dijkstra path");
-    graph1.find_DijkstraPath_simple(node1, node9, true);
+    graph1.naive_Dijkstra_search(node1, node9, true);
     DynArr_names::dynamic_array<double> ans;
     node9->restore_path(ans);
     std::cout << node9->return_dist() << "\n";
 
 
-    sep("A* test");
-    // GENERATE GRID MANUALLY
-    auto* x_array = new DynArr_names::dynamic_array<double>;
-    auto* y_array = new DynArr_names::dynamic_array<double>;
 
-    sep("GRAPH TEST ENDED");
+
 }
 
+void test_AStar(){
+
+    sep("A* test");
+
+
+
+}
 
 int main() {
-    test_graph();
+    test_Dijkstra();
+    test_AStar();
+    test_Lee();
+
+
+
+    sep("GRAPH TEST ENDED");
 
     return 0;
 }
