@@ -125,9 +125,6 @@ void BaseGraph::show() {
     for (auto nodes_iterator = nodes.begin(); nodes_iterator != nodes.end(); ++nodes_iterator){
         std::cout << idx << ". Data: " << nodes_iterator.current_node->data->data << "\n" << "EDGES TO NODE:\n";
 
-        // I understand that the loop in the loop is not good ( O(n^2) ),
-        // but I think in the output you can allow such a luxury
-
         if (nodes_iterator.current_node->data->edges.is_empty()) {
             std::cout << "\tEMPTY\n";
             idx++;
@@ -140,7 +137,7 @@ void BaseGraph::show() {
             idx++;
         }
     }
-    std::cout << "END OF BaseGraph\n";
+    std::cout << "END OF Graph\n";
 }
 
 void DijkstraGraph::naive_Dijkstra_search(Node *source, Node *target, bool show_log) {
@@ -216,11 +213,20 @@ Node *DijkstraGraph::find_node_with_min_dist(bool print_value) {
     return ans;
 }
 
-void Node::restore_path(DynArr_names::dynamic_array<double>& Empty) {
+void Node::restore_path(DynArr_names::dynamic_array<double>& Empty, ALGORITHM_TYPE TYPE) {
     Node* running_node = this;
-    while (running_node != nullptr){
-        Empty.push_back(running_node->data);
-        running_node = running_node->from;
+    if (TYPE == DIJKSTRA) {
+        while (running_node != nullptr) {
+            Empty.push_back(running_node->data);
+            running_node = running_node->from;
+        }
+    }
+
+    if (TYPE == ASTAR){
+        while (running_node != nullptr) {
+            Empty.push_back(running_node->data);
+            running_node = running_node->fromNode;
+        }
     }
 }
 
@@ -228,47 +234,54 @@ double Node::get_dist(const Node &target) {
     return sqrt(pow(target.x_pos - x_pos, 2) + pow(target.y_pos - y_pos, 2));
 }
 
-void AStarGraph::AStarSearch(Node &source, Node &target) {
+int Node::return_dist(ALGORITHM_TYPE TYPE) {
+    if (TYPE == DIJKSTRA)   { return dist;}
+    if (TYPE == ASTAR   )   { return distSource;}
+}
+
+bool AStarGraph::AStarSearch(Node &source, Node &target, bool show_log) {
     list_names::list<Node*> closed;
-    list_names::list<Node*> opened;
+    priority_queue_names::PriorityQueue<Node*, double> opened;
 
     // source node
     source.distSource = 0;
-    source.distTarget = source.distSource + source.get_dist(target);
+    source.distTargetEstimate = source.distSource + source.get_dist(target);
 
-    opened.push(&source);
+    opened.push(&source, source.distTargetEstimate);
 
 
     while (!opened.is_empty())
     {
-        // check front of opened
-        Node* current_node = opened.front();
+        // check element of opened with min target dist
+        Node* current_node = opened.back()->value;
         if ( current_node->x_pos == target.x_pos and current_node->y_pos == target.y_pos )
-            return;
+            return true;
         closed.push(current_node);
-        opened.pop();
+        opened.pop_min();
 
-        // find neighbours
-        if ( current_node->edges.is_empty())
-            return;
-
+        // check neighbours
         for (auto current_edge : current_node->edges)
         {
-            auto current_target_node = current_edge->target;
+            auto neighbour_node = current_edge->target;
 
-            if (closed.is_in_list(current_target_node)) {
+            if (closed.is_in_list(neighbour_node)) {
                 continue;}
 
-            // Ищем соседа в открытом векторе
-            if (opened.is_in_list(current_target_node)){
+            auto tmp_distNeighbourSource = current_node->distSource + current_edge->weight;
 
+            if (!opened.is_data_in_queue(neighbour_node, neighbour_node->distTargetEstimate
+                or tmp_distNeighbourSource < neighbour_node->distSource)){
+                neighbour_node->fromNode = current_node;
+                neighbour_node->distSource = tmp_distNeighbourSource;
+                neighbour_node->distTargetEstimate = neighbour_node->distSource + neighbour_node->get_dist(target);
+            }
+
+            if (!opened.is_data_in_queue(neighbour_node, neighbour_node->distTargetEstimate)){
+                opened.push(neighbour_node, neighbour_node->distTargetEstimate);
             }
 
         }
-
-
     }
-
-    return;
+    return false;
 }
 

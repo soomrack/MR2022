@@ -4,8 +4,19 @@
 #include "list.h"
 #include "dynamic_array.h"
 #include "queue.h"
+#include "priority_queue.h"
 #include <climits> // for int max func
 #include <cmath>
+
+
+#ifndef ALGTYPE
+#define ALGTYPE
+enum ALGORITHM_TYPE{
+    DIJKSTRA,
+    ASTAR,
+
+};
+#endif
 
 
 namespace graph_names {
@@ -61,15 +72,16 @@ namespace graph_names {
         Node* from   = nullptr;
 
         // FOR A*
-        double x_pos      = NAN;
-        double y_pos      = NAN;
-        double distSource = NAN;  // distance from source
-        double distTarget = NAN;  // estimate distance to target
-        Node* fromNode    = nullptr;
+        double x_pos              = NAN;
+        double y_pos              = NAN;
+        double distSource         = INT_MAX - 100;  // set infinity distance from source
+        double distTargetEstimate = INT_MAX - 100;  // estimate distance to target
+        Node* fromNode            = nullptr;
 
     public:
         Node() = delete;
         explicit Node(double data = 0);
+        Node(double data, double x_pos, double y_pos): data(data), x_pos(x_pos), y_pos(y_pos) {};
         Node(double data, Node* source, int weight);
         ~Node();
     public:
@@ -77,8 +89,8 @@ namespace graph_names {
         int del_edge(Node* target, int weight, bool delete_only_one_flag = false);
         bool operator==(Node const& other) const {return data == other.data;}
     public:
-        void restore_path(DynArr_names::dynamic_array<double>& Empty);  // FOR DIJKSTRA
-        int  return_dist() {return dist;}
+        void restore_path(DynArr_names::dynamic_array<double>& Empty, ALGORITHM_TYPE TYPE);
+        int  return_dist(ALGORITHM_TYPE TYPE);
 
         double get_dist(const Node& target);
     public:
@@ -135,7 +147,7 @@ namespace graph_names {
         AStarGraph& operator=(const DijkstraGraph&) = delete;
         ~AStarGraph() = default;
     public:
-        void AStarSearch(Node& source, Node& target);
+        bool AStarSearch(Node& source, Node& target, bool show_log = true);
 
     };
 
