@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "tree.h"
 #include "graph.h"
+#include "priority_queue.h"
 
 //#define DEBUG
 
@@ -174,6 +175,44 @@ void test_tree(){
 }
 
 
+void test_pr_queue(){
+    sep("PRIMARY QUEUE TEST STARTED");
+    using namespace priority_queue_names;
+    PriorityQueue<double, int> pr_queue;
+    pr_queue.push(12, 1);
+    pr_queue.push(13, 2);
+    pr_queue.push(14, 3);
+    pr_queue.push(15, 4);
+    sep("QUEUE1");
+    pr_queue.show();
+
+    pr_queue.pop_max();
+    sep("POP MAX");
+    pr_queue.show();
+
+    sep("PRINT VALUE");
+    std::cout << pr_queue.front()->key << "\n";
+    std::cout << pr_queue.back()->key << "\n";
+
+    pr_queue.pop_min();
+    sep("POP MIN");
+    pr_queue.show();
+
+    std::cout << pr_queue.is_data_in_queue(14, 3) << "\n";
+    std::cout << pr_queue.is_empty() << "\n";
+
+
+
+
+
+    sep("QUEUE2");
+
+    sep("PRIMARY QUEUE TEST ENDED");
+
+
+}
+
+
 void test_queue() {
     sep("QUEUE TEST STARTED");
     using namespace queue_names;
@@ -279,12 +318,13 @@ int main() {
 
     // MANUAL TESTING
     try{
-        test_list();
+        //test_list();
         //test_stack();
         //test_dynamic_array();
         //test_queue();
         //test_tree();
         //test_graph();
+        test_pr_queue();
     }
     catch (const list_names::ListException& err){
         std::cerr << "List exception: " << err.what() << std::endl;}
@@ -298,6 +338,8 @@ int main() {
         std::cerr << "Graph exception: " << err.what() << std::endl;}
     catch (const stack_names::stack_exceptions& err){
         std::cerr << "Stack exception: " << err.what() << std::endl;}
+    catch (const priority_queue_names::PrimaryQueueExceptions& err){
+        std::cerr << "priority queue exception: " << err.what() << std::endl;}
 
     return 0;
 }

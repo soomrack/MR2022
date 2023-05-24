@@ -63,7 +63,8 @@ namespace graph_names {
         // FOR A*
         double x_pos      = NAN;
         double y_pos      = NAN;
-        double distNode   = NAN;  // distance from source
+        double distSource = NAN;  // distance from source
+        double distTarget = NAN;  // estimate distance to target
         Node* fromNode    = nullptr;
 
     public:

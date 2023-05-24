@@ -233,11 +233,10 @@ void AStarGraph::AStarSearch(Node &source, Node &target) {
     list_names::list<Node*> opened;
 
     // source node
-    source.distNode = 0;
-    source.get_dist(target);
+    source.distSource = 0;
+    source.distTarget = source.distSource + source.get_dist(target);
 
     opened.push(&source);
-
 
 
     while (!opened.is_empty())
@@ -261,7 +260,9 @@ void AStarGraph::AStarSearch(Node &source, Node &target) {
                 continue;}
 
             // Ищем соседа в открытом векторе
-            if (opened.is_in_list(current_target_node));
+            if (opened.is_in_list(current_target_node)){
+
+            }
 
         }
 

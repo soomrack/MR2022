@@ -184,7 +184,7 @@ namespace queue_names {
 
     template<typename T>
     void Node<T>::push_next(Node *other) {
-        this->p_prev = other;
+        p_prev = other;
         other->p_next = this;
     }
 
