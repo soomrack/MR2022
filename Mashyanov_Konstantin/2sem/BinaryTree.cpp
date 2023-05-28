@@ -24,7 +24,6 @@ private:
     Node* get_parent_node(int get_value);
     void destroy_tree(Node* node);
     Node* find_min(Node* node);
-
 };
 
 BinaryTree::BinaryTree() : root(nullptr) {}
@@ -49,7 +48,6 @@ void BinaryTree::del(int del_value) {
      auto current_node_link = del_value < get_parent->value ? &(get_parent->left) : &(get_parent->right);
     auto del_node = *current_node_link;
 
-    
     if ((*current_node_link)->left == nullptr) {
         *current_node_link = (*current_node_link)->right;
         delete del_node;
