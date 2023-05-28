@@ -121,9 +121,10 @@ void binary_tree<T>::del(const T &value) {
     auto [replacement, replacement_parent] = traverse(node->left_branch, value, node);
     node->value = replacement->value;
     if (replacement_parent == node)
-        node->left_branch = nullptr;
+        node->left_branch = replacement->left_branch;
     else
-        replacement_parent->right_branch = nullptr;
+        replacement_parent->right_branch = replacement->left_branch;
+    replacement->left_branch = replacement->right_branch = nullptr;
     delete replacement;
 }
 
@@ -147,9 +148,22 @@ std::pair<typename binary_tree<T>::Node*, typename binary_tree<T>::Node*> binary
     else
         return traverse(node->right_branch, value, node);
 }
-
+/*
 int main() {
     binary_tree<int> tree;
+    tree.add(0);
+    tree.add(1);
+    tree.add(-1);
+    tree.add(-10);
+    tree.add(-3);
+    tree.add(-6);
+    tree.add(-4);
+    tree.print_tree();
+    tree.del(-1);
+    tree.print_tree();
+
+    tree = binary_tree<int>();
+
     tree.add(1);
     tree.add(2);
     std::cout << tree.contains(1) << " " << tree.contains(3) << std::endl;
@@ -168,4 +182,4 @@ int main() {
     tree.del(1);
     std::cout << tree.contains(2) << std::endl;
     tree.print_tree();
-}
+}*/
