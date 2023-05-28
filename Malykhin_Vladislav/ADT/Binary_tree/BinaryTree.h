@@ -105,7 +105,6 @@ void BinaryTree::remove(double in_data) {
             previous = buffer;
             buffer = in_data < buffer->data ? buffer->l_child : buffer->r_child;
         }
-        //if(!removed_node->r_child)
         if(previous->r_child == removed_node) previous->r_child = removed_node->r_child ? removed_node->r_child : removed_node->l_child;
         else previous->l_child = removed_node->r_child;
         delete removed_node;
