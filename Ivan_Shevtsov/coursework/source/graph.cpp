@@ -16,7 +16,6 @@ bool Edge::operator==(const Edge &other) const {
     return (weight == other.weight and target == other.target and source == other.source);
 }
 
-Node::Node(double data): data(data){}
 
 Node::Node(double data, Node *source, int weight) {
     this->data = data;
@@ -228,6 +227,13 @@ void Node::restore_path(DynArr_names::dynamic_array<double>& Empty, ALGORITHM_TY
             running_node = running_node->fromNode;
         }
     }
+
+    if (TYPE == LEE){
+        while (running_node != nullptr) {
+            Empty.push_back(running_node->data);
+            running_node = running_node->fromNodeLee;
+        }
+    }
 }
 
 double Node::get_dist(const Node &target) {
@@ -237,6 +243,16 @@ double Node::get_dist(const Node &target) {
 int Node::return_dist(ALGORITHM_TYPE TYPE) {
     if (TYPE == DIJKSTRA)   { return dist;}
     if (TYPE == ASTAR   )   { return distSource;}
+    if (TYPE == LEE     )   {
+        auto runningNode = fromNodeLee;
+        unsigned counter = 1;
+        while (runningNode->fromNodeLee != nullptr){
+            counter++;
+            runningNode = runningNode->fromNodeLee;
+        }
+        return counter;
+
+    }
 }
 
 bool AStarGraph::AStarSearch(Node &source, Node &target, bool show_log) {
@@ -285,3 +301,22 @@ bool AStarGraph::AStarSearch(Node &source, Node &target, bool show_log) {
     return false;
 }
 
+bool LeeGraph::LeeSearch(Node &source, Node &target) {
+
+    // TODO источник должен быть первым в списке нод
+    for (auto nodeIt = nodes.begin(); nodeIt != nodes.end(); ++nodeIt){
+        auto running_node = nodeIt.current_node->data;
+        for (auto it = running_node->edges.begin(); it != running_node->edges.end(); ++it) {
+            if (it.current_node->data->target->fromNodeLee == nullptr){
+                it.current_node->data->target->fromNodeLee = running_node;
+            }
+            if (it.current_node->data->target == &target) {
+                source.fromNodeLee = nullptr;
+                return true;
+            }
+        }
+    }
+    source.fromNodeLee = nullptr;
+    return false;
+
+}

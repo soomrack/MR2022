@@ -14,7 +14,7 @@
 enum ALGORITHM_TYPE{
     DIJKSTRA,
     ASTAR,
-
+    LEE,
 };
 #endif
 
@@ -41,6 +41,7 @@ namespace graph_names {
     class BaseGraph;
     class DijkstraGraph;
     class AStarGraph;
+    class LeeGraph;
 
 
     // EDGE
@@ -59,10 +60,13 @@ namespace graph_names {
     };
 
 
+
+
     // NODE
     struct Node{
         double data;
     private:
+        // BASE EDGES
         list_names::list<Edge*> edges;
 
         // FOR DIJKSTRA
@@ -78,11 +82,19 @@ namespace graph_names {
         double distTargetEstimate = INT_MAX - 100;  // estimate distance to target
         Node* fromNode            = nullptr;
 
+        // FOR LEE
+        Node* fromNodeLee         = nullptr;
+
+
+
     public:
         Node() = delete;
-        explicit Node(double data = 0);
-        Node(double data, double x_pos, double y_pos): data(data), x_pos(x_pos), y_pos(y_pos) {};
+        // BASE CONSTRUCTOR
+        explicit Node(double data = 0): data(data){};
         Node(double data, Node* source, int weight);
+        // A* CONSTRUCTOR
+        Node(double data, double x_pos, double y_pos): data(data), x_pos(x_pos), y_pos(y_pos) {};
+
         ~Node();
     public:
         void add_edge(Node* target, int weight);
@@ -97,6 +109,7 @@ namespace graph_names {
         friend BaseGraph;
         friend DijkstraGraph;
         friend AStarGraph;
+        friend LeeGraph;
     };
 
 
@@ -152,9 +165,25 @@ namespace graph_names {
     };
 
 
+    class LeeGraph:virtual public BaseGraph {
+    private:
+
+    public:
+        LeeGraph() = default;
+        LeeGraph(const DijkstraGraph&) = delete;
+        LeeGraph& operator=(const DijkstraGraph&) = delete;
+        ~LeeGraph() = default;
+    public:
+        bool LeeSearch(Node& source, Node& target);
+
+    };
+
+
     class Graph:
             virtual public AStarGraph,
-            virtual public DijkstraGraph{
+            virtual public DijkstraGraph,
+            virtual public LeeGraph
+            {
     public:
         Graph() = default;
         ~Graph() = default;
