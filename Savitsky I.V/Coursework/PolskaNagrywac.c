@@ -32,7 +32,6 @@ void push(struct stack_over** top_ptr, const unsigned long long int symbol)
 
 unsigned long long int pop(struct stack_over** top_ptr)
 {
-	struct stack_over* temp_ptr = NULL;
 	unsigned long long int pop_symbol = '\0';
 
 	if (*top_ptr == NULL)
@@ -40,12 +39,8 @@ unsigned long long int pop(struct stack_over** top_ptr)
 		return EXIT_SUCCESS;
 	}
 
-	temp_ptr = *top_ptr;
 	pop_symbol = (*top_ptr)->data;
 	*top_ptr = (*top_ptr)->ptr_next;
-
-	free(temp_ptr);
-
 	return pop_symbol;
 }
 
@@ -86,9 +81,9 @@ int main(int argc, char* argv[])
 				}
 				if (symbol == ')') {
 					while (stack_pop != NULL && stack_pop->data != '(') {
-						if (stack_pop == NULL) { printf("Error");return EXIT_SUCCESS; }
-						polska[index] = pop(&stack_pop);index++;
-						if (stack_pop != NULL && stack_pop->data != '(') { polska[index] = ' ';index++; }
+						if (stack_pop == NULL) { printf("Error"); return EXIT_SUCCESS; }
+						polska[index] = pop(&stack_pop); index++;
+						if (stack_pop != NULL && stack_pop->data != '(') { polska[index] = ' '; index++; }
 						else {
 
 							pop(&stack_pop);
@@ -98,14 +93,29 @@ int main(int argc, char* argv[])
 					}
 				}
 				else if (value1 > value2 || symbol == '(') {
-					if (stack_pop != NULL && stack_pop->data == '(' && symbol == '-' && flag==1) { polska[index] = '0';
-					index++;polska[index] = ' ';index++;flag = 0;//push(&stack_pop, (char)symbol);
+					if (stack_pop != NULL && stack_pop->data == '(' && symbol == '-' && flag == 1) {
+						polska[index] = '0';
+						index++;
+						polska[index] = ' ';
+						index++;
+						flag = 0;//push(&stack_pop, (char)symbol);
 					}
 					push(&stack_pop, (char)symbol);
 				}
-				else if (value1 == value2) { polska[index] = pop(&stack_pop);
-				index++;polska[index] = ' ';index++;push(&stack_pop, (char)symbol);}
-				else { while (stack_pop != NULL) { polska[index] = pop(&stack_pop);index++;polska[index] = ' ';index++; }push(&stack_pop, (char)symbol); }
+				else if (value1 == value2) {
+					polska[index] = pop(&stack_pop);
+					index++; polska[index] = ' '; index++; push(&stack_pop, (char)symbol);
+				}
+				
+				else  {
+					while (stack_pop != NULL && stack_pop->data!='(') {
+
+					polska[index] = pop(&stack_pop);
+					index++;
+					polska[index] = ' ';
+					index++; 
+					}
+					push(&stack_pop, (char)symbol); }
 				value1 = 0;value2 = 0;
 			}
 		}
@@ -142,10 +152,10 @@ int main(int argc, char* argv[])
 			}
 			if (symbol == '-') {
 				b = pop(&stack_result);
-				//result = -b;
+				
 				if (stack_result == NULL) { a = 0; }
 				else { a = pop(&stack_result);  }
-				//result = a + result;
+				
 				result = a - b;
 				push(&stack_result, result);result = 0;
 			}
@@ -175,8 +185,8 @@ int main(int argc, char* argv[])
 				}
 				if (b == 0)a = 1; 
 				i = 1;
-				result = b;
-				while (i < a) { i++; result *= b; }
+				result = a;
+				while (i < b) { i++; result *= a; }
 				push(&stack_result, result);
 			}
 
