@@ -92,22 +92,18 @@ void BinaryTree::remove(double value) {
 
     if ((*node_to_remove)->left == nullptr){
         *current = (*current)->right;
-        delete node_to_remove;
+        delete *node_to_remove;
         return;
     }
     if ((*node_to_remove)->right == nullptr) {
         *current = (*current)->left;
-        delete node_to_remove;
+        delete *node_to_remove;
         return;
     }
 
     Node *parent_of_biggest_ptr = find_parent_of_biggest_ptr((*node_to_remove)->left);
-    *current = parent_of_biggest_ptr->right;
 
-    if ((*node_to_remove) != parent_of_biggest_ptr) {
-        parent_of_biggest_ptr->right = (*current)->left;
-        (*current)->left = (*node_to_remove)->left;
-    }
+    parent_of_biggest_ptr == nullptr ? *current = (*node_to_remove)->left : *current = parent_of_biggest_ptr->right;
 
     (*current)->right = (*node_to_remove)->right;
     *node_to_remove = *current;
