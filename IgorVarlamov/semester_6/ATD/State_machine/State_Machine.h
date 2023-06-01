@@ -15,7 +15,6 @@ private:
     std::map<char, State*> transitions;
 };
 
- 
 class FSM {
 public:
     FSM(State* start_state) : current_state(start_state) {}
