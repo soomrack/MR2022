@@ -88,31 +88,31 @@ void BinaryTree::remove(double value) {
     if (*current == nullptr || *current == root)
         return;
 
-    Node *node_to_remove = *current;
+    Node **node_to_remove = current;
 
-    if (node_to_remove->left == nullptr){
+    if ((*node_to_remove)->left == nullptr){
         *current = (*current)->right;
         delete node_to_remove;
         return;
     }
-    if (node_to_remove->right == nullptr) {
+    if ((*node_to_remove)->right == nullptr) {
         *current = (*current)->left;
         delete node_to_remove;
         return;
     }
 
-    Node *parent_of_biggest_ptr = find_parent_of_biggest_ptr(node_to_remove->left);
+    Node *parent_of_biggest_ptr = find_parent_of_biggest_ptr((*node_to_remove)->left);
     *current = parent_of_biggest_ptr->right;
 
-    if (node_to_remove != parent_of_biggest_ptr) {
+    if ((*node_to_remove) != parent_of_biggest_ptr) {
         parent_of_biggest_ptr->right = (*current)->left;
-        (*current)->left = node_to_remove->left;
+        (*current)->left = (*node_to_remove)->left;
     }
 
-    (*current)->right = node_to_remove->right;
-    *current = node_to_remove;
+    (*current)->right = (*node_to_remove)->right;
+    *node_to_remove = *current;
 
-    delete node_to_remove;
+    delete *node_to_remove;
 }
 
 
@@ -161,7 +161,7 @@ int main() {
 
     tree.remove(8);
 
-    tree.print();
+    //tree.print();
 
     if (tree.search(8) != 0)
         std::cout << "Node found" << std::endl;
