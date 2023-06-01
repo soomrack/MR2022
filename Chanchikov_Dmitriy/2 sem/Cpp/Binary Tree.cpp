@@ -15,12 +15,12 @@ class BinaryTree {
 private:
     Node *root;
 
-    static Node *find_biggest_ptr(Node *subtree);
-    void destroy(Node *node);
+    static Node *find_parent_of_biggest_ptr(Node *subtree);
+    void destroy_rec(Node *node);
 
 public:
     BinaryTree() : root(nullptr) {};
-    ~BinaryTree() {destroy(root); root = nullptr;}
+    ~BinaryTree() {destroy_rec(root); root = nullptr;}
 
     void insert(double);
     void remove(double);
@@ -30,7 +30,7 @@ public:
 };
 
 
-Node* BinaryTree::find_biggest_ptr(Node *subtree) {
+Node* BinaryTree::find_parent_of_biggest_ptr(Node *subtree) {
     Node* parent_of_biggest_ptr = nullptr;
     Node* current = subtree;
 
@@ -43,13 +43,13 @@ Node* BinaryTree::find_biggest_ptr(Node *subtree) {
 }
 
 
-void BinaryTree::destroy(Node *node) {
+void BinaryTree::destroy_rec(Node *node) {
     if (node == nullptr)
         return;
 
-    destroy(node->left);
+    destroy_rec(node->left);
 
-    destroy(node->right);
+    destroy_rec(node->right);
 
     delete node;
 }
@@ -57,73 +57,51 @@ void BinaryTree::destroy(Node *node) {
 
 void BinaryTree::insert(double value) {
     auto **node = &root;
-    Node* parent = nullptr;
 
     while (*node != nullptr) {
         if (value == (*node)->data)
             return;
-        else if (value < (*node)->data)
-            node = &(*node)->left;
-        else
-            node = &(*node)->right;
+        value < (*node)->data ? node = &(*node)->left : node = &(*node)->right;
     }
     *node = new Node(value);
 }
 
 
 bool BinaryTree::search(double value) {
-    Node** node = &root;
-    while (*node) {
+    auto** node = &root;
+    while (*node != nullptr) {
         if ((*node)->data == value)
             return true;
-        if ((*node)->data > value) {
-            node = &(*node)->left;
-        } else {
-            node = &(*node)->right;
-        }
+        (*node)->data > value ? node = &(*node)->left : node = &(*node)->right;
+
     }
     return false;
 }
 
 
 void BinaryTree::remove(double value) {
-    auto **node = &root;
-    Node **current = node;
-    Node **parent = nullptr;
-    while (*current && (*current)->data != value) {
-        parent = node;
-        if (value < (*current)->data)
-            current = &(*current)->left;
-        else
-            current = &(*current)->right;
-    }
+    auto node = &root;
+    auto current = node;
+
+    while (*current && (*current)->data != value)
+        value < (*current)->data ? current = &(*current)->left : current = &(*current)->right;
     if (*current == nullptr || *current == root)
         return;
 
     Node *node_to_remove = *current;
 
-    int left_or_right = 0;
-    if ((*parent)->right == node_to_remove)
-        left_or_right = 1;
-
     if (node_to_remove->left == nullptr){
-        if (left_or_right == 0)
-            (*parent)->left = (*current)->right;
-        else
-            (*parent)->right = (*current)->right;
+        *current = (*current)->right;
         delete node_to_remove;
         return;
     }
     if (node_to_remove->right == nullptr) {
-        if (left_or_right == 0)
-            (*parent)->left = (*current)->left;
-        else
-            (*parent)->right = (*current)->left;
+        *current = (*current)->left;
         delete node_to_remove;
         return;
     }
 
-    Node *parent_of_biggest_ptr = find_biggest_ptr(node_to_remove->left);
+    Node *parent_of_biggest_ptr = find_parent_of_biggest_ptr(node_to_remove->left);
     *current = parent_of_biggest_ptr->right;
 
     if (node_to_remove != parent_of_biggest_ptr) {
@@ -132,10 +110,7 @@ void BinaryTree::remove(double value) {
     }
 
     (*current)->right = node_to_remove->right;
-    if (left_or_right == 0)
-        (*parent)->left = *current;
-    else
-        (*parent)->right = *current;
+    *current = node_to_remove;
 
     delete node_to_remove;
 }
