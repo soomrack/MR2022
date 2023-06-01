@@ -102,8 +102,9 @@ void BinaryTree::remove(double value)
     Node **largestOnLeftPtr = find_biggest_ptr(nodeToRemove->left);
     *current = *largestOnLeftPtr;
 
-    (nodeToRemove->left == *largestOnLeftPtr) ? (nodeToRemove->left = nullptr) : (*largestOnLeftPtr = (*current)->left);
-
+    (nodeToRemove->left == *largestOnLeftPtr) 
+    ? (nodeToRemove->left = nullptr) 
+    : (*largestOnLeftPtr = (*current)->left);
     (*current)->left = nodeToRemove->left;
     (*current)->right = nodeToRemove->right;
     delete nodeToRemove;

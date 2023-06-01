@@ -40,8 +40,6 @@ public:
     unsigned int height();
 
     double get(const int sup_key);
-
-    void remove(const int sup_key);  // удаляет элемент со всеми его поддеревьями
     void del(const int sup_key);  // замещает удаленный элемент
 
     void print();
@@ -49,20 +47,15 @@ public:
 
 protected:
 
-    void add(const double vle, const int new_key, Node* sub_tree);
 
-    bool find(const int sup_key, Node* sub_tree);
     unsigned int height(Node* sub_tree);
 
     Node* get_node(const int sup_key);
-    Node** get_parent(const int sup_key);
 
     void remove(Node* sub_tree);
     void print(Node* sub_tree);
 
-    Node** find_node_to_replace(Node* sup_node);
     Node** max_in_left(Node* sup_node);
-    Node** min_in_right(Node* sup_node);
 
 };
 
@@ -115,9 +108,7 @@ BinaryTree::BinaryTree(const double root_vle) {
 
 
 BinaryTree::~BinaryTree() {
-    remove(root->key);
-    //delete next_step;
-    //root = nullptr;
+    remove(root);
 }
 
 
@@ -126,27 +117,13 @@ void BinaryTree::add(const double vle) {
         root = new Node(vle, get_key(vle));
         return;
     }
-    add(vle, get_key(vle), root);
-}
-
-
-void BinaryTree::add(const double vle, const int new_key, Node* sub_tree) {
-    Node* next_step = nullptr;
-    if (sub_tree->key > new_key){
-        if (sub_tree->left == nullptr){
-            sub_tree->left = new Node(vle, new_key);
-            return;
-        }
-        next_step = sub_tree->left;
-    } else {
-        if (sub_tree->right == nullptr){
-            sub_tree->right = new Node(vle, new_key);
-            return;
-        }
-        next_step = sub_tree->right;
+    int new_key = get_key(vle);
+    Node** node = &root;
+    while (*node != nullptr)
+    {
+        node = new_key < (*node)->key ? &(*node)->left : &(*node)->right;
     }
-
-    add(vle, new_key, next_step);
+    *node = new Node(vle, new_key);
 }
 
 
@@ -164,23 +141,6 @@ Node* BinaryTree::get_node(const int sup_key) {
 }
 
 
-Node** BinaryTree::get_parent(const int sup_key) {
-    if (root == nullptr || root->is_leaf()) return nullptr;
-
-    Node* current = root;
-    while (current != nullptr) {
-        Node *next_step = (current->key > sup_key) ? current->left : current->right;
-        if (next_step != nullptr)
-            if (next_step->key == sup_key){
-                return &(next_step);
-            }
-
-        current = next_step;
-    }
-    return nullptr;
-}
-
-
 double BinaryTree::get(const int sup_key) {
     if (get_node(sup_key) == nullptr) return std::numeric_limits<double>::quiet_NaN();
     return get_node(sup_key)->value;
@@ -188,16 +148,12 @@ double BinaryTree::get(const int sup_key) {
 
 
 bool BinaryTree::find(const int sup_key) {
-    return find(sup_key, root);
-}
-
-
-bool BinaryTree::find(const int sup_key, Node *sub_tree) {
-    if (sub_tree == nullptr) return false;
-    if (sub_tree->key == sup_key) return true;
-
-    Node* next_node = (sup_key < sub_tree->key) ? sub_tree->left : sub_tree->right;
-    return find(sup_key, next_node);
+    Node* current = root;
+    do{
+        if (current->key == sup_key) return true;
+        current = (sup_key < current->key) ? current->left : current->right;
+    } while (current != nullptr);
+    return false;
 }
 
 
@@ -210,37 +166,6 @@ unsigned int BinaryTree::height(Node* sub_tree) {
     if (sub_tree == nullptr) return 0;
     if (sub_tree->is_leaf()) return 1;
     return std::max(height(sub_tree->left), height(sub_tree->right)) + 1;
-}
-
-
-void BinaryTree::remove(const int sup_key) {
-    if (/*root == nullptr || */!find(sup_key)) return;
-
-    if (root->key == sup_key){
-        remove(root);
-        root = nullptr;
-        return;
-    }
-
-    Node* node = root;
-    while (true){
-        if (node->left != nullptr)
-            if (node->left->key == sup_key){
-                remove(node->left);
-                node->left = nullptr;
-                return;
-            }
-
-        if (node->right != nullptr)
-            if (node->right->key == sup_key){
-                remove(node->right);
-                node->right = nullptr;
-                return;
-            }
-
-        node = (sup_key < node->key) ? node->left : node->right;
-    }
-
 }
 
 
@@ -263,40 +188,37 @@ void BinaryTree::remove(Node *sub_tree) {
 void BinaryTree::del(const int sup_key) {
 
     Node** parent_link = &root;
-    Node *current = root;
-    while (current != nullptr) {
-        Node *next_step = (current->key > sup_key) ? current->left : current->right;
-        if (next_step != nullptr)
-            if (next_step->key == sup_key) {
-                parent_link = (&(next_step));
-                break;
-            }
-        current = next_step;
+    while (*parent_link && (*parent_link)->key != sup_key)
+    {
+        parent_link = sup_key < (*parent_link)->key ? &(*parent_link)->left : &(*parent_link)->right;
     }
-    //current = (*parent_link);
+    if (!*parent_link)
+        // элемент не был найден
+        return;
 
-    if ((*parent_link)->left != nullptr) {
-        Node **replacing_node = max_in_left((*parent_link)->left);
-        std::cout << (*parent_link)->value << "  " << (*replacing_node)->value << "\n\n";
+    Node* temp = (*parent_link);
 
+    if ((*parent_link)->left == nullptr) {
 
-        (*replacing_node)->right = (*parent_link)->right;
-        (*parent_link) = (*replacing_node);
-
-    } else {
         (*parent_link) = (*parent_link)->right;
+        delete temp;
+        return;
     }
 
-}
+    Node** replacing_node = max_in_left((*parent_link)->left);
+    std::cout << (*parent_link)->value << "  " << (*replacing_node)->value << "\n\n";
 
+    Node* copy = (*replacing_node)->left;
 
-Node** BinaryTree::find_node_to_replace(Node *sup_node) {
-    //if (sup_node->is_leaf()) return nullptr;  //  на данном этапе гарантируется, что sup_node не лист
+    (*replacing_node)->right = (*parent_link)->right;
+    (*replacing_node)->left = (*parent_link)->left;
 
-    if (height(sup_node->right) >= height(sup_node->left))
-        return min_in_right(sup_node->right);
-    else
-        return max_in_left(sup_node->left);
+    *parent_link = *replacing_node;
+
+    (*replacing_node) = copy;
+
+    delete temp;
+
 }
 
 
@@ -310,21 +232,6 @@ Node** BinaryTree::max_in_left(Node *sup_node) {
             left_handed_node = left_handed_node->right;
         } else
             left_handed_node = left_handed_node->left;
-    }
-    return ans;
-}
-
-
-Node** BinaryTree::min_in_right(Node *sup_node) {
-    //sup_node гарантированно не nullptr
-    Node** ans = &sup_node;
-    Node* right_handed_node = sup_node;
-    while(!right_handed_node->is_leaf()){
-        if (right_handed_node->left != nullptr){
-            ans = &right_handed_node->left;
-            right_handed_node = right_handed_node->left;
-        } else
-            right_handed_node = right_handed_node->right;
     }
     return ans;
 }
@@ -396,27 +303,9 @@ int main()
     }
     C.print();
 
-    C.del(7);
+    C.del(5);
     C.print();
 
-/*
-    BinaryTree D = BinaryTree(5);
-    D.add(4);
-    D.add(3);
-    D.add(2);
-    D.add(1);
-    D.add(0);
-
-    D.add(6);
-    D.add(7);
-    D.add(8);
-    D.add(9);
-    D.add(11);
-    D.print();
-
-    //D.del(5);
-    D.print();
-*/
 
     return 0;
 }

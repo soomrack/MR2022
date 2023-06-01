@@ -1,24 +1,25 @@
 #include <iostream>
 
-class Array_Exception : public std::exception
+class Array_Exception : public std::runtime_error
 {
 public:
-	Array_Exception(const char* const& msg) : exception(msg)
+	Array_Exception(const char* const& msg) : runtime_error(msg)
 	{}
 };
 
 Array_Exception NOINDEX("There is no such index\n");
 
-
 template <typename T = double>
 class Array {
 protected:
-	unsigned int size = 0;
-	T* values = nullptr;
+	unsigned int extra;
+	T* values;
+	int begin;
+	int end;
 
 public:
-	Array() = default;
-	Array(unsigned int size, T value = 0., unsigned int extra = 5);
+	Array();
+	Array(unsigned int size, T value = 0, unsigned int extra = 5);
 	//Array(const Array& array);
 	//Array(Array&& array) noexcept;
 	
@@ -37,15 +38,29 @@ public:
 	void remove(unsigned int rem_idx);
 
 	void print_matrix();
+
+	unsigned int size;
+	unsigned int capacity;
 };
 
+template<typename T>
+Array<T>::Array(): Array(0) {}
 
 template <typename T>
 Array<T>::Array(unsigned int size, T value, unsigned int extra) {
-	this->size = size + extra;
-	values = new T[size + extra];
-	for (unsigned int idx = 0; idx < size + extra; ++idx) {
-		values[idx] = value;
+	this->capacity = extra + size + extra;
+	this->size = size;
+	this->extra = extra;
+	this->values = new T[this->capacity];
+	this->begin = extra;
+	this->end = extra + size;
+	for (unsigned int idx = 0; idx < size; ++idx) {
+		this->values[begin + idx] = value;
+	}
+
+	if (size == 0) {
+		this->begin = extra + 1;
+		this->end = extra + 1;
 	}
 }
 
@@ -73,97 +88,152 @@ Array<T>::~Array() {
 template <typename T>
 T& Array<T> :: operator [](unsigned int idx) {
 	if (idx >= size || idx < 0) throw NOINDEX;
-	return values[idx];
+	return values[begin + idx];
 }
 
 
 template <typename T>
-void Array<T>::shrink_head(unsigned int size) {
-	if (this->size <= size) return;
-	T* new_values = new T[size];
+void Array<T>::shrink_head(unsigned int capacity) {
+	if (this->capacity <= capacity) return;
+	T* new_values = new T[capacity];
+
+	int new_size = std::min(size, capacity);
+	for (unsigned int idx = 0; idx < new_size; ++idx) {
+		new_values[idx] = values[begin + idx];
+	}
+	delete[] values;
+
+	values = new_values;
+	if (new_size == 0) {
+		begin = 1;
+		end = 1;
+	} else {
+		begin = 0;
+		end = new_size;
+	}
+	this->size = new_size;
+	this->capacity = capacity;
+}
+
+
+template <typename T>
+void Array<T>::shrink_tail(unsigned int capacity) {
+	if (this->capacity <= capacity) return;
+	T* new_values = new T[capacity];
+
+	int new_size = std::min(size, capacity);
+	for (unsigned int idx = 0; idx < new_size; ++idx) {
+		new_values[capacity - 1 - idx] = values[end - 1 - idx];
+	}
+	delete[] values;
+
+	values = new_values;
+	end = capacity;
+	begin = end - new_size;	
+	this->size = new_size;
+	this->capacity = capacity;
+}
+
+template <typename T>
+void Array<T>::expand_head(unsigned int capacity) {
+	if (this->capacity >= capacity) return;
+	T* new_values = new T[capacity];
+
+	unsigned int difference = capacity - this->capacity;
+	// for (unsigned int idx = 0; idx < difference; ++idx) {
+	// 	new_values[idx] = 0.;
+	// }
+
 	for (unsigned int idx = 0; idx < size; ++idx) {
-		new_values[idx] = values[this->size - size + idx];
+		new_values[begin + difference + idx] = values[begin + idx];
 	}
 	delete[] values;
+
 	values = new_values;
-	this->size = size;
+	end = difference + end;
+	begin = difference + begin;
+	this->capacity = capacity;
 }
 
-
 template <typename T>
-void Array<T>::shrink_tail(unsigned int size) {
-	if (this->size <= size) return;
-	T* new_values = new T[size];
+void Array<T>::expand_tail(unsigned int capacity) {
+	if (this->capacity >= capacity) return;
+	T* new_values = new T[capacity];
+
 	for (unsigned int idx = 0; idx < size; ++idx) {
-		new_values[idx] = values[idx];
+		new_values[begin + idx] = values[begin + idx];
 	}
 	delete[] values;
-	values = new_values;
-	this->size = size;
-}
 
-template <typename T>
-void Array<T>::expand_head(unsigned int size) {
-	if (this->size >= size) return;
-	T* new_values = new T[size];
-	unsigned int difference = size - this->size;
-	for (unsigned int idx = 0; idx < difference; ++idx) {
-		new_values[idx] = 0.;
-	}
-	for (unsigned int idx = difference; idx < size; ++idx) {
-		new_values[idx] = values[idx-difference];
-	}
-	delete[] values;
 	values = new_values;
-	this->size = size;
-}
-
-template <typename T>
-void Array<T>::expand_tail(unsigned int size) {
-	if (this->size >= size) return;
-	T* new_values = new T[size];
-	for (unsigned int idx = 0; idx <= this->size; ++idx) {
-		new_values[idx] = values[idx];
-	}
-	delete[] values;
-	values = new_values;
-	this->size = size;
+	this->capacity = capacity;
 }
 
 template <typename T>
 void Array<T>::push_head(T value) {
-	expand_head(size + 1);
-	values[0] = value;
+	if (begin == 0) {
+		expand_head(capacity + extra);
+	}
+
+	values[--begin] = value;
+	size++;
 }
 
 template <typename T>
 void Array<T>::push_tail(T value) {
-	expand_tail(size + 1);
-	values[size - 1] = value;
+	if (end == capacity) {
+		expand_tail(capacity + extra);
+	}
+	values[end++] = value;
+	size++;
 }
 
 template <typename T>
 void Array<T>::remove(unsigned int rem_idx) {
 	if (rem_idx >= size || rem_idx < 0) throw NOINDEX;
-	T* new_values = new T[size - 1];
-	unsigned int offset = 0;
-	for (unsigned int idx = 0; idx < this->size; ++idx) {
-		if (idx == rem_idx) {
-			offset = 1;
-			continue;
-		}
-		new_values[idx - offset] = values[idx];
+	for (unsigned int idx = rem_idx; idx < size - 1; idx++) {
+		values[begin + idx] = values[begin + idx + 1];
 	}
-	delete[] values;
-	values = new_values;
-	this->size = size - 1;
+
+	size--;
+	if (size == 0) {
+		begin = size / 2 + 1;
+		end = size / 2 + 1;
+	} else {
+		end--;
+	}
+
+	return;
 }
 
 template <typename T>
 void Array<T>::print_matrix() {
 	std::cout << "Size: " << size << std::endl;
 	for (unsigned int idx = 0; idx < size; ++idx) {
-		std::cout << values[idx] << " ";
+		std::cout << values[begin + idx] << " ";
 	}
 	std::cout  << "\n\n";
 }
+/*
+signed main() {
+	Array<int> arr(2, 1, 1);
+	arr.push_head(1);
+	arr.push_head(2);
+	arr.push_tail(3);
+	arr.print_matrix();
+	arr.remove(1);
+	arr.print_matrix();
+	arr.remove(0);
+	arr.remove(0);
+	arr.print_matrix();
+	arr.remove(1);
+	arr.remove(0);
+	arr.print_matrix();
+
+	arr.shrink_head(1);
+	arr.push_tail(1);
+	arr.push_tail(2);
+	arr.push_tail(3);
+	arr.print_matrix();
+}
+*/
