@@ -18,12 +18,12 @@ Array_Exceptions IS_EMPTY ("Error: Array is empty");
 
 class DynArray {
 private:
-    unsigned int *array;
+    unsigned int* array;
     unsigned int size;
     unsigned int filled_size;
 
 public:
-    unsigned buffer;
+    unsigned int buffer;
     DynArray();
     DynArray(unsigned int size, unsigned int buffer = 10);
     DynArray(const DynArray &other);
@@ -33,7 +33,7 @@ public:
     void remove(int idx);
     void print();
     void clean();
-    void resize(unsigned int new_size);
+    void resize(unsigned int new_size, unsigned int new_buffer);
     unsigned int get(unsigned int number);
     void set(unsigned int number, unsigned int item);
     unsigned int operator[] (unsigned int number);
@@ -46,7 +46,7 @@ DynArray::DynArray() {
     {
         size = 0;
         array = nullptr;
-        buffer = 50;
+        buffer = 1;
         filled_size = 0;
     }
 }
@@ -104,6 +104,7 @@ void DynArray::add(int value, int number) {
     for (int i = number; i < size; ++i) {
         temp[i + 1] = array[i];
     }
+
     delete array;
     array = temp;
     size++;
@@ -130,7 +131,7 @@ void DynArray::remove(int number) {
 
 
 void DynArray::print() {
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < filled_size; ++i) {
         cout << array[i] << " ";
     }
     cout << endl;
@@ -145,17 +146,20 @@ void DynArray::clean() {
 }
 
 
-void DynArray::resize(unsigned int new_size) {
-    if (new_size < size)
-        size = new_size;
-    auto* new_data = new unsigned int[new_size + buffer]; //добавлен буффер
-    memcpy(new_data, array, sizeof(unsigned int) * size);
-    delete[] array;
+void DynArray::resize(unsigned int new_size, unsigned int new_buffer) {
+    if (new_size < size){
+        filled_size = new_size;
+        buffer = new_buffer;
+        return;
+    }
+    auto* new_data = new unsigned int[new_size + new_buffer];
+    memcpy(new_data, array, sizeof(unsigned int) * filled_size);
+    size = new_size + new_buffer;
+    buffer = new_buffer;
+    filled_size = new_size;
+    delete array;
     array = new_data;
-    size = new_size;
 }
-
-
 
 unsigned int DynArray::get(unsigned int number) {
     return array[number];
@@ -178,3 +182,6 @@ bool DynArray::is_empty() {
 
 
 #endif //DYNAMIC_ARRAY
+/*cout <<"filled_size " << filled_size << "\n";
+cout <<"size " << size << "\n";
+cout <<"buffer " << buffer << "\n";*/

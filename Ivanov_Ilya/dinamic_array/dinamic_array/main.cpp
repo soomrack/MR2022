@@ -6,7 +6,7 @@ int main() {
     a.fill_random(10);
     a.print();
     a.add(18, 3);
-    a.resize(8);
+    a.resize(16,4);
     a.print();
     a.clean();
 }
