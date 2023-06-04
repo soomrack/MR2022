@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/ATD.dir/main.cpp.o -o ATD 

@@ -1,0 +1,3 @@
+C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/build/CMakeFiles/client.dir
+C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/build/CMakeFiles/edit_cache.dir
+C:/Users/El1x3r7714/CLionProjects/MR2022/Maxim_Gavrilenko/Coursework/Based_file/Client/build/CMakeFiles/rebuild_cache.dir

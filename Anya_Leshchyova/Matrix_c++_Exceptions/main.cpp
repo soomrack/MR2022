@@ -310,7 +310,7 @@ bool Matrix:: operator==(const Matrix &X) {  // работает
 }
 
 
-Matrix Matrix:: operator +(const Matrix &X) {  //работает
+Matrix Matrix:: operator +(const Matrix &X) {
     if (rows != X.rows || cols != X.cols){
         throw different_sizes;
     }

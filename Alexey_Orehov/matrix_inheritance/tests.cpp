@@ -129,38 +129,30 @@ void test_inv_mul(int num = 100, int size = 5) {
 }
 
 unsigned long int MatrixMemory::total_memory = 0;
+unsigned long int MatrixMemory::quantity = 0;
 
 
 int main(){
-//    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-//    test_equal();
-//    test_add();
-//    test_sub();
-//    test_mul();
-//    test_inv();
-//    test_inv_mul();
-//    double values[9] = {1, 0, 0,
-//                        0, 2, 0,
-//                        0 ,0, 3};
-//    Matrix A = Matrix(3, 3).fill_from_array(values);
-//    std::cout << A.exp();
 
-//    double values[9] = {1, 0, 0,
-//                        0, 2, 0,
-//                        0 ,0, 3};
-//
-//
-//    Matrix A = Matrix(3, 3).fill_from_array(values);
-//    Matrix B = A * 5;
-//    Matrix C = A * B;
-//
-//    MatrixMemory A_mem = {5, 5};
-    MatrixMemory A = {4, 4};
+    double data1[] = {1, 2, 3,
+                      4, 5, 6,
+                      7, 8, 9};
+
+    Matrix A = Matrix(3, 3).set_identity();
     std::cout << A.get_total_memory() << std::endl;
 
-    MatrixMemory B = A;
-    MatrixMemory C;
-    std::cout << A.get_total_memory() << std::endl;
-    Matrix D = A + B;
+    Matrix C = Matrix(3, 3).fill_from_array(data1);
+    std::cout << C.get_total_memory() << std::endl;
+
+    //Matrix B = Matrix(6, 6).set_value(5);
+//    std::cout << B.get_total_memory() << std::endl;
+
+    Matrix D = C - A;
+    std::cout << D.get_total_memory();
+
+//    std::cout << B << "\n" << B.get_total_memory() << std::endl;
+
+
+
     return 0;
 }
