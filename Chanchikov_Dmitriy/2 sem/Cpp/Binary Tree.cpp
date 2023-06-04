@@ -1,216 +1,128 @@
 #include <iostream>
 
 
-// класс узла
-class Node {
-public:
-    explicit Node(double val);
-    ~Node();
+struct Node {
+    explicit Node(const double &value, Node* left = nullptr, Node* right = nullptr):
+        data(value), left(left), right(right)  {}
 
-    double value;
+    double data;
     Node* left;
     Node* right;
 };
 
 
-// класс бинарного дерева
 class BinaryTree {
 private:
     Node* root;
 
-    void insert_req(Node* node, double value);  // рекурсивная функция вставки узла
-    void traverse_req_list(Node* node);  // рекурсивная функция обхода узлов (in-order traversal)
-    void traverse_req_tree(Node* node, int level);  // рекурсивная функция обхода узлов (in-order traversal)
-    Node* find_req(Node* node, double value);  // рекурсивная функция поиска узла
-    Node* remove_req(Node* node, double value);  // рекурсивная функция удаления узла
-
-    static Node* minValueNode(Node* node);  // функция поиска узла с минимальным значением
-    static Node* maxValueNode(Node* node);  // функция поиска узла с максимальным значением
+    static Node* find_parent_of_biggest_ptr(Node *subtree);
+    void destroy_rec(Node *node);
 
 public:
-    BinaryTree();
-    ~BinaryTree();
+    BinaryTree() : root(nullptr) {};
+    ~BinaryTree() {destroy_rec(root); root = nullptr;}
 
-    void insert(double value);  // метод вставки узла
-    void traverse();  // метод обхода узлов (in-order traversal)
-    Node* find(double value);  // метод поиска узла
-    void remove(double value);  // метод удаления узла
-    //void root_value();  // метод, который выводит значение корневого узла
+    void insert(double);
+    void remove(double);
+    bool search(double);
+    void print() {print_rec(root, 0);}
+    void print_rec(Node* node, int indent);
 };
 
 
-// конструктор класса узла
-Node::Node(double val) {
-    value = val;
-    left = nullptr;
-    right = nullptr;
-    //std::cout << "Node created with value " << value << std::endl;
-}
-
-// деструктор класса узла
-Node::~Node() {
-    delete left;
-    delete right;
-    //std::cout << "Node with value " << value << " deleted" << std::endl;
-}
-
-
-// конструктор класса бинарного дерева
-BinaryTree::BinaryTree() {
-    root = nullptr;
-    //std::cout << "Binary Tree created with value " << root << std::endl;
-}
-
-// деструктор класса бинарного дерева
-BinaryTree::~BinaryTree() {
-    delete root;
-    //std::cout << "Binary Tree with value " << root << " deleted" << std::endl;
-}
-
-
-// рекурсивная функция вставки узла
-void BinaryTree::insert_req(Node* node, double value) {
-    if (value == node->value) {
-        node->value = value;
-    } else if (value < node->value) {
-        if (node->left == nullptr) {
-            node->left = new Node(value);
-        } else {
-            insert_req(node->left, value);
-        }
-    } else {
-        if (node->right == nullptr) {
-            node->right = new Node(value);
-        } else {
-            insert_req(node->right, value);
-        }
-    }
-}
-
-// рекурсивная функция обхода узлов (in-order traversal)
-void BinaryTree::traverse_req_list(Node* node) {
-    if (node != nullptr) {
-        traverse_req_list(node->left);
-        std::cout << node->value << " ";
-        traverse_req_list(node->right);
-    }
-}
-void BinaryTree::traverse_req_tree(Node* node, int level) {
-    if (node != nullptr) {
-        traverse_req_tree(node->right, level + 1);
-        for (int i = 0; i < level; i++) {
-            std::cout << "    ";
-        }
-        std::cout << node->value << std::endl;
-        traverse_req_tree(node->left, level + 1);
-    }
-}
-
-// рекурсивная функция поиска узла
-Node* BinaryTree::find_req(Node* node, double value) {
-    if (node == nullptr || node->value == value) {
-        return node;
-    } else if (value < node->value) {
-        return find_req(node->left, value);
-    } else {
-        return find_req(node->right, value);
-    }
-}
-
-// рекурсивная функция удаления узла
-Node* BinaryTree::remove_req(Node* node, double value) {
-    if (node == nullptr) {
-        return node;
-    }
-    if (value < node->value) {
-        node->left = remove_req(node->left, value);
-    } else if (value > node->value) {
-        node->right = remove_req(node->right, value);
-    } else {
-        if (node->left == nullptr && node->right == nullptr) {
-            delete node;
-            return nullptr;
-        } else if (node->left == nullptr) {
-            Node* temp = minValueNode(node->right);
-            node->value = temp->value;
-            node->right = remove_req(node->right, temp->value);
-            //node->right = nullptr;
-            //*node = *temp;
-            //delete temp;
-        } else if (node->right == nullptr) {
-            Node* temp = maxValueNode(node->left);
-            node->value = temp->value;
-            node->left = remove_req(node->left, temp->value);
-            //node->left = nullptr;
-            //*node = *temp;
-            //delete temp;
-        } else {
-            Node* temp = minValueNode(node->right);
-            node->value = temp->value;
-            node->right = remove_req(node->right, temp->value);
-        }
-    }
-    return node;
-}
-
-// функция поиска узла с минимальным значением
-Node* BinaryTree::minValueNode(Node* node) {
-    Node* current = node;
-    while (current->left != nullptr) {
-        current = current->left;
-    }
-    return current;
-}
-
-// функция поиска узла с максимальным значением
-Node* BinaryTree::maxValueNode(Node* node) {
-    Node* current = node;
+Node* BinaryTree::find_parent_of_biggest_ptr(Node *subtree) {
+    Node* parent_of_biggest_ptr = nullptr;
+    Node* current = subtree;
     while (current->right != nullptr) {
+        parent_of_biggest_ptr = current;
         current = current->right;
     }
-    return current;
+    return parent_of_biggest_ptr;
 }
 
 
-// метод вставки узла
-void BinaryTree::insert(double value) {
-    if (root == nullptr) {
-        root = new Node(value);
-    } else {
-        insert_req(root, value);
-    }
-}
-
-// метод обхода узлов (in-order traversal)
-void BinaryTree::traverse() {
-    traverse_req_list(root);
-    std::cout << std::endl;
-    traverse_req_tree(root, 0);
-    std::cout << std::endl;
-}
-
-// метод поиска узла
-Node* BinaryTree::find(double value) {
-    return find_req(root, value);
-}
-
-// метод удаления узла
-void BinaryTree::remove(double value) {
-    root = remove_req(root, value);
-}
-
-// метод, который выводит значение корневого узла
-/*
-void BinaryTree::root_value() {
-    if (root == nullptr) {
-        std::cout << "Binary Tree is empty" << std::endl;
+void BinaryTree::destroy_rec(Node *node) {
+    if (node == nullptr)
         return;
-    }
-    std::cout << "Root value: " << root->value << std::endl;
+    destroy_rec(node->left);
+    destroy_rec(node->right);
+    delete node;
 }
-*/
+
+
+void BinaryTree::insert(double value) {
+    auto node = &root;
+    while (*node != nullptr) {
+        if (value == (*node)->data)
+            return;
+        value < (*node)->data ? node = &(*node)->left : node = &(*node)->right;
+    }
+    *node = new Node(value);
+}
+
+
+bool BinaryTree::search(double value) {
+    auto node = &root;
+    while (*node != nullptr) {
+        if ((*node)->data == value)
+            return true;
+        (*node)->data > value ? node = &(*node)->left : node = &(*node)->right;
+    }
+    return false;
+}
+
+
+void BinaryTree::remove(double value) {
+    auto node = &root;    // ук. на ук. на корневой узел
+    auto current = node;  // ук. на ук. на текущий узел
+    while (*current != nullptr && (*current)->data != value)  // ищем текущий узел, кот. соотв-ет value
+        value < (*current)->data ? current = &(*current)->left : current = &(*current)->right;
+    if (*current == nullptr || *current == root)  // если текущий узел не найден или явл. корневым узлом,
+        return;                                   // возврат
+
+    Node* node_to_remove = *current;  // ук. на удаляемый узел
+    if (node_to_remove->left == nullptr) {  // если удаляемый узел не имеет левого потомка,
+        *current = (*current)->right;       // ук. на текущий узел = ук. на его правого потомка,
+        delete node_to_remove;              // удаляемый узел удаляется,
+        return;                             // возврат
+    }  /*
+    if (node_to_remove->right == nullptr) {  // если удаляемый узел не имеет правого потомка,
+        *current = (*current)->left;         // ук. на текущий узел = ук. на его левого потомка,
+        delete node_to_remove;               // удаляемый узел удаляется
+        return;
+    }  */  // условие для правого потомка не нужно, т. к. будет обработано ниже
+
+    Node* parent_of_biggest_ptr = find_parent_of_biggest_ptr(node_to_remove->left);
+                                            // ук. на родителя самого большого узла в левом поддереве
+    if (parent_of_biggest_ptr == nullptr) { // если ук. на родителя не найден,
+        *current = node_to_remove->left;    // ук. на текущий узел = ук. на левого потомка удаляемого узла,
+    } else {                                              // в ином случае
+        *current = parent_of_biggest_ptr->right;          // ук. на текущий узел = ук. на правого потомка родителя,
+        parent_of_biggest_ptr->right = (*current)->left;  // ук. на правого п. родителя = ук. на левого п. текущего узла,
+        (*current)->left = node_to_remove->left;          // ук. на левого п. текущего узла = ук. на левого п. удаляемого узла
+    }
+    (*current)->right = node_to_remove->right;  // ук. на правого п. текущего узла = ук. на правого п. удаляемого узла
+    delete node_to_remove;  // удаляемый узел удаляется
+}
+
+
+void BinaryTree::print_rec(Node* node, int indent) {
+    if (node == nullptr)
+        return;
+    if (node->right != nullptr)
+        print_rec(node->right, indent + 4);
+    for (int i = 0; i < indent; i++)
+        std::cout << " ";
+    std::cout << node->data << std::endl;
+    if (node->left != nullptr)
+        print_rec(node->left, indent + 4);
+}
+
 
 int main() {
+    double find = 8;
+    double del = find;
+
     BinaryTree tree;
 
     tree.insert(1);
@@ -219,22 +131,27 @@ int main() {
     tree.insert(5);
     tree.insert(8);
     tree.insert(7);
-    //tree.insert(7.1);
-    //tree.insert(6.9);
+    tree.insert(7.1);
+    tree.insert(7.05);
+    tree.insert(7.15);
+    tree.insert(6.9);
     tree.insert(9);
-    tree.traverse();
 
-    std::cout << "==================" << std::endl;
+    tree.print();
 
-    tree.remove(5);
-    tree.traverse();
+    tree.search(find) != 0
+        ? std::cout << "Node " << find << " found" << std::endl
+        : std::cout << "Node " << find << " not found" << std::endl;
 
-    Node* found = tree.find(7);
-    if (found != nullptr) {
-        std::cout << "Found node with value: " << found->value << std::endl;
-    } else {
-        std::cout << "Node not found." << std::endl;
-    }
+    std::cout << "================================" << std::endl;
+
+    tree.remove(del);
+
+    tree.print();
+
+    tree.search(find) != 0
+        ? std::cout << "Node " << find << " found" << std::endl
+        : std::cout << "Node " << find << " not found" << std::endl;
 
     return 0;
 }

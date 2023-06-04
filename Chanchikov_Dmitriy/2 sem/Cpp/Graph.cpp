@@ -35,7 +35,7 @@ GraphNode *Graph::get_node(double data){
 }
 
 void Graph::add_node(double data){
-    GraphNode *node = new GraphNode(data);  // GraphNode
+    auto *node = new GraphNode(data);  // GraphNode
     nodes.push_back(node->data);
 }
 
