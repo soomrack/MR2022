@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 class Linked_list_exception: public std::logic_error
 {
@@ -8,8 +10,26 @@ public:
     {}
 };
 
+template<typename N>
+class Node {
+public:
+    explicit Node(N data = N(), Node* next = nullptr) {
+        this->data = data;
+        this->next = next;
+    }
+
+    N data;
+    Node* next;
+};
+
 template<typename T>
 class Linked_list {
+
+private:
+
+    size_t size;
+    Node<T>* head;
+
 public:
     Linked_list();
     Linked_list(const Linked_list&);
@@ -21,6 +41,8 @@ public:
 
     void push_head(T elem);
     void push_tail(T elem);
+    void push_elem(T elem, size_t idx);
+    void pop_elem(size_t idx);
     void pop_head();
     void pop_tail();
 
@@ -29,22 +51,6 @@ public:
     T& operator[](size_t n);
     void print();
 
-private:
-
-    template<typename N>
-    class Node {
-    public:
-        explicit Node(N data = N(), Node* pntr = nullptr) {
-            this->data = data;
-            this->pntr = pntr;
-        }
-
-        N data;
-        Node* pntr;
-    };
-
-    size_t size;
-    Node<T>* head;
 };
 
 template<typename T>
@@ -61,7 +67,7 @@ Linked_list<T>::Linked_list(const Linked_list& other):
     Node<T>* temp = other.head;
     while (temp != nullptr) {
         push_tail(temp->data);
-        temp = temp->pntr;
+        temp = temp->next;
     }
 }
 
@@ -103,12 +109,49 @@ void Linked_list<T>::push_tail(T elem) {
         head = new Node<T>(elem);
     } else {
         Node<T>* temp = this->head;
-        while (temp->pntr != nullptr) {
-            temp = temp->pntr;
+        while (temp->next != nullptr) {
+            temp = temp->next;
         }
-        temp->pntr = new Node<T>(elem);
+        temp->next = new Node<T>(elem);
     }
     size++;
+}
+
+template<typename T>
+void Linked_list<T>::push_elem(T elem, size_t idx) {
+    if (idx > size) throw Linked_list_exception("Linked list out of bounds!");
+    if (head == nullptr) {
+        head = new Node<T>(elem);
+    } else {
+        Node<T>* temp = this->head;
+        size_t num = 1;
+        while (num < idx) {
+            temp = temp->next;
+            num++;
+        }
+        temp->next = new Node<T>(elem, temp->next);
+    }
+    size++;
+}
+
+template<typename T>
+void Linked_list<T>::pop_elem(size_t idx) {
+    if (idx > size) throw Linked_list_exception("Linked list out of bounds!");
+    if (head == nullptr) {
+        throw Linked_list_exception("Linked list is empty!");
+    } else {
+        Node<T>* temp = this->head;
+        Node<T>* temp_last = temp;
+        size_t num = 0;
+        while (num < idx) {
+            temp_last = temp;
+            temp = temp->next;
+            num++;
+        }
+        temp_last->next = temp->next;
+        delete[] temp;
+    }
+    size--;
 }
 
 template<typename T>
@@ -116,7 +159,7 @@ void Linked_list<T>::pop_head() {
     if (head == nullptr)
         throw Linked_list_exception("Linked list is empty!");
     Node<T>* temp = head;
-    head = head->pntr;
+    head = head->next;
     delete[] temp;
     size--;
 }
@@ -127,12 +170,12 @@ void Linked_list<T>::pop_tail() {
         throw Linked_list_exception("Linked list is empty!");
     Node<T>* temp = head;
     Node<T>* temp_last = temp;
-    while (temp->pntr != nullptr) {
+    while (temp->next != nullptr) {
         temp_last = temp;
-        temp = temp->pntr;
+        temp = temp->next;
     }
     delete[] temp;
-    temp_last->pntr = nullptr;
+    temp_last->next = nullptr;
     // нужно ли стирать данные из предыдущего "хвоста"?
     size--;
     if (!size) head = nullptr;
@@ -157,7 +200,7 @@ T &Linked_list<T>::operator[](const size_t n) {
     size_t i = 0;
     Node<T>* temp = this->head;
     while (i < n) {
-        temp = temp->pntr;
+        temp = temp->next;
         if (temp == nullptr)
             throw Linked_list_exception("Linked list out of bounds!");
         i++;
@@ -172,7 +215,7 @@ void Linked_list<T>::print() {
     Node<T>* temp = this->head;
     while (temp != nullptr) {
         std::cout << temp->data << "\t";
-        temp = temp->pntr;
+        temp = temp->next;
     }
     std::cout << std::endl;
 }
@@ -182,6 +225,10 @@ int main() {
     for (size_t idx = 0; idx < 5; idx++) {
         test.push_head((int)(2 * idx));
     }
+    test.print();
+    test.push_elem(9, 3);
+    test.print();
+    test.pop_elem(2);
     test.print();
     Linked_list<int> test2(test);
     for (size_t idx = 0; idx < 5; idx++) {

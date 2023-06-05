@@ -27,8 +27,8 @@ public:
     void pop();
     void push(T);
     unsigned long int get_size() const {return this->size;}
-    unsigned long int get_free_space() const {return (this->size - this->sp);}
-//    T get_peak() const {return this->data[this->sp];} ??? TODO:
+    unsigned long int get_free_space() const {return (size - sp);}
+    T get_peak() const {return data[sp - 1];}
 
     void print();
 
@@ -143,6 +143,7 @@ int main() {
     test3.print();
     test3.push(10);
     test3.print();
+    std::cout << test.get_peak() << std::endl;
     test3.push(0);
     return 0;
 }

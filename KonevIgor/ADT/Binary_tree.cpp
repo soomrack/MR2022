@@ -24,11 +24,10 @@ public:
     Binary_tree& operator=(const Binary_tree&);
 
     void add(T elem);
-    bool find(T elem);
+    bool is_find(T elem);
     void delete_tree();
 //    void del(const T element); TODO:
-//    void print();
-// TODO: как правильно выводить дерево и нужен вообще вывод?
+
     unsigned get_height() {return height;}
 
 private:
@@ -77,7 +76,7 @@ void Binary_tree<T>::add(const T elem) {
         root = new Tree_node<T>(elem);
         height = 0;
     } else {
-        if (find(elem)) return;
+        if (is_find(elem)) return;
         Tree_node<T>* temp = root;
         Tree_node<T>* temp_last = temp;
         int temp_height = 0;
@@ -99,7 +98,7 @@ void Binary_tree<T>::add(const T elem) {
 
 // нужно ли бросать исключение, когда пытаемся внести существующий элемент?
 template<typename T>
-bool Binary_tree<T>::find(const T elem) {
+bool Binary_tree<T>::is_find(const T elem) {
     if (root == nullptr) return false;
     if (elem == root->key) return true;
     Tree_node<T>* temp = root;
