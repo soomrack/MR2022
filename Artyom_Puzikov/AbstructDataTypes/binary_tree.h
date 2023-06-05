@@ -89,10 +89,6 @@ public:
         cur = cur->left;
       } else
       {
-        //Found it, start deleting
-        //1, left is empty
-        //2, right is empty
-        //3, neither left nor right are empty
         if (cur->left == nullptr)
         {
           if (cur == root)

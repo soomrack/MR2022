@@ -38,33 +38,21 @@ namespace tree_names {
     private:
         unsigned depth;
         Node* root;
-
-        Node* find(Node* node, int key);
-        Node* delete_node(Node* node, int key);
-        void insert(Node* node, int key, double value);
     public:
         tree();
         tree(double value, int key);
 
-        void add(int key, double value){ insert(root, key, value); }
-        void delete_node(int key, double value) { delete_node(root, key);}
-        double find (int key) { Node* found = find(root, key); return found->value;}
+        void insert(int key, double value);
+        bool delete_node(int key, double value);
+        Node* find (int key);
 
 
         unsigned get_depth() {return depth;}
         Node* get_max(Node* node);
-        //void clear();
-        //void show();
+        void clear();
+        //~tree() {clear();};
 
-/*         ;
-        void remove_first() ;
-        void remove_last();
-        void remove(int data);
-        Node* operator[] (const int idx);
-        Node* get_max(Node* node);
-        Node* get_min(Node* node);*/
-
-        //~tree();
+        void print_right();
     };
 }
 

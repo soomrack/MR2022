@@ -166,4 +166,4 @@ Node<Type>* LinkedList<Type>::find(Type find_data) {
 }
 
 
-#endif //ATD_LINKED_LIST_H
+#endif

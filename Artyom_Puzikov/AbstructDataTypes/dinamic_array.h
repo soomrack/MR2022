@@ -70,4 +70,4 @@ public:
 };
 
 
-#endif //DINARRAY_LIBRARY_H
+#endif
