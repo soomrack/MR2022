@@ -21,7 +21,6 @@ public:
     ~Stack();
 
     Stack& operator=(const Stack&);
-    // TODO: конструктор перемещения и оператор перемещающего присваивания
     bool operator==(const Stack&);
     bool operator!=(const Stack& other) {return !(this == other);}
 

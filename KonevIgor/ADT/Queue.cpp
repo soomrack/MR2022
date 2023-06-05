@@ -21,7 +21,6 @@ public:
     ~Queue();
 
     Queue& operator=(const Queue&);
-    // TODO: конструктор перемещения и оператор перемещающего присваивания
     bool operator==(const Queue&);
     bool operator!=(const Queue& other) {return !(this == other);}
 

@@ -23,7 +23,6 @@ public:
     void expand(unsigned int extension);
 
     Dynamic_array& operator=(const Dynamic_array&);
-    // TODO: конструктор перемещения и оператор перемещающего присваивания
 
     T& operator[](unsigned long int num);
     bool operator==(const Dynamic_array&);
