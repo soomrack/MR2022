@@ -1,6 +1,4 @@
 /*
-del_node() / del_child() - O(1) или при удалении всего поддерева O(h)
-
 del O(h) Справа по дереву берем сразу левый или слева по дереву берем самый правый
  */
 
@@ -160,6 +158,7 @@ void Binary_tree<T>::delete_child(Binary_tree::Tree_node<T>* node) {
         delete_child(node->right);
         node->right = nullptr;
     }
+    delete[] node;
 }
 
 template<typename T>
