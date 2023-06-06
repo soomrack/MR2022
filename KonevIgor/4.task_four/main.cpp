@@ -7,9 +7,9 @@ int main(int argc, char const *argv[])
 
     std::cout << "Add test: " << (test_add() ? "Success\n" : "Fault\n");
     std::cout << "Subtract test: " << (test_subtract() ? "Success\n" :
-   "Fault\n");
+    "Fault\n");
     std::cout << "Multiply test: " << (test_multiply() ? "Success\n" :
-   "Fault\n");
+    "Fault\n");
     std::cout << "Divide by a scalar test: " << (test_divide_by_scalar() ?
    "Success\n" : "Fault\n");
     std::cout << "Triangle matrix test: " << (test_triangle_matrix() ?

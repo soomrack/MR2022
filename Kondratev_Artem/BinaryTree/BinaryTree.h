@@ -33,7 +33,7 @@ public:
     ~BinaryTree();
 
 private:
-    void deleteNode(Node* node);
+    void deleteNodes(Node* node);
 
 public:
     void add(unsigned int add_key, void* add_data);
@@ -60,18 +60,18 @@ BinaryTree::BinaryTree() {
 }
 
 
-void BinaryTree::deleteNode(Node* node) {
+void BinaryTree::deleteNodes(Node* node) {
     if (!node) {
         return;
     }
-    deleteNode(node->left);
-    deleteNode(node->right);
+    deleteNodes(node->left);
+    deleteNodes(node->right);
     delete node;
 }
 
 
 BinaryTree::~BinaryTree() {
-    deleteNode(root);
+    deleteNodes(root);
 }
 
 
