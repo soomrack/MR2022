@@ -34,7 +34,9 @@ public:
 
 public:
     size_t get_size();
+    bool resize(size_t size);
     bool resize(size_t size, size_t buffer_size);
+
 };
 
 template<typename T>
@@ -91,12 +93,24 @@ size_t Dynamic_array<T>::get_size() {
 }
 
 template<typename T>
-bool Dynamic_array<T>::resize(size_t size, size_t buffer_size) {
-    if (size + buffer_size <= this->size + this->buffer_size) {
+bool Dynamic_array<T>::resize(size_t size) {
+    if (size <= this->size + this->buffer_size) {
         this->buffer_size += (this->size - size);// он равен оставшейся выделенной, а не указанной пользователем
         this->size = size;
         return true;
     }
+    T* new_val = new T[size + buffer_size];
+    if (new_val == nullptr) return false;
+    memcpy(new_val, val, (this->buffer_size + this->size) * sizeof (T));
+    delete[] val;
+    val = new_val;
+    this->size = size;
+    this->buffer_size = buffer_size;
+    return true;
+}
+
+template<typename T>
+bool Dynamic_array<T>::resize(size_t size, size_t buffer_size) {
     T* new_val = new T[size + buffer_size];
     if (new_val == nullptr) return false;
     memcpy(new_val, val, (this->buffer_size + this->size) * sizeof (T));

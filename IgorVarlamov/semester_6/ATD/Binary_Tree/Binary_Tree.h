@@ -21,8 +21,9 @@ public:
 
 private:
     Node *root;
-    Node** find_smallest_ptr(Node *subtree);
-    void delete_root();
+    Node **find_smallest_ptr(Node *subtree);
+    Node **find_biggest_ptr(Node *subtree);
+    void delete_root(Node *root);
 };
 
 BinaryTree::BinaryTree()
@@ -32,38 +33,40 @@ BinaryTree::BinaryTree()
 
 BinaryTree::~BinaryTree()
 {
-    delete_root(root)
+    delete_root(root);
 }
 
 bool BinaryTree::search(double value)
 {
-    auto** node = &root;
-    while (*node != nullptr) 
+    auto **node = &root;
+    while (*node != nullptr)
     {
-        if ((*node)->data == value) return true;
-        if ((*node)->data > value) 
+        if ((*node)->data == value)
+            return true;
+        if ((*node)->data > value)
         {
             node = &(*node)->left;
         }
-        else 
+        else
         {
             node = &(*node)->right;
         }
     }
 }
 
-void BinaryTree::delete_root(Node* node)
-{   if (node != nullptr) 
+void BinaryTree::delete_root(Node *node)
+{
+    if (node != nullptr)
     {
-    delete_root(node->left);
-    delete_root(node->right);
-    delete node;
+        delete_root(node->left);
+        delete_root(node->right);
+        delete node;
     }
 }
 
 void BinaryTree::add(double value)
 {
-    auto** node = &root;
+    auto **node = &root;
     while (*node != nullptr)
     {
         node = value < (*node)->data ? &(*node)->left : &(*node)->right;
@@ -71,37 +74,40 @@ void BinaryTree::add(double value)
     *node = new Node(value);
 }
 
-
 void BinaryTree::remove(double value)
 {
-    auto** node = &root;
+    auto **node = &root;
     Node **current = node;
     while (*current && (*current)->data != value)
     {
-        current = value < (*current)->data ? &(*current)->left : &(*current)->right;
+        current = value < (*current)->data ? &((*current)->left) : &((*current)->right);
     }
-    if (!*current)
-        return; 
+    if (*current == nullptr)
+        return;
 
-    Node *temp = *current; 
-    if (((*current)->left) != nullptr) 
+    Node *nodeToRemove = *current;
+
+    if (nodeToRemove->left == nullptr)
     {
-        *current = (*current)->right;
-        delete temp;
+        *current = nodeToRemove->right;
+        delete nodeToRemove;
         return;
     }
-    if (!(*current)->right)
+    if (nodeToRemove->right == nullptr)
     {
-        *current = (*current)->left;
-        delete temp;
+        *current = nodeToRemove->left;
+        delete nodeToRemove;
         return;
     }
-    Node **smallest_ptr = find_smallest_ptr(temp->right);
-    *current = *smallest_ptr;
-    (*current)->left = temp->left;
-    *smallest_ptr = (*current)->right;
-    (*current)->right = temp->right;
-    delete temp;
+    Node **largestOnLeftPtr = find_biggest_ptr(nodeToRemove->left);
+    *current = *largestOnLeftPtr;
+
+    (nodeToRemove->left == *largestOnLeftPtr) 
+    ? (nodeToRemove->left = nullptr) 
+    : (*largestOnLeftPtr = (*current)->left);
+    (*current)->left = nodeToRemove->left;
+    (*current)->right = nodeToRemove->right;
+    delete nodeToRemove;
 }
 
 Node **BinaryTree::find_smallest_ptr(Node *subtree)
@@ -110,6 +116,14 @@ Node **BinaryTree::find_smallest_ptr(Node *subtree)
     while ((*smallest)->left != nullptr)
         smallest = &((*smallest)->left);
     return smallest;
+}
+
+Node **BinaryTree::find_biggest_ptr(Node *subtree)
+{
+    Node **biggest = &subtree;
+    while ((*biggest)->right != nullptr)
+        biggest = &((*biggest)->right);
+    return biggest;
 }
 
 #endif // MR2022_BINARY_TREE_H

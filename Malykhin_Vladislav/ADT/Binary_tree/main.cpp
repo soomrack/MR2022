@@ -22,9 +22,9 @@ int main(){
     tree.print(4);
     tree.print(5);
 
-
-    std::cout<<"\nRemove test****************\n";
-    tree.remove(10);
+    const int remove_var = 12;
+    std::cout<<"\nRemove test: " << remove_var <<" ****************\n";
+    tree.remove(remove_var);
     tree.print(10);
     tree.print(9);
     tree.print(11);

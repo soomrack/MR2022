@@ -120,7 +120,7 @@ void Graph<T>::print()
         std::cout << "Adjacency list for node " << node->data << ": ";
         for (int j = 0; j < node->neighbors.get_size(); j++)
         {
-            std::cout << node->neighbors[j] << " ";
+            std::cout << node->neighbors[j] << " "; 
         }
         std::cout << std::endl;
     }

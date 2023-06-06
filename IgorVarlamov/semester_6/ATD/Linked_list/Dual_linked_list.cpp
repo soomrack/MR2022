@@ -12,7 +12,7 @@ void print(Iterator<T> it)
 }
 
 int main()
-{
+{ 
     LinkedList<double> list;
     list.push_head(3);
     list.push_head(10);

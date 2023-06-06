@@ -31,52 +31,51 @@ tree_names::tree::tree(double value, int key) {
     root = new Node(value, key);
 }
 
-void tree_names::tree::insert(tree_names::Node *node, int key, double value) {
-    if (key < node->key){
-        if (node->left == nullptr)
-            node->left = new Node(key, value);
-        else insert(node->left, key, value);
+void tree_names::tree::insert(int key, double value) {
+    if (root == nullptr){
+        root = new Node(value, key);
+        depth=1;
+        return;
     }
-    else if (key >= node->key){
-        if (node->right == nullptr)
-            node->right = new Node(key, value);
-        else insert(node->right, key, value);
-    }
-}
 
-tree_names::Node *tree_names::tree::find(tree_names::Node *node, int key) {
-    if (node == nullptr)
-        return nullptr;
-    if (node->key == key)
-        return node;
-    if (key < node->key)
-        find(node->left,key);
-    else find (node->right, key);
-}
+    Node* undertree = root;
+    Node** newNodePointer = nullptr;
 
-tree_names::Node *tree_names::tree::delete_node(tree_names::Node *node, int key) {
-    if (node == nullptr)
-        return nullptr;
-    else if (key < node->key)
-        node->left = delete_node(node->left, key);
-    else if (key > node->key)
-        node->right = delete_node(node->right, key);
-    else {
-        if (node->left == nullptr or node->right == nullptr)
-            if (node->left == nullptr)
-                node = node->right;
-            else
-                node = node->left;
-        else {
-            Node* left_max = get_max(node->left);
-            node->key = left_max->key;
-            node->value = left_max->value;
-            node->right = delete_node(node->right, left_max->key);
+    while (key != undertree->key){
+        if (key > undertree->key){
+            newNodePointer = &undertree->right;
+            if (undertree->right == nullptr) {
+                *newNodePointer = new Node(value, key);
+                undertree->right = *newNodePointer;
+                break;
+            } else {
+                undertree = undertree->right;
+            }
+
+        } else {
+            newNodePointer = &undertree->left;
+            if (undertree->left == nullptr){
+                *newNodePointer = new Node(value, key);
+                undertree->left = *newNodePointer;
+                break;
+            } else{
+                undertree = undertree->left;
+            }
         }
-
     }
-    return node;
+    depth++;
 }
+
+tree_names::Node *tree_names::tree::find(int key) {
+    Node* underTree = root;
+    while (underTree != nullptr) {
+        if (key == underTree->key) return underTree;
+        underTree = (key - underTree->key > 0) ? underTree->right : underTree->left;
+    }
+    return nullptr;
+}
+
+
 
 tree_names::Node *tree_names::tree::get_max(tree_names::Node *node) {
     if (node == nullptr) return nullptr;
@@ -84,21 +83,62 @@ tree_names::Node *tree_names::tree::get_max(tree_names::Node *node) {
     return get_max(node->right);
 }
 
+bool tree_names::tree::delete_node(int key, double value) {
+    Node** parentNodePointer = &root;
+
+    // find deleted node
+    while (*parentNodePointer != nullptr) {
+        if (key == (*parentNodePointer)->key) break;
+        parentNodePointer = (key > (*parentNodePointer)->key) ? &((*parentNodePointer)->right) : &((*parentNodePointer)->left);
+    }
+    if (*parentNodePointer == nullptr) return false;
+    Node* deletedNode = *parentNodePointer;
+
+    //check if only one neighbour
+    if (deletedNode->right == nullptr) { *parentNodePointer = deletedNode->left;  depth--; return true; }
+    if (deletedNode->left == nullptr)  { *parentNodePointer = deletedNode->right; depth--; return true; }
+
+    // find node with min key (left) in right undertree
+    Node** smallest_ptr = &deletedNode->right;
+    while ((*smallest_ptr)->left != nullptr) smallest_ptr = &((*smallest_ptr)->left);
 
 
+    *parentNodePointer = *smallest_ptr;
+    (*parentNodePointer)->left = deletedNode->left;
 
-/*tree_names::tree::~tree() {
-    clear();
-    depth = 0;
+    *smallest_ptr = (*parentNodePointer)->right;
+    (*parentNodePointer)->right = deletedNode->right;
+
+    delete deletedNode;
+    depth--;
+    return true;
+}
+
+
+void tree_names::tree::print_right() {
+    Node* currentNode = root;
+    std::cout << currentNode->key << "\t";
+
+
+    while (currentNode->right != nullptr){
+        std::cout << currentNode->right->key << "\t";
+        currentNode = currentNode->right;
+    }
+    std::cout <<  "\n";
+
 
 }
 
-void tree_names::tree::clear() {
-    Node* running_pointer = root;
+
+
+
+
+
+
+
+
+/*void tree_names::tree::clear() {
     while (depth) {
-        if (running_pointer->left != nullptr)
-            running_pointer
-
+        delete_node(root->key, root->value);
     }
-
 }*/

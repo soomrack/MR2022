@@ -656,14 +656,13 @@ template <typename T>
 int Matrix_memory<T>::quantity = 0;
 
 template <typename T>
-Matrix_memory<T>::Matrix_memory():Matrix<T>() {
+Matrix_memory<T>::Matrix_memory() : Matrix<T>() {
     memory_allocated = 0;
-    total_memory += memory_allocated;
     quantity++;
 }
 
 template <typename T>
-Matrix_memory<T>::Matrix_memory(unsigned int rows, unsigned int cols):
+Matrix_memory<T>::Matrix_memory(unsigned int rows, unsigned int cols) :
 Matrix<T>(rows, cols) {
     memory_allocated = sizeof(T) * rows * cols;
     total_memory += memory_allocated;
@@ -687,6 +686,7 @@ Matrix_memory<T>::~Matrix_memory() {
 
 template <typename T>
 Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory& other) {
+    // Добавить синтаксис родительского оператора
     total_memory -= memory_allocated;
     memory_allocated = other.memory_allocated;
     total_memory += memory_allocated;
@@ -694,6 +694,7 @@ Matrix_memory<T>& Matrix_memory<T>::operator=(const Matrix_memory& other) {
 
 template <typename T>
 Matrix_memory<T>& Matrix_memory<T>::operator=(Matrix_memory&& other) noexcept {
+    // Добавить синтаксис родительского оператора
     total_memory -= memory_allocated;
     memory_allocated = other.memory_allocated;
     other.memory_allocated = 0;
@@ -739,8 +740,8 @@ Matrix_memory<T> Matrix_memory<T>::add(const Matrix_memory& other) {
 
 template <typename T>
 void Matrix_memory<T>::print_mem() {
-    std::cout << "Used " << this->total_memory << " bytes" << std::endl;
-    std::cout << "Made " << this->quantity << " matrices\n" << std::endl;
+    std::cout << "Allocated " << this->total_memory << " bytes" << std::endl;
+    std::cout << "Create " << this->quantity << " matrices\n" << std::endl;
 }
 
 #endif

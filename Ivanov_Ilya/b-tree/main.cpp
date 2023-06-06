@@ -1,5 +1,4 @@
-
-#include "tree.h"
+#include "btree.h"
 #include <iostream>
 
 int main () {
@@ -26,12 +25,6 @@ int main () {
     bst.insert(86);
     bst.insert(7);
     bst.insert(6);
-
-
-
-
-
-
     bst.print();
 
     std::cout << "\n"

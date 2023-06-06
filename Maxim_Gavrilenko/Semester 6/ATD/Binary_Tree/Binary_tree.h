@@ -24,7 +24,7 @@ private:
     Node *root;
     void add(Node **, double);
     void remove(Node **, double);
-    void remove_tree(Node* node);
+    void remove_tree(Node *node);
     bool search(Node **node, double data);
     Node **find_smallest_ptr(Node *subtree);
 };
@@ -39,9 +39,10 @@ BinaryTree::~BinaryTree()
     remove_tree(root);
 }
 
-void BinaryTree::remove_tree(Node* node)
+void BinaryTree::remove_tree(Node *node)
 {
-    if (node!= nullptr) {
+    if (node != nullptr)
+    {
         remove_tree(node->left);
         remove_tree(node->right);
         delete node;
@@ -91,10 +92,18 @@ void BinaryTree::remove(Node **node, double value)
         return;
     }
     Node **smallest_ptr = find_smallest_ptr(temp->right);
-    *current = *smallest_ptr;
+
+    if (temp->right == *smallest_ptr)
+    {
+        *current = *smallest_ptr;
+    }
+    else
+    {
+        *current = *smallest_ptr;
+        *smallest_ptr = (*current)->right;
+        (*current)->right = temp->right;
+    }
     (*current)->left = temp->left;
-    *smallest_ptr = (*current)->right;
-    (*current)->right = temp->right;
     delete temp;
 }
 
@@ -105,8 +114,10 @@ bool BinaryTree::search(double value)
 
 bool BinaryTree::search(Node **node, double value)
 {
-    while (*node != nullptr) {
-        if ((*node)->data == value) {
+    while (*node != nullptr)
+    {
+        if ((*node)->data == value)
+        {
             return true;
         }
         node = value < (*node)->data ? &(*node)->left : &(*node)->right;

@@ -89,30 +89,26 @@ void Tree::insert(unsigned int new_value) {
 
 
 void Tree::del(unsigned int del_value) {
-    Node** del_link = &root;
-    while (*del_link != nullptr) {
-        if (del_value == (*del_link)->key) break;
-        del_link = del_value > (*del_link)->key? &(*del_link)->right:  &(*del_link)->left;
+    Node** to_del = &root;
+    while (*to_del != nullptr) {
+        if (del_value == (*to_del)->key) break;
+        to_del = del_value > (*to_del)->key? &(*to_del)->right:  &(*to_del)->left;
     }
-    if (*del_link == nullptr) return;
-    Node* del = *del_link;
-    if (((*del_link)->left == nullptr) && ((*del_link)->right == nullptr)) {
-        *del_link = nullptr;
-        delete (*del_link);
-    }
-    if ((*del_link)->left == nullptr) {
-        *del_link = (*del_link)->right;
+    if (*to_del == nullptr) return;
+    Node* del = *to_del;
+    if ((*to_del)->left == nullptr) {
+        *to_del = (*to_del)->right;
         delete del;
     }
-    if ((*del_link)->right == nullptr) {
-        *del_link = (*del_link)->left;
+    if ((*to_del)->right == nullptr) {
+        *to_del = (*to_del)->left;
         delete del;
     }
-    Node** temp_link = &((*del_link)->right);
+    Node** temp_link = &((*to_del)->right);
     while ((*temp_link)->left) temp_link = &((*temp_link)->left);
-    *del_link = *temp_link;
-    (*del_link)->right = del->right;
-    (*del_link)->left = del->left;
+    *to_del = *temp_link;
+    (*to_del)->right = del->right;
+    (*to_del)->left = del->left;
     *temp_link = (*temp_link)->right;
     delete del;
 }

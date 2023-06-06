@@ -24,7 +24,6 @@ private:
     Node* get_parent_node(int get_value);
     void destroy_tree(Node* node);
     Node* find_min(Node* node);
-
 };
 
 BinaryTree::BinaryTree() : root(nullptr) {}
@@ -43,43 +42,36 @@ void BinaryTree::add(int value) {
 
 void BinaryTree::del(int del_value) {
     auto get_parent = get_parent_node(del_value);
-    auto current_node_link = del_value < get_parent->value ? &(get_parent->left) : &(get_parent->right);
+   if (get_parent == nullptr) {
+        return;
+    }
+     auto current_node_link = del_value < get_parent->value ? &(get_parent->left) : &(get_parent->right);
     auto del_node = *current_node_link;
 
-    if (get_node(del_value) == nullptr) {
-        return;
-    }
-
-    if ((*current_node_link)->right == nullptr) {
-        *current_node_link = (*current_node_link)->left;
-        delete del_node;
-        return;
-    }
     if ((*current_node_link)->left == nullptr) {
         *current_node_link = (*current_node_link)->right;
         delete del_node;
         return;
-    }
+    }  
 
-    auto del_left_link = &((*current_node_link)->left);
-    auto del_right_link = &((*current_node_link)->right);
-    auto del_link = current_node_link;
+auto del_left_link = (*current_node_link)->left;
+auto del_right_link = (*current_node_link)->right;
+auto del_link = current_node_link;
 
-    auto most_left_link = del_right_link;
-    auto next_node = (*most_left_link)->left;
-    while (next_node != nullptr) {
-        most_left_link = &((*most_left_link)->left);
-        next_node = next_node->left;
-    }
+auto most_right_link = &del_right_link;
+auto next_node = (*most_right_link)->right;  // Первое удаление (правого потомка)
+while (next_node != nullptr) {
+    most_right_link = &((*most_right_link)->right); // Второй выбор
+    next_node = next_node->right;
+}
 
-    auto most_left = *most_left_link;
-    (*del_link) = most_left;
-    most_left->left = (*del_left_link);
-    auto mem_link = most_left->right;
-    (*most_left_link) = mem_link;
-    most_left->right = (*del_right_link);
+auto most_left = *most_right_link;
+(*del_link) = most_left;  // Второе удаление (левого потомка)
+most_left->right = (del_right_link);
+auto mem_link = most_left->left;
+most_left->left = del_left_link;
 
-    delete del_node;
+delete del_node;
 }
 
 bool BinaryTree::get(int get_value) {

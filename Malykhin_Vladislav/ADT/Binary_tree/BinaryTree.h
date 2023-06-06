@@ -6,32 +6,23 @@
 
 
 class Node{
-protected:
+public: // можно сделать паблик и убрать гетеры, возможно нужно переписать
     Node *l_child;
     Node *r_child;
     double data;
-public:
     explicit Node(double in_data);
     ~Node() = default;
-    Node* get_l();
-    Node* get_r();
-    [[nodiscard]] double get_data() const;
-    void add_l(Node* new_node);
-    void add_r(Node* new_node);
-    void set_data(double in_data);
-    void set_link(Node * setting_link, Node * in_link);
 };
-
 
 
 class BinaryTree{
 protected:
     Node * root;
-    Node * p_find(double data);
+    Node * get_node(double data);
+    void delete_all(Node* del_root);
 public:
     BinaryTree();
-    ~BinaryTree() = default;
-    void add_node(Node *node, Node *fork_node);
+    ~BinaryTree();
     void add_node(double in_data);
     void  print(double data);
     double find(double data);
@@ -47,169 +38,102 @@ Node::Node(double in_data) {
 }
 
 
-double Node::get_data() const {
-    return data;
-}
-
-
-Node* Node::get_l() {
-    return l_child;
-}
-
-
-Node* Node::get_r() {
-    return r_child;
-}
-
-
-void Node::add_l(Node *new_node) {
-    l_child = new_node;
-}
-
-
-void Node::add_r(Node *new_node) {
-    r_child = new_node;
-}
-
-
-void Node::set_data(double in_data) {
-    data = in_data;
-}
-
-
-void Node::set_link(Node * setting_link, Node * in_link = nullptr) {
-    if (!setting_link) return;
-    if (setting_link == r_child) {
-        r_child = in_link;
-        return;
-    }
-    if(setting_link == l_child) {
-        l_child = in_link;
-        return;
-    }
-}
-
-
 BinaryTree::BinaryTree() {
     root = nullptr;
 }
 
 
-void BinaryTree::add_node(Node *node, Node *fork_node = nullptr) {
-    if (fork_node == nullptr) {  // вставка корня или проверка 1ой итерации.
-        if (root == nullptr) {
-            root = node;
-            return;
-        }
-        fork_node = root;
-    }
-    if(node->get_data() < fork_node->get_data()) // сравнение входа с развилочным значением
-        if (fork_node->get_l()) fork_node = fork_node->get_l();  // шаг буфера налево
-        else {
-            fork_node->add_l(node);
-            return;
-        }
-    else
-        if (fork_node->get_r()) fork_node = fork_node->get_r();  // шаг буфера налево
-        else {
-            fork_node->add_r(node);
-            return;
-        }
-    BinaryTree::add_node(node, fork_node);
-}
-
-
 void BinaryTree::add_node(double in_data) {
-    auto *new_node = new Node(in_data);
-    BinaryTree::add_node(new_node);
+    Node ** link = &root;
+    while(*link){  // bcrk.xtybt yf le,kbhjdfybt
+        if(in_data == (*link)->data){
+            std::cout << "Duplicate data entered. Error.\n";
+            return;
+        }
+        link = in_data < (*link)->data ? &((*link)->l_child) : &((*link)->r_child);
+    }
+    *link = new Node(in_data);
 }
 
 
-Node* BinaryTree::p_find(double data) {
-    Node * fork_node = root;
-    while (fork_node){
-        if(data == fork_node->get_data()) return fork_node;
-        if(data < fork_node->get_data()) fork_node = fork_node->get_l();
-        else fork_node = fork_node->get_r();
+Node* BinaryTree::get_node(double data) {
+    Node * node = root;
+    while (node){
+        if(data == node->data) return node;
+        node = (data < node->data) ? node->l_child : node->r_child ;
     }
     return nullptr;
 }
 
 
 double BinaryTree::find(double data) {
-    return BinaryTree::p_find(data)->get_data();
+    return BinaryTree::get_node(data)->data;
 }
 
 
 void BinaryTree::print(double data){
-    Node *buffer = p_find(data);
+    Node *buffer = get_node(data);
     if(buffer == nullptr) {
         std::cout << "There is no such object:" << data <<"\n";
         return;
     }
     std::cout<<"l:";
-    if(buffer->get_l() != nullptr)
-        std::cout<<p_find(data)->get_l()->get_data();
+    if(buffer->l_child != nullptr)
+        std::cout << get_node(data)->l_child->data;
     else
         std::cout<<"null";
     std::cout<<" m:"<<find(data)<<" r:";
-    if(buffer->get_r() != nullptr)
-        std::cout<<p_find(data)->get_r()->get_data()<<"\n";
+    if(buffer->r_child != nullptr)
+        std::cout << get_node(data)->r_child->data<< "\n";
     else
         std::cout<<"null\n";
 }
 
 
 void BinaryTree::remove(double in_data) {
-    Node * removed_node = p_find(in_data);
+    Node * removed_node = get_node(in_data);  // проверка на возможность удаления
     if(!removed_node) {
         std::cout << "There is nothing to remove.\n";
         return;
     }
     Node * previous;  // Переменная нужна, чтобы удалить ссылку на переносимый node. Нужно задать точку за 1 до removed_node.
-    Node * fork_node = root;  // Переменная нужна, чтобы задать начальное значение для previous
-    while (fork_node){
-        if(in_data == fork_node->get_data()) break;
-        if(in_data < fork_node->get_data()) {
-            previous = fork_node;
-            fork_node = fork_node->get_l(); }
-        else {
-            previous = fork_node;
-            fork_node = fork_node->get_r();
+    Node * buffer = root;  // Переменная нужна, чтобы задать начальное значение для previous
+    Node * replacement; // создание узла для замены
+    if(!removed_node->l_child) {
+        while (buffer) { //  задание значения переменной previous
+            if (in_data == buffer->data) break;
+            previous = buffer;
+            buffer = in_data < buffer->data ? buffer->l_child : buffer->r_child;
         }
-    }
-    Node * replacement;
-    if(removed_node->get_l()){
-        previous = removed_node;
-        replacement = removed_node->get_l();
-        while (replacement->get_r()){
-            previous = replacement;
-            replacement = replacement->get_r();
-        }
-        if(removed_node == root) previous->set_link(previous->get_l(),replacement->get_l());
-        previous->set_link(replacement);
-        removed_node->set_data(replacement->get_data());
-        delete replacement;
+        if(previous->r_child == removed_node) previous->r_child = removed_node->r_child ? removed_node->r_child : removed_node->l_child;
+        else previous->l_child = removed_node->r_child;
+        delete removed_node;
         return;
+    }   // замена на наибольшего элемента левого ребёнка
+    previous = removed_node;
+    replacement = removed_node->l_child;
+    while (replacement->r_child){
+        previous = replacement;
+        replacement = replacement->r_child;
     }
-    else if(removed_node->get_r()) {
-        previous = removed_node;
-        replacement = removed_node->get_r();
-        while (replacement->get_l()) {
-            previous = replacement;
-            replacement = replacement->get_l();
-        }
-        if(removed_node == root) previous->set_link(previous->get_r(), replacement->get_r());
-        previous->set_link(replacement);
-        removed_node->set_data(replacement->get_data());
-        delete replacement;
-        return;
-    }
-    if(previous->get_l() == removed_node && !removed_node->get_l())
-       previous->set_link(removed_node );
-    if(previous->get_r() == removed_node && !removed_node->get_r())  // можно сделать красивее.
-        previous->set_link(removed_node);
-    delete removed_node;
+    if(removed_node == root) previous->l_child = replacement->l_child;
+    else previous->r_child = nullptr;
+    if(previous->l_child == replacement) previous->l_child = nullptr;
+    removed_node->data = replacement->data;
+    delete replacement;
+}
+
+
+void BinaryTree::delete_all(Node* del_root) {
+    if (del_root == nullptr)  return; // Базовый случай
+    delete_all(del_root->l_child);   // рекурсивный вызов левого поддерева
+    delete_all(del_root->r_child);  // рекурсивный вызов правого поддерева
+    delete del_root;
+}
+
+
+BinaryTree::~BinaryTree() {
+    delete_all(root);
 }
 
 #endif //BINARYTREE_H
