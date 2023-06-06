@@ -2,7 +2,7 @@
 
 
 int main() {
-    MatrixTest<float>::usingUnused();
+    /*MatrixTest<float>::usingUnused();
     MatrixTest<float>::outputTest();
     MatrixTest<double>::overloadTest();
     MatrixTest<float>::additionTest();
@@ -22,6 +22,12 @@ int main() {
     MatrixTest<double>::matrixMemTest();
     MatrixTest<float>::matrixMemTest();
     MatrixTest<double>::genMemTest();
-    MatrixTest<float>::genMemTest();
+    MatrixTest<float>::genMemTest();*/
+
+    std::vector v = {1, 0, 2, 4};
+    Matrix<double> A(2, 2, {1, 0, 2, 4});
+    A.output();
+    Matrix<double> B = Matrix<double>::exp(A, 200);
+    B.output();
     return 0;
 }
